@@ -1,5 +1,5 @@
 const express = require("express");
-const { Pool } = require("pg"); // Upgraded to PostgreSQL
+const { Pool } = require("pg"); 
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require('path');
@@ -32,11 +32,10 @@ initDB();
 // --- THE SECURITY FIREWALL ---
 app.post("/api/login", (req, res) => {
     const { password } = req.body;
-    // Set cookie headers for browser auth
-    if (password === "KilrrAdmin99") { // Admin Pass
+    if (password === "KilrrAdmin99") { 
         res.setHeader('Set-Cookie', 'kilrr_auth=admin; Path=/; Max-Age=86400');
         return res.json({ success: true, role: 'admin' });
-    } else if (password === "KilrrFloor2026") { // Operator Pass
+    } else if (password === "KilrrFloor2026") { 
         res.setHeader('Set-Cookie', 'kilrr_auth=operator; Path=/; Max-Age=86400');
         return res.json({ success: true, role: 'operator' });
     } else {
@@ -44,18 +43,16 @@ app.post("/api/login", (req, res) => {
     }
 });
 
-// Middleware to block unauthorized access to pages
 app.use((req, res, next) => {
     const url = req.path === '/' ? '/index.html' : req.path;
     if (url.endsWith('.html')) {
-        if (url === '/login.html') return next(); // Let them see the login page
+        if (url === '/login.html') return next(); 
         
         const cookies = req.headers.cookie || "";
         if (!cookies.includes("kilrr_auth=")) {
-            return res.redirect('/login.html'); // Kick them out if not logged in
+            return res.redirect('/login.html'); 
         }
         
-        // Strict protection for Manager Pages
         if (url === '/dashboard.html' || url === '/master.html') {
             if (!cookies.includes("kilrr_auth=admin")) {
                 return res.send("<div style='font-family:sans-serif; text-align:center; padding:50px;'><h1 style='color:#ef4444;'>⛔ Access Denied</h1><p>You do not have Manager privileges to view this page.</p><a href='/'>Return to Scanner</a></div>");
@@ -65,9 +62,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Serve static HTML files after the firewall check
 app.use(express.static("public"));
-
 
 // --- POSTGRES APIs ---
 
@@ -166,6 +161,19 @@ app.post("/update-recipe-secure", async (req, res) => {
     } catch(e) { await pool.query("ROLLBACK"); res.status(500).json({error: e.message}); }
 });
 
+// 🔥 THE MISSING VAULT ACCESS ENDPOINT 🔥
+app.post("/vault-access", async (req, res) => {
+    if (req.body.password !== "Action123") return res.status(403).json({ error: "Denied" });
+    try {
+        const ingredients = await pool.query("SELECT * FROM ingredients ORDER BY ingredient_name ASC");
+        const vendors = await pool.query("SELECT * FROM vendors ORDER BY vendor_name ASC");
+        const recipes = await pool.query("SELECT * FROM recipes");
+        res.json({ ingredients: ingredients.rows, vendors: vendors.rows, recipes: recipes.rows });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 // 4. PRODUCTION SCANNER
 app.get("/recipe-requirements/:fg", async (req, res) => {
     const result = await pool.query("SELECT r.product_code, i.ingredient_name FROM recipes r JOIN ingredients i ON r.product_code = i.product_code WHERE r.fg_code = $1", [req.params.fg]);
@@ -216,6 +224,5 @@ app.post("/unlock-batch", async (req, res) => {
     res.json({ success: true });
 });
 
-// Dynamic Port for Cloud Hosting (Render/Railway)
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Kilrr System Active on Port ${PORT}`));
