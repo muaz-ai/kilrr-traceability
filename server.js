@@ -32,16 +32,23 @@ initDB();
 app.post("/api/login", (req, res) => {
     const { password } = req.body;
     
-    // 🔑 CHANGE YOUR PASSWORDS HERE:
-    if (password === "KilrrAdmin420") { 
-        res.setHeader('Set-Cookie', 'kilrr_auth=admin; Path=/; Max-Age=86400');
+    // REMOVED 'Max-Age' -> Now it is a strict Session Cookie (expires on close)
+    if (password === "KilrrAdmin99") { 
+        res.setHeader('Set-Cookie', 'kilrr_auth=admin; Path=/; HttpOnly');
         return res.json({ success: true, role: 'admin' });
-    } else if (password === "KilrrSpicesOP") { 
-        res.setHeader('Set-Cookie', 'kilrr_auth=operator; Path=/; Max-Age=86400');
+    } else if (password === "KilrrFloor2026") { 
+        res.setHeader('Set-Cookie', 'kilrr_auth=operator; Path=/; HttpOnly');
         return res.json({ success: true, role: 'operator' });
     } else {
         return res.status(401).json({ success: false, error: "Invalid" });
     }
+});
+
+// 🔥 NEW LOGOUT ENDPOINT
+app.get("/api/logout", (req, res) => {
+    // Overwrite the cookie with an immediate expiration
+    res.setHeader('Set-Cookie', 'kilrr_auth=; Path=/; Max-Age=0');
+    res.redirect('/login.html');
 });
 
 // Middleware to block unauthorized access to pages
@@ -55,49 +62,18 @@ app.use((req, res, next) => {
             return res.redirect('/login.html'); 
         }
         
-        // Strict protection for Manager Pages
         if (url === '/dashboard.html' || url === '/master.html') {
             if (!cookies.includes("kilrr_auth=admin")) {
-                // 🌌 THE NEW "OUT OF THIS WORLD" ACCESS DENIED UI
                 const sciFiDenied = `
                 <!DOCTYPE html>
                 <html>
-                <head>
-                    <title>SECURITY BREACH</title>
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
-                    <style>
-                        body { margin: 0; padding: 0; background: #050505; color: #ff3333; font-family: 'Space Grotesk', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-                        .container { text-align: center; position: relative; z-index: 2; padding: 50px; background: rgba(20, 0, 0, 0.8); border: 2px solid #ff3333; border-radius: 20px; box-shadow: 0 0 40px rgba(255, 51, 51, 0.3), inset 0 0 20px rgba(255, 51, 51, 0.1); backdrop-filter: blur(10px); max-width: 90%; }
-                        h1 { font-size: 50px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 5px; text-shadow: 0 0 15px #ff3333; animation: glitch 2s infinite; font-weight: 900;}
-                        p { color: #ff9999; font-size: 18px; margin-bottom: 40px; letter-spacing: 2px; font-weight: 700; text-transform: uppercase;}
-                        .btn { display: inline-block; padding: 18px 40px; color: #fff; text-decoration: none; text-transform: uppercase; font-weight: 900; background: transparent; border: 2px solid #ff3333; border-radius: 8px; transition: 0.3s; letter-spacing: 3px; font-size: 16px;}
-                        .btn:hover { background: #ff3333; color: #000; box-shadow: 0 0 30px #ff3333; transform: scale(1.05);}
-                        .radar { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80vw; height: 80vw; max-width: 800px; max-height: 800px; border-radius: 50%; border: 1px solid rgba(255, 51, 51, 0.1); z-index: 1; pointer-events: none; }
-                        .radar::before { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid rgba(255, 51, 51, 0.3); animation: pulse 2.5s ease-out infinite; }
-                        @keyframes pulse { 0% { transform: scale(0.1); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
-                        @keyframes glitch { 0% { text-shadow: 3px 0 0 red, -3px 0 0 blue; } 5% { text-shadow: -3px 0 0 red, 3px 0 0 blue; } 10% { text-shadow: 3px 0 0 red, -3px 0 0 blue; } 15% { text-shadow: 0 0 0 #ff3333; } 100% { text-shadow: 0 0 0 #ff3333; } }
-                    </style>
-                </head>
-                <body>
-                    <div class="radar"></div>
-                    <div class="container">
-                        <h1>⚠️ RESTRICTED</h1>
-                        <p>Manager Clearance Required.</p>
-                        <a href="/" class="btn">Return to Scanner</a>
-                    </div>
-                </body>
-                </html>
-                `;
+                <head><title>SECURITY BREACH</title><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet"><style>body { margin: 0; padding: 0; background: #050505; color: #ff3333; font-family: 'Space Grotesk', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; } .container { text-align: center; position: relative; z-index: 2; padding: 50px; background: rgba(20, 0, 0, 0.8); border: 2px solid #ff3333; border-radius: 20px; box-shadow: 0 0 40px rgba(255, 51, 51, 0.3), inset 0 0 20px rgba(255, 51, 51, 0.1); backdrop-filter: blur(10px); max-width: 90%; } h1 { font-size: 50px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 5px; text-shadow: 0 0 15px #ff3333; animation: glitch 2s infinite; font-weight: 900;} p { color: #ff9999; font-size: 18px; margin-bottom: 40px; letter-spacing: 2px; font-weight: 700; text-transform: uppercase;} .btn { display: inline-block; padding: 18px 40px; color: #fff; text-decoration: none; text-transform: uppercase; font-weight: 900; background: transparent; border: 2px solid #ff3333; border-radius: 8px; transition: 0.3s; letter-spacing: 3px; font-size: 16px;} .btn:hover { background: #ff3333; color: #000; box-shadow: 0 0 30px #ff3333; transform: scale(1.05);} .radar { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80vw; height: 80vw; max-width: 800px; max-height: 800px; border-radius: 50%; border: 1px solid rgba(255, 51, 51, 0.1); z-index: 1; pointer-events: none; } .radar::before { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid rgba(255, 51, 51, 0.3); animation: pulse 2.5s ease-out infinite; } @keyframes pulse { 0% { transform: scale(0.1); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } } @keyframes glitch { 0% { text-shadow: 3px 0 0 red, -3px 0 0 blue; } 5% { text-shadow: -3px 0 0 red, 3px 0 0 blue; } 10% { text-shadow: 3px 0 0 red, -3px 0 0 blue; } 15% { text-shadow: 0 0 0 #ff3333; } 100% { text-shadow: 0 0 0 #ff3333; } }</style></head><body><div class="radar"></div><div class="container"><h1>⚠️ RESTRICTED</h1><p>Manager Clearance Required.</p><a href="/" class="btn">Return to Scanner</a></div></body></html>`;
                 return res.send(sciFiDenied);
             }
         }
     }
     next();
 });
-
-app.use(express.static("public"));
-
 // --- POSTGRES APIs ---
 
 // 1. INWARDING LOGS
@@ -260,4 +236,5 @@ app.post("/unlock-batch", async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Kilrr System Active on Port ${PORT}`));
+
 
