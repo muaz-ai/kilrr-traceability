@@ -26,8 +26,9 @@
         h2 { margin-top: 0; color: #0f172a; font-size: 24px; margin-bottom: 25px; font-weight: 800; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; text-align: center; }
         label { display: block; font-weight: 800; margin-bottom: 8px; color: #475569; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        input { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 16px; background: #ffffff; color: #0f172a; transition: all 0.2s; font-family: 'Space Grotesk', sans-serif; font-weight: 600; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); margin-bottom: 20px;}
-        input:focus { border-color: #0ea5e9; outline: none; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2); }
+        input, select { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 16px; background: #ffffff; color: #0f172a; transition: all 0.2s; font-family: 'Space Grotesk', sans-serif; font-weight: 600; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); margin-bottom: 20px;}
+        input:focus, select:focus { border-color: #0ea5e9; outline: none; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2); }
+        select { appearance: none; cursor: pointer; }
 
         .autocomplete { position: relative; display: inline-block; width: 100%; margin-bottom: 0; }
         .autocomplete-items { position: absolute; border: 1px solid #e2e8f0; border-radius: 12px; z-index: 1000; background: #ffffff; width: 100%; max-height: 250px; overflow-y: auto; box-shadow: 0 15px 35px rgba(0,0,0,0.1); top: calc(100% - 15px); left: 0; font-family: 'Outfit', sans-serif; text-align: left; }
@@ -62,7 +63,7 @@
             .card { max-width: 850px; padding: 50px; margin: 40px auto; }
             h2 { font-size: 32px; margin-bottom: 35px; }
             label { font-size: 16px; margin-bottom: 10px; }
-            input { padding: 22px 24px; font-size: 18px; border-radius: 12px; margin-bottom: 25px;}
+            input, select { padding: 22px 24px; font-size: 18px; border-radius: 12px; margin-bottom: 25px;}
             .autocomplete-items { font-size: 18px; }
             .dropdown-item { padding: 20px 24px; }
             button { font-size: 20px; padding: 25px; border-radius: 12px; }
@@ -100,8 +101,19 @@
         <label>2. Enter or Resume Batch Code</label>
         <div class="autocomplete"><input type="text" id="bc" placeholder="Type new or tap to resume..." autocomplete="off"></div>
         
-        <label>3. Operator Name</label>
-        <input type="text" id="op_name" placeholder="e.g. Arbaaz, Rahul..." autocomplete="on" style="margin-bottom: 35px;">
+        <label>3. Select Operator</label>
+        <div style="position: relative;">
+            <select id="op_name" style="margin-bottom: 35px;">
+                <option value="" disabled selected>Tap to select operator...</option>
+                <option value="Muaz">Muaz</option>
+                <option value="Arbaaz">Arbaaz</option>
+                <option value="Satish">Satish</option>
+                <option value="Dhruv">Dhruv</option>
+                <option value="Akshay">Akshay</option>
+                <option value="Shebaz">Shebaz</option>
+            </select>
+            <span style="position: absolute; right: 20px; top: 22px; pointer-events: none; font-size: 16px; color: #94a3b8;">▼</span>
+        </div>
         
         <button class="btn-primary" onclick="start()">🚀 Open Scanner</button>
     </div>
@@ -134,7 +146,6 @@
         let curB = ""; let curF = ""; let curOp = ""; let isProcessing = false; let localScannedTags = []; 
         let openBatchesData = []; let html5QrcodeScanner = null;
         
-        // --- AUDIO BEEP SYSTEM ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(isSuccess) {
             try {
@@ -214,11 +225,13 @@
         document.addEventListener("click", function (e) { if(e.target.tagName !== "INPUT") closeAllLists(); });
 
         async function start() {
-            if(audioCtx.state === 'suspended') audioCtx.resume(); // Unlock audio
+            if(audioCtx.state === 'suspended') audioCtx.resume(); 
             curB = document.getElementById('bc').value.trim(); 
             curF = document.getElementById('fg_select').value.trim();
-            curOp = document.getElementById('op_name').value.trim() || "Unknown Operator";
+            curOp = document.getElementById('op_name').value; // Grabs the selected value
+            
             if(!curB || !curF) return alert("Please select a Flavour Profile and enter a Batch Code!");
+            if(!curOp) return alert("Please select an Operator Name!"); // Forces them to pick a name
             
             const isOpen = openBatchesData.find(b => b.batch_code.toUpperCase() === curB.toUpperCase());
             if (isOpen) {
@@ -262,7 +275,7 @@
             if(parts.length === 5) { cleanTag = parts.slice(0, 4).join('/'); }
 
             if (localScannedTags.includes(cleanTag)) {
-                playBeep(false); // Play Error Buzz!
+                playBeep(false); 
                 alert("⚠️ DUPLICATE: Bag already scanned for this batch!");
                 document.getElementById('rm_tag_manual').value = ""; document.getElementById('rm_tag_manual').focus(); 
                 setTimeout(() => { isProcessing = false; }, 1000); return;
@@ -270,7 +283,7 @@
             
             await fetch('/scan', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB, rm_tag:cleanTag}) });
             
-            playBeep(true); // Play Success Beep!
+            playBeep(true); 
             document.getElementById('rm_tag_manual').value = ""; document.getElementById('rm_tag_manual').focus();
             
             update();
