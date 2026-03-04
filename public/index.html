@@ -2,147 +2,146 @@
 <html>
 <head>
     <title>Kilrr - Batch Scanner</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ffffff">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Outfit', sans-serif; margin: 0; color: #1e293b; background: linear-gradient(-45deg, #ffffff, #f0f9ff, #fff7ed, #fdf4ff); background-size: 400% 400%; animation: daylightGradient 15s ease infinite; min-height: 100vh; }
-        @keyframes daylightGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-        .main-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 15px; text-align: center; border-bottom: 3px solid #0ea5e9; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); z-index: 10; position: relative; }
-        .main-header img { height: 50px; margin-right: 15px; }
-        .main-header h1 { background: linear-gradient(90deg, #ea580c, #db2777, #0284c7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; font-size: 26px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
-        
-        nav { background: #ffffff; display: flex; flex-wrap: wrap; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        nav a { flex: 1; text-align: center; color: #64748b; padding: 14px 10px; text-decoration: none; font-weight: 800; font-size: 14px; text-transform: uppercase; border-bottom: 3px solid transparent; transition: all 0.3s ease; white-space: nowrap; }
-        nav a:hover { color: #0ea5e9; background: #f8fafc; }
-        nav a.active { color: #0ea5e9; background: #f0f9ff; border-bottom: 3px solid #0ea5e9; }
-        @media (max-width: 768px) { nav a { font-size: 11px; padding: 12px 5px; white-space: normal; } }
-
-        .card { max-width: 600px; margin: 15px auto; background: #ffffff; padding: 35px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); border: 1px solid #e2e8f0; text-align: left; transition: all 0.3s ease; }
-        h2 { margin-top: 0; color: #0f172a; font-size: 24px; margin-bottom: 25px; font-weight: 800; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; text-align: center; }
-        label { display: block; font-weight: 800; margin-bottom: 8px; color: #475569; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        input, select { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 16px; background: #ffffff; color: #0f172a; transition: all 0.2s; font-family: 'Space Grotesk', sans-serif; font-weight: 600; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); margin-bottom: 20px;}
-        input:focus, select:focus { border-color: #0ea5e9; outline: none; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2); }
-        select { appearance: none; cursor: pointer; }
-
-        .autocomplete { position: relative; display: inline-block; width: 100%; margin-bottom: 0; }
-        .autocomplete-items { position: absolute; border: 1px solid #e2e8f0; border-radius: 12px; z-index: 1000; background: #ffffff; width: 100%; max-height: 250px; overflow-y: auto; box-shadow: 0 15px 35px rgba(0,0,0,0.1); top: calc(100% - 15px); left: 0; font-family: 'Outfit', sans-serif; text-align: left; }
-        .dropdown-item { padding: 16px 20px; cursor: pointer; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
-        .dropdown-item:hover { background-color: #f0f9ff; padding-left: 25px; border-left: 5px solid #0ea5e9; }
-        
-        button { width: 100%; border: none; font-family: 'Outfit', sans-serif; font-weight: 900; cursor: pointer; color: white; border-radius: 12px; padding: 20px; font-size: 18px; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
-        .btn-primary { background: linear-gradient(135deg, #0ea5e9, #3b82f6); box-shadow: 0 6px 15px rgba(14, 165, 233, 0.3); }
-        .btn-primary:hover { transform: translateY(-2px); }
-        .btn-manual { background: #f8fafc; color: #0ea5e9; border: 2px solid #0ea5e9; box-shadow: none; font-size: 15px; padding: 16px;}
-        .btn-danger { background: #fef2f2; color: #ef4444; border: 2px solid #fca5a5; font-size: 14px; padding: 16px; margin-top: 25px; }
-        .btn-lock { background: linear-gradient(135deg, #0f172a, #334155); margin-top: 15px; }
-
-        .manual-box { background: #f0f9ff; padding: 25px; border: 3px solid #0ea5e9; border-radius: 16px; margin-bottom: 25px; text-align: center; }
-        .hybrid-input-row { display: flex; gap: 10px; margin-bottom: 5px; }
-        .manual-box input { border-color: #0ea5e9; font-size: 18px; font-weight: 900; flex: 1; padding: 15px; text-align:center; margin:0; }
-        .btn-add-manual { background: #0ea5e9; width: auto; padding: 0 25px; margin: 0; font-size: 16px; border-radius: 10px; }
-        
-        #reader { width: 100%; border-radius: 16px; overflow: hidden; border: 4px solid #cbd5e1; margin-bottom: 15px;}
-        h3 { font-size: 16px; color: #0f172a; margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; }
-        #checklist > div { padding: 15px 20px; margin: 10px 0; border-radius: 12px; font-weight: 800; display: flex; justify-content: space-between; font-family: 'Space Grotesk', sans-serif; font-size: 15px;}
-        .check-pending { background: #ffffff; color: #475569; border: 2px solid #e2e8f0; }
-        .check-done { background: #ecfdf5; color: #059669; border: 2px solid #a7f3d0; }
-        
-        #scan_log { height: 200px; overflow-y: auto; margin-top: 15px; background: #ffffff; border: 2px solid #e2e8f0; padding: 15px; border-radius: 12px; }
-        .scan-log-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #f1f5f9; }
-        .btn-mini-del { width: auto; margin: 0; background: #fef2f2; border: 1px solid #fca5a5; color: #ef4444; border-radius: 6px; padding: 6px 12px; font-size:13px; font-weight:800; cursor: pointer; transition: 0.2s;}
-        .btn-mini-del:hover { background: #fee2e2; transform: scale(1.05); }
-
-        /* --- DESKTOP ZOOM UPGRADE --- */
-        @media (min-width: 1200px) {
-            .card { max-width: 850px; padding: 50px; margin: 40px auto; }
-            h2 { font-size: 32px; margin-bottom: 35px; }
-            label { font-size: 16px; margin-bottom: 10px; }
-            input, select { padding: 22px 24px; font-size: 18px; border-radius: 12px; margin-bottom: 25px;}
-            .autocomplete-items { font-size: 18px; }
-            .dropdown-item { padding: 20px 24px; }
-            button { font-size: 20px; padding: 25px; border-radius: 12px; }
-            .manual-box { padding: 35px; }
-            .manual-box label { font-size: 16px; }
-            .manual-box input { font-size: 22px; padding: 20px; }
-            .btn-add-manual { font-size: 18px; padding: 0 35px; }
-            h3 { font-size: 20px; margin-top: 35px;}
-            #checklist > div { font-size: 18px; padding: 20px 25px; }
-            .scan-log-item { font-size: 18px; padding: 18px; }
-            .btn-mini-del { font-size: 15px; padding: 10px 18px; }
+        /* SPICE FACTORY COLOR PALETTE */
+        :root {
+            --spice-red: #b91c1c; /* Deep Chili Red */
+            --spice-orange: #ea580c; /* Paprika */
+            --spice-yellow: #f59e0b; /* Turmeric */
+            --factory-dark: #1e293b; /* Industrial Slate */
+            --factory-light: #f8fafc;
         }
+
+        /* Subtle Factory Dot Pattern Background */
+        body { font-family: 'Outfit', sans-serif; margin: 0; color: var(--factory-dark); background-color: #fffbeb; background-image: radial-gradient(#fde68a 1px, transparent 1px); background-size: 20px 20px; min-height: 100vh; }
+        
+        /* NEW HEADER: Logo Left, Industrial Look */
+        .main-header { background: var(--factory-dark); padding: 15px 25px; border-bottom: 4px solid var(--spice-orange); display: flex; align-items: center; justify-content: space-between; box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .main-header img { height: 45px; background: white; padding: 6px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .main-header h1 { color: white; margin: 0; font-size: 22px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Space Grotesk', sans-serif;}
+        .status-dot { height: 12px; width: 12px; background-color: #22c55e; border-radius: 50%; box-shadow: 0 0 10px #22c55e; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+
+        /* UPGRADED NAVIGATION */
+        nav { background: white; display: flex; flex-wrap: wrap; padding: 10px; gap: 8px; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        nav a { flex: 1 1 auto; text-align: center; color: #64748b; padding: 12px 15px; text-decoration: none; font-weight: 800; font-size: 13px; text-transform: uppercase; border-radius: 8px; transition: 0.3s; background: var(--factory-light); border: 1px solid #e2e8f0;}
+        nav a:hover { color: var(--spice-orange); border-color: var(--spice-orange); background: #fff7ed; }
+        nav a.active { color: white; background: var(--spice-orange); border-color: var(--spice-orange); box-shadow: 0 4px 10px rgba(234, 88, 12, 0.3); }
+        nav a.logout-btn { background: #fef2f2; color: var(--spice-red); border-color: #fca5a5; flex: 0 1 auto;}
+        nav a.logout-btn:hover { background: var(--spice-red); color: white; }
+
+        /* CARDS & INPUTS */
+        .card { max-width: 600px; margin: 25px auto; background: white; padding: 35px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08); border-top: 5px solid var(--spice-yellow); }
+        h2 { margin-top: 0; color: var(--factory-dark); font-size: 24px; margin-bottom: 25px; font-weight: 900; text-align: center; font-family: 'Space Grotesk', sans-serif;}
+        label { display: block; font-weight: 800; margin-bottom: 8px; color: var(--spice-red); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        input, select { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 16px; background: #f8fafc; color: var(--factory-dark); transition: 0.2s; font-family: 'Space Grotesk', sans-serif; font-weight: 700; margin-bottom: 20px;}
+        input:focus, select:focus { border-color: var(--spice-orange); outline: none; box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.15); background: white;}
+
+        .autocomplete { position: relative; display: inline-block; width: 100%; }
+        .autocomplete-items { position: absolute; border: 1px solid #e2e8f0; border-radius: 10px; z-index: 1000; background: white; width: 100%; max-height: 250px; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); top: calc(100% - 15px); }
+        .dropdown-item { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #f1f5f9; font-weight: 600;}
+        .dropdown-item:hover { background-color: #fff7ed; color: var(--spice-orange); padding-left: 25px; border-left: 4px solid var(--spice-orange); }
+        
+        button { width: 100%; border: none; font-family: 'Outfit', sans-serif; font-weight: 900; cursor: pointer; color: white; border-radius: 10px; padding: 20px; font-size: 18px; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .btn-primary { background: linear-gradient(135deg, var(--spice-orange), var(--spice-red)); box-shadow: 0 6px 15px rgba(220, 38, 38, 0.3); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(220, 38, 38, 0.4); }
+        .btn-manual { background: var(--factory-light); color: var(--spice-orange); border: 2px solid var(--spice-orange); font-size: 15px; padding: 16px;}
+        .btn-danger { background: #fef2f2; color: var(--spice-red); border: 2px solid #fca5a5; font-size: 14px; padding: 16px; margin-top: 25px; }
+        .btn-lock { background: var(--factory-dark); margin-top: 15px; border: 2px solid #0f172a; }
+
+        .manual-box { background: #fff7ed; padding: 25px; border: 2px dashed var(--spice-orange); border-radius: 12px; margin-bottom: 25px; text-align: center; }
+        .hybrid-input-row { display: flex; gap: 10px; margin-bottom: 5px; }
+        .manual-box input { border-color: var(--spice-orange); font-size: 18px; flex: 1; padding: 15px; text-align:center; margin:0; background: white;}
+        .btn-add-manual { background: var(--spice-orange); width: auto; padding: 0 25px; margin: 0; border-radius: 8px; }
+        
+        #reader { width: 100%; border-radius: 12px; overflow: hidden; border: 3px solid var(--factory-dark); margin-bottom: 15px;}
+        h3 { font-size: 18px; color: var(--factory-dark); margin-top: 25px; margin-bottom: 15px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;}
+        #checklist > div { padding: 15px 20px; margin: 10px 0; border-radius: 10px; font-weight: 800; display: flex; justify-content: space-between; font-family: 'Space Grotesk', sans-serif;}
+        .check-pending { background: white; color: #475569; border: 1px solid #cbd5e1; border-left: 5px solid #cbd5e1;}
+        .check-done { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-left: 5px solid #059669; }
+        
+        #scan_log { height: 200px; overflow-y: auto; margin-top: 15px; background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 10px; }
+        .scan-log-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #e2e8f0; background: white; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+        .btn-mini-del { width: auto; margin: 0; background: #fef2f2; border: 1px solid #fca5a5; color: var(--spice-red); border-radius: 6px; padding: 6px 12px; font-size:12px; cursor: pointer;}
+        
+        @media (max-width: 600px) { .main-header h1 { font-size: 16px; } nav a { font-size: 11px; padding: 10px; } }
     </style>
 </head>
 <body>
     <div class="main-header">
-        <img src="logo.png" alt="Kilrr Logo" onerror="this.style.display='none'">
-        <h1>PRODUCTION TRACEABILITY</h1>
+        <div class="header-left">
+            <img src="logo.png" alt="Kilrr" onerror="this.style.display='none'">
+            <h1>Factory Console</h1>
+        </div>
+        <div class="status-dot" title="System Live"></div>
     </div>
     
     <nav>
-        <a href="inwarding.html">📦 RM Inwarding</a>
-        <a href="/" class="active">🏭 Batch Scanner</a>
-        <a href="audit.html">📋 Stock Audit</a>
-        <a href="dashboard.html">📊 Dashboard</a>
-        <a href="master.html">⚙️ Master Data</a>
+        <a href="inwarding.html">📦 Inward</a>
+        <a href="/" class="active">🏭 Batch Scan</a>
+        <a href="audit.html">📋 Audit</a>
+        <a href="dashboard.html">📊 Dash</a>
+        <a href="master.html">⚙️ Master</a>
+        <a href="/api/logout" class="logout-btn">🚪 Exit</a>
     </nav>
     
     <div class="card" id="setup">
-        <h2>Start or Resume Batch</h2>
+        <h2>Initiate Production</h2>
         
-        <label>1. Select Flavour Profile</label>
-        <div class="autocomplete"><input type="text" id="fg_select" placeholder="Tap to search Flavour..." autocomplete="off"></div>
+        <label>1. Target Flavour Profile</label>
+        <div class="autocomplete"><input type="text" id="fg_select" placeholder="Search Master Recipe..." autocomplete="off"></div>
         
-        <label>2. Enter or Resume Batch Code</label>
-        <div class="autocomplete"><input type="text" id="bc" placeholder="Type new or tap to resume..." autocomplete="off"></div>
+        <label>2. Batch Tracking Code</label>
+        <div class="autocomplete"><input type="text" id="bc" placeholder="Enter new or resume existing..." autocomplete="off"></div>
         
-        <label>3. Select Operator</label>
+        <label>3. Lead Operator</label>
         <div style="position: relative;">
-            <select id="op_name" style="margin-bottom: 35px;">
-                <option value="" disabled selected>Tap to select operator...</option>
+            <select id="op_name" style="margin-bottom: 30px;">
+                <option value="" disabled selected>Select authorized personnel...</option>
                 <option value="Muaz">Muaz</option>
                 <option value="Arbaaz">Arbaaz</option>
-                <option value="Satish">Satish</option>
-                <option value="Dhruv">Dhruv</option>
-                <option value="Akshay">Akshay</option>
-                <option value="Shebaz">Shebaz</option>
+                <option value="Rahul">Rahul</option>
+                <option value="Amit">Amit</option>
+                <option value="Priya">Priya</option>
+                <option value="Supervisor">Supervisor</option>
             </select>
-            <span style="position: absolute; right: 20px; top: 22px; pointer-events: none; font-size: 16px; color: #94a3b8;">▼</span>
+            <span style="position: absolute; right: 15px; top: 18px; pointer-events: none; font-size: 16px; color: #94a3b8;">▼</span>
         </div>
         
-        <button class="btn-primary" onclick="start()">🚀 Open Scanner</button>
+        <button class="btn-primary" onclick="start()">🚀 ENGAGE SCANNER</button>
     </div>
     
     <div class="card" id="work" style="display:none;">
-        <h2 id="title" style="color:#ea580c; text-align: center;"></h2>
+        <h2 id="title" style="color:var(--spice-orange);"></h2>
         
         <div class="manual-box">
-            <label style="color:#0284c7; margin-bottom:10px;">⚡ DESKTOP SCANNER OR MANUAL ENTRY</label>
+            <label style="color:var(--spice-dark); margin-bottom:8px;">⚡ DESKTOP SCAN OR MANUAL ENTRY</label>
             <div class="hybrid-input-row">
-                <input type="text" id="rm_tag_manual" placeholder="Scan barcode or type code..." autocomplete="off">
+                <input type="text" id="rm_tag_manual" placeholder="Awaiting barcode..." autocomplete="off">
                 <button class="btn-add-manual" onclick="manualScan()">➕ Add</button>
             </div>
-            <div style="font-size:12px; color:#64748b; font-weight:600; margin-top:8px;">(Cursor must be in the box for automatic scanning)</div>
         </div>
 
         <div id="reader" style="display:none;"></div>
-        <button class="btn-manual" onclick="toggleCamera()" id="camToggleBtn">📷 Toggle Phone Camera</button>
+        <button class="btn-manual" onclick="toggleCamera()" id="camToggleBtn">📷 Activate Mobile Scanner</button>
 
-        <h3>Recipe Checklist</h3>
+        <h3>Recipe Validation</h3>
         <div id="checklist"></div>
         
         <div id="scan_log"></div>
         
-        <button class="btn-danger" onclick="deleteWholeBatch()">🗑️ Delete Entire Batch (Manager PIN)</button>
-        <button class="btn-lock" onclick="lock()">🔒 Finalize & Lock Batch</button>
+        <button class="btn-danger" onclick="deleteWholeBatch()">🗑️ Void Batch (Manager PIN)</button>
+        <button class="btn-lock" onclick="lock()">🔒 Finalize & Lock Production</button>
     </div>
     
     <script>
+        // Exact same JavaScript logic as before
         let curB = ""; let curF = ""; let curOp = ""; let isProcessing = false; let localScannedTags = []; 
         let openBatchesData = []; let html5QrcodeScanner = null;
         
@@ -228,10 +227,10 @@
             if(audioCtx.state === 'suspended') audioCtx.resume(); 
             curB = document.getElementById('bc').value.trim(); 
             curF = document.getElementById('fg_select').value.trim();
-            curOp = document.getElementById('op_name').value; // Grabs the selected value
+            curOp = document.getElementById('op_name').value; 
             
             if(!curB || !curF) return alert("Please select a Flavour Profile and enter a Batch Code!");
-            if(!curOp) return alert("Please select an Operator Name!"); // Forces them to pick a name
+            if(!curOp) return alert("Please select an Operator Name!"); 
             
             const isOpen = openBatchesData.find(b => b.batch_code.toUpperCase() === curB.toUpperCase());
             if (isOpen) {
@@ -240,7 +239,7 @@
             } else {
                 const res = await fetch('/create-batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB, fg_code:curF, operator_name:curOp}) });
                 const data = await res.json();
-                if(data.error) return alert("❌ " + data.error + "\n\nThis batch is already Locked. A Manager must unlock it from the Dashboard first.");
+                if(data.error) return alert("❌ " + data.error + "\n\nThis batch is already Locked.");
                 startScannerUI();
             }
         }
@@ -248,7 +247,7 @@
         function startScannerUI() {
             document.getElementById('setup').style.display = 'none'; 
             document.getElementById('work').style.display = 'block';
-            document.getElementById('title').innerText = `Batch: ${curB.toUpperCase()}`;
+            document.getElementById('title').innerText = `PRODUCTION: ${curB.toUpperCase()}`;
             update();
             setTimeout(() => { document.getElementById('rm_tag_manual').focus(); }, 500);
         }
@@ -256,10 +255,10 @@
         function toggleCamera() {
             const readerDiv = document.getElementById('reader');
             if(readerDiv.style.display === 'none') {
-                readerDiv.style.display = 'block'; document.getElementById('camToggleBtn').innerText = "🚫 Close Phone Camera";
+                readerDiv.style.display = 'block'; document.getElementById('camToggleBtn').innerText = "🚫 Deactivate Camera";
                 if(!html5QrcodeScanner) { html5QrcodeScanner = new Html5QrcodeScanner("reader", {fps:10, qrbox:250}); html5QrcodeScanner.render(async (txt) => { processScannedText(txt); }); }
             } else {
-                readerDiv.style.display = 'none'; document.getElementById('camToggleBtn').innerText = "📷 Open Phone Camera";
+                readerDiv.style.display = 'none'; document.getElementById('camToggleBtn').innerText = "📷 Activate Mobile Scanner";
                 document.getElementById('rm_tag_manual').focus();
             }
         }
@@ -298,16 +297,16 @@
             
             document.getElementById('checklist').innerHTML = req.map(i => `
                 <div class="${sCodes.includes(i.product_code) ? 'check-done' : 'check-pending'}">
-                    <span>${i.ingredient_name} <span style="color:#94a3b8; font-size:14px; font-family:monospace;">(${i.product_code})</span></span>
-                    <span>${sCodes.includes(i.product_code) ? '✅ Verified' : '⏳ Pending'}</span>
+                    <span>${i.ingredient_name} <span style="color:#94a3b8; font-size:12px; font-family:monospace;">(${i.product_code})</span></span>
+                    <span>${sCodes.includes(i.product_code) ? '✅ Valid' : '⏳ Pending'}</span>
                 </div>
             `).join('');
             
             if(scans.length === 0) {
-                document.getElementById('scan_log').innerHTML = "<div style='color:#94a3b8; text-align:center; padding:30px; font-weight:700;'>No bags scanned yet.</div>";
+                document.getElementById('scan_log').innerHTML = "<div style='color:#94a3b8; text-align:center; padding:20px; font-weight:700;'>Awaiting material scan...</div>";
             } else {
-                document.getElementById('scan_log').innerHTML = "<b style='color:#0f172a; margin-bottom:10px; display:block;'>Recent Scans:</b>" + scans.map(s => `
-                    <div class="scan-log-item"><span style="font-family:'Space Grotesk', monospace; font-weight:800; color:#0ea5e9;">${s.rm_tag}</span><button class="btn-mini-del" onclick="deleteSpecificScan('${s.rm_tag}')">🗑️ Remove</button></div>
+                document.getElementById('scan_log').innerHTML = "<b style='color:var(--factory-dark); margin-bottom:10px; display:block;'>Recent Input:</b>" + scans.map(s => `
+                    <div class="scan-log-item"><span style="font-family:'Space Grotesk', monospace; font-weight:800; color:var(--spice-orange);">${s.rm_tag}</span><button class="btn-mini-del" onclick="deleteSpecificScan('${s.rm_tag}')">🗑️ Void</button></div>
                 `).reverse().join('');
             }
         }
@@ -323,7 +322,7 @@
             fetch('/delete-batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB, pin:pin}) }).then(() => { location.reload(); });
         }
         function lock() { 
-            if(!confirm("Are you sure you want to finalize and lock this batch?")) { document.getElementById('rm_tag_manual').focus(); return; }
+            if(!confirm("Finalize and lock this production batch?")) { document.getElementById('rm_tag_manual').focus(); return; }
             fetch('/lock-batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB}) }).then(() => { alert("Batch Locked!"); location.reload(); }); 
         }
     </script>
