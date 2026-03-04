@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kilrr - Dashboard</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Outfit', sans-serif; margin: 0; color: #1e293b; background: linear-gradient(-45deg, #ffffff, #f0f9ff, #fff7ed, #fdf4ff); background-size: 400% 400%; animation: daylightGradient 15s ease infinite; min-height: 100vh; }
+        @keyframes daylightGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .main-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 15px; text-align: center; border-bottom: 3px solid #0ea5e9; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
+        .main-header img { height: 50px; margin-right: 15px; }
+        .main-header h1 { background: linear-gradient(90deg, #ea580c, #db2777, #0284c7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; font-size: 26px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+        
+        nav { background: #ffffff; display: flex; flex-wrap: wrap; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        nav a { flex: 1; text-align: center; color: #64748b; padding: 14px 10px; text-decoration: none; font-weight: 800; font-size: 14px; text-transform: uppercase; border-bottom: 3px solid transparent; transition: all 0.3s ease; white-space: nowrap; }
+        nav a:hover { color: #0ea5e9; background: #f8fafc; }
+        nav a.active { color: #0ea5e9; background: #f0f9ff; border-bottom: 3px solid #0ea5e9; }
+
+        .container { max-width: 1400px; margin: auto; padding: 0 15px; }
+
+        /* UPGRADED TABS */
+        .tabs { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; background: #ffffff; border: 2px solid #e2e8f0; padding: 20px; cursor: pointer; font-size: 16px; font-weight: 800; border-radius: 12px; color: #64748b; transition: all 0.3s; font-family: 'Outfit', sans-serif; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.02);}
+        .tab-btn:hover { border-color: #cbd5e1; background: #f8fafc; color: #0f172a; }
+        .tab-btn.active { background: linear-gradient(135deg, #0ea5e9, #3b82f6); color: white; border-color: transparent; box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3); transform: translateY(-2px); }
+
+        .card { background: #ffffff; padding: 30px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); border: 2px solid #e2e8f0; }
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 3px solid #f1f5f9; padding-bottom: 15px; flex-wrap: wrap; gap: 15px;}
+        h2 { margin: 0; color: #0f172a; font-size: 24px; font-weight: 900; }
+        
+        .btn { padding: 12px 25px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; font-family: 'Outfit', sans-serif; text-transform: uppercase; font-size: 14px; }
+        .btn-primary { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(16,185,129,0.4); }
+
+        .search-box { padding: 14px 20px; width: 100%; max-width: 350px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 15px; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #0f172a;}
+        .search-box:focus { border-color: #0ea5e9; outline: none; }
+
+        .table-responsive { overflow-x: auto; }
+        .kilrr-table { width: 100%; border-collapse: collapse; min-width: 800px; font-family: 'Space Grotesk', sans-serif; }
+        .kilrr-table th { background: #f8fafc; padding: 18px 15px; text-align: left; border-bottom: 3px solid #e2e8f0; color: #475569; font-family: 'Outfit', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; font-size: 14px;}
+        .kilrr-table td { padding: 15px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-weight: 600; font-size: 15px;}
+        .kilrr-table tr:hover { background: #f0f9ff; }
+
+        .status-badge { padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 800; background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; font-family: 'Outfit', sans-serif; text-transform: uppercase; display: inline-block;}
+        
+        .btn-view { background: #f1f5f9; color: #0f172a; border: 2px solid #e2e8f0; padding: 8px 15px; font-size: 13px;}
+        .btn-view:hover { background: #e2e8f0; }
+        .btn-del-batch { background: #fef2f2; color: #ef4444; border: 2px solid #fca5a5; padding: 8px 15px; font-size: 13px; margin-left: 5px; }
+        .btn-del-batch:hover { background: #fee2e2; }
+
+        /* INVENTORY AUDIT STYLES */
+        .session-select { padding: 15px 20px; font-size: 16px; border: 2px solid #0ea5e9; border-radius: 8px; width: 100%; max-width: 400px; font-weight: 800; color: #0f172a; background: #f0f9ff; font-family: 'Outfit', sans-serif;}
+        .inv-layout { margin-top: 30px; display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .inv-row { background: #ffffff; border: 2px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .inv-row-header { background: #f8fafc; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #cbd5e1; }
+        .inv-title { font-size: 18px; font-weight: 900; color: #0f172a; font-family: 'Outfit', sans-serif; text-transform: uppercase;}
+        .inv-total { background: #0ea5e9; color: white; padding: 6px 15px; border-radius: 20px; font-size: 14px; font-weight: 900; font-family: 'Space Grotesk', sans-serif;}
+        
+        .inv-bag-list { padding: 10px; }
+        .inv-bag-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f1f5f9; }
+        .inv-bag-item:last-child { border-bottom: none; }
+        .bag-details { display: flex; align-items: center; gap: 15px; flex-wrap: wrap;}
+        .bag-tag { font-family: 'Space Grotesk', monospace; font-weight: 800; color: #334155; font-size: 15px;}
+        .bag-orig { font-size: 13px; color: #94a3b8; font-weight: 600; }
+        .bag-status-sealed { background: #ecfdf5; color: #059669; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 900; border: 1px solid #a7f3d0;}
+        .bag-status-open { background: #fffbeb; color: #d97706; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 900; border: 1px solid #fde68a;}
+        .bag-current-wt { font-size: 18px; font-weight: 900; color: #ea580c; font-family: 'Space Grotesk', sans-serif;}
+        .btn-delete-scan { background: #fef2f2; color: #ef4444; border: 1px solid #fca5a5; padding: 6px 12px; font-size: 12px; border-radius: 6px; font-weight: 800; margin-left: 15px; cursor: pointer;}
+        .btn-delete-scan:hover { background: #fee2e2; }
+
+        /* MODAL */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 1000; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-content { background: #ffffff; padding: 40px; border-radius: 20px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.3); border: 2px solid #e2e8f0;}
+        .scan-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #cbd5e1; padding: 15px 0; align-items: center;}
+        .scan-code { font-family: 'Space Grotesk', monospace; font-weight: 800; color: #0ea5e9; font-size: 16px;}
+
+        /* REPRINT SYSTEM HIDDEN CSS */
+        #printArea { display: none; }
+    </style>
+</head>
+<body>
+    <div class="main-header no-print">
+        <img src="logo.png" alt="Kilrr Logo" onerror="this.style.display='none'">
+        <h1>PRODUCTION TRACEABILITY</h1>
+    </div>
+    
+    <nav class="no-print">
+        <a href="inwarding.html">📦 RM Inwarding</a>
+        <a href="/">🏭 Batch Scanner</a>
+        <a href="audit.html">📋 Stock Audit</a>
+        <a href="dashboard.html" class="active">📊 Dashboard</a>
+        <a href="master.html">⚙️ Master Data</a>
+    </nav>
+
+    <div class="container no-print">
+        
+        <div class="tabs">
+            <button class="tab-btn active" id="tabBtn1" onclick="switchTab('logs')">🏭 Production Batch Logs</button>
+            <button class="tab-btn" id="tabBtn2" onclick="switchTab('inventory')">📦 Audit Cycles & Inventory</button>
+            <button class="tab-btn" id="tabBtn3" onclick="switchTab('inwarding')">📥 RM Inwarding Logs</button>
+        </div>
+
+        <div id="tab_logs" class="card">
+            <div class="header-row">
+                <h2>🏭 Locked Production Batches</h2>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search Batch, Flavour, or Operator..." onkeyup="filterTable()">
+                    <button class="btn btn-primary" onclick="exportMainTableToExcel()">⬇️ Download Excel</button>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="kilrr-table" id="batchTable">
+                    <thead>
+                        <tr>
+                            <th>Batch Code</th>
+                            <th>Flavour Profile</th>
+                            <th>Operator</th>
+                            <th>Locked At</th>
+                            <th>Status</th>
+                            <th style="text-align:center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logs_body">
+                        <tr><td colspan="6" style="text-align:center;">Loading logs...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab_inventory" style="display:none;" class="card">
+            <div class="header-row">
+                <h2>📦 Cycle Inventory Viewer</h2>
+                <button class="btn btn-primary" onclick="exportInventoryToExcel()">⬇️ Download Cycle Excel</button>
+            </div>
+            <select id="sessionDropdown" class="session-select" onchange="loadSessionData()"><option>Loading...</option></select>
+            <div id="inventory_layout" class="inv-layout"></div>
+        </div>
+
+        <div id="tab_inwarding" style="display:none;" class="card">
+            <div class="header-row">
+                <h2>📥 RM Inwarding History</h2>
+                <button class="btn btn-primary" onclick="exportInwardingToExcel()">⬇️ Download Excel</button>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="kilrr-table">
+                    <thead>
+                        <tr>
+                            <th>Date Received</th>
+                            <th>Ingredient</th>
+                            <th>Vendor</th>
+                            <th>Tags Printed</th>
+                            <th>Wt/Bag</th>
+                            <th style="text-align:center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inwarding_body">
+                        <tr><td colspan="6" style="text-align:center;">Loading logs...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="scanModal" class="modal-overlay no-print" onclick="closeModal(event)">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; border-bottom: 3px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 15px; align-items:center;">
+                <div>
+                    <h2 id="modalBatchTitle" style="margin-bottom: 5px; border: none; padding: 0;"></h2>
+                    <div id="modalBatchSubtitle" style="color: #64748b; font-weight: 700; font-size: 14px;"></div>
+                </div>
+                <button class="btn btn-primary" onclick="exportModalToExcel()">⬇️ Excel</button>
+            </div>
+            <div id="modalScanList"></div>
+            <div style="text-align: center; margin-top: 25px;"><button class="btn btn-view" onclick="document.getElementById('scanModal').style.opacity = '0'; setTimeout(() => document.getElementById('scanModal').style.display = 'none', 300);">Close Window</button></div>
+        </div>
+    </div>
+
+    <div id="printArea"></div>
+
+    <script>
+        let allBatches = []; let currentSessionData = []; let currentModalData = []; let currentModalBatch = ""; let inwardingLogsData = [];
+
+        window.onload = () => {
+            fetch('/all-batches').then(r => r.json()).then(data => { allBatches = data; renderTable(data); });
+            fetch('/get-sessions').then(r => r.json()).then(data => {
+                const drop = document.getElementById('sessionDropdown');
+                if(data.length === 0) drop.innerHTML = `<option value="">No Audit Cycles Found</option>`;
+                else drop.innerHTML = `<option value="">-- Choose an Audit Cycle --</option>` + data.map(s => `<option value="${s.session_name}">${s.session_name}</option>`).join('');
+            });
+            fetch('/get-inwarding-logs').then(r => r.json()).then(data => { inwardingLogsData = data; renderInwardingTable(data); });
+        };
+
+        function switchTab(tab) {
+            document.getElementById('tabBtn1').classList.remove('active'); document.getElementById('tabBtn2').classList.remove('active'); document.getElementById('tabBtn3').classList.remove('active');
+            document.getElementById('tab_logs').style.display = 'none'; document.getElementById('tab_inventory').style.display = 'none'; document.getElementById('tab_inwarding').style.display = 'none';
+            if(tab === 'logs') { document.getElementById('tabBtn1').classList.add('active'); document.getElementById('tab_logs').style.display = 'block'; } 
+            else if(tab === 'inventory') { document.getElementById('tabBtn2').classList.add('active'); document.getElementById('tab_inventory').style.display = 'block'; }
+            else { document.getElementById('tabBtn3').classList.add('active'); document.getElementById('tab_inwarding').style.display = 'block'; }
+        }
+
+        // --- 1. BATCH LOGS ---
+        function renderTable(data) {
+            const tbody = document.getElementById('logs_body'); tbody.innerHTML = '';
+            if (data.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8; padding: 40px; font-size:18px; font-weight:700;">No production batches found.</td></tr>`; return; }
+            data.forEach(row => {
+                const displayDate = new Date(row.created_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
+                const isLocked = row.status === 'LOCKED';
+                const statusBadge = isLocked ? `<span class="status-badge">🔒 Locked</span>` : `<span class="status-badge" style="background:#fffbeb; color:#d97706; border-color:#fde68a;">⏳ Open</span>`;
+                let actionButtons = `<button class="btn btn-view" onclick="openDetailsModal('${row.batch_code}', '${row.fg_code}', '${displayDate}')">👁️ View</button>`;
+                if(isLocked) { actionButtons += `<button class="btn btn-view" style="background:#fffbeb; color:#d97706; border-color:#fde68a; margin-left:8px;" onclick="unlockBatch('${row.batch_code}')">🔓 Unlock</button>`; } 
+                else { actionButtons += `<button class="btn btn-view" style="background:#ecfdf5; color:#059669; border-color:#a7f3d0; margin-left:8px;" onclick="forceLockBatch('${row.batch_code}')">🔒 Lock</button>`; }
+                actionButtons += `<button class="btn btn-del-batch" onclick="deleteBatch('${row.batch_code}')">🗑️ Del</button>`;
+                tbody.innerHTML += `<tr><td>${row.batch_code}</td><td>${row.fg_code}</td><td><strong style="color:#0ea5e9;">👤 ${row.operator_name || "Unknown"}</strong></td><td>${displayDate}</td><td>${statusBadge}</td><td style="text-align:center;">${actionButtons}</td></tr>`;
+            });
+        }
+        function filterTable() { const query = document.getElementById('searchInput').value.toUpperCase(); renderTable(allBatches.filter(b => b.batch_code.toUpperCase().includes(query) || b.fg_code.toUpperCase().includes(query) || (b.operator_name && b.operator_name.toUpperCase().includes(query)))); }
+        async function openDetailsModal(batchCode, flavour, dateString) {
+            currentModalBatch = batchCode; document.getElementById('modalBatchTitle').innerText = `Batch: ${batchCode}`; document.getElementById('modalBatchSubtitle').innerText = `Recipe: ${flavour} | ${dateString}`; document.getElementById('modalScanList').innerHTML = `<div style="text-align:center; padding:30px; font-size:18px; color:#94a3b8;">Loading scan data...</div>`; document.getElementById('scanModal').style.display = 'flex'; setTimeout(() => document.getElementById('scanModal').style.opacity = '1', 10);
+            try {
+                const rawScans = await fetch(`/current-scans/${batchCode}`).then(r => r.json());
+                const uniqueScans = []; const seenTags = new Set(); rawScans.forEach(scan => { if(!seenTags.has(scan.rm_tag)) { seenTags.add(scan.rm_tag); uniqueScans.push(scan); } }); currentModalData = uniqueScans;
+                if(uniqueScans.length === 0) { document.getElementById('modalScanList').innerHTML = `<div style="text-align:center; padding:30px; color:#ef4444; font-weight:800;">No scan data found for this batch.</div>`; return; }
+                document.getElementById('modalScanList').innerHTML = uniqueScans.map(scan => { const displayName = scan.ingredient_name ? `${scan.ingredient_name} (${scan.product_code})` : scan.product_code; return `<div class="scan-item"><div><span style="font-size:13px; color:#64748b; text-transform:uppercase; font-weight:900;">${displayName}</span><br><span class="scan-code">${scan.rm_tag}</span></div></div>`; }).join('');
+            } catch (err) { document.getElementById('modalScanList').innerHTML = `<div style="text-align:center; color:red;">Error loading data.</div>`; }
+        }
+        function closeModal(e) { if(e.target.id === 'scanModal') { document.getElementById('scanModal').style.opacity = '0'; setTimeout(() => document.getElementById('scanModal').style.display = 'none', 300); } }
+        function deleteBatch(code) { const pin = prompt(`⚠️ Enter Manager PIN (1234) to PERMANENTLY delete Batch ${code}:`); if(!pin) return; fetch('/delete-batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:code, pin:pin}) }).then(() => location.reload()); }
+        function unlockBatch(code) { const pin = prompt(`⚠️ Enter Manager PIN (1234) to UNLOCK Batch ${code}:`); if(!pin) return; fetch('/unlock-batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:code, pin:pin}) }).then(() => location.reload()); }
+        function forceLockBatch(code) { fetch('/lock-batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:code}) }).then(() => location.reload()); }
+
+        // --- 2. AUDIT INVENTORY ---
+        function loadSessionData() {
+            const sessionName = document.getElementById('sessionDropdown').value; const layout = document.getElementById('inventory_layout');
+            if(!sessionName) { layout.innerHTML = `<div style="text-align:center; padding: 50px; color:#64748b; font-size:20px; font-weight:800; background:#f8fafc; border-radius:16px; border: 2px dashed #cbd5e1;">Please select an Audit Cycle from the dropdown above.</div>`; currentSessionData = []; return; }
+            layout.innerHTML = `<div style="text-align:center; padding: 50px; color:#0ea5e9; font-size:22px; font-weight:900;">Loading Cycle Data...</div>`; fetch(`/audit-session/${sessionName}`).then(r => r.json()).then(data => { currentSessionData = data; renderWideInventory(data); });
+        }
+        function renderWideInventory(data) {
+            const layout = document.getElementById('inventory_layout'); if(data.length === 0) { layout.innerHTML = `<div style="text-align:center; padding: 50px; color:#ef4444; font-size:22px; font-weight:900; background:#fef2f2; border-radius:16px; border: 2px dashed #fca5a5;">No physical bags were audited in this cycle.</div>`; return; }
+            const grouped = {}; data.forEach(item => { const name = item.ingredient_name ? `${item.ingredient_name} (${item.product_code})` : item.product_code; if(!grouped[name]) grouped[name] = { total: 0, bags: [] }; grouped[name].bags.push(item); grouped[name].total += item.current_weight; });
+            layout.innerHTML = Object.keys(grouped).sort().map(ingredient => {
+                const info = grouped[ingredient];
+                const bagListHTML = info.bags.map(bag => {
+                    const orig = bag.original_weight || bag.current_weight; const isSealed = bag.current_weight >= orig;
+                    const statusBadge = isSealed ? `<span class="bag-status-sealed">✅ Sealed</span>` : `<span class="bag-status-open">⚠️ Open</span>`;
+                    return `<div class="inv-bag-item"><div class="bag-details"><span class="bag-tag">${bag.rm_tag}</span>${statusBadge}<span class="bag-orig">(Started at: ${orig}kg)</span></div><div class="bag-actions"><span class="bag-current-wt">${bag.current_weight} kg</span><button class="btn-delete-scan" onclick="deleteInvBag('${bag.rm_tag}')">🗑️ Delete Scan</button></div></div>`;
+                }).join('');
+                return `<div class="inv-row"><div class="inv-row-header"><div class="inv-title">📦 ${ingredient}</div><div class="inv-total">Total Counted: ${info.total.toFixed(1)} kg</div></div><div class="inv-bag-list">${bagListHTML}</div></div>`;
+            }).join('');
+        }
+        function deleteInvBag(tag) { const pin = prompt(`⚠️ Enter Manager PIN (1234) to PERMANENTLY remove bag ${tag}:`); if(!pin) return; fetch('/delete-inventory', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({rm_tag:tag, pin:pin}) }).then(() => loadSessionData()); }
+
+        // --- 3. RM INWARDING LOGS ---
+        function renderInwardingTable(data) {
+            const tbody = document.getElementById('inwarding_body'); tbody.innerHTML = '';
+            if (data.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8; padding: 40px; font-weight:700;">No inwarding logs found.</td></tr>`; return; }
+            data.forEach(row => {
+                const d = new Date(row.date_received); const dd = String(d.getDate()).padStart(2, '0'); const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const displayDate = `${dd}/${mm}/${d.getFullYear()}`;
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${displayDate}</td>
+                        <td><strong>${row.ingredient_name}</strong> <span style="font-size:12px;color:#64748b;">(${row.ingredient_code})</span></td>
+                        <td>${row.vendor_name}</td>
+                        <td><span style="background:#0ea5e9; color:white; padding:4px 10px; border-radius:12px; font-size:13px; font-weight:900;">${row.packs} Tags</span></td>
+                        <td><strong style="color:#ea580c;">${row.weight} kg</strong></td>
+                        <td style="text-align:center;">
+                            <button class="btn btn-view" style="background:#ecfdf5; color:#059669; border-color:#a7f3d0;" onclick="reprintLog('${row.date_received}', '${row.ingredient_name}', '${row.ingredient_code}', '${row.vendor_code}', ${row.weight}, ${row.packs})">🖨️ Reprint</button>
+                            <button class="btn btn-del-batch" onclick="deleteInwardingLog(${row.id})">🗑️ Del</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteInwardingLog(id) {
+            const pin = prompt(`⚠️ Enter Manager PIN (1234) to delete this Inwarding Log:`); if(!pin) return;
+            fetch('/delete-inwarding-log', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id:id, pin:pin}) }).then(() => location.reload());
+        }
+
+        function reprintLog(dateRaw, ingName, ingCode, venCode, weight, packs) {
+            // Dynamically inject the thermal CSS just for this print job
+            let printStyle = document.getElementById('dynamic-print-style');
+            if(!printStyle) { printStyle = document.createElement('style'); printStyle.id = 'dynamic-print-style'; document.head.appendChild(printStyle); }
+            printStyle.innerHTML = `@media print { body * { visibility: hidden; } .no-print { display: none !important; } body, html { margin: 0 !important; padding: 0 !important; background: #fff; width: 100vw; height: 100vh;} #printArea, #printArea * { visibility: visible; } #printArea { display: block; position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: #fff; } .sticker-page { page-break-after: always; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; box-sizing: border-box; font-family: Arial, sans-serif; color: #000; background: #fff; margin: 0; padding: 0; } @page { size: 75mm 75mm; margin: 0mm; } }`;
+
+            const printArea = document.getElementById('printArea'); printArea.innerHTML = '';
+            
+            const d = new Date(dateRaw); const dd = String(d.getDate()).padStart(2, '0'); const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const datePrefix = `${dd}${mm}`; const displayDate = `${dd}/${mm}/${d.getFullYear()}`;
+
+            for(let i = 1; i <= packs; i++) {
+                const tagForQRCode = `${datePrefix}/${ingCode}/${venCode}/${i}/${weight}`;
+                const tagForText = `${datePrefix}/${ingCode}/${venCode}/${i}`;
+                const sticker = document.createElement('div'); sticker.className = 'sticker-page'; sticker.style.width = '75mm'; sticker.style.height = '75mm';
+                sticker.innerHTML = `
+                    <div style="font-size:24px; font-weight:900; margin-bottom:4px; font-family:Arial, sans-serif; text-align:center; line-height:1.1; width:95%; word-wrap:break-word; text-transform:uppercase;">${ingName}</div>
+                    <div style="font-size:16px; margin-bottom:8px; font-weight:900; font-family:'Courier New', monospace; text-align:center; text-transform:uppercase;">${tagForText}</div>
+                    <div style="display:flex; justify-content:center; width:100%;"><canvas id="qr_reprint_${i}"></canvas></div>
+                    <div style="font-size:18px; font-weight:900; margin-top:8px; font-family:Arial, sans-serif; text-align:center; text-transform:uppercase;">NET WT: ${weight} KG</div>
+                    <div style="font-size:14px; margin-top:4px; font-weight:900; font-family:Arial, sans-serif; text-align:center; text-transform:uppercase;">REC'D: ${displayDate}</div>
+                `;
+                printArea.appendChild(sticker);
+                new QRious({ element: document.getElementById(`qr_reprint_${i}`), value: tagForQRCode, size: 130, level: 'H' });
+            }
+            
+            window.print();
+            
+            // Clean up CSS after print dialog closes so Excel downloads still work normally later
+            setTimeout(() => { if(printStyle) printStyle.remove(); printArea.innerHTML = ''; }, 1000);
+        }
+
+        // --- 4. EXCEL EXPORTS ---
+        function exportMainTableToExcel() {
+            if(allBatches.length === 0) return alert("No data to export!");
+            const exportData = [["Batch Code", "Flavour Profile", "Operator", "Status", "Locked At Time"]];
+            allBatches.forEach(b => { const dateObj = new Date(b.created_at).toLocaleString('en-IN'); exportData.push([b.batch_code, b.fg_code, b.operator_name || "Unknown", b.status, dateObj]); });
+            const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(exportData); ws['!cols'] = [{wch: 15}, {wch: 25}, {wch: 20}, {wch: 15}, {wch: 25}]; XLSX.utils.book_append_sheet(wb, ws, "Production Logs"); XLSX.writeFile(wb, `Kilrr_Production_Logs_${new Date().toISOString().slice(0,10)}.xlsx`);
+        }
+        function exportModalToExcel() {
+            if(currentModalData.length === 0) return alert("No scans to export!");
+            const groupedScans = {}; let maxTags = 1; currentModalData.forEach(scan => { const displayName = scan.ingredient_name ? `${scan.ingredient_name} (${scan.product_code})` : scan.product_code; if (!groupedScans[displayName]) groupedScans[displayName] = []; groupedScans[displayName].push(scan.rm_tag); if (groupedScans[displayName].length > maxTags) maxTags = groupedScans[displayName].length; });
+            const headerRow = ["Ingredient / Product Code"]; for(let i = 1; i <= maxTags; i++) headerRow.push(`Bag ${i} Tag`); const exportData = [ [`KILRR SPICES - BATCH REPORT`], [`Batch Code:`, currentModalBatch], [`Exported On:`, new Date().toLocaleString('en-IN')], [], headerRow ]; Object.keys(groupedScans).sort().forEach(ingredient => { exportData.push([ingredient, ...groupedScans[ingredient]]); });
+            const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(exportData); const colWidths = [{wch: 35}]; for(let i=0; i<maxTags; i++) colWidths.push({wch: 25}); ws['!cols'] = colWidths; XLSX.utils.book_append_sheet(wb, ws, `Batch_${currentModalBatch}`); XLSX.writeFile(wb, `Kilrr_Batch_Report_${currentModalBatch}.xlsx`);
+        }
+        function exportInventoryToExcel() {
+            if(currentSessionData.length === 0) return alert("Please select a session!"); const sessionName = document.getElementById('sessionDropdown').value; const exportData = [ [`KILRR SPICES - CYCLE AUDIT: ${sessionName}`], ["Exported On:", new Date().toLocaleString('en-IN')], [], ["Ingredient Name", "Product Code", "Physical Tag Code", "Original Weight (kg)", "Current Audited Weight (kg)", "Status", "Audit Timestamp"] ];
+            currentSessionData.forEach(item => { const orig = item.original_weight || item.current_weight; const isSealed = item.current_weight >= orig ? "Sealed" : "Open/Partial"; const dateObj = new Date(item.audited_at).toLocaleString('en-IN'); exportData.push([ item.ingredient_name || "Unknown", item.product_code, item.rm_tag, orig, item.current_weight, isSealed, dateObj ]); });
+            const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(exportData); ws['!cols'] = [{wch: 25}, {wch: 15}, {wch: 25}, {wch: 18}, {wch: 22}, {wch: 15}, {wch: 25}]; XLSX.utils.book_append_sheet(wb, ws, sessionName.substring(0, 30)); XLSX.writeFile(wb, `Kilrr_Audit_${sessionName}_${new Date().toISOString().slice(0,10)}.xlsx`);
+        }
+        function exportInwardingToExcel() {
+            if(inwardingLogsData.length === 0) return alert("No inwarding logs to export!");
+            const exportData = [["Date Received", "Ingredient Name", "Ingredient Code", "Vendor Name", "Vendor Code", "Total Tags (Bags)", "Net Weight per Bag (kg)", "Log Created At"]];
+            inwardingLogsData.forEach(r => { const d = new Date(r.date_received); const displayDate = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`; const logDate = new Date(r.created_at).toLocaleString('en-IN'); exportData.push([displayDate, r.ingredient_name, r.ingredient_code, r.vendor_name, r.vendor_code, r.packs, r.weight, logDate]); });
+            const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(exportData); ws['!cols'] = [{wch: 15}, {wch: 25}, {wch: 15}, {wch: 25}, {wch: 15}, {wch: 15}, {wch: 20}, {wch: 25}]; XLSX.utils.book_append_sheet(wb, ws, "RM Inwarding Logs"); XLSX.writeFile(wb, `Kilrr_RM_Inwarding_${new Date().toISOString().slice(0,10)}.xlsx`);
+        }
+    </script>
+</body>
+</html>

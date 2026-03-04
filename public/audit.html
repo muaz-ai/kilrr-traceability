@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kilrr - Stock Audit</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Outfit', sans-serif; margin: 0; color: #1e293b; background: linear-gradient(-45deg, #ffffff, #f0f9ff, #fff7ed, #fdf4ff); background-size: 400% 400%; animation: daylightGradient 15s ease infinite; min-height: 100vh; }
+        @keyframes daylightGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .main-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 20px; text-align: center; border-bottom: 4px solid #0ea5e9; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
+        .main-header img { height: 60px; margin-right: 20px; }
+        .main-header h1 { background: linear-gradient(90deg, #ea580c, #db2777, #0284c7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; font-size: 32px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+        
+        nav { background: #ffffff; display: flex; flex-wrap: wrap; margin-bottom: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        nav a { flex: 1; text-align: center; color: #64748b; padding: 18px 10px; text-decoration: none; font-weight: 800; font-size: 15px; text-transform: uppercase; border-bottom: 4px solid transparent; transition: all 0.3s ease; }
+        nav a:hover { color: #10b981; background: #f8fafc; }
+        nav a.active { color: #10b981; background: #ecfdf5; border-bottom: 4px solid #10b981; }
+
+        .wrapper { max-width: 1200px; margin: 0 auto; padding: 0 15px; display: flex; gap: 30px; flex-wrap: wrap; }
+        .left-col { flex: 1.5; min-width: 320px; }
+        .right-col { flex: 1; min-width: 300px; }
+
+        .card { background: #ffffff; padding: 35px; border-radius: 20px; box-shadow: 0 15px 50px rgba(0,0,0,0.08); border: 2px solid #e2e8f0; margin-bottom: 20px; }
+        h2 { text-align: center; color: #0f172a; font-size: 28px; margin-top: 0; margin-bottom: 25px; font-weight: 900; border-bottom: 3px solid #f1f5f9; padding-bottom: 15px; }
+        
+        label { display: block; font-weight: 800; margin-bottom: 10px; color: #475569; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 20px; box-sizing: border-box; border-radius: 12px; border: 3px solid #cbd5e1; font-size: 20px; font-weight: 800; background: #fff; color: #0f172a; transition: all 0.2s; font-family: 'Space Grotesk', sans-serif; margin-bottom: 20px; }
+        input:focus { border-color: #0ea5e9; outline: none; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2); }
+        
+        #current_weight { font-size: 42px; text-align: center; color: #0ea5e9; }
+
+        .autocomplete { position: relative; display: inline-block; width: 100%; }
+        .autocomplete-items { position: absolute; border: 1px solid #e2e8f0; border-radius: 8px; z-index: 1000; background: #ffffff; width: 100%; max-height: 250px; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); top: calc(100% - 15px); left: 0; font-family: 'Outfit', sans-serif; text-align: left; }
+        .dropdown-item { padding: 14px 16px; cursor: pointer; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; font-weight: 700; color: #0f172a;}
+        .dropdown-item:hover { background-color: #f0f9ff; padding-left: 20px; border-left: 4px solid #0ea5e9; }
+
+        button { width: 100%; border: none; font-family: 'Outfit', sans-serif; font-weight: 900; cursor: pointer; color: white; border-radius: 12px; padding: 20px; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; margin-bottom: 10px; }
+        .btn-primary { background: linear-gradient(135deg, #0ea5e9, #3b82f6); box-shadow: 0 6px 15px rgba(14, 165, 233, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4); }
+        .btn-save { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3); }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4); }
+        .btn-cancel { background: #f1f5f9; color: #475569; border: 2px solid #e2e8f0; }
+
+        /* HYBRID SCANNER BOX */
+        .manual-box { background: #f0f9ff; padding: 25px; border: 3px solid #0ea5e9; border-radius: 16px; margin-bottom: 25px; text-align: center; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.1); }
+        .hybrid-input-row { display: flex; gap: 10px; margin-bottom: 5px; }
+        .manual-box input { border-color: #0ea5e9; font-size: 18px; font-weight: 900; flex: 1; padding: 15px; text-align:center; margin:0;}
+        .btn-add-manual { background: #0ea5e9; width: auto; padding: 0 25px; margin: 0; font-size: 16px; border-radius: 10px; }
+        .btn-add-manual:hover { background: #0284c7; }
+
+        #reader { width: 100%; border-radius: 16px; overflow: hidden; border: 4px solid #cbd5e1; box-shadow: 0 8px 20px rgba(0,0,0,0.05); margin-bottom: 15px;}
+        .btn-manual { background: #f8fafc; color: #0ea5e9; border: 2px solid #0ea5e9; box-shadow: none; font-size: 15px; padding: 16px;}
+        
+        .audit-panel { display: none; background: #f8fafc; border: 3px dashed #cbd5e1; }
+        .tag-display { font-family: 'Space Grotesk', monospace; font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 15px; padding: 15px; background: #fff; border-radius: 12px; border: 2px solid #e2e8f0; text-align: center; word-break: break-all; }
+        .weight-pill { display: block; background: #ecfdf5; color: #059669; font-weight: 900; padding: 12px; border-radius: 30px; font-size: 18px; border: 2px solid #a7f3d0; margin-bottom: 25px; font-family: 'Space Grotesk', sans-serif; text-align: center; }
+
+        /* RIGHT COLUMN */
+        .session-overview { background: #f8fafc; border: 2px solid #e2e8f0; height: 100%; min-height: 400px; display: flex; flex-direction: column; }
+        .overview-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 15px; }
+        .overview-header h3 { margin: 0; font-size: 18px; color: #0f172a; }
+        .badge-count { background: #0ea5e9; color: white; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 900; }
+        
+        .scanned-list { overflow-y: auto; flex-grow: 1; max-height: 500px; padding-right: 5px; }
+        .scanned-list::-webkit-scrollbar { width: 6px; }
+        .scanned-list::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        .scanned-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .scanned-item { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 12px 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: all 0.3s; }
+        .scanned-code { font-family: 'Outfit', sans-serif; font-weight: 800; color: #334155; font-size: 14px; display: block; margin-bottom: 4px; }
+        .scanned-wt { font-size: 16px; font-weight: 900; color: #059669; font-family: 'Space Grotesk', sans-serif; }
+        
+        .item-counted { border-left: 6px solid #10b981; }
+        .item-pending { border-left: 6px solid #cbd5e1; opacity: 0.7; background: #f8fafc; }
+        .empty-state { text-align: center; color: #94a3b8; font-style: italic; padding: 30px 10px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="main-header">
+        <img src="logo.png" alt="Kilrr Logo" onerror="this.style.display='none'">
+        <h1>PRODUCTION TRACEABILITY</h1>
+    </div>
+    
+    <nav>
+        <a href="inwarding.html">📦 RM Inwarding</a>
+        <a href="/">🏭 Batch Scanner</a>
+        <a href="audit.html" class="active">📋 Stock Audit</a>
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="master.html">⚙️ Master Data</a>
+    </nav>
+
+    <div class="wrapper">
+        <div class="left-col">
+            <div class="card" id="setup-section">
+                <h2>Start / Resume Audit</h2>
+                <label>Audit Session Name</label>
+                <div class="autocomplete">
+                    <input type="text" id="session_name" placeholder="Type new or tap to resume..." autocomplete="off">
+                </div>
+                <button class="btn-primary" onclick="startSession()">🚀 Enter Session</button>
+            </div>
+
+            <div class="card" id="scanner-section" style="display: none;">
+                <h2 id="display_session_name" style="color:#0ea5e9; text-align:center; font-size:20px; border:none; padding:0; margin-bottom:20px;">---</h2>
+                
+                <div class="manual-box">
+                    <label style="color:#0284c7; margin-bottom:10px; font-size: 14px;">⚡ DESKTOP SCANNER OR MANUAL ENTRY</label>
+                    <div class="hybrid-input-row">
+                        <input type="text" id="audit_manual_scan" placeholder="Scan barcode or type code here..." autocomplete="off">
+                        <button class="btn-add-manual" onclick="manualAuditScan()">➕ Add</button>
+                    </div>
+                    <div style="font-size:11px; color:#64748b;">(Cursor must be in the box for automatic scanning)</div>
+                </div>
+
+                <div id="reader" style="display:none;"></div>
+                <button class="btn-manual" onclick="toggleCamera()" id="camToggleBtn">📷 Toggle Phone Camera</button>
+            </div>
+
+            <div class="card audit-panel" id="audit-section">
+                <h2 style="color: #0ea5e9; border-bottom: none; margin-bottom: 10px;">Bag Identified</h2>
+                <div class="tag-display" id="display_tag">---</div>
+                <div class="weight-pill" id="display_orig">Starting Weight: ---</div>
+
+                <div style="text-align: left; margin-top: 10px;">
+                    <label>Confirm Physical Scale Weight (kg):</label>
+                    <input type="number" id="current_weight" step="0.1" placeholder="0.0">
+                </div>
+
+                <button class="btn-save" onclick="saveAudit()">💾 Save & Log Weight</button>
+                <button class="btn-cancel" onclick="resetScanner()">Cancel / Scan Another</button>
+            </div>
+        </div>
+
+        <div class="right-col">
+            <div class="card session-overview">
+                <div class="overview-header">
+                    <h3>RM Master Progress</h3>
+                    <span class="badge-count" id="scan_count">0 Bags</span>
+                </div>
+                <div class="scanned-list" id="live_scanned_list">
+                    <div class="empty-state">Enter a session to load your Master RM List.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isProcessing = false; 
+        let currentSession = "";
+        let globalTag = ""; 
+        let globalCode = ""; 
+        let globalOrigWeight = 0;
+        let allIngredients = [];
+        let sessionLogs = []; 
+        let sessionAuditedTags = []; 
+        let html5QrcodeScanner = null;
+
+        window.onload = () => {
+            fetch('/get-sessions').then(r => r.json()).then(data => {
+                const sessionNames = data.map(s => s.session_name);
+                setupStylishAutocomplete(document.getElementById('session_name'), sessionNames);
+            });
+
+            // Listen for Physical Scanner Enter Key
+            document.getElementById('audit_manual_scan').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    manualAuditScan();
+                }
+            });
+
+            // Make sure hitting enter on the weight saves it quickly
+            document.getElementById('current_weight').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') { e.preventDefault(); saveAudit(); }
+            });
+        };
+
+        function setupStylishAutocomplete(inp, arr) {
+            let currentFocus;
+            function showList(val) {
+                closeAllLists(); currentFocus = -1;
+                let a = document.createElement("DIV"); a.setAttribute("id", inp.id + "autocomplete-list"); a.setAttribute("class", "autocomplete-items"); inp.parentNode.appendChild(a);
+                let count = 0;
+                for (let i = 0; i < arr.length; i++) {
+                    if (arr[i].trim() === "") continue;
+                    if (!val || arr[i].toUpperCase().includes(val.toUpperCase())) {
+                        let b = document.createElement("DIV"); b.className = "dropdown-item";
+                        b.innerHTML = `<span>🔄 Resume: ${arr[i]}</span><input type='hidden' value='${arr[i]}'>`;
+                        b.addEventListener("click", function(e) { inp.value = this.getElementsByTagName("input")[0].value; closeAllLists(); });
+                        a.appendChild(b); count++;
+                    }
+                }
+            }
+            inp.addEventListener("focus", function() { showList(this.value); }); inp.addEventListener("click", function(e) { e.stopPropagation(); showList(this.value); }); inp.addEventListener("input", function() { showList(this.value); }); 
+            function closeAllLists(elmnt) { var x = document.getElementsByClassName("autocomplete-items"); for (var i = 0; i < x.length; i++) { if (elmnt != x[i] && elmnt != inp) x[i].parentNode.removeChild(x[i]); } }
+            document.addEventListener("click", function (e) { closeAllLists(e.target); });
+        }
+
+        async function startSession() {
+            const sn = document.getElementById('session_name').value.trim().toUpperCase();
+            if(!sn) return alert("Please enter a Session Name.");
+            
+            currentSession = sn;
+            document.getElementById('setup-section').style.display = 'none';
+            document.getElementById('scanner-section').style.display = 'block';
+            document.getElementById('display_session_name').innerText = `Cycle: ${currentSession}`;
+            
+            allIngredients = await fetch('/get-ingredients').then(r => r.json());
+            sessionLogs = await fetch(`/audit-session/${currentSession}`).then(r => r.json());
+            sessionAuditedTags = sessionLogs.map(log => log.rm_tag);
+
+            updateSessionListUI();
+
+            setTimeout(() => { document.getElementById('audit_manual_scan').focus(); }, 500);
+        }
+
+        function toggleCamera() {
+            const readerDiv = document.getElementById('reader');
+            if(readerDiv.style.display === 'none') {
+                readerDiv.style.display = 'block';
+                document.getElementById('camToggleBtn').innerText = "🚫 Close Phone Camera";
+                if(!html5QrcodeScanner) {
+                    html5QrcodeScanner = new Html5QrcodeScanner("reader", {fps: 10, qrbox: 250});
+                    html5QrcodeScanner.render((txt) => { processTag(txt); });
+                }
+            } else {
+                readerDiv.style.display = 'none';
+                document.getElementById('camToggleBtn').innerText = "📷 Open Phone Camera";
+                document.getElementById('audit_manual_scan').focus();
+            }
+        }
+
+        // TRIGGERED BY BOTH "ADD" BUTTON AND "ENTER" KEY
+        function manualAuditScan() {
+            const inputField = document.getElementById('audit_manual_scan');
+            const val = inputField.value.trim();
+            if(val) {
+                inputField.value = ''; 
+                processTag(val);
+            }
+        }
+
+        function processTag(txt) {
+            if (isProcessing) return; 
+            
+            const parts = txt.split('/');
+            if(parts.length < 4) {
+                isProcessing = true; alert("Invalid Factory Tag format.");
+                document.getElementById('audit_manual_scan').focus();
+                setTimeout(() => { isProcessing = false; }, 1500); return;
+            }
+
+            let cleanTag = txt; let origWt = 0;
+            if(parts.length === 5) {
+                origWt = parseFloat(parts[4]);
+                cleanTag = parts.slice(0, 4).join('/');
+            }
+
+            if (sessionAuditedTags.includes(cleanTag)) {
+                isProcessing = true; alert("⚠️ DUPLICATE: You already counted this bag in this session!");
+                document.getElementById('audit_manual_scan').focus();
+                setTimeout(() => { isProcessing = false; }, 1500); return;
+            }
+
+            isProcessing = true; 
+            globalOrigWeight = origWt;
+            globalTag = cleanTag;
+            globalCode = parts[1];
+
+            document.getElementById('scanner-section').style.display = 'none';
+            document.getElementById('audit-section').style.display = 'block';
+            document.getElementById('display_tag').innerText = globalTag;
+            
+            if(globalOrigWeight > 0) {
+                document.getElementById('display_orig').innerText = `Start Wt: ${globalOrigWeight} kg`;
+                document.getElementById('display_orig').style.background = '#e0f2fe';
+                document.getElementById('display_orig').style.color = '#0284c7';
+                document.getElementById('display_orig').style.borderColor = '#bae6fd';
+                document.getElementById('current_weight').value = globalOrigWeight; 
+            } else {
+                document.getElementById('display_orig').innerText = `Legacy Tag (No Start Wt)`;
+                document.getElementById('display_orig').style.background = '#fffbeb';
+                document.getElementById('display_orig').style.color = '#d97706';
+                document.getElementById('display_orig').style.borderColor = '#fde68a';
+                document.getElementById('current_weight').value = ""; 
+            }
+            
+            setTimeout(() => { document.getElementById('current_weight').focus(); }, 100);
+        }
+
+        function saveAudit() {
+            const currentWt = parseFloat(document.getElementById('current_weight').value);
+            
+            if(!currentWt || currentWt <= 0) return alert("Please enter a valid weight.");
+            if(globalOrigWeight > 0 && currentWt > globalOrigWeight) {
+                return alert(`❌ INVALID ENTRY:\n\nYou cannot save ${currentWt}kg. This bag's original starting weight was strictly locked at ${globalOrigWeight}kg when it was printed.`);
+            }
+
+            fetch('/audit-stock', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_name: currentSession, rm_tag: globalTag, product_code: globalCode, original_weight: globalOrigWeight, current_weight: currentWt })
+            })
+            .then(async (r) => {
+                if (!r.ok) throw new Error("Server Error: " + await r.text());
+                return r.json();
+            })
+            .then(data => {
+                if(data.error) {
+                    alert("Database Error: " + data.error);
+                } else { 
+                    sessionLogs.push({ product_code: globalCode, rm_tag: globalTag, audited_weight: currentWt });
+                    sessionAuditedTags.push(globalTag);
+                    updateSessionListUI();
+                    resetScanner(); 
+                }
+            })
+            .catch(err => { alert("❌ FAILED: " + err.message); });
+        }
+
+        function updateSessionListUI() {
+            document.getElementById('scan_count').innerText = `${sessionLogs.length} Bags`;
+            const totals = {};
+            sessionLogs.forEach(log => { if(!totals[log.product_code]) totals[log.product_code] = 0; totals[log.product_code] += parseFloat(log.audited_weight); });
+
+            const sortedIngredients = [...allIngredients].sort((a, b) => {
+                const aCounted = totals[a.product_code] > 0; const bCounted = totals[b.product_code] > 0;
+                if (aCounted && !bCounted) return -1; if (!aCounted && bCounted) return 1;
+                return a.ingredient_name.localeCompare(b.ingredient_name);
+            });
+
+            const listHTML = sortedIngredients.map(ing => {
+                const totalWt = totals[ing.product_code] || 0;
+                if (totalWt > 0) {
+                    return `<div class="scanned-item item-counted"><div><span class="scanned-code">${ing.ingredient_name} (${ing.product_code})</span><span style="font-size:11px; color:#10b981; font-weight:800;">✅ COUNTED</span></div><div class="scanned-wt">${totalWt.toFixed(1)} kg</div></div>`;
+                } else {
+                    return `<div class="scanned-item item-pending"><div><span class="scanned-code">${ing.ingredient_name} (${ing.product_code})</span><span style="font-size:11px; color:#94a3b8; font-weight:800;">⏳ PENDING</span></div><div class="scanned-wt" style="color:#94a3b8;">0 kg</div></div>`;
+                }
+            }).join('');
+            
+            document.getElementById('live_scanned_list').innerHTML = listHTML;
+        }
+
+        function resetScanner() {
+            document.getElementById('audit-section').style.display = 'none';
+            document.getElementById('scanner-section').style.display = 'block';
+            document.getElementById('current_weight').value = "";
+            
+            setTimeout(() => { 
+                isProcessing = false; 
+                document.getElementById('audit_manual_scan').focus(); 
+            }, 300);
+        }
+    </script>
+</body>
+</html>

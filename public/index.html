@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kilrr - Batch Scanner</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Outfit', sans-serif; margin: 0; color: #1e293b; background: linear-gradient(-45deg, #ffffff, #f0f9ff, #fff7ed, #fdf4ff); background-size: 400% 400%; animation: daylightGradient 15s ease infinite; min-height: 100vh; }
+        @keyframes daylightGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .main-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 15px; text-align: center; border-bottom: 3px solid #0ea5e9; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); z-index: 10; position: relative; }
+        .main-header img { height: 50px; margin-right: 15px; }
+        .main-header h1 { background: linear-gradient(90deg, #ea580c, #db2777, #0284c7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; font-size: 26px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+        
+        nav { background: #ffffff; display: flex; flex-wrap: wrap; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        nav a { flex: 1; text-align: center; color: #64748b; padding: 14px 10px; text-decoration: none; font-weight: 800; font-size: 14px; text-transform: uppercase; border-bottom: 3px solid transparent; transition: all 0.3s ease; white-space: nowrap; }
+        nav a:hover { color: #0ea5e9; background: #f8fafc; }
+        nav a.active { color: #0ea5e9; background: #f0f9ff; border-bottom: 3px solid #0ea5e9; }
+        @media (max-width: 768px) { nav a { font-size: 11px; padding: 12px 5px; white-space: normal; } }
+
+        .card { max-width: 600px; margin: 15px auto; background: #ffffff; padding: 35px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); border: 1px solid #e2e8f0; text-align: left; transition: all 0.3s ease; }
+        h2 { margin-top: 0; color: #0f172a; font-size: 24px; margin-bottom: 25px; font-weight: 800; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; text-align: center; }
+        label { display: block; font-weight: 800; margin-bottom: 8px; color: #475569; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        input { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 16px; background: #ffffff; color: #0f172a; transition: all 0.2s; font-family: 'Space Grotesk', sans-serif; font-weight: 600; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); margin-bottom: 20px;}
+        input:focus { border-color: #0ea5e9; outline: none; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2); }
+
+        .autocomplete { position: relative; display: inline-block; width: 100%; margin-bottom: 0; }
+        .autocomplete-items { position: absolute; border: 1px solid #e2e8f0; border-radius: 12px; z-index: 1000; background: #ffffff; width: 100%; max-height: 250px; overflow-y: auto; box-shadow: 0 15px 35px rgba(0,0,0,0.1); top: calc(100% - 15px); left: 0; font-family: 'Outfit', sans-serif; text-align: left; }
+        .dropdown-item { padding: 16px 20px; cursor: pointer; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+        .dropdown-item:hover { background-color: #f0f9ff; padding-left: 25px; border-left: 5px solid #0ea5e9; }
+        
+        button { width: 100%; border: none; font-family: 'Outfit', sans-serif; font-weight: 900; cursor: pointer; color: white; border-radius: 12px; padding: 20px; font-size: 18px; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .btn-primary { background: linear-gradient(135deg, #0ea5e9, #3b82f6); box-shadow: 0 6px 15px rgba(14, 165, 233, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-manual { background: #f8fafc; color: #0ea5e9; border: 2px solid #0ea5e9; box-shadow: none; font-size: 15px; padding: 16px;}
+        .btn-danger { background: #fef2f2; color: #ef4444; border: 2px solid #fca5a5; font-size: 14px; padding: 16px; margin-top: 25px; }
+        .btn-lock { background: linear-gradient(135deg, #0f172a, #334155); margin-top: 15px; }
+
+        .manual-box { background: #f0f9ff; padding: 25px; border: 3px solid #0ea5e9; border-radius: 16px; margin-bottom: 25px; text-align: center; }
+        .hybrid-input-row { display: flex; gap: 10px; margin-bottom: 5px; }
+        .manual-box input { border-color: #0ea5e9; font-size: 18px; font-weight: 900; flex: 1; padding: 15px; text-align:center; margin:0; }
+        .btn-add-manual { background: #0ea5e9; width: auto; padding: 0 25px; margin: 0; font-size: 16px; border-radius: 10px; }
+        
+        #reader { width: 100%; border-radius: 16px; overflow: hidden; border: 4px solid #cbd5e1; margin-bottom: 15px;}
+        h3 { font-size: 16px; color: #0f172a; margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; }
+        #checklist > div { padding: 15px 20px; margin: 10px 0; border-radius: 12px; font-weight: 800; display: flex; justify-content: space-between; font-family: 'Space Grotesk', sans-serif; font-size: 15px;}
+        .check-pending { background: #ffffff; color: #475569; border: 2px solid #e2e8f0; }
+        .check-done { background: #ecfdf5; color: #059669; border: 2px solid #a7f3d0; }
+        
+        #scan_log { height: 200px; overflow-y: auto; margin-top: 15px; background: #ffffff; border: 2px solid #e2e8f0; padding: 15px; border-radius: 12px; }
+        .scan-log-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #f1f5f9; }
+        .btn-mini-del { width: auto; margin: 0; background: #fef2f2; border: 1px solid #fca5a5; color: #ef4444; border-radius: 6px; padding: 6px 12px; font-size:13px; font-weight:800; cursor: pointer; transition: 0.2s;}
+        .btn-mini-del:hover { background: #fee2e2; transform: scale(1.05); }
+
+        /* --- DESKTOP ZOOM UPGRADE --- */
+        @media (min-width: 1200px) {
+            .card { max-width: 850px; padding: 50px; margin: 40px auto; }
+            h2 { font-size: 32px; margin-bottom: 35px; }
+            label { font-size: 16px; margin-bottom: 10px; }
+            input { padding: 22px 24px; font-size: 18px; border-radius: 12px; margin-bottom: 25px;}
+            .autocomplete-items { font-size: 18px; }
+            .dropdown-item { padding: 20px 24px; }
+            button { font-size: 20px; padding: 25px; border-radius: 12px; }
+            .manual-box { padding: 35px; }
+            .manual-box label { font-size: 16px; }
+            .manual-box input { font-size: 22px; padding: 20px; }
+            .btn-add-manual { font-size: 18px; padding: 0 35px; }
+            h3 { font-size: 20px; margin-top: 35px;}
+            #checklist > div { font-size: 18px; padding: 20px 25px; }
+            .scan-log-item { font-size: 18px; padding: 18px; }
+            .btn-mini-del { font-size: 15px; padding: 10px 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-header">
+        <img src="logo.png" alt="Kilrr Logo" onerror="this.style.display='none'">
+        <h1>PRODUCTION TRACEABILITY</h1>
+    </div>
+    
+    <nav>
+        <a href="inwarding.html">📦 RM Inwarding</a>
+        <a href="/" class="active">🏭 Batch Scanner</a>
+        <a href="audit.html">📋 Stock Audit</a>
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="master.html">⚙️ Master Data</a>
+    </nav>
+    
+    <div class="card" id="setup">
+        <h2>Start or Resume Batch</h2>
+        
+        <label>1. Select Flavour Profile</label>
+        <div class="autocomplete"><input type="text" id="fg_select" placeholder="Tap to search Flavour..." autocomplete="off"></div>
+        
+        <label>2. Enter or Resume Batch Code</label>
+        <div class="autocomplete"><input type="text" id="bc" placeholder="Type new or tap to resume..." autocomplete="off"></div>
+        
+        <label>3. Operator Name</label>
+        <input type="text" id="op_name" placeholder="e.g. Arbaaz, Rahul..." autocomplete="on" style="margin-bottom: 35px;">
+        
+        <button class="btn-primary" onclick="start()">🚀 Open Scanner</button>
+    </div>
+    
+    <div class="card" id="work" style="display:none;">
+        <h2 id="title" style="color:#ea580c; text-align: center;"></h2>
+        
+        <div class="manual-box">
+            <label style="color:#0284c7; margin-bottom:10px;">⚡ DESKTOP SCANNER OR MANUAL ENTRY</label>
+            <div class="hybrid-input-row">
+                <input type="text" id="rm_tag_manual" placeholder="Scan barcode or type code..." autocomplete="off">
+                <button class="btn-add-manual" onclick="manualScan()">➕ Add</button>
+            </div>
+            <div style="font-size:12px; color:#64748b; font-weight:600; margin-top:8px;">(Cursor must be in the box for automatic scanning)</div>
+        </div>
+
+        <div id="reader" style="display:none;"></div>
+        <button class="btn-manual" onclick="toggleCamera()" id="camToggleBtn">📷 Toggle Phone Camera</button>
+
+        <h3>Recipe Checklist</h3>
+        <div id="checklist"></div>
+        
+        <div id="scan_log"></div>
+        
+        <button class="btn-danger" onclick="deleteWholeBatch()">🗑️ Delete Entire Batch (Manager PIN)</button>
+        <button class="btn-lock" onclick="lock()">🔒 Finalize & Lock Batch</button>
+    </div>
+    
+    <script>
+        let curB = ""; let curF = ""; let curOp = ""; let isProcessing = false; let localScannedTags = []; 
+        let openBatchesData = []; let html5QrcodeScanner = null;
+        
+        // --- AUDIO BEEP SYSTEM ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep(isSuccess) {
+            try {
+                if(audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                if(isSuccess) {
+                    osc.type = 'sine'; osc.frequency.value = 1000;
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+                } else {
+                    osc.type = 'sawtooth'; osc.frequency.value = 150;
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+                }
+            } catch(e) { console.log("Audio not supported"); }
+        }
+
+        window.onload = () => {
+            fetch('/get-recipes').then(r => r.json()).then(data => {
+                const flavors = [...new Set(data.map(r => r.fg_code))].filter(f => f && f.trim() !== "");
+                setupFlavourAutocomplete(document.getElementById('fg_select'), flavors);
+            });
+            fetch('/open-batches').then(r => r.json()).then(data => {
+                openBatchesData = data;
+                setupBatchAutocomplete(document.getElementById('bc'), data);
+            });
+            document.getElementById('rm_tag_manual').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') { e.preventDefault(); manualScan(); }
+            });
+        };
+        
+        function setupFlavourAutocomplete(inp, arr) {
+            let currentFocus;
+            function showList(val) {
+                closeAllLists(); currentFocus = -1;
+                let a = document.createElement("DIV"); a.setAttribute("class", "autocomplete-items"); inp.parentNode.appendChild(a);
+                for (let i = 0; i < arr.length; i++) {
+                    if (!val || arr[i].toUpperCase().includes(val.toUpperCase())) {
+                        let b = document.createElement("DIV"); b.className = "dropdown-item";
+                        b.innerHTML = `<span>${arr[i]}</span><input type='hidden' value='${arr[i]}'>`;
+                        b.addEventListener("click", function(e) { inp.value = this.getElementsByTagName("input")[0].value; closeAllLists(); });
+                        a.appendChild(b);
+                    }
+                }
+            }
+            inp.addEventListener("focus", function() { showList(this.value); });
+            inp.addEventListener("click", function(e) { e.stopPropagation(); showList(this.value); });
+            inp.addEventListener("input", function() { showList(this.value); }); 
+        }
+
+        function setupBatchAutocomplete(inp, arr) {
+            let currentFocus;
+            function showList(val) {
+                closeAllLists(); currentFocus = -1;
+                let a = document.createElement("DIV"); a.setAttribute("class", "autocomplete-items"); inp.parentNode.appendChild(a);
+                for (let i = 0; i < arr.length; i++) {
+                    if (!val || arr[i].batch_code.toUpperCase().includes(val.toUpperCase())) {
+                        let b = document.createElement("DIV"); b.className = "dropdown-item";
+                        b.innerHTML = `<span>🔄 Resume: ${arr[i].batch_code}</span><input type='hidden' value='${arr[i].batch_code}'><input type='hidden' class='hidden-fg' value='${arr[i].fg_code}'>`;
+                        b.addEventListener("click", function(e) { 
+                            inp.value = this.getElementsByTagName("input")[0].value; 
+                            document.getElementById('fg_select').value = this.getElementsByClassName("hidden-fg")[0].value;
+                            closeAllLists(); 
+                        });
+                        a.appendChild(b);
+                    }
+                }
+            }
+            inp.addEventListener("focus", function() { showList(this.value); }); 
+            inp.addEventListener("click", function(e) { e.stopPropagation(); showList(this.value); });
+            inp.addEventListener("input", function() { showList(this.value); }); 
+        }
+        function closeAllLists(elmnt) { document.querySelectorAll(".autocomplete-items").forEach(el => { if(el !== elmnt && el !== document.activeElement) el.remove(); }); }
+        document.addEventListener("click", function (e) { if(e.target.tagName !== "INPUT") closeAllLists(); });
+
+        async function start() {
+            if(audioCtx.state === 'suspended') audioCtx.resume(); // Unlock audio
+            curB = document.getElementById('bc').value.trim(); 
+            curF = document.getElementById('fg_select').value.trim();
+            curOp = document.getElementById('op_name').value.trim() || "Unknown Operator";
+            if(!curB || !curF) return alert("Please select a Flavour Profile and enter a Batch Code!");
+            
+            const isOpen = openBatchesData.find(b => b.batch_code.toUpperCase() === curB.toUpperCase());
+            if (isOpen) {
+                curF = isOpen.fg_code; 
+                startScannerUI();
+            } else {
+                const res = await fetch('/create-batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB, fg_code:curF, operator_name:curOp}) });
+                const data = await res.json();
+                if(data.error) return alert("❌ " + data.error + "\n\nThis batch is already Locked. A Manager must unlock it from the Dashboard first.");
+                startScannerUI();
+            }
+        }
+
+        function startScannerUI() {
+            document.getElementById('setup').style.display = 'none'; 
+            document.getElementById('work').style.display = 'block';
+            document.getElementById('title').innerText = `Batch: ${curB.toUpperCase()}`;
+            update();
+            setTimeout(() => { document.getElementById('rm_tag_manual').focus(); }, 500);
+        }
+
+        function toggleCamera() {
+            const readerDiv = document.getElementById('reader');
+            if(readerDiv.style.display === 'none') {
+                readerDiv.style.display = 'block'; document.getElementById('camToggleBtn').innerText = "🚫 Close Phone Camera";
+                if(!html5QrcodeScanner) { html5QrcodeScanner = new Html5QrcodeScanner("reader", {fps:10, qrbox:250}); html5QrcodeScanner.render(async (txt) => { processScannedText(txt); }); }
+            } else {
+                readerDiv.style.display = 'none'; document.getElementById('camToggleBtn').innerText = "📷 Open Phone Camera";
+                document.getElementById('rm_tag_manual').focus();
+            }
+        }
+
+        function manualScan() {
+            let val = document.getElementById('rm_tag_manual').value.trim();
+            if(!val) return; processScannedText(val);
+        }
+
+        async function processScannedText(txt) {
+            if (isProcessing) return; isProcessing = true;
+            let cleanTag = txt; let parts = txt.split('/');
+            if(parts.length === 5) { cleanTag = parts.slice(0, 4).join('/'); }
+
+            if (localScannedTags.includes(cleanTag)) {
+                playBeep(false); // Play Error Buzz!
+                alert("⚠️ DUPLICATE: Bag already scanned for this batch!");
+                document.getElementById('rm_tag_manual').value = ""; document.getElementById('rm_tag_manual').focus(); 
+                setTimeout(() => { isProcessing = false; }, 1000); return;
+            }
+            
+            await fetch('/scan', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB, rm_tag:cleanTag}) });
+            
+            playBeep(true); // Play Success Beep!
+            document.getElementById('rm_tag_manual').value = ""; document.getElementById('rm_tag_manual').focus();
+            
+            update();
+            setTimeout(() => { isProcessing = false; }, 300); 
+        }
+
+        async function update() {
+            const req = await fetch(`/recipe-requirements/${curF}`).then(r => r.json());
+            const scans = await fetch(`/current-scans/${curB}`).then(r => r.json());
+            localScannedTags = scans.map(s => s.rm_tag);
+            const sCodes = scans.map(s => s.product_code);
+            
+            document.getElementById('checklist').innerHTML = req.map(i => `
+                <div class="${sCodes.includes(i.product_code) ? 'check-done' : 'check-pending'}">
+                    <span>${i.ingredient_name} <span style="color:#94a3b8; font-size:14px; font-family:monospace;">(${i.product_code})</span></span>
+                    <span>${sCodes.includes(i.product_code) ? '✅ Verified' : '⏳ Pending'}</span>
+                </div>
+            `).join('');
+            
+            if(scans.length === 0) {
+                document.getElementById('scan_log').innerHTML = "<div style='color:#94a3b8; text-align:center; padding:30px; font-weight:700;'>No bags scanned yet.</div>";
+            } else {
+                document.getElementById('scan_log').innerHTML = "<b style='color:#0f172a; margin-bottom:10px; display:block;'>Recent Scans:</b>" + scans.map(s => `
+                    <div class="scan-log-item"><span style="font-family:'Space Grotesk', monospace; font-weight:800; color:#0ea5e9;">${s.rm_tag}</span><button class="btn-mini-del" onclick="deleteSpecificScan('${s.rm_tag}')">🗑️ Remove</button></div>
+                `).reverse().join('');
+            }
+        }
+        
+        function deleteSpecificScan(tag) {
+            const pin = prompt(`Manager PIN (1234) required to remove tag ${tag}:`);
+            if(!pin) { document.getElementById('rm_tag_manual').focus(); return; }
+            fetch('/delete-specific-scan', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB, rm_tag:tag, pin:pin}) }).then(() => { update(); document.getElementById('rm_tag_manual').focus(); });
+        }
+        function deleteWholeBatch() {
+            const pin = prompt("⚠️ Manager PIN (1234) to PERMANENTLY delete this batch:");
+            if(!pin) { document.getElementById('rm_tag_manual').focus(); return; }
+            fetch('/delete-batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB, pin:pin}) }).then(() => { location.reload(); });
+        }
+        function lock() { 
+            if(!confirm("Are you sure you want to finalize and lock this batch?")) { document.getElementById('rm_tag_manual').focus(); return; }
+            fetch('/lock-batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB}) }).then(() => { alert("Batch Locked!"); location.reload(); }); 
+        }
+    </script>
+</body>
+</html>

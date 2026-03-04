@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kilrr - Master Data & Recipes</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* BRIGHT AURORA BACKGROUND */
+        body { font-family: 'Outfit', sans-serif; margin: 0; color: #1e293b; background: linear-gradient(-45deg, #ffffff, #f0f9ff, #fff7ed, #fdf4ff); background-size: 400% 400%; animation: daylightGradient 15s ease infinite; min-height: 100vh; }
+        @keyframes daylightGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* Bright Header */
+        .main-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 15px; text-align: center; border-bottom: 4px solid #0ea5e9; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); z-index: 10; position: relative; }
+        .main-header img { height: 50px; margin-right: 15px; }
+        .main-header h1 { background: linear-gradient(90deg, #ea580c, #db2777, #0284c7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; font-size: 26px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+        
+        /* Unified Navigation */
+        nav { background: #ffffff; display: flex; flex-wrap: wrap; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        nav a { flex: 1; text-align: center; color: #64748b; padding: 14px 10px; text-decoration: none; font-weight: 800; font-size: 14px; text-transform: uppercase; border-bottom: 4px solid transparent; transition: all 0.3s ease; white-space: nowrap; }
+        nav a:hover { color: #0ea5e9; background: #f8fafc; }
+        nav a.active { color: #0ea5e9; background: #f0f9ff; border-bottom: 4px solid #0ea5e9; }
+
+        @media (max-width: 768px) { nav a { font-size: 11px; padding: 12px 5px; white-space: normal; } }
+
+        /* MASSIVE GRID LAYOUT */
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 15px 40px 15px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; }
+        
+        .col-card { background: #ffffff; padding: 30px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); border: 2px solid #e2e8f0; display: flex; flex-direction: column; }
+        
+        h3 { margin-top: 0; color: #0f172a; font-size: 22px; margin-bottom: 20px; font-weight: 900; border-bottom: 3px solid #f1f5f9; padding-bottom: 15px; }
+        h4 { margin: 20px 0 10px 0; color: #475569; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
+
+        /* HIGH VISIBILITY INPUTS */
+        input[type="text"], select { width: 100%; padding: 16px 20px; margin-bottom: 15px; box-sizing: border-box; border-radius: 12px; border: 3px solid #cbd5e1; font-size: 16px; background: #ffffff; color: #0f172a; transition: all 0.2s; font-family: 'Space Grotesk', sans-serif; font-weight: 700; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); }
+        input[type="text"]:focus, select:focus { border-color: #0ea5e9; outline: none; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2); }
+        
+        /* Disabled Input Style */
+        .readonly { background-color: #f8fafc !important; color: #94a3b8 !important; cursor: not-allowed; border-color: #e2e8f0 !important; }
+
+        /* BUTTONS */
+        .btn-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        button { border: none; font-family: 'Outfit', sans-serif; font-weight: 900; cursor: pointer; border-radius: 10px; padding: 16px; font-size: 15px; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .btn-primary { background: linear-gradient(135deg, #0ea5e9, #3b82f6); color: white; box-shadow: 0 6px 15px rgba(14, 165, 233, 0.3); width: 100%; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4); }
+        
+        .btn-recipe { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3); width: 100%; margin-top: auto; }
+        .btn-recipe:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4); }
+        
+        .btn-clear { background: #f1f5f9; color: #475569; border: 2px solid #e2e8f0; padding: 16px 25px; }
+        .btn-clear:hover { background: #e2e8f0; color: #0f172a; }
+
+        /* LISTS (SCROLLABLE & CHUNKY) */
+        .single-list { flex-grow: 1; height: 250px; overflow-y: auto; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 5px; }
+        .single-list::-webkit-scrollbar { width: 8px; }
+        .single-list::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        .single-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 15px; cursor: pointer; transition: all 0.2s; background: #fff; border-radius: 8px; margin-bottom: 5px; border-left: 4px solid #0ea5e9; }
+        .list-item:hover { transform: scale(1.01); box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left-color: #3b82f6; }
+        .list-text { flex-grow: 1; font-weight: 800; color: #0f172a; }
+        .list-code { font-family: 'Space Grotesk', monospace; color: #64748b; font-size: 13px; font-weight: 700; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; margin-left: 8px; }
+        
+        .btn-del { background: #fef2f2; color: #ef4444; border: 2px solid #fca5a5; padding: 6px 12px; font-size: 12px; border-radius: 6px; margin-left: 10px; font-weight: 900; }
+        .btn-del:hover { background: #fee2e2; transform: scale(1.05); }
+
+        /* RECIPE BUILDER SPECIFICS */
+        .checklist { height: 300px; overflow-y: auto; background: #f8fafc; border: 2px solid #e2e8f0; padding: 10px; border-radius: 12px; margin-bottom: 15px; }
+        .checklist::-webkit-scrollbar { width: 8px; }
+        .checklist::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        .checklist::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        .checklist label { display: flex; align-items: center; padding: 15px 15px; border-bottom: 1px solid #f1f5f9; cursor: pointer; font-size: 16px; background: #fff; margin-bottom: 5px; border-radius: 8px; transition: all 0.2s; font-weight: 700; color: #334155; }
+        .checklist label:hover { background: #f0f9ff; }
+        .checklist input[type="checkbox"] { width: 22px; height: 22px; margin: 0 15px 0 0; cursor: pointer; accent-color: #10b981; }
+
+        /* MANAGER'S VAULT */
+        .vault-section { margin-top: 50px; border-top: 4px dashed #cbd5e1; padding-top: 40px; }
+        #vault_lock_screen { text-align: center; padding: 50px 20px; background: #f8fafc; border-radius: 20px; border: 2px solid #e2e8f0; }
+        #vault_lock_screen h3 { border-bottom: none; font-size: 28px; }
+        
+        .vault-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 25px; }
+        .vault-box { background: #ffffff; padding: 25px; border: 2px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .vault-list { height: 300px; overflow-y: auto; font-family: 'Space Grotesk', monospace; font-size: 14px; color: #334155; }
+        .vault-item { padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+        
+        .recipe-pill { background: #ecfdf5; padding: 6px 10px; border-radius: 8px; font-size: 12px; margin: 4px; display: inline-block; border: 1px solid #a7f3d0; font-weight: 800; color: #059669; font-family: 'Space Grotesk', sans-serif;}
+    </style>
+</head>
+<body>
+    <div class="main-header">
+        <img src="logo.png" alt="Kilrr Logo" onerror="this.style.display='none'">
+        <h1>PRODUCTION TRACEABILITY</h1>
+    </div>
+    
+    <nav>
+        <a href="inwarding.html">📦 RM Inwarding</a>
+        <a href="/">🏭 Batch Scanner</a>
+        <a href="audit.html">📋 Stock Audit</a>
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="master.html" class="active">⚙️ Master Data</a>
+    </nav>
+
+    <div class="container">
+        <div class="grid">
+            
+            <div class="col-card">
+                <h3 style="color: #0ea5e9;">1. Ingredients Data</h3>
+                <input type="text" id="in" placeholder="Ingredient Name" autocomplete="one-time-code">
+                
+                <div class="btn-row">
+                    <input type="text" id="ic" placeholder="Code (e.g. SA)" autocomplete="one-time-code" style="margin-bottom:0;">
+                    <button class="btn-clear" onclick="clearIngForm()">Clear</button>
+                </div>
+                
+                <button class="btn-primary" onclick="saveIng()">💾 Save / Update</button>
+                
+                <h4>Ingredient Master List</h4>
+                <div class="single-list" id="ing_single_list"></div>
+            </div>
+
+            <div class="col-card">
+                <h3 style="color: #ea580c;">2. Vendors Data</h3>
+                <input type="text" id="vn" placeholder="Vendor Name" autocomplete="one-time-code">
+                
+                <div class="btn-row">
+                    <input type="text" id="vc" placeholder="Code (e.g. UF)" autocomplete="one-time-code" style="margin-bottom:0;">
+                    <button class="btn-clear" onclick="clearVenForm()">Clear</button>
+                </div>
+                
+                <button class="btn-primary" style="background: linear-gradient(135deg, #ea580c, #f97316); box-shadow: 0 6px 15px rgba(234, 88, 12, 0.3);" onclick="saveVen()">💾 Save / Update</button>
+                
+                <h4>Vendor Master List</h4>
+                <div class="single-list" id="ven_single_list"></div>
+            </div>
+
+            <div class="col-card">
+                <h3 style="color: #10b981;">3. Recipe Builder</h3>
+                <select id="edit_recipe_select" onchange="loadRecipeToEdit()" style="border-color: #10b981; color: #059669; background: #ecfdf5;">
+                    <option value="">-- Add New Recipe Formula --</option>
+                </select>
+
+                <input type="text" id="fg" placeholder="Flavour Name (e.g. Tandoori)" autocomplete="one-time-code">
+                <input type="text" id="ingSearch" placeholder="🔍 Search Ingredients..." onkeyup="filterIngredients()" autocomplete="one-time-code">
+                
+                <div class="checklist" id="check_list"></div>
+                
+                <button class="btn-recipe" onclick="saveRec()">💾 Save Formula</button>
+            </div>
+        </div>
+
+        <div class="vault-section">
+            <div id="vault_lock_screen">
+                <h3>🔒 Manager's Data Vault</h3>
+                <p style="font-size:18px; color:#64748b; font-weight:600; margin-bottom: 30px;">Secure access to full directories and master formulas.</p>
+                <button onclick="unlockVault()" style="background: #0f172a; color: white; padding: 20px 40px; font-size: 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">🔓 Unlock with Action123</button>
+            </div>
+
+            <div id="vault_content" style="display:none;">
+                <h2 style="color:#0f172a; border-bottom: 4px solid #0f172a; padding-bottom: 15px; font-size: 32px; margin-bottom: 30px;">📋 Master System Directory</h2>
+                
+                <div class="vault-grid">
+                    <div class="vault-box">
+                        <h3 style="color:#0ea5e9; border-bottom: 2px dashed #cbd5e1;">📦 Complete Ingredients</h3>
+                        <div id="v_ing" class="vault-list"></div>
+                    </div>
+                    <div class="vault-box">
+                        <h3 style="color:#ea580c; border-bottom: 2px dashed #cbd5e1;">🤝 Complete Vendors</h3>
+                        <div id="v_ven" class="vault-list"></div>
+                    </div>
+                </div>
+
+                <div class="vault-box" style="margin-top:25px;">
+                    <h3 style="color:#10b981; border-bottom: 2px dashed #cbd5e1;">📖 Master Recipe Formulas</h3>
+                    <div id="v_rec" style="display:flex; flex-wrap:wrap; gap:15px; margin-top: 15px;"></div>
+                </div>
+                
+                <button onclick="location.reload()" style="background:#475569; color: white; margin-top:40px; padding: 20px 40px; width: auto;">🔒 Re-Lock Vault</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allRecipesData = [];
+
+        // --- 1. LOAD DATA & FILTER GARBAGE ---
+        function load() {
+            // Load Ingredients
+            fetch('/get-ingredients').then(r => r.json()).then(data => {
+                // Garbage Filter: Ignore empty names or empty codes
+                const cleanData = data.filter(i => i.product_code && i.product_code.trim() !== "" && i.ingredient_name && i.ingredient_name.trim() !== "" && i.ingredient_name !== "0");
+                
+                document.getElementById('ing_single_list').innerHTML = cleanData.map(i => `
+                    <div class="list-item">
+                        <div class="list-text" onclick="editIng('${i.product_code}', '${i.ingredient_name.replace(/'/g, "\\'")}')">
+                            ${i.ingredient_name} <span class="list-code">${i.product_code}</span>
+                        </div>
+                        <button class="btn-del" onclick="deleteIng('${i.product_code}')">🗑️ Del</button>
+                    </div>
+                `).join('');
+
+                // Checklist
+                document.getElementById('check_list').innerHTML = cleanData.map(i => `
+                    <label>
+                        <input type="checkbox" value="${i.product_code}"> 
+                        ${i.ingredient_name} <span style="color:#94a3b8; font-size:14px; font-family:'Space Grotesk'; margin-left:5px;">(${i.product_code})</span>
+                    </label>
+                `).join('');
+            });
+
+            // Load Vendors
+            fetch('/get-vendors').then(r => r.json()).then(data => {
+                // Garbage Filter
+                const cleanData = data.filter(v => v.vendor_code && v.vendor_code.trim() !== "" && v.vendor_name && v.vendor_name.trim() !== "" && v.vendor_name !== "0");
+                
+                document.getElementById('ven_single_list').innerHTML = cleanData.map(v => `
+                    <div class="list-item" style="border-left-color: #ea580c;">
+                        <div class="list-text" onclick="editVen('${v.vendor_code}', '${v.vendor_name.replace(/'/g, "\\'")}')">
+                            ${v.vendor_name} <span class="list-code">${v.vendor_code}</span>
+                        </div>
+                        <button class="btn-del" onclick="deleteVen('${v.vendor_code}')">🗑️ Del</button>
+                    </div>
+                `).join('');
+            });
+
+            // Load Recipes
+            fetch('/get-recipes').then(r => r.json()).then(data => {
+                allRecipesData = data;
+                const uniqueFlavours = [...new Set(data.map(r => r.fg_code))].filter(f => f && f.trim() !== "");
+                const dropdown = document.getElementById('edit_recipe_select');
+                uniqueFlavours.forEach(f => {
+                    dropdown.innerHTML += `<option value="${f}">${f}</option>`;
+                });
+            });
+        }
+
+        // --- 2. EDIT / CLEAR FORMS ---
+        function editIng(code, name) {
+            document.getElementById('in').value = name;
+            document.getElementById('ic').value = code;
+            document.getElementById('ic').classList.add('readonly');
+            document.getElementById('ic').readOnly = true;
+        }
+        function clearIngForm() {
+            document.getElementById('in').value = '';
+            document.getElementById('ic').value = '';
+            document.getElementById('ic').classList.remove('readonly');
+            document.getElementById('ic').readOnly = false;
+        }
+
+        function editVen(code, name) {
+            document.getElementById('vn').value = name;
+            document.getElementById('vc').value = code;
+            document.getElementById('vc').classList.add('readonly');
+            document.getElementById('vc').readOnly = true;
+        }
+        function clearVenForm() {
+            document.getElementById('vn').value = '';
+            document.getElementById('vc').value = '';
+            document.getElementById('vc').classList.remove('readonly');
+            document.getElementById('vc').readOnly = false;
+        }
+
+        function loadRecipeToEdit() {
+            const selectedFg = document.getElementById('edit_recipe_select').value;
+            if(!selectedFg) {
+                document.getElementById('fg').value = '';
+                document.querySelectorAll('#check_list input[type="checkbox"]').forEach(cb => cb.checked = false);
+                return;
+            }
+            document.getElementById('fg').value = selectedFg;
+            const checkboxes = document.querySelectorAll('#check_list input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            
+            const recipeIngredients = allRecipesData.filter(r => r.fg_code === selectedFg).map(r => r.product_code);
+            checkboxes.forEach(cb => {
+                if(recipeIngredients.includes(cb.value)) cb.checked = true;
+            });
+        }
+
+        function filterIngredients() {
+            let filter = document.getElementById('ingSearch').value.toUpperCase();
+            let labels = document.getElementById('check_list').getElementsByTagName('label');
+            for (let i = 0; i < labels.length; i++) {
+                let txtValue = labels[i].textContent || labels[i].innerText;
+                labels[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "flex" : "none";
+            }
+        }
+
+        // --- 3. SAVE WITH POPUPS (NO PIN REQUIRED) ---
+        function saveIng() { 
+            const name = document.getElementById('in').value.trim();
+            const code = document.getElementById('ic').value.trim();
+            if(!name || !code) return alert("Please fill in both Ingredient Name and Code.");
+            
+            if(!confirm(`Are you sure you want to save/update Ingredient:\n${name} (${code})?`)) return;
+
+            fetch('/add-ingredient', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name: name, code: code})})
+            .then(() => { location.reload(); }); 
+        }
+        
+        function saveVen() { 
+            const name = document.getElementById('vn').value.trim();
+            const code = document.getElementById('vc').value.trim();
+            if(!name || !code) return alert("Please fill in both Vendor Name and Code.");
+
+            if(!confirm(`Are you sure you want to save/update Vendor:\n${name} (${code})?`)) return;
+
+            fetch('/add-vendor', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name: name, code: code})})
+            .then(() => { location.reload(); }); 
+        }
+
+        function saveRec() {
+            const fg = document.getElementById('fg').value.trim();
+            const ings = Array.from(document.querySelectorAll('#check_list input:checked')).map(c => c.value);
+            if(!fg || ings.length === 0) return alert("Enter Flavour Name and select at least one ingredient!");
+            
+            if(!confirm(`Are you sure you want to save the formula for ${fg} with ${ings.length} ingredients?`)) return;
+
+            const pin = prompt("Enter Manager PIN (1234) to confirm Recipe Change:");
+            if(!pin) return;
+
+            fetch('/update-recipe-secure', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fg_code: fg, ingredients: ings, pin: pin })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.error) alert(data.error);
+                else { location.reload(); }
+            });
+        }
+
+        // --- 4. DELETE FUNCTIONS (PIN REQUIRED) ---
+        function deleteIng(code) {
+            const pin = prompt(`⚠️ Enter Manager PIN (1234) to PERMANENTLY delete code: ${code}`);
+            if(!pin) return;
+
+            fetch('/delete-ingredient', {
+                method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code: code, pin: pin})
+            }).then(r => r.json()).then(data => {
+                if(data.error) alert(data.error);
+                else { location.reload(); }
+            });
+        }
+
+        function deleteVen(code) {
+            const pin = prompt(`⚠️ Enter Manager PIN (1234) to PERMANENTLY delete code: ${code}`);
+            if(!pin) return;
+
+            fetch('/delete-vendor', {
+                method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code: code, pin: pin})
+            }).then(r => r.json()).then(data => {
+                if(data.error) alert(data.error);
+                else { location.reload(); }
+            });
+        }
+
+        // --- 5. VAULT LOGIC ---
+        function unlockVault() {
+            const pw = prompt("Enter Vault Password:");
+            if (pw !== "Action123") return alert("Access Denied: Incorrect Password");
+
+            fetch('/vault-access', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.error) return alert(data.error);
+
+                document.getElementById('vault_lock_screen').style.display = 'none';
+                document.getElementById('vault_content').style.display = 'block';
+
+                const cleanIng = data.ingredients.filter(i => i.product_code && i.ingredient_name && i.ingredient_name !== "0");
+                const cleanVen = data.vendors.filter(v => v.vendor_code && v.vendor_name && v.vendor_name !== "0");
+
+                document.getElementById('v_ing').innerHTML = cleanIng.map(i => `<div class="vault-item"><b>${i.product_code}</b>: ${i.ingredient_name}</div>`).join('');
+                document.getElementById('v_ven').innerHTML = cleanVen.map(v => `<div class="vault-item"><b>${v.vendor_code}</b>: ${v.vendor_name}</div>`).join('');
+                
+                const nameDictionary = {};
+                cleanIng.forEach(item => { nameDictionary[item.product_code] = item.ingredient_name; });
+
+                const grouped = data.recipes.reduce((acc, r) => { (acc[r.fg_code] = acc[r.fg_code] || []).push(r.product_code); return acc; }, {});
+                
+                document.getElementById('v_rec').innerHTML = Object.keys(grouped).filter(name => name.trim() !== "").map(name => `
+                    <div style="background:#f8fafc; border:2px solid #e2e8f0; padding:20px; border-radius:12px; min-width:300px; flex: 1 1 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 15px;">
+                            <b style="color:#10b981; font-size:20px; font-family:'Outfit';">${name}</b>
+                            <span style="background:#0f172a; color:white; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:900;">${grouped[name].length} Ingredients</span>
+                        </div>
+                        <div>${grouped[name].map(code => `<span class="recipe-pill">${nameDictionary[code] || code}</span>`).join('')}</div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        window.onload = load;
+    </script>
+</body>
+</html>

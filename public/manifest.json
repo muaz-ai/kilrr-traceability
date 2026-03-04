@@ -1,0 +1,20 @@
+{
+  "name": "Kilrr Scanner",
+  "short_name": "Kilrr",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f4f9",
+  "theme_color": "#ff5722",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
