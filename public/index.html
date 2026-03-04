@@ -1,330 +1,63 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Kilrr - Batch Scanner</title>
+    <title>Kilrr - Factory Hub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* SPICE FACTORY COLOR PALETTE */
-        :root {
-            --spice-red: #b91c1c; /* Deep Chili Red */
-            --spice-orange: #ea580c; /* Paprika */
-            --spice-yellow: #f59e0b; /* Turmeric */
-            --factory-dark: #1e293b; /* Industrial Slate */
-            --factory-light: #f8fafc;
-        }
-
-        /* Subtle Factory Dot Pattern Background */
-        body { font-family: 'Outfit', sans-serif; margin: 0; color: var(--factory-dark); background-color: #fffbeb; background-image: radial-gradient(#fde68a 1px, transparent 1px); background-size: 20px 20px; min-height: 100vh; }
+        body { margin: 0; background: #0f172a; color: #f8fafc; font-family: 'Outfit', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-image: radial-gradient(circle at 50% -20%, #1e293b, #0f172a); }
+        .hub-container { width: 90%; max-width: 800px; padding: 20px; text-align: center; }
+        .logo-box { margin-bottom: 40px; }
+        .logo-box img { height: 60px; background: white; padding: 10px 20px; border-radius: 16px; box-shadow: 0 0 30px rgba(14, 165, 233, 0.2); }
+        h1 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; letter-spacing: 2px; text-transform: uppercase; margin-top: 20px; background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* NEW HEADER: Logo Left, Industrial Look */
-        .main-header { background: var(--factory-dark); padding: 15px 25px; border-bottom: 4px solid var(--spice-orange); display: flex; align-items: center; justify-content: space-between; box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .main-header img { height: 45px; background: white; padding: 6px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        .main-header h1 { color: white; margin: 0; font-size: 22px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Space Grotesk', sans-serif;}
-        .status-dot { height: 12px; width: 12px; background-color: #22c55e; border-radius: 50%; box-shadow: 0 0 10px #22c55e; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
-
-        /* UPGRADED NAVIGATION */
-        nav { background: white; display: flex; flex-wrap: wrap; padding: 10px; gap: 8px; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        nav a { flex: 1 1 auto; text-align: center; color: #64748b; padding: 12px 15px; text-decoration: none; font-weight: 800; font-size: 13px; text-transform: uppercase; border-radius: 8px; transition: 0.3s; background: var(--factory-light); border: 1px solid #e2e8f0;}
-        nav a:hover { color: var(--spice-orange); border-color: var(--spice-orange); background: #fff7ed; }
-        nav a.active { color: white; background: var(--spice-orange); border-color: var(--spice-orange); box-shadow: 0 4px 10px rgba(234, 88, 12, 0.3); }
-        nav a.logout-btn { background: #fef2f2; color: var(--spice-red); border-color: #fca5a5; flex: 0 1 auto;}
-        nav a.logout-btn:hover { background: var(--spice-red); color: white; }
-
-        /* CARDS & INPUTS */
-        .card { max-width: 600px; margin: 25px auto; background: white; padding: 35px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08); border-top: 5px solid var(--spice-yellow); }
-        h2 { margin-top: 0; color: var(--factory-dark); font-size: 24px; margin-bottom: 25px; font-weight: 900; text-align: center; font-family: 'Space Grotesk', sans-serif;}
-        label { display: block; font-weight: 800; margin-bottom: 8px; color: var(--spice-red); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 40px; }
         
-        input, select { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 16px; background: #f8fafc; color: var(--factory-dark); transition: 0.2s; font-family: 'Space Grotesk', sans-serif; font-weight: 700; margin-bottom: 20px;}
-        input:focus, select:focus { border-color: var(--spice-orange); outline: none; box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.15); background: white;}
-
-        .autocomplete { position: relative; display: inline-block; width: 100%; }
-        .autocomplete-items { position: absolute; border: 1px solid #e2e8f0; border-radius: 10px; z-index: 1000; background: white; width: 100%; max-height: 250px; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); top: calc(100% - 15px); }
-        .dropdown-item { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #f1f5f9; font-weight: 600;}
-        .dropdown-item:hover { background-color: #fff7ed; color: var(--spice-orange); padding-left: 25px; border-left: 4px solid var(--spice-orange); }
+        .app-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid #334155; border-radius: 20px; padding: 30px 20px; text-decoration: none; color: white; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; align-items: center; gap: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .app-card:hover { transform: translateY(-5px); border-color: #38bdf8; background: rgba(30, 41, 59, 0.9); box-shadow: 0 15px 30px rgba(56, 189, 248, 0.15); }
+        .icon { font-size: 40px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
+        .title { font-weight: 800; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
         
-        button { width: 100%; border: none; font-family: 'Outfit', sans-serif; font-weight: 900; cursor: pointer; color: white; border-radius: 10px; padding: 20px; font-size: 18px; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-        .btn-primary { background: linear-gradient(135deg, var(--spice-orange), var(--spice-red)); box-shadow: 0 6px 15px rgba(220, 38, 38, 0.3); }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(220, 38, 38, 0.4); }
-        .btn-manual { background: var(--factory-light); color: var(--spice-orange); border: 2px solid var(--spice-orange); font-size: 15px; padding: 16px;}
-        .btn-danger { background: #fef2f2; color: var(--spice-red); border: 2px solid #fca5a5; font-size: 14px; padding: 16px; margin-top: 25px; }
-        .btn-lock { background: var(--factory-dark); margin-top: 15px; border: 2px solid #0f172a; }
-
-        .manual-box { background: #fff7ed; padding: 25px; border: 2px dashed var(--spice-orange); border-radius: 12px; margin-bottom: 25px; text-align: center; }
-        .hybrid-input-row { display: flex; gap: 10px; margin-bottom: 5px; }
-        .manual-box input { border-color: var(--spice-orange); font-size: 18px; flex: 1; padding: 15px; text-align:center; margin:0; background: white;}
-        .btn-add-manual { background: var(--spice-orange); width: auto; padding: 0 25px; margin: 0; border-radius: 8px; }
+        .logout-card { margin-top: 40px; border-color: #ef4444; background: rgba(127, 29, 29, 0.2); grid-column: 1 / -1; padding: 20px; flex-direction: row; justify-content: center; }
+        .logout-card:hover { border-color: #f87171; background: rgba(127, 29, 29, 0.4); box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2); }
         
-        #reader { width: 100%; border-radius: 12px; overflow: hidden; border: 3px solid var(--factory-dark); margin-bottom: 15px;}
-        h3 { font-size: 18px; color: var(--factory-dark); margin-top: 25px; margin-bottom: 15px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;}
-        #checklist > div { padding: 15px 20px; margin: 10px 0; border-radius: 10px; font-weight: 800; display: flex; justify-content: space-between; font-family: 'Space Grotesk', sans-serif;}
-        .check-pending { background: white; color: #475569; border: 1px solid #cbd5e1; border-left: 5px solid #cbd5e1;}
-        .check-done { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-left: 5px solid #059669; }
-        
-        #scan_log { height: 200px; overflow-y: auto; margin-top: 15px; background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 10px; }
-        .scan-log-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #e2e8f0; background: white; border-radius: 6px; margin-bottom: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
-        .btn-mini-del { width: auto; margin: 0; background: #fef2f2; border: 1px solid #fca5a5; color: var(--spice-red); border-radius: 6px; padding: 6px 12px; font-size:12px; cursor: pointer;}
-        
-        @media (max-width: 600px) { .main-header h1 { font-size: 16px; } nav a { font-size: 11px; padding: 10px; } }
+        @media (min-width: 768px) { .grid { grid-template-columns: repeat(3, 1fr); } }
     </style>
 </head>
 <body>
-    <div class="main-header">
-        <div class="header-left">
+    <div class="hub-container">
+        <div class="logo-box">
             <img src="logo.png" alt="Kilrr" onerror="this.style.display='none'">
-            <h1>Factory Console</h1>
-        </div>
-        <div class="status-dot" title="System Live"></div>
-    </div>
-    
-    <nav>
-        <a href="inwarding.html">📦 Inward</a>
-        <a href="/" class="active">🏭 Batch Scan</a>
-        <a href="audit.html">📋 Audit</a>
-        <a href="dashboard.html">📊 Dash</a>
-        <a href="master.html">⚙️ Master</a>
-        <a href="/api/logout" class="logout-btn">🚪 Exit</a>
-    </nav>
-    
-    <div class="card" id="setup">
-        <h2>Initiate Production</h2>
-        
-        <label>1. Target Flavour Profile</label>
-        <div class="autocomplete"><input type="text" id="fg_select" placeholder="Search Master Recipe..." autocomplete="off"></div>
-        
-        <label>2. Batch Tracking Code</label>
-        <div class="autocomplete"><input type="text" id="bc" placeholder="Enter new or resume existing..." autocomplete="off"></div>
-        
-        <label>3. Lead Operator</label>
-        <div style="position: relative;">
-            <select id="op_name" style="margin-bottom: 30px;">
-                <option value="" disabled selected>Select authorized personnel...</option>
-                <option value="Muaz">Muaz</option>
-                <option value="Arbaaz">Arbaaz</option>
-                <option value="Rahul">Rahul</option>
-                <option value="Amit">Amit</option>
-                <option value="Priya">Priya</option>
-                <option value="Supervisor">Supervisor</option>
-            </select>
-            <span style="position: absolute; right: 15px; top: 18px; pointer-events: none; font-size: 16px; color: #94a3b8;">▼</span>
+            <h1>Factory Os</h1>
         </div>
         
-        <button class="btn-primary" onclick="start()">🚀 ENGAGE SCANNER</button>
-    </div>
-    
-    <div class="card" id="work" style="display:none;">
-        <h2 id="title" style="color:var(--spice-orange);"></h2>
-        
-        <div class="manual-box">
-            <label style="color:var(--spice-dark); margin-bottom:8px;">⚡ DESKTOP SCAN OR MANUAL ENTRY</label>
-            <div class="hybrid-input-row">
-                <input type="text" id="rm_tag_manual" placeholder="Awaiting barcode..." autocomplete="off">
-                <button class="btn-add-manual" onclick="manualScan()">➕ Add</button>
-            </div>
+        <div class="grid">
+            <a href="inwarding.html" class="app-card">
+                <span class="icon">📦</span>
+                <span class="title">Inwarding</span>
+            </a>
+            <a href="scanner.html" class="app-card" style="border-color: #38bdf8; background: rgba(14, 165, 233, 0.1);">
+                <span class="icon">🏭</span>
+                <span class="title">Batch Scanner</span>
+            </a>
+            <a href="audit.html" class="app-card">
+                <span class="icon">📋</span>
+                <span class="title">Stock Audit</span>
+            </a>
+            <a href="dashboard.html" class="app-card">
+                <span class="icon">📊</span>
+                <span class="title">Dashboard</span>
+            </a>
+            <a href="master.html" class="app-card">
+                <span class="icon">⚙️</span>
+                <span class="title">Master Data</span>
+            </a>
+            
+            <a href="/api/logout" class="app-card logout-card">
+                <span class="icon" style="font-size: 24px;">🚪</span>
+                <span class="title" style="color: #fca5a5;">Secure Logout</span>
+            </a>
         </div>
-
-        <div id="reader" style="display:none;"></div>
-        <button class="btn-manual" onclick="toggleCamera()" id="camToggleBtn">📷 Activate Mobile Scanner</button>
-
-        <h3>Recipe Validation</h3>
-        <div id="checklist"></div>
-        
-        <div id="scan_log"></div>
-        
-        <button class="btn-danger" onclick="deleteWholeBatch()">🗑️ Void Batch (Manager PIN)</button>
-        <button class="btn-lock" onclick="lock()">🔒 Finalize & Lock Production</button>
     </div>
-    
-    <script>
-        // Exact same JavaScript logic as before
-        let curB = ""; let curF = ""; let curOp = ""; let isProcessing = false; let localScannedTags = []; 
-        let openBatchesData = []; let html5QrcodeScanner = null;
-        
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playBeep(isSuccess) {
-            try {
-                if(audioCtx.state === 'suspended') audioCtx.resume();
-                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                if(isSuccess) {
-                    osc.type = 'sine'; osc.frequency.value = 1000;
-                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-                    osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-                } else {
-                    osc.type = 'sawtooth'; osc.frequency.value = 150;
-                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-                    osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-                }
-            } catch(e) { console.log("Audio not supported"); }
-        }
-
-        window.onload = () => {
-            fetch('/get-recipes').then(r => r.json()).then(data => {
-                const flavors = [...new Set(data.map(r => r.fg_code))].filter(f => f && f.trim() !== "");
-                setupFlavourAutocomplete(document.getElementById('fg_select'), flavors);
-            });
-            fetch('/open-batches').then(r => r.json()).then(data => {
-                openBatchesData = data;
-                setupBatchAutocomplete(document.getElementById('bc'), data);
-            });
-            document.getElementById('rm_tag_manual').addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') { e.preventDefault(); manualScan(); }
-            });
-        };
-        
-        function setupFlavourAutocomplete(inp, arr) {
-            let currentFocus;
-            function showList(val) {
-                closeAllLists(); currentFocus = -1;
-                let a = document.createElement("DIV"); a.setAttribute("class", "autocomplete-items"); inp.parentNode.appendChild(a);
-                for (let i = 0; i < arr.length; i++) {
-                    if (!val || arr[i].toUpperCase().includes(val.toUpperCase())) {
-                        let b = document.createElement("DIV"); b.className = "dropdown-item";
-                        b.innerHTML = `<span>${arr[i]}</span><input type='hidden' value='${arr[i]}'>`;
-                        b.addEventListener("click", function(e) { inp.value = this.getElementsByTagName("input")[0].value; closeAllLists(); });
-                        a.appendChild(b);
-                    }
-                }
-            }
-            inp.addEventListener("focus", function() { showList(this.value); });
-            inp.addEventListener("click", function(e) { e.stopPropagation(); showList(this.value); });
-            inp.addEventListener("input", function() { showList(this.value); }); 
-        }
-
-        function setupBatchAutocomplete(inp, arr) {
-            let currentFocus;
-            function showList(val) {
-                closeAllLists(); currentFocus = -1;
-                let a = document.createElement("DIV"); a.setAttribute("class", "autocomplete-items"); inp.parentNode.appendChild(a);
-                for (let i = 0; i < arr.length; i++) {
-                    if (!val || arr[i].batch_code.toUpperCase().includes(val.toUpperCase())) {
-                        let b = document.createElement("DIV"); b.className = "dropdown-item";
-                        b.innerHTML = `<span>🔄 Resume: ${arr[i].batch_code}</span><input type='hidden' value='${arr[i].batch_code}'><input type='hidden' class='hidden-fg' value='${arr[i].fg_code}'>`;
-                        b.addEventListener("click", function(e) { 
-                            inp.value = this.getElementsByTagName("input")[0].value; 
-                            document.getElementById('fg_select').value = this.getElementsByClassName("hidden-fg")[0].value;
-                            closeAllLists(); 
-                        });
-                        a.appendChild(b);
-                    }
-                }
-            }
-            inp.addEventListener("focus", function() { showList(this.value); }); 
-            inp.addEventListener("click", function(e) { e.stopPropagation(); showList(this.value); });
-            inp.addEventListener("input", function() { showList(this.value); }); 
-        }
-        function closeAllLists(elmnt) { document.querySelectorAll(".autocomplete-items").forEach(el => { if(el !== elmnt && el !== document.activeElement) el.remove(); }); }
-        document.addEventListener("click", function (e) { if(e.target.tagName !== "INPUT") closeAllLists(); });
-
-        async function start() {
-            if(audioCtx.state === 'suspended') audioCtx.resume(); 
-            curB = document.getElementById('bc').value.trim(); 
-            curF = document.getElementById('fg_select').value.trim();
-            curOp = document.getElementById('op_name').value; 
-            
-            if(!curB || !curF) return alert("Please select a Flavour Profile and enter a Batch Code!");
-            if(!curOp) return alert("Please select an Operator Name!"); 
-            
-            const isOpen = openBatchesData.find(b => b.batch_code.toUpperCase() === curB.toUpperCase());
-            if (isOpen) {
-                curF = isOpen.fg_code; 
-                startScannerUI();
-            } else {
-                const res = await fetch('/create-batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB, fg_code:curF, operator_name:curOp}) });
-                const data = await res.json();
-                if(data.error) return alert("❌ " + data.error + "\n\nThis batch is already Locked.");
-                startScannerUI();
-            }
-        }
-
-        function startScannerUI() {
-            document.getElementById('setup').style.display = 'none'; 
-            document.getElementById('work').style.display = 'block';
-            document.getElementById('title').innerText = `PRODUCTION: ${curB.toUpperCase()}`;
-            update();
-            setTimeout(() => { document.getElementById('rm_tag_manual').focus(); }, 500);
-        }
-
-        function toggleCamera() {
-            const readerDiv = document.getElementById('reader');
-            if(readerDiv.style.display === 'none') {
-                readerDiv.style.display = 'block'; document.getElementById('camToggleBtn').innerText = "🚫 Deactivate Camera";
-                if(!html5QrcodeScanner) { html5QrcodeScanner = new Html5QrcodeScanner("reader", {fps:10, qrbox:250}); html5QrcodeScanner.render(async (txt) => { processScannedText(txt); }); }
-            } else {
-                readerDiv.style.display = 'none'; document.getElementById('camToggleBtn').innerText = "📷 Activate Mobile Scanner";
-                document.getElementById('rm_tag_manual').focus();
-            }
-        }
-
-        function manualScan() {
-            let val = document.getElementById('rm_tag_manual').value.trim();
-            if(!val) return; processScannedText(val);
-        }
-
-        async function processScannedText(txt) {
-            if (isProcessing) return; isProcessing = true;
-            let cleanTag = txt; let parts = txt.split('/');
-            if(parts.length === 5) { cleanTag = parts.slice(0, 4).join('/'); }
-
-            if (localScannedTags.includes(cleanTag)) {
-                playBeep(false); 
-                alert("⚠️ DUPLICATE: Bag already scanned for this batch!");
-                document.getElementById('rm_tag_manual').value = ""; document.getElementById('rm_tag_manual').focus(); 
-                setTimeout(() => { isProcessing = false; }, 1000); return;
-            }
-            
-            await fetch('/scan', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB, rm_tag:cleanTag}) });
-            
-            playBeep(true); 
-            document.getElementById('rm_tag_manual').value = ""; document.getElementById('rm_tag_manual').focus();
-            
-            update();
-            setTimeout(() => { isProcessing = false; }, 300); 
-        }
-
-        async function update() {
-            const req = await fetch(`/recipe-requirements/${curF}`).then(r => r.json());
-            const scans = await fetch(`/current-scans/${curB}`).then(r => r.json());
-            localScannedTags = scans.map(s => s.rm_tag);
-            const sCodes = scans.map(s => s.product_code);
-            
-            document.getElementById('checklist').innerHTML = req.map(i => `
-                <div class="${sCodes.includes(i.product_code) ? 'check-done' : 'check-pending'}">
-                    <span>${i.ingredient_name} <span style="color:#94a3b8; font-size:12px; font-family:monospace;">(${i.product_code})</span></span>
-                    <span>${sCodes.includes(i.product_code) ? '✅ Valid' : '⏳ Pending'}</span>
-                </div>
-            `).join('');
-            
-            if(scans.length === 0) {
-                document.getElementById('scan_log').innerHTML = "<div style='color:#94a3b8; text-align:center; padding:20px; font-weight:700;'>Awaiting material scan...</div>";
-            } else {
-                document.getElementById('scan_log').innerHTML = "<b style='color:var(--factory-dark); margin-bottom:10px; display:block;'>Recent Input:</b>" + scans.map(s => `
-                    <div class="scan-log-item"><span style="font-family:'Space Grotesk', monospace; font-weight:800; color:var(--spice-orange);">${s.rm_tag}</span><button class="btn-mini-del" onclick="deleteSpecificScan('${s.rm_tag}')">🗑️ Void</button></div>
-                `).reverse().join('');
-            }
-        }
-        
-        function deleteSpecificScan(tag) {
-            const pin = prompt(`Manager PIN (1234) required to remove tag ${tag}:`);
-            if(!pin) { document.getElementById('rm_tag_manual').focus(); return; }
-            fetch('/delete-specific-scan', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB, rm_tag:tag, pin:pin}) }).then(() => { update(); document.getElementById('rm_tag_manual').focus(); });
-        }
-        function deleteWholeBatch() {
-            const pin = prompt("⚠️ Manager PIN (1234) to PERMANENTLY delete this batch:");
-            if(!pin) { document.getElementById('rm_tag_manual').focus(); return; }
-            fetch('/delete-batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB, pin:pin}) }).then(() => { location.reload(); });
-        }
-        function lock() { 
-            if(!confirm("Finalize and lock this production batch?")) { document.getElementById('rm_tag_manual').focus(); return; }
-            fetch('/lock-batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB}) }).then(() => { alert("Batch Locked!"); location.reload(); }); 
-        }
-    </script>
 </body>
 </html>
