@@ -28,11 +28,11 @@ const initDB = async () => {
     } catch(e) { console.error("Database Init Error:", e); }
 };
 initDB();
+
 // --- THE SECURITY FIREWALL ---
 app.post("/api/login", (req, res) => {
-    const { password } = req.body;
-    
-    // REMOVED 'Max-Age' -> Now it is a strict Session Cookie (expires on close)
+    const { password } = req.body;  
+    // Strict Session Cookie (expires when browser is closed)
     if (password === "KilrrAdmin99") { 
         res.setHeader('Set-Cookie', 'kilrr_auth=admin; Path=/; HttpOnly');
         return res.json({ success: true, role: 'admin' });
@@ -74,6 +74,10 @@ app.use((req, res, next) => {
     }
     next();
 });
+
+// 🔥 THE MISSING LINE THAT SERVES YOUR HTML FILES 🔥
+app.use(express.static("public"));
+
 // --- POSTGRES APIs ---
 
 // 1. INWARDING LOGS
@@ -171,7 +175,7 @@ app.post("/update-recipe-secure", async (req, res) => {
     } catch(e) { await pool.query("ROLLBACK"); res.status(500).json({error: e.message}); }
 });
 
-// 🔥 THE MISSING VAULT ACCESS ENDPOINT 🔥
+// 🔥 VAULT ACCESS ENDPOINT 🔥
 app.post("/vault-access", async (req, res) => {
     if (req.body.password !== "Action123") return res.status(403).json({ error: "Denied" });
     try {
@@ -236,5 +240,3 @@ app.post("/unlock-batch", async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Kilrr System Active on Port ${PORT}`));
-
-
