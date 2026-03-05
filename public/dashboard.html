@@ -5,31 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;900&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Outfit', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 50px; }
-        .nav-top { background: #ffffff; border-bottom: 4px solid #0ea5e9; padding: 15px 25px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        body { font-family: 'Outfit', sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 50px; }
+        .nav-top { background: #ffffff; border-bottom: 4px solid #ea580c; padding: 15px 25px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .brand { display: flex; align-items: center; gap: 12px; font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: #0f172a; letter-spacing: 1px; text-decoration: none; text-transform: uppercase;}
         .brand img { height: 40px; }
         .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; width: 100%; justify-content: center; }
         @media(min-width: 900px){ .nav-links { width: auto; margin-top: 0; } }
-        .nav-btn { text-decoration: none; padding: 10px 15px; color: #64748b; font-weight: 800; font-size: 14px; text-transform: uppercase; border-radius: 8px; transition: 0.2s; background: #f8fafc; border: 1px solid #e2e8f0; }
-        .nav-btn:hover, .nav-btn.active { background: #0ea5e9; color: #ffffff; border-color: #0ea5e9; box-shadow: 0 4px 10px rgba(14,165,233,0.2);}
-        .nav-btn.logout { background: #fef2f2; color: #ef4444; border-color: #fca5a5; } .nav-btn.logout:hover { background: #ef4444; color: #ffffff; }
+        .nav-btn { text-decoration: none; padding: 10px 15px; color: #64748b; font-weight: 800; font-size: 14px; text-transform: uppercase; border-radius: 8px; transition: 0.2s; background: #f1f5f9; border: 1px solid #e2e8f0; }
+        .nav-btn:hover, .nav-btn.active { background: #0f172a; color: #ffffff; border-color: #0f172a; box-shadow: 0 4px 10px rgba(15,23,42,0.2);}
+        .nav-btn.logout { background: #fee2e2; color: #ef4444; border-color: #fca5a5; } .nav-btn.logout:hover { background: #ef4444; color: #ffffff; }
 
         .container { max-width: 1300px; margin: 40px auto; padding: 0 20px;}
         
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 40px; }
-        .stat-card { background: #ffffff; border: 1px solid #e2e8f0; padding: 35px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-top: 5px solid #0ea5e9;}
-        .stat-val { font-family: 'Space Grotesk', sans-serif; font-size: 50px; font-weight: 900; color: #0ea5e9; margin-bottom: 5px;}
+        .stat-card { background: #ffffff; border: 1px solid #e2e8f0; padding: 35px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-top: 5px solid #0f172a;}
+        .stat-val { font-family: 'Space Grotesk', sans-serif; font-size: 50px; font-weight: 900; color: #ea580c; margin-bottom: 5px;}
         .stat-lbl { color: #475569; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900;}
+
+        /* Tabs UI */
+        .tab-menu { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 3px solid #e2e8f0; padding-bottom: 10px; overflow-x: auto;}
+        .tab-btn { background: transparent; border: none; color: #64748b; font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 900; padding: 10px 20px; cursor: pointer; text-transform: uppercase; border-radius: 10px; transition: 0.2s; white-space: nowrap;}
+        .tab-btn.active { background: #0f172a; color: white; box-shadow: 0 4px 15px rgba(15,23,42,0.2);}
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
         
-        .section { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 30px; margin-bottom: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.05);}
+        .section { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.05);}
         .sec-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 25px; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px;}
-        h2 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: #0f172a; text-transform: uppercase; letter-spacing: 1px;}
+        h2 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 900; color: #0f172a; text-transform: uppercase; letter-spacing: 1px;}
         
         .btn-export { background: #10b981; border: none; color: #ffffff; font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 15px; padding: 12px 25px; border-radius: 10px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(16,185,129,0.3);}
         .btn-export:hover { background: #059669; transform: translateY(-2px);}
         
-        /* 🔥 The Unmissable Delete Button 🔥 */
+        /* The Unmissable Delete Button */
         .btn-del { background: #fee2e2; border: 2px solid #fca5a5; color: #ef4444; font-family: 'Outfit', sans-serif; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 900; transition: 0.2s; white-space: nowrap;}
         .btn-del:hover { background: #ef4444; color: #ffffff; box-shadow: 0 4px 10px rgba(239,68,68,0.3);}
         
@@ -37,10 +44,10 @@
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 15px;}
         th { background: #f8fafc; color: #475569; padding: 20px 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; white-space: nowrap; border-bottom: 2px solid #e2e8f0;}
         td { padding: 18px 15px; border-bottom: 1px solid #f1f5f9; color: #0f172a; font-weight: 600; white-space: nowrap;}
-        tr:hover { background: #f0f9ff; }
-        .tag-style { font-family: 'Space Grotesk', monospace; color: #0ea5e9; font-weight: 800; font-size: 16px;}
+        tr:hover { background: #fff7ed; }
+        .tag-style { font-family: 'Space Grotesk', monospace; color: #ea580c; font-weight: 800; font-size: 16px;}
         .badge { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 900;}
-        .bg-open { background: #e0f2fe; color: #0284c7; border: 1px solid #7dd3fc;}
+        .bg-open { background: #ffedd5; color: #ea580c; border: 1px solid #fdba74;}
         .bg-locked { background: #dcfce7; color: #16a34a; border: 1px solid #86efac;}
     </style>
 </head>
@@ -64,22 +71,34 @@
             <div class="stat-card"><div class="stat-val" id="st_inv">0</div><div class="stat-lbl">Bags in Inventory</div></div>
         </div>
 
-        <div class="section">
-            <div class="sec-header"><h2>1. RM Inwarding Logs</h2><button class="btn-export" onclick="exp('inw_t', 'Inwarding')">📥 Export CSV</button></div>
+        <div class="tab-menu">
+            <button class="tab-btn active" onclick="showTab('inw', this)">Inwarding Logs</button>
+            <button class="tab-btn" onclick="showTab('bat', this)">Production Batches</button>
+            <button class="tab-btn" onclick="showTab('inv', this)">Live Inventory</button>
+        </div>
+
+        <div id="tab_inw" class="tab-content active section">
+            <div class="sec-header"><h2>RM Inwarding Logs</h2><button class="btn-export" onclick="exp('inw_t', 'Inwarding')">📥 Export CSV</button></div>
             <div class="table-wrap"><table id="inw_t"><thead><tr><th>Date</th><th>Material</th><th>Code</th><th>Vendor</th><th>V-Code</th><th>Wt</th><th>Packs</th><th>Action</th></tr></thead><tbody></tbody></table></div>
         </div>
 
-        <div class="section">
-            <div class="sec-header"><h2>2. Production Batches</h2><button class="btn-export" onclick="exp('bat_t', 'Batches')">📥 Export CSV</button></div>
+        <div id="tab_bat" class="tab-content section">
+            <div class="sec-header"><h2>Production Batches</h2><button class="btn-export" onclick="exp('bat_t', 'Batches')">📥 Export CSV</button></div>
             <div class="table-wrap"><table id="bat_t"><thead><tr><th>Date</th><th>Batch</th><th>Flavour</th><th>Status</th><th>Operator</th></tr></thead><tbody></tbody></table></div>
         </div>
 
-        <div class="section">
-            <div class="sec-header"><h2>3. Live Inventory & Audit</h2><button class="btn-export" onclick="exp('inv_t', 'Inventory')">📥 Export CSV</button></div>
+        <div id="tab_inv" class="tab-content section">
+            <div class="sec-header"><h2>Live Inventory & Audit</h2><button class="btn-export" onclick="exp('inv_t', 'Inventory')">📥 Export CSV</button></div>
             <div class="table-wrap"><table id="inv_t"><thead><tr><th>RM Tag</th><th>Material</th><th>Current Wt</th><th>Last Audited</th><th>Action</th></tr></thead><tbody></tbody></table></div>
         </div>
     </div>
     <script>
+        function showTab(id, btn) {
+            document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+            document.getElementById('tab_' + id).classList.add('active');
+            btn.classList.add('active');
+        }
         window.onload=async()=>{ const iRes=await fetch('/get-inwarding-logs'); const inw=await iRes.json(); document.getElementById('st_inw').innerText=inw.length; document.querySelector('#inw_t tbody').innerHTML=inw.map(r=>`<tr><td>${r.date_received}</td><td>${r.ingredient_name}</td><td style="font-family:monospace; font-weight:bold;">${r.ingredient_code}</td><td>${r.vendor_name}</td><td>${r.vendor_code}</td><td>${r.weight}kg</td><td>${r.packs}</td><td><button class="btn-del" onclick="delInw(${r.id})">🗑️ Delete</button></td></tr>`).join(''); const bRes=await fetch('/all-batches'); const bat=await bRes.json(); document.getElementById('st_bat').innerText=bat.length; document.querySelector('#bat_t tbody').innerHTML=bat.map(r=>`<tr><td>${new Date(r.created_at).toLocaleDateString()}</td><td class="tag-style">${r.batch_code}</td><td>${r.fg_code}</td><td><span class="badge ${r.status==='OPEN'?'bg-open':'bg-locked'}">${r.status}</span></td><td>${r.operator_name||'N/A'}</td></tr>`).join(''); const invRes=await fetch('/get-inventory'); const inv=await invRes.json(); document.getElementById('st_inv').innerText=inv.length; document.querySelector('#inv_t tbody').innerHTML=inv.map(r=>`<tr><td class="tag-style">${r.rm_tag}</td><td>${r.ingredient_name||r.product_code}</td><td style="color:#10b981;font-weight:900;font-size:16px;">${r.current_weight} kg</td><td>${new Date(r.last_audited).toLocaleString()}</td><td><button class="btn-del" onclick="delInv('${r.rm_tag}')">🗑️ Delete</button></td></tr>`).join(''); };
         function delInw(id){const pin=prompt("Manager PIN (1234):");if(!pin)return;fetch('/delete-inwarding-log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,pin})}).then(()=>location.reload());} function delInv(tag){const pin=prompt("Manager PIN (1234):");if(!pin)return;fetch('/delete-inventory',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rm_tag:tag,pin})}).then(()=>location.reload());}
         function exp(tabId,name){ let csv=[]; let rows=document.querySelectorAll(`#${tabId} tr`); for(let i=0;i<rows.length;i++){ let row=[], cols=rows[i].querySelectorAll("td, th"); for(let j=0;j<cols.length-1;j++)row.push('"'+cols[j].innerText.replace(/"/g,'""')+'"'); csv.push(row.join(",")); } let a=document.createElement("a"); a.href='data:text/csv;charset=utf-8,'+encodeURI(csv.join("\n")); a.target='_blank'; a.download=`${name}_${new Date().toLocaleDateString()}.csv`; a.click(); }
