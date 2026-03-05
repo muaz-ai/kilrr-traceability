@@ -7,44 +7,52 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;900&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Outfit', sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 50px; }
-        .nav-top { background: #ffffff; border-bottom: 4px solid #ea580c; padding: 15px 25px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .brand { display: flex; align-items: center; gap: 12px; font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: #0f172a; letter-spacing: 1px; text-decoration: none; text-transform: uppercase;}
-        .brand img { height: 40px; }
-        .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; width: 100%; justify-content: center; }
-        @media(min-width: 900px){ .nav-links { width: auto; margin-top: 0; } }
-        .nav-btn { text-decoration: none; padding: 10px 15px; color: #64748b; font-weight: 800; font-size: 14px; text-transform: uppercase; border-radius: 8px; transition: 0.2s; background: #f1f5f9; border: 1px solid #e2e8f0; }
-        .nav-btn:hover, .nav-btn.active { background: #0f172a; color: #ffffff; border-color: #0f172a; box-shadow: 0 4px 10px rgba(15,23,42,0.2);}
-        .nav-btn.logout { background: #fee2e2; color: #ef4444; border-color: #fca5a5; } .nav-btn.logout:hover { background: #ef4444; color: #ffffff; }
+        .nav-top { background: #ffffff; border-bottom: 6px solid #ea580c; padding: 20px 35px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 1000; }
+        .brand { display: flex; align-items: center; gap: 15px; font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 900; color: #0f172a; letter-spacing: 1px; text-decoration: none; text-transform: uppercase;}
+        .brand img { height: 45px; }
+        .nav-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 15px; width: 100%; justify-content: center; }
+        @media(min-width: 1000px){ .nav-links { width: auto; margin-top: 0; } }
+        .nav-btn { text-decoration: none; padding: 12px 20px; color: #475569; font-weight: 900; font-size: 15px; text-transform: uppercase; border-radius: 10px; transition: 0.3s; background: #f1f5f9; border: 2px solid transparent; letter-spacing: 1px;}
+        .nav-btn:hover { background: #fff7ed; color: #ea580c; border-color: #ffedd5; transform: translateY(-2px);}
+        .nav-btn.active { background: #ea580c; color: #ffffff; box-shadow: 0 6px 15px rgba(234, 88, 12, 0.3); }
+        .nav-btn.logout { background: #fef2f2; color: #ef4444; } .nav-btn.logout:hover { background: #ef4444; color: #ffffff; border-color: #ef4444;}
 
-        .card { background: #ffffff; border-radius: 20px; padding: 40px; margin: 40px auto; max-width: 650px; box-shadow: 0 15px 35px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; border-top: 6px solid #ea580c;}
-        h2 { font-family: 'Space Grotesk', sans-serif; color: #0f172a; margin-top: 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; font-size: 24px; text-transform: uppercase;}
+        .card { background: #ffffff; border-radius: 24px; padding: 40px; margin: 50px auto; max-width: 700px; box-shadow: 0 15px 40px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; border-top: 8px solid #ea580c;}
+        h2 { font-family: 'Space Grotesk', sans-serif; color: #0f172a; margin-top: 0; border-bottom: 3px solid #f1f5f9; padding-bottom: 20px; font-size: 28px; text-transform: uppercase; letter-spacing: 1px;}
         
-        label { display: block; font-weight: 900; color: #475569; font-size: 14px; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px;}
-        input, select { width: 100%; padding: 16px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #0f172a; margin-bottom: 25px; background: #f8fafc; transition: 0.2s; }
-        input:focus, select:focus { border-color: #ea580c; background: #ffffff; outline: none; box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.2); }
+        label { display: block; font-weight: 900; color: #475569; font-size: 15px; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px;}
+        input, select { width: 100%; padding: 20px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 18px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #0f172a; margin-bottom: 25px; background: #f8fafc; transition: 0.2s; }
+        input:focus, select:focus { border-color: #ea580c; background: #ffffff; outline: none; box-shadow: 0 0 0 5px rgba(234, 88, 12, 0.15); }
         
-        button { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.2s; margin-bottom: 15px; }
-        .btn-primary { background: #ea580c; color: #ffffff; box-shadow: 0 6px 15px rgba(234, 88, 12, 0.3); }
-        .btn-primary:hover { background: #c2410c; transform: translateY(-2px); }
-        .btn-manual { background: #fff7ed; color: #ea580c; border: 2px solid #ea580c; }
+        /* 🔥 CUSTOM PREMIUM DROPDOWN UI 🔥 */
+        .custom-dropdown-container { position: relative; width: 100%; }
+        .custom-dropdown-list { position: absolute; top: calc(100% - 20px); left: 0; right: 0; background: #ffffff; border: 2px solid #cbd5e1; border-radius: 12px; max-height: 280px; overflow-y: auto; z-index: 9999; box-shadow: 0 20px 50px rgba(0,0,0,0.15); display: none; }
+        .custom-dropdown-item { padding: 18px 20px; font-size: 16px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s; }
+        .custom-dropdown-item:last-child { border-bottom: none; }
+        .custom-dropdown-item:hover { background: #fff7ed; color: #ea580c; padding-left: 25px; border-left: 4px solid #ea580c; }
+
+        button { width: 100%; padding: 22px; border: none; border-radius: 12px; font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 18px; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: 0.2s; margin-bottom: 15px; }
+        .btn-primary { background: #ea580c; color: #ffffff; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3); }
+        .btn-primary:hover { background: #c2410c; transform: translateY(-3px); box-shadow: 0 12px 25px rgba(234, 88, 12, 0.4); }
+        .btn-manual { background: #fff7ed; color: #ea580c; border: 3px solid #ea580c; font-size: 20px; }
         .btn-danger { background: #fef2f2; color: #ef4444; border: 2px solid #fca5a5; margin-top:30px;}
-        .btn-lock { background: #0f172a; color: white; }
+        .btn-lock { background: #0f172a; color: white; border: 3px solid #0f172a; }
 
-        .manual-box { background: #f8fafc; padding: 25px; border: 2px dashed #94a3b8; border-radius: 16px; margin-bottom: 25px; text-align: center; }
-        .hybrid-input-row { display: flex; gap: 10px; }
-        .manual-box input { border-color: #0f172a; margin: 0; text-align: center; font-size: 20px; background: white;}
-        .btn-add-manual { background: #0f172a; width: auto; padding: 0 30px; margin: 0; border-radius: 12px; color: white; }
+        .manual-box { background: #f8fafc; padding: 30px; border: 3px dashed #cbd5e1; border-radius: 20px; margin-bottom: 30px; text-align: center; }
+        .hybrid-input-row { display: flex; gap: 15px; }
+        .manual-box input { border-color: #0f172a; margin: 0; text-align: center; font-size: 24px; background: #ffffff; flex: 1;}
+        .btn-add-manual { background: #0f172a; width: auto; padding: 0 35px; margin: 0; border-radius: 12px; color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
         
-        #reader { width: 100%; border-radius: 16px; overflow: hidden; border: 3px solid #cbd5e1; margin-bottom: 20px;}
-        h3 { font-size: 16px; color: #475569; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 35px;}
+        #reader { width: 100%; border-radius: 20px; overflow: hidden; border: 4px solid #cbd5e1; margin-bottom: 25px;}
+        h3 { font-size: 18px; color: #475569; text-transform: uppercase; letter-spacing: 2px; border-bottom: 3px solid #e2e8f0; padding-bottom: 15px; margin-top: 40px;}
         
-        #checklist > div { padding: 20px; margin: 10px 0; border-radius: 12px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; border: 2px solid #e2e8f0; background: #ffffff; font-size: 16px;}
-        .check-pending { border-left: 6px solid #94a3b8 !important; }
-        .check-done { border-color: #10b981 !important; background: #ecfdf5 !important; color: #059669; border-left: 6px solid #10b981 !important; }
+        #checklist > div { padding: 25px 20px; margin: 15px 0; border-radius: 16px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; border: 2px solid #e2e8f0; background: #ffffff; font-size: 18px;}
+        .check-pending { border-left: 8px solid #94a3b8 !important; }
+        .check-done { border-color: #10b981 !important; background: #ecfdf5 !important; color: #059669; border-left: 8px solid #10b981 !important; }
         
-        #scan_log { height: 250px; overflow-y: auto; background: #ffffff; border: 2px solid #e2e8f0; padding: 15px; border-radius: 12px; }
-        .scan-log-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f1f5f9; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; }
-        .btn-mini-del { width: auto; margin: 0; background: #fef2f2; border: 1px solid #fca5a5; color: #ef4444; padding: 10px 15px; font-size: 14px; border-radius: 8px;}
+        #scan_log { height: 300px; overflow-y: auto; background: #ffffff; border: 2px solid #e2e8f0; padding: 20px; border-radius: 16px; }
+        .scan-log-item { display: flex; justify-content: space-between; align-items: center; padding: 18px; border-bottom: 2px solid #f1f5f9; background: #f8fafc; border-radius: 12px; margin-bottom: 12px; }
+        .btn-mini-del { width: auto; margin: 0; background: #fef2f2; border: 2px solid #fca5a5; color: #ef4444; padding: 12px 20px; font-size: 15px; border-radius: 10px;}
     </style>
 </head>
 <body>
@@ -65,12 +73,14 @@
         <h2>Production Setup</h2>
         
         <label>1. Target Flavour Profile</label>
-        <input list="fg_dl" id="fg_select" placeholder="Select Recipe Flavour..." autocomplete="off">
-        <datalist id="fg_dl"></datalist>
+        <div class="custom-dropdown-container">
+            <input type="text" id="fg_select" placeholder="Search Master Recipe..." autocomplete="off">
+        </div>
         
         <label>2. Batch Tracking Code</label>
-        <input list="bc_dl" id="bc" placeholder="Enter new or select open batch..." autocomplete="off">
-        <datalist id="bc_dl"></datalist>
+        <div class="custom-dropdown-container">
+            <input type="text" id="bc" placeholder="Enter new or select open batch..." autocomplete="off">
+        </div>
         
         <label>3. Lead Operator</label>
         <select id="op_name">
@@ -86,16 +96,18 @@
     </div>
     
     <div class="card" id="work" style="display:none;">
-        <h2 id="title" style="color:#ea580c;"></h2>
+        <h2 id="title" style="color:#ea580c; font-size:32px;"></h2>
+        
         <div class="manual-box">
-            <label style="color:#0f172a;">⚡ SCAN OR MANUAL ENTRY</label>
+            <label style="color:#0f172a; font-size: 18px; margin-bottom: 15px;">⚡ MANUAL ENTRY OVERRIDE ⚡</label>
             <div class="hybrid-input-row">
-                <input type="text" id="rm_tag_manual" placeholder="Awaiting barcode..." autocomplete="off">
-                <button class="btn-add-manual" onclick="manualScan()">Add</button>
+                <input type="text" id="rm_tag_manual" placeholder="Type Barcode..." autocomplete="off">
+                <button class="btn-add-manual" onclick="manualScan()">ADD BAG</button>
             </div>
         </div>
+        
         <div id="reader" style="display:none;"></div>
-        <button class="btn-manual" onclick="toggleCamera()" id="camToggleBtn">📷 Activate Mobile Camera</button>
+        <button class="btn-manual" onclick="toggleCamera()" id="camToggleBtn">📷 Activate Mobile Scanner</button>
 
         <h3>Recipe Validation</h3>
         <div id="checklist"></div>
@@ -111,25 +123,49 @@
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(isSuccess) { try { if(audioCtx.state==='suspended') audioCtx.resume(); const osc=audioCtx.createOscillator(); const gain=audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination); if(isSuccess){osc.type='sine';osc.frequency.value=1000;gain.gain.setValueAtTime(0.1,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.1);osc.start();osc.stop(audioCtx.currentTime+0.1);}else{osc.type='sawtooth';osc.frequency.value=150;gain.gain.setValueAtTime(0.1,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.3);osc.start();osc.stop(audioCtx.currentTime+0.3);} } catch(e){} }
         
+        function attachCustomDropdownArray(inputId, stringArray, onSelect) {
+            const inp = document.getElementById(inputId);
+            const list = document.createElement('div');
+            list.className = 'custom-dropdown-list';
+            inp.parentNode.appendChild(list);
+
+            function renderList(filterTxt = "") {
+                list.innerHTML = '';
+                const matches = stringArray.filter(item => item.toLowerCase().includes(filterTxt.toLowerCase()));
+                if(matches.length === 0) { list.style.display = 'none'; return; }
+                matches.forEach(match => {
+                    let div = document.createElement('div');
+                    div.className = 'custom-dropdown-item';
+                    div.innerText = match;
+                    div.onclick = () => {
+                        inp.value = match;
+                        list.style.display = 'none';
+                        if(onSelect) onSelect(match);
+                    };
+                    list.appendChild(div);
+                });
+                list.style.display = 'block';
+            }
+            inp.addEventListener('input', function() { renderList(this.value); });
+            inp.addEventListener('focus', function() { renderList(""); });
+            document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
+        }
+
         window.onload = async () => { 
             const rRes = await fetch('/get-recipes'); const rData = await rRes.json();
             const flavors = [...new Set(rData.map(r=>r.fg_code))].filter(f=>f&&f.trim()!=="");
-            const fgList = document.getElementById('fg_dl');
-            flavors.forEach(f => { let opt = document.createElement('option'); opt.value = f; fgList.appendChild(opt); });
+            attachCustomDropdownArray('fg_select', flavors);
 
             const bRes = await fetch('/open-batches'); openBatchesData = await bRes.json();
-            const bcList = document.getElementById('bc_dl');
-            openBatchesData.forEach(b => { let opt = document.createElement('option'); opt.value = b.batch_code; opt.innerHTML = `Resume: ${b.fg_code}`; bcList.appendChild(opt); });
+            const batchStrings = openBatchesData.map(b => b.batch_code);
+            attachCustomDropdownArray('bc', batchStrings, (selectedBatch) => {
+                const match = openBatchesData.find(b => b.batch_code === selectedBatch);
+                if(match) document.getElementById('fg_select').value = match.fg_code;
+            });
             
             document.getElementById('rm_tag_manual').addEventListener('keypress', e=>{if(e.key==='Enter'){e.preventDefault(); manualScan();}}); 
         };
         
-        document.getElementById('bc').addEventListener('input', function() {
-            const val = this.value.trim().toUpperCase();
-            const match = openBatchesData.find(b => b.batch_code.toUpperCase() === val);
-            if(match) document.getElementById('fg_select').value = match.fg_code;
-        });
-
         async function start() { 
             if(audioCtx.state==='suspended') audioCtx.resume(); 
             curB=document.getElementById('bc').value.trim(); curF=document.getElementById('fg_select').value.trim(); curOp=document.getElementById('op_name').value; 
@@ -155,9 +191,9 @@
         async function update() { 
             const req=await fetch(`/recipe-requirements/${curF}`).then(r=>r.json()); const scans=await fetch(`/current-scans/${curB}`).then(r=>r.json()); 
             localScannedTags=scans.map(s=>s.rm_tag); const sCodes=scans.map(s=>s.product_code); 
-            document.getElementById('checklist').innerHTML=req.map(i=>`<div class="${sCodes.includes(i.product_code)?'check-done':'check-pending'}"><span>${i.ingredient_name} <span style="color:#64748b;font-size:14px;">(${i.product_code})</span></span><span>${sCodes.includes(i.product_code)?'✅ Validated':'⏳ Pending'}</span></div>`).join(''); 
-            if(scans.length===0){ document.getElementById('scan_log').innerHTML="<div style='color:#64748b;text-align:center;padding:20px;font-weight:700;'>Awaiting material scan...</div>"; } 
-            else { document.getElementById('scan_log').innerHTML=scans.map(s=>`<div class="scan-log-item"><span style="color:#0f172a;font-family:monospace;font-size:18px;font-weight:bold;">${s.rm_tag}</span><button class="btn-mini-del" onclick="deleteSpecificScan('${s.rm_tag}')">Void</button></div>`).reverse().join(''); } 
+            document.getElementById('checklist').innerHTML=req.map(i=>`<div class="${sCodes.includes(i.product_code)?'check-done':'check-pending'}"><span>${i.ingredient_name} <span style="color:#64748b;font-size:15px; font-weight: 600;">(${i.product_code})</span></span><span>${sCodes.includes(i.product_code)?'✅ Validated':'⏳ Pending'}</span></div>`).join(''); 
+            if(scans.length===0){ document.getElementById('scan_log').innerHTML="<div style='color:#64748b;text-align:center;padding:30px;font-weight:800; font-size:18px;'>Awaiting material scan...</div>"; } 
+            else { document.getElementById('scan_log').innerHTML=scans.map(s=>`<div class="scan-log-item"><span style="color:#0f172a;font-family:'Space Grotesk',monospace;font-size:20px;font-weight:900;">${s.rm_tag}</span><button class="btn-mini-del" onclick="deleteSpecificScan('${s.rm_tag}')">🗑️ Void</button></div>`).reverse().join(''); } 
         }
         function deleteSpecificScan(tag) { const pin=prompt("Manager PIN (1234) required:"); if(!pin)return; fetch('/delete-specific-scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:tag,pin})}).then(()=>update()); }
         function deleteWholeBatch() { const pin=prompt("⚠️ Manager PIN (1234) to delete batch:"); if(!pin)return; fetch('/delete-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,pin})}).then(()=>location.reload()); }
