@@ -30,7 +30,7 @@
         .print-range-row > div { flex: 1; min-width: 120px; }
         .print-range-row input { margin-bottom: 0; text-align: center;}
 
-        /* 🔥 CUSTOM PREMIUM DROPDOWN UI 🔥 */
+        /* Custom Dropdowns */
         .custom-dropdown-container { position: relative; width: 100%; }
         .custom-dropdown-list { position: absolute; top: calc(100% - 20px); left: 0; right: 0; background: #ffffff; border: 2px solid #cbd5e1; border-radius: 12px; max-height: 280px; overflow-y: auto; z-index: 9999; box-shadow: 0 20px 50px rgba(0,0,0,0.15); display: none; }
         .custom-dropdown-item { padding: 18px 20px; font-size: 16px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s; }
@@ -47,7 +47,7 @@
         .print-preview { background: #ffffff; color: #000000; padding: 35px; text-align: center; font-family: sans-serif; border-radius: 16px; margin-bottom: 25px; border: 3px solid #cbd5e1; box-shadow: inset 0 0 20px rgba(0,0,0,0.05);}
         #queueList { background: #f8fafc; padding: 25px; border-radius: 16px; border: 2px solid #e2e8f0; min-height: 120px; margin-bottom: 25px; font-family: 'Space Grotesk', monospace; color: #0f172a; font-size: 16px; font-weight: 700;}
 
-        /* Toggle Switch UI for Database Logging */
+        /* Toggle Switch UI */
         .toggle-box { background: #fff7ed; padding: 20px; border-radius: 16px; border: 2px solid #ffedd5; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; cursor: pointer; transition: 0.2s; }
         .toggle-box:hover { background: #ffedd5; border-color: #fdba74; }
         .toggle-box input[type="checkbox"] { width: 30px; height: 30px; margin: 0; cursor: pointer; accent-color: #ea580c; }
@@ -81,29 +81,18 @@
             <div class="custom-dropdown-container">
                 <input type="text" id="ing_input" placeholder="Tap to select Material..." autocomplete="off">
             </div>
-            <input type="hidden" id="ing_code">
-            <input type="hidden" id="ing_name">
+            <input type="hidden" id="ing_code"><input type="hidden" id="ing_name">
             
             <label>Vendor</label>
             <div class="custom-dropdown-container">
                 <input type="text" id="ven_input" placeholder="Tap to select Vendor..." autocomplete="off">
             </div>
-            <input type="hidden" id="ven_code">
-            <input type="hidden" id="ven_name">
+            <input type="hidden" id="ven_code"><input type="hidden" id="ven_name">
             
             <div class="print-range-row">
-                <div>
-                    <label>Total Bags</label>
-                    <input type="number" id="packs" placeholder="Total" oninput="autoFillRange(); updatePreview();">
-                </div>
-                <div>
-                    <label>Print Start No.</label>
-                    <input type="number" id="start_no" placeholder="1" oninput="updatePreview()">
-                </div>
-                <div>
-                    <label>Print End No.</label>
-                    <input type="number" id="end_no" placeholder="Max" oninput="updatePreview()">
-                </div>
+                <div><label>Total Bags</label><input type="number" id="packs" placeholder="Total" oninput="autoFillRange(); updatePreview();"></div>
+                <div><label>Print Start No.</label><input type="number" id="start_no" placeholder="1" oninput="updatePreview()"></div>
+                <div><label>Print End No.</label><input type="number" id="end_no" placeholder="Max" oninput="updatePreview()"></div>
             </div>
 
             <button class="btn-primary" onclick="addToQueue()">➕ Stage for Printing</button>
@@ -124,7 +113,7 @@
                 <input type="checkbox" id="log_db_check" checked onclick="event.stopPropagation()">
                 <div class="toggle-text">
                     <span class="toggle-title">Log to Dashboard Database</span>
-                    <span class="toggle-desc">Uncheck this box if you are just re-printing damaged tags and don't want to add duplicate data.</span>
+                    <span class="toggle-desc">Uncheck this if you are just re-printing damaged tags to prevent duplicate data.</span>
                 </div>
             </div>
 
@@ -135,51 +124,22 @@
     <script>
         let queue=[]; document.getElementById('date').valueAsDate=new Date();
         
-        function toggleCheckbox() {
-            const cb = document.getElementById('log_db_check');
-            cb.checked = !cb.checked;
-        }
+        function toggleCheckbox() { const cb = document.getElementById('log_db_check'); cb.checked = !cb.checked; }
+        function autoFillRange() { const total = document.getElementById('packs').value; if(total) { document.getElementById('start_no').value = 1; document.getElementById('end_no').value = total; } else { document.getElementById('start_no').value = ''; document.getElementById('end_no').value = ''; } }
 
-        function autoFillRange() {
-            const total = document.getElementById('packs').value;
-            if(total) {
-                document.getElementById('start_no').value = 1;
-                document.getElementById('end_no').value = total;
-            } else {
-                document.getElementById('start_no').value = '';
-                document.getElementById('end_no').value = '';
-            }
-        }
-
-        // Custom UI Dropdown Builder
         function attachCustomDropdown(inputId, dataArray, searchKey, displayKey, codeKey, nameHiddenId, codeHiddenId) {
-            const inp = document.getElementById(inputId);
-            const list = document.createElement('div');
-            list.className = 'custom-dropdown-list';
-            inp.parentNode.appendChild(list);
-
+            const inp = document.getElementById(inputId); const list = document.createElement('div'); list.className = 'custom-dropdown-list'; inp.parentNode.appendChild(list);
             function renderList(filterTxt = "") {
-                list.innerHTML = '';
-                const matches = dataArray.filter(item => item[searchKey].toLowerCase().includes(filterTxt.toLowerCase()) || item[codeKey].toLowerCase().includes(filterTxt.toLowerCase()));
+                list.innerHTML = ''; const matches = dataArray.filter(item => item[searchKey].toLowerCase().includes(filterTxt.toLowerCase()) || item[codeKey].toLowerCase().includes(filterTxt.toLowerCase()));
                 if(matches.length === 0) { list.style.display = 'none'; return; }
                 matches.forEach(match => {
-                    let div = document.createElement('div');
-                    div.className = 'custom-dropdown-item';
-                    div.innerHTML = `<strong>${match[codeKey]}</strong> - ${match[displayKey]}`;
-                    div.onclick = () => {
-                        inp.value = match[displayKey];
-                        document.getElementById(nameHiddenId).value = match[displayKey];
-                        document.getElementById(codeHiddenId).value = match[codeKey];
-                        list.style.display = 'none';
-                        updatePreview();
-                    };
+                    let div = document.createElement('div'); div.className = 'custom-dropdown-item'; div.innerHTML = `<strong>${match[codeKey]}</strong> - ${match[displayKey]}`;
+                    div.onclick = () => { inp.value = match[displayKey]; document.getElementById(nameHiddenId).value = match[displayKey]; document.getElementById(codeHiddenId).value = match[codeKey]; list.style.display = 'none'; updatePreview(); };
                     list.appendChild(div);
                 });
                 list.style.display = 'block';
             }
-
-            inp.addEventListener('input', function() { renderList(this.value); });
-            inp.addEventListener('focus', function() { renderList(""); });
+            inp.addEventListener('input', function() { renderList(this.value); }); inp.addEventListener('focus', function() { renderList(""); });
             document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
         }
 
@@ -191,124 +151,63 @@
         };
 
         function updatePreview() {
-            const iName = document.getElementById('ing_name').value;
-            const iCode = document.getElementById('ing_code').value;
-            const vCode = document.getElementById('ven_code').value;
-            const dateRaw = document.getElementById('date').value; 
-            const packs = document.getElementById('packs').value || "?";
-            const startNo = document.getElementById('start_no').value || "1";
-            const wt = document.getElementById('wt').value || "0";
-            
+            const iName = document.getElementById('ing_name').value, iCode = document.getElementById('ing_code').value, vCode = document.getElementById('ven_code').value, dateRaw = document.getElementById('date').value, startNo = document.getElementById('start_no').value || "1", wt = document.getElementById('wt').value || "0";
             if(!iCode || !vCode) { document.getElementById('previewBox').innerHTML=`<span style="color:#94a3b8;font-weight:800; font-size:18px;">Awaiting material selection...</span>`; return; }
             
-            // Format DD/MM/YYYY for text display
-            const dObj = new Date(dateRaw);
-            const dd = String(dObj.getDate()).padStart(2, '0');
-            const mm = String(dObj.getMonth()+1).padStart(2, '0');
-            const yyyy = dObj.getFullYear();
-            const displayDate = `${dd}/${mm}/${yyyy}`;
-            
-            // Format strictly DDMM for barcode
-            const barcodeDate = `${dd}${mm}`; 
-            const bc = `${barcodeDate}/${iCode}/${vCode}/${startNo}`;
+            const dObj = new Date(dateRaw); const dd = String(dObj.getDate()).padStart(2, '0'); const mm = String(dObj.getMonth()+1).padStart(2, '0'); const yyyy = dObj.getFullYear();
+            const displayDate = `${dd}/${mm}/${yyyy}`; const barcodeDate = `${dd}${mm}`; const bc = `${barcodeDate}/${iCode}/${vCode}/${startNo}`;
 
             document.getElementById('previewBox').innerHTML=`
                 <h3 style="margin:0 0 10px 0; font-size:26px; text-transform:uppercase;">${iName}</h3>
                 <p style="margin:5px 0; font-size:18px;">Material Code: <strong>${iCode}</strong> | Vendor Code: <strong>${vCode}</strong></p>
                 <div style="font-size:22px; margin-top:20px; font-weight:900;">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${bc}" style="margin-bottom:10px; border:3px solid black; padding:8px;"><br>
-                    ${bc}
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${bc}" style="margin-bottom:10px; border:3px solid black; padding:8px;"><br>${bc}
                 </div>
                 <p style="font-size:18px; margin:15px 0 5px 0;">Date Received: <strong>${displayDate}</strong></p>
-                <p style="font-size:18px; margin:5px 0;">Net Wt: <strong>${wt} KG</strong> | Bag ${startNo} of ${packs}</p>
-            `;
+                <p style="font-size:18px; margin:5px 0;">Net Wt: <strong>${wt} KG</strong></p>`;
         }
 
         function addToQueue(){ 
-            const iName = document.getElementById('ing_name').value;
-            const iCode = document.getElementById('ing_code').value;
-            const vName = document.getElementById('ven_input').value;
-            const vCode = document.getElementById('ven_code').value;
-            const date = document.getElementById('date').value; 
-            const wt = document.getElementById('wt').value; 
-            const packs = document.getElementById('packs').value; 
-            const startNo = parseInt(document.getElementById('start_no').value);
-            const endNo = parseInt(document.getElementById('end_no').value);
+            const iName = document.getElementById('ing_name').value, iCode = document.getElementById('ing_code').value, vName = document.getElementById('ven_input').value, vCode = document.getElementById('ven_code').value, date = document.getElementById('date').value, wt = document.getElementById('wt').value;
+            const startNo = parseInt(document.getElementById('start_no').value), endNo = parseInt(document.getElementById('end_no').value);
             
-            if(!iCode || !vCode || !wt || !packs || isNaN(startNo) || isNaN(endNo)) return alert("Please select from the dropdown list and fill all fields!"); 
-            if(startNo > endNo) return alert("Print Start No. cannot be greater than Print End No!");
+            // Auto-calculate packs if they leave "Total Bags" empty but fill start/end
+            const packs = document.getElementById('packs').value || (endNo - startNo + 1);
             
-            // Extract DDMM for Queue
-            const dObj = new Date(date);
-            const ddmm = `${String(dObj.getDate()).padStart(2, '0')}${String(dObj.getMonth()+1).padStart(2, '0')}`;
+            if(!iCode || !vCode || !wt || isNaN(startNo) || isNaN(endNo)) return alert("Please fill all fields correctly!"); 
+            if(startNo > endNo) return alert("Start No. cannot be greater than End No!");
             
-            queue.push({
-                dateRaw: date, dateFmt: ddmm, 
-                ingName: iName, ingCode: iCode, 
-                venName: vName, venCode: vCode, 
-                weight: wt, packs: packs,
-                startNo: startNo, endNo: endNo
-            }); 
+            const dObj = new Date(date); const ddmm = `${String(dObj.getDate()).padStart(2, '0')}${String(dObj.getMonth()+1).padStart(2, '0')}`;
+            queue.push({ dateRaw: date, dateFmt: ddmm, ingName: iName, ingCode: iCode, venName: vName, venCode: vCode, weight: wt, packs: packs, startNo: startNo, endNo: endNo }); 
             renderQueue(); clearForm(false); 
         }
 
         function renderQueue(){ 
             if(queue.length===0){document.getElementById('queueList').innerHTML="Queue is empty.";return;} 
-            document.getElementById('queueList').innerHTML=queue.map((q,idx)=> {
-                const numTags = q.endNo - q.startNo + 1;
-                return `<div style="margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:15px; color:#ea580c; font-size:18px; font-weight:900;">
-                    [${idx+1}] Printing ${numTags} tags (Bag ${q.startNo} to ${q.endNo}) of ${q.ingName} (${q.weight}kg)
-                </div>`;
-            }).join(''); 
+            document.getElementById('queueList').innerHTML=queue.map((q,idx)=> { const numTags = q.endNo - q.startNo + 1; return `<div style="margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:15px; color:#ea580c; font-size:18px; font-weight:900;">[${idx+1}] Printing ${numTags} tags (Bag ${q.startNo} to ${q.endNo}) of ${q.ingName} (${q.weight}kg)</div>`; }).join(''); 
         }
 
         function clearForm(full=true){ 
-            document.getElementById('ing_input').value=''; document.getElementById('ing_code').value=''; document.getElementById('ing_name').value='';
-            document.getElementById('packs').value=''; document.getElementById('start_no').value=''; document.getElementById('end_no').value='';
+            document.getElementById('ing_input').value=''; document.getElementById('ing_code').value=''; document.getElementById('ing_name').value=''; document.getElementById('packs').value=''; document.getElementById('start_no').value=''; document.getElementById('end_no').value='';
             if(full){document.getElementById('ven_input').value=''; document.getElementById('ven_code').value=''; document.getElementById('wt').value='';} 
             updatePreview();
         }
 
         async function printAll(){ 
             if(queue.length===0) return alert("Queue empty!"); 
-            
             const shouldLog = document.getElementById('log_db_check').checked;
-            if(shouldLog) {
-                // If it is NOT a reprint, we log it to the database
-                await fetch('/log-inwarding',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({queue})}); 
-            }
-
+            if(shouldLog) { await fetch('/log-inwarding',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({queue})}); }
             let printWindow=window.open('','_blank'); 
             let html=`<html><head><style>@page{size:${document.getElementById('printer_size').value==="75x75"?"75mm 75mm":"100mm 150mm"};margin:0;} body{margin:0;font-family:sans-serif;text-align:center;} .page{width:100%;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;page-break-after:always;}</style></head><body>`; 
-            
             queue.forEach(q=>{ 
-                // Re-format strictly DD/MM/YYYY for the bottom text on print
-                const dObj = new Date(q.dateRaw);
-                const dd = String(dObj.getDate()).padStart(2, '0');
-                const mm = String(dObj.getMonth()+1).padStart(2, '0');
-                const yyyy = dObj.getFullYear();
-                const dispDate = `${dd}/${mm}/${yyyy}`;
-                
-                // Only loop through the requested print range!
+                const dObj = new Date(q.dateRaw); const dd = String(dObj.getDate()).padStart(2, '0'); const mm = String(dObj.getMonth()+1).padStart(2, '0'); const yyyy = dObj.getFullYear(); const dispDate = `${dd}/${mm}/${yyyy}`;
                 for(let i = q.startNo; i <= q.endNo; i++){ 
-                    // Barcode string uses the DDMM generated in addToQueue()
                     let bc=`${q.dateFmt}/${q.ingCode}/${q.venCode}/${i}`; 
-                    
-                    html+=`<div class="page">
-                        <h2 style="margin:5px 0;font-size:26px;text-transform:uppercase;">${q.ingName}</h2>
-                        <p style="margin:5px 0;font-size:16px;">Material Code: <strong>${q.ingCode}</strong> | Vendor Code: <strong>${q.venCode}</strong></p>
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${bc}" style="margin:10px 0; border:2px solid black; padding:5px;">
-                        <p style="margin:5px 0;font-size:18px;font-weight:bold;">${bc}</p>
-                        <p style="margin:5px 0;font-size:16px;">Date Received: <strong>${dispDate}</strong></p>
-                        <p style="margin:5px 0;font-size:16px;">Net Wt: <strong>${q.weight} KG</strong> | Bag ${i} of ${q.packs}</p>
-                    </div>`; 
+                    html+=`<div class="page"><h2 style="margin:5px 0;font-size:26px;text-transform:uppercase;">${q.ingName}</h2><p style="margin:5px 0;font-size:16px;">Material Code: <strong>${q.ingCode}</strong> | Vendor Code: <strong>${q.venCode}</strong></p><img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${bc}" style="margin:10px 0; border:2px solid black; padding:5px;"><p style="margin:5px 0;font-size:18px;font-weight:bold;">${bc}</p><p style="margin:5px 0;font-size:16px;">Date Received: <strong>${dispDate}</strong></p><p style="margin:5px 0;font-size:16px;">Net Wt: <strong>${q.weight} KG</strong></p></div>`; 
                 } 
             }); 
-            
             html+=`</body><script>window.onload=()=>{window.print();window.close();}<\/script></html>`; 
             printWindow.document.write(html); printWindow.document.close(); queue=[]; renderQueue(); 
-            
-            // Re-check the box automatically for the next user to be safe
             document.getElementById('log_db_check').checked = true;
         }
     </script>
