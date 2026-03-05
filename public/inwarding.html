@@ -103,7 +103,7 @@
             <label>Select Printer Config</label>
             <select id="printer_size"><option value="75x75">75mm x 75mm (Industrial)</option><option value="100x150">100mm x 150mm (Large)</option></select>
             
-            <label>Live Label Preview (Showing First Tag)</label>
+            <label>Live Label Preview</label>
             <div class="print-preview" id="previewBox"><span style="color:#94a3b8; font-weight:800; font-size:18px;">Awaiting material selection...</span></div>
             
             <label>Staged Print Jobs</label>
@@ -157,21 +157,22 @@
             const dObj = new Date(dateRaw); const dd = String(dObj.getDate()).padStart(2, '0'); const mm = String(dObj.getMonth()+1).padStart(2, '0'); const yyyy = dObj.getFullYear();
             const displayDate = `${dd}/${mm}/${yyyy}`; const barcodeDate = `${dd}${mm}`; const bc = `${barcodeDate}/${iCode}/${vCode}/${startNo}`;
 
+            // Preview styling strictly mimics the print styling
             document.getElementById('previewBox').innerHTML=`
-                <h3 style="margin:0 0 10px 0; font-size:26px; text-transform:uppercase;">${iName}</h3>
-                <p style="margin:5px 0; font-size:18px;">Material Code: <strong>${iCode}</strong> | Vendor Code: <strong>${vCode}</strong></p>
-                <div style="font-size:22px; margin-top:20px; font-weight:900;">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${bc}" style="margin-bottom:10px; border:3px solid black; padding:8px;"><br>${bc}
+                <div style="font-family: Arial, sans-serif; color: black; max-width: 250px; margin: 0 auto; text-align: center;">
+                    <h2 style="margin:0 0 5px 0; font-size:24px; text-transform:uppercase; font-weight:900;">${iName}</h2>
+                    <div style="margin:0 0 10px 0; font-size:14px; font-weight:bold;">Mat: ${iCode} | Ven: ${vCode}</div>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=${bc}" style="margin:0 0 5px 0;">
+                    <div style="margin:0 0 8px 0; font-size:18px; font-weight:900;">${bc}</div>
+                    <div style="margin:0 0 3px 0; font-size:14px; font-weight:bold;">Date: ${displayDate}</div>
+                    <div style="margin:0; font-size:14px; font-weight:bold;">Net Wt: ${wt} KG</div>
                 </div>
-                <p style="font-size:18px; margin:15px 0 5px 0;">Date Received: <strong>${displayDate}</strong></p>
-                <p style="font-size:18px; margin:5px 0;">Net Wt: <strong>${wt} KG</strong></p>`;
+            `;
         }
 
         function addToQueue(){ 
             const iName = document.getElementById('ing_name').value, iCode = document.getElementById('ing_code').value, vName = document.getElementById('ven_input').value, vCode = document.getElementById('ven_code').value, date = document.getElementById('date').value, wt = document.getElementById('wt').value;
             const startNo = parseInt(document.getElementById('start_no').value), endNo = parseInt(document.getElementById('end_no').value);
-            
-            // Auto-calculate packs if they leave "Total Bags" empty but fill start/end
             const packs = document.getElementById('packs').value || (endNo - startNo + 1);
             
             if(!iCode || !vCode || !wt || isNaN(startNo) || isNaN(endNo)) return alert("Please fill all fields correctly!"); 
@@ -197,15 +198,36 @@
             if(queue.length===0) return alert("Queue empty!"); 
             const shouldLog = document.getElementById('log_db_check').checked;
             if(shouldLog) { await fetch('/log-inwarding',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({queue})}); }
+            
             let printWindow=window.open('','_blank'); 
-            let html=`<html><head><style>@page{size:${document.getElementById('printer_size').value==="75x75"?"75mm 75mm":"100mm 150mm"};margin:0;} body{margin:0;font-family:sans-serif;text-align:center;} .page{width:100%;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;page-break-after:always;}</style></head><body>`; 
+            // Rigid Block Styling to prevent Chrome Flexbox overlap bug
+            let html=`<html><head><style>
+                @page { size: ${document.getElementById('printer_size').value==="75x75" ? "75mm 75mm" : "100mm 150mm"}; margin: 0; } 
+                body { margin: 0; padding: 0; font-family: Arial, sans-serif; text-align: center; color: black; background: white; } 
+                .page { width: 100%; height: 100%; box-sizing: border-box; padding-top: 15px; page-break-after: always; display: block; }
+                h2 { margin: 0 0 5px 0; font-size: 24px; text-transform: uppercase; font-weight: 900; line-height: 1; }
+                .codes { margin: 0 0 10px 0; font-size: 14px; font-weight: bold; }
+                img { width: 110px; height: 110px; margin: 0 0 5px 0; }
+                .bc-text { margin: 0 0 8px 0; font-size: 18px; font-weight: 900; }
+                .details { margin: 0 0 3px 0; font-size: 14px; font-weight: bold; }
+            </style></head><body>`; 
+            
             queue.forEach(q=>{ 
                 const dObj = new Date(q.dateRaw); const dd = String(dObj.getDate()).padStart(2, '0'); const mm = String(dObj.getMonth()+1).padStart(2, '0'); const yyyy = dObj.getFullYear(); const dispDate = `${dd}/${mm}/${yyyy}`;
                 for(let i = q.startNo; i <= q.endNo; i++){ 
                     let bc=`${q.dateFmt}/${q.ingCode}/${q.venCode}/${i}`; 
-                    html+=`<div class="page"><h2 style="margin:5px 0;font-size:26px;text-transform:uppercase;">${q.ingName}</h2><p style="margin:5px 0;font-size:16px;">Material Code: <strong>${q.ingCode}</strong> | Vendor Code: <strong>${q.venCode}</strong></p><img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${bc}" style="margin:10px 0; border:2px solid black; padding:5px;"><p style="margin:5px 0;font-size:18px;font-weight:bold;">${bc}</p><p style="margin:5px 0;font-size:16px;">Date Received: <strong>${dispDate}</strong></p><p style="margin:5px 0;font-size:16px;">Net Wt: <strong>${q.weight} KG</strong></p></div>`; 
+                    html+=`
+                    <div class="page">
+                        <h2>${q.ingName}</h2>
+                        <div class="codes">Mat: ${q.ingCode} | Ven: ${q.venCode}</div>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=${bc}">
+                        <div class="bc-text">${bc}</div>
+                        <div class="details">Date: ${dispDate}</div>
+                        <div class="details">Net Wt: ${q.weight} KG</div>
+                    </div>`; 
                 } 
             }); 
+            
             html+=`</body><script>window.onload=()=>{window.print();window.close();}<\/script></html>`; 
             printWindow.document.write(html); printWindow.document.close(); queue=[]; renderQueue(); 
             document.getElementById('log_db_check').checked = true;
