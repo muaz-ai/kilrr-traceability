@@ -4,111 +4,101 @@
     <title>Kilrr - Batch Scanner</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;900&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; background: #0f172a; color: #f8fafc; font-family: 'Outfit', sans-serif; min-height: 100vh; padding-bottom: 40px;}
-        
-        /* Glassmorphism Navbar */
-        nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid #334155; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.3);}
-        .nav-logo { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
-        .nav-logo img { height: 35px; background: white; padding: 4px; border-radius: 6px; }
-        .nav-logo span { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 1px;}
-        .home-btn { background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; color: #38bdf8; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 800; font-size: 14px; transition: 0.3s;}
-        .home-btn:hover { background: #38bdf8; color: #0f172a; }
+        body { font-family: 'Outfit', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 50px; }
+        .nav-top { background: #ffffff; border-bottom: 4px solid #0ea5e9; padding: 15px 25px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .brand { display: flex; align-items: center; gap: 12px; font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: #0f172a; letter-spacing: 1px; text-decoration: none; text-transform: uppercase;}
+        .brand img { height: 40px; }
+        .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; width: 100%; justify-content: center; }
+        @media(min-width: 900px){ .nav-links { width: auto; margin-top: 0; } }
+        .nav-btn { text-decoration: none; padding: 10px 15px; color: #64748b; font-weight: 800; font-size: 14px; text-transform: uppercase; border-radius: 8px; transition: 0.2s; background: #f8fafc; border: 1px solid #e2e8f0; }
+        .nav-btn:hover, .nav-btn.active { background: #0ea5e9; color: #ffffff; border-color: #0ea5e9; box-shadow: 0 4px 10px rgba(14,165,233,0.2);}
+        .nav-btn.logout { background: #fef2f2; color: #ef4444; border-color: #fca5a5; } .nav-btn.logout:hover { background: #ef4444; color: #ffffff; }
 
-        /* Premium Cards */
-        .card { max-width: 600px; margin: 30px auto; background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(10px); padding: 35px; border-radius: 20px; border: 1px solid #334155; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-        h2 { margin-top: 0; font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; color: #e2e8f0; text-align: center; margin-bottom: 30px; letter-spacing: 1px;}
+        .card { background: #ffffff; border-radius: 20px; padding: 40px; margin: 40px auto; max-width: 650px; box-shadow: 0 15px 35px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; border-top: 6px solid #0ea5e9;}
+        h2 { font-family: 'Space Grotesk', sans-serif; color: #0f172a; margin-top: 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; font-size: 26px; text-transform: uppercase;}
         
-        /* Inputs */
-        label { display: block; font-weight: 800; margin-bottom: 8px; color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
-        input, select { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 12px; border: 1px solid #475569; font-size: 16px; background: rgba(15, 23, 42, 0.6); color: white; transition: 0.3s; font-family: 'Space Grotesk', sans-serif; margin-bottom: 25px;}
-        input:focus, select:focus { border-color: #38bdf8; outline: none; box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); background: rgba(15, 23, 42, 0.9);}
+        label { display: block; font-weight: 900; color: #475569; font-size: 14px; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px;}
+        input, select { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 18px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #0f172a; margin-bottom: 25px; background: #f8fafc; transition: 0.2s; }
+        input:focus, select:focus { border-color: #0ea5e9; background: #ffffff; outline: none; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2); }
         
-        /* AutoComplete Dropdown Fix */
+        button { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.2s; margin-bottom: 15px; }
+        .btn-primary { background: #0ea5e9; color: #ffffff; box-shadow: 0 6px 15px rgba(14, 165, 233, 0.3); }
+        .btn-primary:hover { background: #0284c7; transform: translateY(-2px); }
+        .btn-manual { background: #f0f9ff; color: #0ea5e9; border: 2px solid #0ea5e9; }
+        .btn-danger { background: #fef2f2; color: #ef4444; border: 2px solid #fca5a5; margin-top:30px;}
+        .btn-lock { background: #0f172a; color: white; }
+
         .autocomplete { position: relative; width: 100%; }
-        .autocomplete-items { position: absolute; border: 1px solid #475569; border-radius: 12px; z-index: 1000; background: #1e293b; width: 100%; max-height: 250px; overflow-y: auto; top: calc(100% - 15px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
-        .dropdown-item { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #334155; color: #e2e8f0; transition: 0.2s;}
-        .dropdown-item:hover { background: #0f172a; color: #38bdf8; padding-left: 25px; border-left: 4px solid #38bdf8; }
+        .autocomplete-items { position: absolute; border: 1px solid #e2e8f0; border-radius: 12px; z-index: 1000; background: #ffffff; width: 100%; max-height: 250px; overflow-y: auto; box-shadow: 0 15px 40px rgba(0,0,0,0.1); top: calc(100% - 15px);}
+        .dropdown-item { padding: 18px 20px; cursor: pointer; border-bottom: 1px solid #f1f5f9; font-weight: 600; font-size: 16px;}
+        .dropdown-item:hover { background: #f0f9ff; color: #0ea5e9; padding-left: 25px; border-left: 4px solid #0ea5e9; }
 
-        /* Buttons */
-        button { width: 100%; border: none; font-family: 'Outfit', sans-serif; font-weight: 900; cursor: pointer; color: #0f172a; border-radius: 12px; padding: 20px; font-size: 16px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
-        .btn-primary { background: linear-gradient(135deg, #38bdf8, #818cf8); box-shadow: 0 10px 20px rgba(56, 189, 248, 0.2); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(56, 189, 248, 0.4); }
-        .btn-manual { background: transparent; color: #38bdf8; border: 1px solid #38bdf8; }
-        .btn-danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; margin-top: 30px;}
-        .btn-lock { background: #f8fafc; color: #0f172a; }
-
-        /* Work UI Sections */
-        .manual-box { background: rgba(15, 23, 42, 0.4); padding: 25px; border: 1px dashed #475569; border-radius: 16px; margin-bottom: 25px; text-align: center; }
+        .manual-box { background: #f8fafc; padding: 25px; border: 2px dashed #94a3b8; border-radius: 16px; margin-bottom: 25px; text-align: center; }
         .hybrid-input-row { display: flex; gap: 10px; }
-        .manual-box input { border-color: #38bdf8; margin: 0; text-align: center; font-size: 20px;}
-        .btn-add-manual { background: #38bdf8; width: auto; padding: 0 30px; margin: 0; border-radius: 12px; }
+        .manual-box input { border-color: #0ea5e9; margin: 0; text-align: center; font-size: 22px; background: white;}
+        .btn-add-manual { background: #0ea5e9; width: auto; padding: 0 30px; margin: 0; border-radius: 12px; color: white; }
         
-        #reader { width: 100%; border-radius: 16px; overflow: hidden; border: 2px solid #475569; margin-bottom: 20px;}
+        #reader { width: 100%; border-radius: 16px; overflow: hidden; border: 3px solid #cbd5e1; margin-bottom: 20px;}
+        h3 { font-size: 16px; color: #475569; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 35px;}
         
-        h3 { font-size: 14px; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #334155; padding-bottom: 10px; margin-top: 30px;}
+        #checklist > div { padding: 20px; margin: 10px 0; border-radius: 12px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; border: 2px solid #e2e8f0; background: #ffffff; font-size: 16px;}
+        .check-pending { border-left: 6px solid #94a3b8 !important; }
+        .check-done { border-color: #10b981 !important; background: #ecfdf5 !important; color: #059669; border-left: 6px solid #10b981 !important; }
         
-        #checklist > div { padding: 18px 20px; margin: 10px 0; border-radius: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; background: rgba(15, 23, 42, 0.4); }
-        .check-pending { border-left: 4px solid #64748b !important; }
-        .check-done { border-color: #059669 !important; background: rgba(5, 150, 105, 0.1) !important; color: #34d399; border-left: 4px solid #10b981 !important; }
-        
-        #scan_log { height: 250px; overflow-y: auto; background: rgba(15, 23, 42, 0.4); border: 1px solid #334155; padding: 15px; border-radius: 12px; }
-        .scan-log-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #1e293b; background: rgba(30, 41, 59, 0.8); border-radius: 8px; margin-bottom: 8px; }
-        .btn-mini-del { width: auto; margin: 0; background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; padding: 8px 15px; font-size: 12px; border-radius: 8px;}
+        #scan_log { height: 250px; overflow-y: auto; background: #ffffff; border: 2px solid #e2e8f0; padding: 15px; border-radius: 12px; }
+        .scan-log-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f1f5f9; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; }
+        .btn-mini-del { width: auto; margin: 0; background: #fef2f2; border: 1px solid #fca5a5; color: #ef4444; padding: 10px 15px; font-size: 14px; border-radius: 8px;}
     </style>
 </head>
 <body>
-    <nav>
-        <a href="index.html" class="nav-logo">
-            <img src="logo.png" alt="Kilrr" onerror="this.style.display='none'">
-            <span>BATCH SCANNER</span>
-        </a>
-        <a href="index.html" class="home-btn">🏠 Hub</a>
+    <nav class="nav-top">
+        <a href="index.html" class="brand"><img src="logo.png" alt="Kilrr" onerror="this.style.display='none'"> Factory OS</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn">🏠 HUB</a>
+            <a href="inwarding.html" class="nav-btn">📦 INWARD</a>
+            <a href="scanner.html" class="nav-btn active">🏭 SCANNER</a>
+            <a href="audit.html" class="nav-btn">📋 AUDIT</a>
+            <a href="dashboard.html" class="nav-btn">📊 DASHBOARD</a>
+            <a href="master.html" class="nav-btn">⚙️ MASTER</a>
+            <a href="/api/logout" class="nav-btn logout">🚪 EXIT</a>
+        </div>
     </nav>
     
     <div class="card" id="setup">
-        <h2>Initiate Production Run</h2>
-        
+        <h2>Production Setup</h2>
         <label>1. Target Flavour Profile</label>
-        <div class="autocomplete"><input type="text" id="fg_select" placeholder="Tap to search recipes..." autocomplete="off"></div>
-        
+        <div class="autocomplete"><input type="text" id="fg_select" placeholder="Search Flavour..." autocomplete="off"></div>
         <label>2. Batch Tracking Code</label>
         <div class="autocomplete"><input type="text" id="bc" placeholder="Enter new or resume..." autocomplete="off"></div>
-        
         <label>3. Lead Operator</label>
-        <div style="position: relative;">
-            <select id="op_name">
-                <option value="" disabled selected>Select authorized personnel...</option>
-                <option value="Muaz">Muaz</option>
-                <option value="Arbaaz">Arbaaz</option>
-                <option value="Dhruv">Dhruv</option>
-                <option value="Satish">Satish</option>
-                <option value="Shebaz">Shebaz</option>
-                <option value="Hitesh">Hitesh</option>
-            </select>
-        </div>
-        
+        <select id="op_name">
+            <option value="" disabled selected>Select authorized personnel...</option>
+            <option value="Muaz">Muaz</option>
+            <option value="Arbaaz">Arbaaz</option>
+            <option value="Rahul">Rahul</option>
+            <option value="Amit">Amit</option>
+            <option value="Priya">Priya</option>
+            <option value="Supervisor">Supervisor</option>
+        </select>
         <button class="btn-primary" onclick="start()">🚀 ENGAGE SYSTEM</button>
     </div>
     
     <div class="card" id="work" style="display:none;">
-        <h2 id="title" style="color:#38bdf8;"></h2>
-        
+        <h2 id="title" style="color:#0ea5e9;"></h2>
         <div class="manual-box">
-            <label style="color:#38bdf8;">⚡ SCAN OR MANUAL ENTRY</label>
+            <label style="color:#0ea5e9;">⚡ SCAN OR MANUAL ENTRY</label>
             <div class="hybrid-input-row">
                 <input type="text" id="rm_tag_manual" placeholder="Awaiting barcode..." autocomplete="off">
                 <button class="btn-add-manual" onclick="manualScan()">Add</button>
             </div>
         </div>
-
         <div id="reader" style="display:none;"></div>
         <button class="btn-manual" onclick="toggleCamera()" id="camToggleBtn">📷 Activate Mobile Camera</button>
 
-        <h3>Recipe Validation Protocol</h3>
+        <h3>Recipe Validation</h3>
         <div id="checklist"></div>
-        
         <h3>System Scan Log</h3>
         <div id="scan_log"></div>
         
@@ -117,119 +107,22 @@
     </div>
     
     <script>
-        // Exact same JS logic to keep it working perfectly
-        let curB = ""; let curF = ""; let curOp = ""; let isProcessing = false; let localScannedTags = []; 
-        let openBatchesData = []; let html5QrcodeScanner = null;
-        
+        let curB="", curF="", curOp="", isProcessing=false, localScannedTags=[], openBatchesData=[], html5QrcodeScanner=null;
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playBeep(isSuccess) {
-            try {
-                if(audioCtx.state === 'suspended') audioCtx.resume();
-                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                if(isSuccess) { osc.type = 'sine'; osc.frequency.value = 1000; gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1); osc.start(); osc.stop(audioCtx.currentTime + 0.1); } 
-                else { osc.type = 'sawtooth'; osc.frequency.value = 150; gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3); osc.start(); osc.stop(audioCtx.currentTime + 0.3); }
-            } catch(e) { console.log("Audio not supported"); }
-        }
-
-        window.onload = () => {
-            fetch('/get-recipes').then(r => r.json()).then(data => {
-                const flavors = [...new Set(data.map(r => r.fg_code))].filter(f => f && f.trim() !== "");
-                setupFlavourAutocomplete(document.getElementById('fg_select'), flavors);
-            });
-            fetch('/open-batches').then(r => r.json()).then(data => {
-                openBatchesData = data;
-                setupBatchAutocomplete(document.getElementById('bc'), data);
-            });
-            document.getElementById('rm_tag_manual').addEventListener('keypress', function (e) { if (e.key === 'Enter') { e.preventDefault(); manualScan(); } });
-        };
-        
-        function setupFlavourAutocomplete(inp, arr) {
-            let currentFocus;
-            function showList(val) {
-                closeAllLists(); currentFocus = -1;
-                let a = document.createElement("DIV"); a.setAttribute("class", "autocomplete-items"); inp.parentNode.appendChild(a);
-                for (let i = 0; i < arr.length; i++) {
-                    if (!val || arr[i].toUpperCase().includes(val.toUpperCase())) {
-                        let b = document.createElement("DIV"); b.className = "dropdown-item";
-                        b.innerHTML = `<span>${arr[i]}</span><input type='hidden' value='${arr[i]}'>`;
-                        b.addEventListener("click", function(e) { inp.value = this.getElementsByTagName("input")[0].value; closeAllLists(); });
-                        a.appendChild(b);
-                    }
-                }
-            }
-            inp.addEventListener("focus", function() { showList(this.value); }); inp.addEventListener("click", function(e) { e.stopPropagation(); showList(this.value); }); inp.addEventListener("input", function() { showList(this.value); }); 
-        }
-
-        function setupBatchAutocomplete(inp, arr) {
-            let currentFocus;
-            function showList(val) {
-                closeAllLists(); currentFocus = -1;
-                let a = document.createElement("DIV"); a.setAttribute("class", "autocomplete-items"); inp.parentNode.appendChild(a);
-                for (let i = 0; i < arr.length; i++) {
-                    if (!val || arr[i].batch_code.toUpperCase().includes(val.toUpperCase())) {
-                        let b = document.createElement("DIV"); b.className = "dropdown-item";
-                        b.innerHTML = `<span>🔄 Resume: ${arr[i].batch_code}</span><input type='hidden' value='${arr[i].batch_code}'><input type='hidden' class='hidden-fg' value='${arr[i].fg_code}'>`;
-                        b.addEventListener("click", function(e) { inp.value = this.getElementsByTagName("input")[0].value; document.getElementById('fg_select').value = this.getElementsByClassName("hidden-fg")[0].value; closeAllLists(); });
-                        a.appendChild(b);
-                    }
-                }
-            }
-            inp.addEventListener("focus", function() { showList(this.value); }); inp.addEventListener("click", function(e) { e.stopPropagation(); showList(this.value); }); inp.addEventListener("input", function() { showList(this.value); }); 
-        }
-        function closeAllLists(elmnt) { document.querySelectorAll(".autocomplete-items").forEach(el => { if(el !== elmnt && el !== document.activeElement) el.remove(); }); }
-        document.addEventListener("click", function (e) { if(e.target.tagName !== "INPUT") closeAllLists(); });
-
-        async function start() {
-            if(audioCtx.state === 'suspended') audioCtx.resume(); 
-            curB = document.getElementById('bc').value.trim(); curF = document.getElementById('fg_select').value.trim(); curOp = document.getElementById('op_name').value; 
-            
-            if(!curB || !curF) return alert("Select Flavour Profile and Batch Code!");
-            if(!curOp) return alert("Select an Operator Name!"); 
-            
-            const isOpen = openBatchesData.find(b => b.batch_code.toUpperCase() === curB.toUpperCase());
-            if (isOpen) { curF = isOpen.fg_code; startScannerUI(); } else {
-                const res = await fetch('/create-batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB, fg_code:curF, operator_name:curOp}) });
-                const data = await res.json();
-                if(data.error) return alert("❌ " + data.error);
-                startScannerUI();
-            }
-        }
-
-        function startScannerUI() { document.getElementById('setup').style.display = 'none'; document.getElementById('work').style.display = 'block'; document.getElementById('title').innerText = `RUN: ${curB.toUpperCase()}`; update(); setTimeout(() => { document.getElementById('rm_tag_manual').focus(); }, 500); }
-
-        function toggleCamera() {
-            const readerDiv = document.getElementById('reader');
-            if(readerDiv.style.display === 'none') { readerDiv.style.display = 'block'; document.getElementById('camToggleBtn').innerText = "🚫 Deactivate Camera"; if(!html5QrcodeScanner) { html5QrcodeScanner = new Html5QrcodeScanner("reader", {fps:10, qrbox:250}); html5QrcodeScanner.render(async (txt) => { processScannedText(txt); }); } } 
-            else { readerDiv.style.display = 'none'; document.getElementById('camToggleBtn').innerText = "📷 Activate Mobile Camera"; document.getElementById('rm_tag_manual').focus(); }
-        }
-
-        function manualScan() { let val = document.getElementById('rm_tag_manual').value.trim(); if(!val) return; processScannedText(val); }
-
-        async function processScannedText(txt) {
-            if (isProcessing) return; isProcessing = true;
-            let cleanTag = txt; let parts = txt.split('/');
-            if(parts.length === 5) { cleanTag = parts.slice(0, 4).join('/'); }
-            if (localScannedTags.includes(cleanTag)) { playBeep(false); alert("⚠️ DUPLICATE BAG!"); document.getElementById('rm_tag_manual').value = ""; document.getElementById('rm_tag_manual').focus(); setTimeout(() => { isProcessing = false; }, 1000); return; }
-            await fetch('/scan', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB, rm_tag:cleanTag}) });
-            playBeep(true); document.getElementById('rm_tag_manual').value = ""; document.getElementById('rm_tag_manual').focus(); update(); setTimeout(() => { isProcessing = false; }, 300); 
-        }
-
-        async function update() {
-            const req = await fetch(`/recipe-requirements/${curF}`).then(r => r.json()); const scans = await fetch(`/current-scans/${curB}`).then(r => r.json());
-            localScannedTags = scans.map(s => s.rm_tag); const sCodes = scans.map(s => s.product_code);
-            document.getElementById('checklist').innerHTML = req.map(i => `
-                <div class="${sCodes.includes(i.product_code) ? 'check-done' : 'check-pending'}">
-                    <span>${i.ingredient_name} <span style="color:#64748b; font-size:12px;">(${i.product_code})</span></span>
-                    <span>${sCodes.includes(i.product_code) ? '✅ Validated' : '⏳ Pending'}</span>
-                </div>`).join('');
-            if(scans.length === 0) { document.getElementById('scan_log').innerHTML = "<div style='color:#64748b; text-align:center; padding:20px;'>Awaiting material scan...</div>"; } 
-            else { document.getElementById('scan_log').innerHTML = scans.map(s => `<div class="scan-log-item"><span style="color:#38bdf8; font-family:monospace; font-size: 16px;">${s.rm_tag}</span><button class="btn-mini-del" onclick="deleteSpecificScan('${s.rm_tag}')">Void</button></div>`).reverse().join(''); }
-        }
-        
-        function deleteSpecificScan(tag) { const pin = prompt(`Manager PIN (1234) required:`); if(!pin) return; fetch('/delete-specific-scan', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB, rm_tag:tag, pin:pin}) }).then(() => { update(); }); }
-        function deleteWholeBatch() { const pin = prompt("⚠️ Manager PIN (1234) to delete batch:"); if(!pin) return; fetch('/delete-batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB, pin:pin}) }).then(() => { location.reload(); }); }
-        function lock() { if(!confirm("Finalize and lock?")) return; fetch('/lock-batch', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({batch_code:curB}) }).then(() => { alert("Locked!"); location.href="index.html"; }); }
+        function playBeep(isSuccess) { try { if(audioCtx.state==='suspended') audioCtx.resume(); const osc=audioCtx.createOscillator(); const gain=audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination); if(isSuccess){osc.type='sine';osc.frequency.value=1000;gain.gain.setValueAtTime(0.1,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.1);osc.start();osc.stop(audioCtx.currentTime+0.1);}else{osc.type='sawtooth';osc.frequency.value=150;gain.gain.setValueAtTime(0.1,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.3);osc.start();osc.stop(audioCtx.currentTime+0.3);} } catch(e){} }
+        window.onload = () => { fetch('/get-recipes').then(r=>r.json()).then(data=>{ const flavors=[...new Set(data.map(r=>r.fg_code))].filter(f=>f&&f.trim()!==""); setupFlavourAutocomplete(document.getElementById('fg_select'), flavors); }); fetch('/open-batches').then(r=>r.json()).then(data=>{ openBatchesData=data; setupBatchAutocomplete(document.getElementById('bc'), data); }); document.getElementById('rm_tag_manual').addEventListener('keypress', e=>{if(e.key==='Enter'){e.preventDefault(); manualScan();}}); };
+        function setupFlavourAutocomplete(inp, arr) { inp.addEventListener("input", function() { let a,b,val=this.value; closeAllLists(); if(!val)return; a=document.createElement("DIV"); a.setAttribute("class","autocomplete-items"); this.parentNode.appendChild(a); for(let i=0;i<arr.length;i++){ if(arr[i].toUpperCase().includes(val.toUpperCase())){ b=document.createElement("DIV"); b.className="dropdown-item"; b.innerHTML=`<span>${arr[i]}</span><input type='hidden' value='${arr[i]}'>`; b.addEventListener("click", function(){ inp.value=this.getElementsByTagName("input")[0].value; closeAllLists(); }); a.appendChild(b); } } }); inp.addEventListener("click", function(e){e.stopPropagation(); let evt = new Event('input'); this.dispatchEvent(evt);}); }
+        function setupBatchAutocomplete(inp, arr) { inp.addEventListener("input", function() { let a,b,val=this.value; closeAllLists(); if(!val)return; a=document.createElement("DIV"); a.setAttribute("class","autocomplete-items"); this.parentNode.appendChild(a); for(let i=0;i<arr.length;i++){ if(arr[i].batch_code.toUpperCase().includes(val.toUpperCase())){ b=document.createElement("DIV"); b.className="dropdown-item"; b.innerHTML=`<span>🔄 Resume: ${arr[i].batch_code}</span><input type='hidden' value='${arr[i].batch_code}'><input type='hidden' class='hidden-fg' value='${arr[i].fg_code}'>`; b.addEventListener("click", function(){ inp.value=this.getElementsByTagName("input")[0].value; document.getElementById('fg_select').value=this.getElementsByClassName("hidden-fg")[0].value; closeAllLists(); }); a.appendChild(b); } } }); inp.addEventListener("click", function(e){e.stopPropagation(); let evt = new Event('input'); this.dispatchEvent(evt);});}
+        function closeAllLists(el) { document.querySelectorAll(".autocomplete-items").forEach(x=>{if(x!==el)x.remove();}); } document.addEventListener("click", e=>{if(e.target.tagName!=="INPUT")closeAllLists();});
+        async function start() { if(audioCtx.state==='suspended') audioCtx.resume(); curB=document.getElementById('bc').value.trim(); curF=document.getElementById('fg_select').value.trim(); curOp=document.getElementById('op_name').value; if(!curB||!curF) return alert("Select Flavour and Batch Code!"); if(!curOp) return alert("Select Operator Name!"); const isOpen=openBatchesData.find(b=>b.batch_code.toUpperCase()===curB.toUpperCase()); if(isOpen){ curF=isOpen.fg_code; startScannerUI(); } else { const res=await fetch('/create-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,fg_code:curF,operator_name:curOp})}); const data=await res.json(); if(data.error) return alert("❌ "+data.error); startScannerUI(); } }
+        function startScannerUI() { document.getElementById('setup').style.display='none'; document.getElementById('work').style.display='block'; document.getElementById('title').innerText=`RUN: ${curB.toUpperCase()}`; update(); setTimeout(()=>document.getElementById('rm_tag_manual').focus(),500); }
+        function toggleCamera() { const rd=document.getElementById('reader'); if(rd.style.display==='none'){ rd.style.display='block'; document.getElementById('camToggleBtn').innerText="🚫 Deactivate Camera"; if(!html5QrcodeScanner){html5QrcodeScanner=new Html5QrcodeScanner("reader",{fps:10,qrbox:250}); html5QrcodeScanner.render(txt=>processScannedText(txt));} } else { rd.style.display='none'; document.getElementById('camToggleBtn').innerText="📷 Activate Mobile Camera"; document.getElementById('rm_tag_manual').focus(); } }
+        function manualScan() { let val=document.getElementById('rm_tag_manual').value.trim(); if(!val)return; processScannedText(val); }
+        async function processScannedText(txt) { if(isProcessing)return; isProcessing=true; let cleanTag=txt, parts=txt.split('/'); if(parts.length===5)cleanTag=parts.slice(0,4).join('/'); if(localScannedTags.includes(cleanTag)){ playBeep(false); alert("⚠️ DUPLICATE BAG!"); document.getElementById('rm_tag_manual').value=""; document.getElementById('rm_tag_manual').focus(); setTimeout(()=>isProcessing=false,1000); return; } await fetch('/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:cleanTag})}); playBeep(true); document.getElementById('rm_tag_manual').value=""; document.getElementById('rm_tag_manual').focus(); update(); setTimeout(()=>isProcessing=false,300); }
+        async function update() { const req=await fetch(`/recipe-requirements/${curF}`).then(r=>r.json()); const scans=await fetch(`/current-scans/${curB}`).then(r=>r.json()); localScannedTags=scans.map(s=>s.rm_tag); const sCodes=scans.map(s=>s.product_code); document.getElementById('checklist').innerHTML=req.map(i=>`<div class="${sCodes.includes(i.product_code)?'check-done':'check-pending'}"><span>${i.ingredient_name} <span style="color:#64748b;font-size:14px;">(${i.product_code})</span></span><span>${sCodes.includes(i.product_code)?'✅ Validated':'⏳ Pending'}</span></div>`).join(''); if(scans.length===0){ document.getElementById('scan_log').innerHTML="<div style='color:#64748b;text-align:center;padding:20px;font-weight:700;'>Awaiting material scan...</div>"; } else { document.getElementById('scan_log').innerHTML=scans.map(s=>`<div class="scan-log-item"><span style="color:#0ea5e9;font-family:monospace;font-size:18px;font-weight:bold;">${s.rm_tag}</span><button class="btn-mini-del" onclick="deleteSpecificScan('${s.rm_tag}')">Void</button></div>`).reverse().join(''); } }
+        function deleteSpecificScan(tag) { const pin=prompt("Manager PIN (1234) required:"); if(!pin)return; fetch('/delete-specific-scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:tag,pin})}).then(()=>update()); }
+        function deleteWholeBatch() { const pin=prompt("⚠️ Manager PIN (1234) to delete batch:"); if(!pin)return; fetch('/delete-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,pin})}).then(()=>location.reload()); }
+        function lock() { if(!confirm("Finalize and lock?"))return; fetch('/lock-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB})}).then(()=>{alert("Locked!");location.href="index.html";}); }
     </script>
 </body>
 </html>
