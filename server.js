@@ -33,10 +33,10 @@ initDB();
 app.post("/api/login", (req, res) => {
     const { password } = req.body;  
     // Strict Session Cookie (expires when browser is closed)
-    if (password === "KilrrAdmin99") { 
+    if (password === "Kilrrspicesadmin") { 
         res.setHeader('Set-Cookie', 'kilrr_auth=admin; Path=/; HttpOnly');
         return res.json({ success: true, role: 'admin' });
-    } else if (password === "KilrrFloor2026") { 
+    } else if (password === "Kilrrspicesop") { 
         res.setHeader('Set-Cookie', 'kilrr_auth=operator; Path=/; HttpOnly');
         return res.json({ success: true, role: 'operator' });
     } else {
@@ -240,3 +240,4 @@ app.post("/unlock-batch", async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Kilrr System Active on Port ${PORT}`));
+
