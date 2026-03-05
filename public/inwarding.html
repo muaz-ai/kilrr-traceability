@@ -3,44 +3,56 @@
 <head>
     <title>Kilrr - RM Inwarding</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;900&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        body { margin:0; background:#0f172a; color:#f8fafc; font-family:'Outfit',sans-serif; min-height:100vh; padding-bottom:40px;}
-        nav { background:rgba(15,23,42,0.8); backdrop-filter:blur(15px); border-bottom:1px solid #334155; padding:15px 20px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; box-shadow:0 4px 20px rgba(0,0,0,0.3);}
-        .nav-logo { display:flex; align-items:center; gap:15px; text-decoration:none; color:white;}
-        .nav-logo img { height:35px; background:white; padding:4px; border-radius:6px; }
-        .nav-logo span { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:18px; letter-spacing:1px; text-transform:uppercase;}
-        .home-btn { background:rgba(56,189,248,0.1); border:1px solid #38bdf8; color:#38bdf8; padding:8px 16px; border-radius:8px; text-decoration:none; font-weight:800; font-size:14px; transition:0.3s;}
-        .home-btn:hover { background:#38bdf8; color:#0f172a; }
+        body { font-family: 'Outfit', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 50px; }
+        .nav-top { background: #ffffff; border-bottom: 4px solid #0ea5e9; padding: 15px 25px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .brand { display: flex; align-items: center; gap: 12px; font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: #0f172a; letter-spacing: 1px; text-decoration: none; text-transform: uppercase;}
+        .brand img { height: 40px; }
+        .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; width: 100%; justify-content: center; }
+        @media(min-width: 900px){ .nav-links { width: auto; margin-top: 0; } }
+        .nav-btn { text-decoration: none; padding: 10px 15px; color: #64748b; font-weight: 800; font-size: 14px; text-transform: uppercase; border-radius: 8px; transition: 0.2s; background: #f8fafc; border: 1px solid #e2e8f0; }
+        .nav-btn:hover, .nav-btn.active { background: #0ea5e9; color: #ffffff; border-color: #0ea5e9; box-shadow: 0 4px 10px rgba(14,165,233,0.2);}
+        .nav-btn.logout { background: #fef2f2; color: #ef4444; border-color: #fca5a5; } .nav-btn.logout:hover { background: #ef4444; color: #ffffff; }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr; gap: 30px;}
+        @media(min-width: 900px){ .container{grid-template-columns: 1fr 1fr;} }
         
-        .container { max-width:1000px; margin:30px auto; padding:0 20px; display:grid; grid-template-columns:1fr; gap:25px;}
-        @media(min-width:768px){ .container{grid-template-columns:1fr 1fr;} }
-        .card { background:rgba(30,41,59,0.6); backdrop-filter:blur(10px); padding:30px; border-radius:20px; border:1px solid #334155; box-shadow:0 20px 40px rgba(0,0,0,0.4); }
-        h2 { margin-top:0; font-family:'Space Grotesk',sans-serif; font-size:20px; font-weight:700; color:#38bdf8; margin-bottom:25px; letter-spacing:1px; border-bottom:1px solid #334155; padding-bottom:15px; text-transform:uppercase;}
+        .card { background: #ffffff; border-radius: 20px; padding: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; border-top: 6px solid #0ea5e9;}
+        h2 { font-family: 'Space Grotesk', sans-serif; color: #0f172a; margin-top: 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; font-size: 24px; text-transform: uppercase;}
         
-        label { display:block; font-weight:800; margin-bottom:8px; color:#94a3b8; font-size:12px; text-transform:uppercase; letter-spacing:1px; }
-        input, select { width:100%; padding:15px; box-sizing:border-box; border-radius:12px; border:1px solid #475569; font-size:15px; background:rgba(15,23,42,0.6); color:white; font-family:'Space Grotesk',sans-serif; margin-bottom:20px; transition:0.3s;}
-        input:focus, select:focus { border-color:#38bdf8; outline:none; box-shadow:0 0 15px rgba(56,189,248,0.2); background:rgba(15,23,42,0.9);}
+        label { display: block; font-weight: 900; color: #475569; font-size: 13px; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px;}
+        input, select { width: 100%; padding: 16px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #0f172a; margin-bottom: 25px; background: #f8fafc; transition: 0.2s; }
+        input:focus, select:focus { border-color: #0ea5e9; background: #ffffff; outline: none; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2); }
         
-        .autocomplete { position:relative; width:100%; }
-        .autocomplete-items { position:absolute; border:1px solid #475569; border-radius:12px; z-index:1000; background:#1e293b; width:100%; max-height:200px; overflow-y:auto; top:calc(100% - 15px); box-shadow:0 10px 30px rgba(0,0,0,0.5);}
-        .dropdown-item { padding:12px 15px; cursor:pointer; border-bottom:1px solid #334155; color:#e2e8f0; font-size:14px;}
-        .dropdown-item:hover { background:#0f172a; color:#38bdf8; padding-left:20px; border-left:4px solid #38bdf8; }
-        
-        button { width:100%; border:none; font-family:'Outfit',sans-serif; font-weight:900; cursor:pointer; color:#0f172a; border-radius:12px; padding:16px; font-size:15px; transition:0.3s; text-transform:uppercase; letter-spacing:1px; margin-bottom:15px; }
-        .btn-primary { background:linear-gradient(135deg, #38bdf8, #818cf8); box-shadow:0 10px 20px rgba(56,189,248,0.2); }
-        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 15px 30px rgba(56,189,248,0.4); }
-        .btn-secondary { background:transparent; color:#94a3b8; border:1px solid #475569; }
-        .btn-print { background:linear-gradient(135deg, #10b981, #059669); color:white; }
-        
-        .print-preview { background:white; color:black; padding:20px; text-align:center; font-family:sans-serif; border-radius:8px; margin-bottom:20px; border:2px dashed #94a3b8;}
-        #queueList { background:rgba(15,23,42,0.6); padding:15px; border-radius:12px; border:1px solid #334155; min-height:100px; margin-bottom:20px; font-family:monospace; color:#38bdf8; font-size:13px;}
+        button { width: 100%; padding: 18px; border: none; border-radius: 12px; font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.2s; margin-bottom: 15px; }
+        .btn-primary { background: #0ea5e9; color: #ffffff; box-shadow: 0 6px 15px rgba(14, 165, 233, 0.3); }
+        .btn-primary:hover { background: #0284c7; transform: translateY(-2px); }
+        .btn-secondary { background: #f1f5f9; color: #475569; border: 2px solid #cbd5e1; }
+        .btn-print { background: #10b981; color: white; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3); font-size: 18px;}
+        .btn-print:hover { background: #059669; transform: translateY(-2px); }
+
+        .autocomplete { position: relative; width: 100%; }
+        .autocomplete-items { position: absolute; border: 1px solid #e2e8f0; border-radius: 12px; z-index: 1000; background: #ffffff; width: 100%; max-height: 250px; overflow-y: auto; box-shadow: 0 15px 40px rgba(0,0,0,0.1); top: calc(100% - 15px);}
+        .dropdown-item { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #f1f5f9; font-weight: 600; font-size: 15px;}
+        .dropdown-item:hover { background: #f0f9ff; color: #0ea5e9; padding-left: 25px; border-left: 4px solid #0ea5e9; }
+
+        .print-preview { background: #ffffff; color: #000000; padding: 30px; text-align: center; font-family: sans-serif; border-radius: 12px; margin-bottom: 25px; border: 3px solid #cbd5e1; box-shadow: inset 0 0 20px rgba(0,0,0,0.05);}
+        #queueList { background: #f8fafc; padding: 20px; border-radius: 12px; border: 2px solid #e2e8f0; min-height: 120px; margin-bottom: 25px; font-family: 'Space Grotesk', monospace; color: #0f172a; font-size: 15px; font-weight: 700;}
     </style>
 </head>
 <body>
-    <nav>
-        <a href="index.html" class="nav-logo"><img src="logo.png" alt="Kilrr" onerror="this.style.display='none'"><span>RM INWARDING</span></a>
-        <a href="index.html" class="home-btn">🏠 Hub</a>
+    <nav class="nav-top">
+        <a href="index.html" class="brand"><img src="logo.png" alt="Kilrr" onerror="this.style.display='none'"> Factory OS</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn">🏠 HUB</a>
+            <a href="inwarding.html" class="nav-btn active">📦 INWARD</a>
+            <a href="scanner.html" class="nav-btn">🏭 SCANNER</a>
+            <a href="audit.html" class="nav-btn">📋 AUDIT</a>
+            <a href="dashboard.html" class="nav-btn">📊 DASHBOARD</a>
+            <a href="master.html" class="nav-btn">⚙️ MASTER</a>
+            <a href="/api/logout" class="nav-btn logout">🚪 EXIT</a>
+        </div>
     </nav>
     <div class="container">
         <div class="card">
@@ -65,72 +77,22 @@
             <label>Select Printer Config</label>
             <select id="printer_size"><option value="75x75">75mm x 75mm (Industrial)</option><option value="100x150">100mm x 150mm (Large)</option></select>
             <label>Live Label Preview</label>
-            <div class="print-preview" id="previewBox"><span style="color:#94a3b8;">Awaiting material selection...</span></div>
+            <div class="print-preview" id="previewBox"><span style="color:#94a3b8; font-weight:bold;">Awaiting material selection...</span></div>
             <label>Staged Batches</label>
             <div id="queueList">Queue is empty.</div>
             <button class="btn-print" onclick="printAll()">🖨️ PRINT & LOG TO DATABASE</button>
         </div>
     </div>
     <script>
-        let ingredients=[], vendors=[], queue=[];
-        document.getElementById('date').valueAsDate = new Date();
-        window.onload = async () => {
-            const iRes = await fetch('/get-ingredients'); ingredients = await iRes.json();
-            const vRes = await fetch('/get-vendors'); vendors = await vRes.json();
-            setupAutocomplete(document.getElementById('ing_name'), ingredients, 'ingredient_name', 'product_code', 'ing_code');
-            setupAutocomplete(document.getElementById('ven_name'), vendors, 'vendor_name', 'vendor_code', 'ven_code');
-        };
-        function setupAutocomplete(inp, arr, nameKey, codeKey, targetCodeId) {
-            inp.addEventListener("input", function() {
-                let a, b, val = this.value; closeAllLists(); if (!val) return;
-                a = document.createElement("DIV"); a.setAttribute("class", "autocomplete-items"); this.parentNode.appendChild(a);
-                for (let i = 0; i < arr.length; i++) {
-                    if (arr[i][nameKey].toUpperCase().includes(val.toUpperCase()) || arr[i][codeKey].toUpperCase().includes(val.toUpperCase())) {
-                        b = document.createElement("DIV"); b.className = "dropdown-item";
-                        b.innerHTML = `<strong>${arr[i][codeKey]}</strong> - ${arr[i][nameKey]} <input type='hidden' value='${arr[i][nameKey]}'><input type='hidden' class='code-val' value='${arr[i][codeKey]}'>`;
-                        b.addEventListener("click", function() { inp.value = this.getElementsByTagName("input")[0].value; document.getElementById(targetCodeId).value = this.getElementsByClassName("code-val")[0].value; updatePreview(); closeAllLists(); });
-                        a.appendChild(b);
-                    }
-                }
-            });
-        }
-        function closeAllLists() { document.querySelectorAll(".autocomplete-items").forEach(el => el.remove()); }
-        document.addEventListener("click", function(e){ if(e.target.tagName !== "INPUT") closeAllLists(); });
-
-        function updatePreview() {
-            const iName=document.getElementById('ing_name').value, iCode=document.getElementById('ing_code').value, vCode=document.getElementById('ven_code').value, date=document.getElementById('date').value.replace(/-/g,''), packs=document.getElementById('packs').value||1;
-            if(!iCode || !vCode) return;
-            document.getElementById('previewBox').innerHTML = `<h3 style="margin:0;font-size:24px;">${iName}</h3><p style="margin:5px 0;font-size:14px;"><strong>${iCode}</strong> | V: ${vCode}</p><div style="font-size:18px;margin-top:10px;">${date}/${iCode}/${vCode}/1<br><img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${date}/${iCode}/${vCode}/1" style="margin-top:5px;"></div><p style="font-size:12px;margin:5px 0;">Bag 1 of ${packs}</p>`;
-        }
-        function addToQueue() {
-            const date=document.getElementById('date').value, iName=document.getElementById('ing_name').value, iCode=document.getElementById('ing_code').value, vName=document.getElementById('ven_name').value, vCode=document.getElementById('ven_code').value, wt=document.getElementById('wt').value, packs=document.getElementById('packs').value;
-            if(!iCode || !vCode || !wt || !packs) return alert("Fill all fields!");
-            queue.push({ dateRaw:date, dateFmt:date.replace(/-/g,''), ingName:iName, ingCode:iCode, venName:vName, venCode:vCode, weight:wt, packs:packs });
-            renderQueue(); clearForm(false);
-        }
-        function renderQueue() {
-            if(queue.length===0) { document.getElementById('queueList').innerHTML = "Queue is empty."; return; }
-            document.getElementById('queueList').innerHTML = queue.map((q,idx) => `<div style="margin-bottom:8px; border-bottom:1px solid #334155; padding-bottom:5px;">[${idx+1}] ${q.packs}x ${q.ingName} (${q.weight}kg)</div>`).join('');
-        }
-        function clearForm(full=true) {
-            document.getElementById('ing_name').value=''; document.getElementById('ing_code').value=''; document.getElementById('packs').value='';
-            if(full){ document.getElementById('ven_name').value=''; document.getElementById('ven_code').value=''; document.getElementById('wt').value=''; }
-            document.getElementById('previewBox').innerHTML = `<span style="color:#94a3b8;">Awaiting material selection...</span>`;
-        }
-        async function printAll() {
-            if(queue.length===0) return alert("Queue empty!");
-            await fetch('/log-inwarding', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({queue}) });
-            let printWindow = window.open('', '_blank');
-            let html = `<html><head><style>@page { size: ${document.getElementById('printer_size').value==="75x75" ? "75mm 75mm" : "100mm 150mm"}; margin: 0; } body { margin: 0; font-family: sans-serif; text-align: center; } .page { width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; page-break-after: always; }</style></head><body>`;
-            queue.forEach(q => {
-                for(let i=1; i<=q.packs; i++) {
-                    let bc = `${q.dateFmt}/${q.ingCode}/${q.venCode}/${i}`;
-                    html += `<div class="page"><h2 style="margin:5px 0; font-size:24px;">${q.ingName}</h2><p style="margin:2px 0; font-size:14px;">Code: <strong>${q.ingCode}</strong> | Vendor: <strong>${q.venCode}</strong></p><p style="margin:2px 0 10px 0; font-size:12px;">N.W: ${q.weight} KG | Bag ${i} of ${q.packs}</p><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${bc}"><p style="margin-top:5px; font-size:14px; font-weight:bold;">${bc}</p></div>`;
-                }
-            });
-            html += `</body><script>window.onload = () => { window.print(); window.close(); }</script></html>`;
-            printWindow.document.write(html); printWindow.document.close(); queue = []; renderQueue();
-        }
+        let ingredients=[], vendors=[], queue=[]; document.getElementById('date').valueAsDate=new Date();
+        window.onload=async()=>{ const iRes=await fetch('/get-ingredients'); ingredients=await iRes.json(); const vRes=await fetch('/get-vendors'); vendors=await vRes.json(); setupAutocomplete(document.getElementById('ing_name'),ingredients,'ingredient_name','product_code','ing_code'); setupAutocomplete(document.getElementById('ven_name'),vendors,'vendor_name','vendor_code','ven_code'); };
+        function setupAutocomplete(inp,arr,nameKey,codeKey,targetCodeId){ inp.addEventListener("input",function(){ let a,b,val=this.value; closeAllLists(); if(!val)return; a=document.createElement("DIV"); a.setAttribute("class","autocomplete-items"); this.parentNode.appendChild(a); for(let i=0;i<arr.length;i++){ if(arr[i][nameKey].toUpperCase().includes(val.toUpperCase())||arr[i][codeKey].toUpperCase().includes(val.toUpperCase())){ b=document.createElement("DIV"); b.className="dropdown-item"; b.innerHTML=`<strong>${arr[i][codeKey]}</strong> - ${arr[i][nameKey]} <input type='hidden' value='${arr[i][nameKey]}'><input type='hidden' class='code-val' value='${arr[i][codeKey]}'>`; b.addEventListener("click",function(){ inp.value=this.getElementsByTagName("input")[0].value; document.getElementById(targetCodeId).value=this.getElementsByClassName("code-val")[0].value; updatePreview(); closeAllLists(); }); a.appendChild(b); } } }); inp.addEventListener("click", function(e){e.stopPropagation(); let evt = new Event('input'); this.dispatchEvent(evt);});}
+        function closeAllLists(){document.querySelectorAll(".autocomplete-items").forEach(el=>el.remove());} document.addEventListener("click",e=>{if(e.target.tagName!=="INPUT")closeAllLists();});
+        function updatePreview(){ const iName=document.getElementById('ing_name').value, iCode=document.getElementById('ing_code').value, vCode=document.getElementById('ven_code').value, date=document.getElementById('date').value.replace(/-/g,''), packs=document.getElementById('packs').value||1; if(!iCode||!vCode)return; document.getElementById('previewBox').innerHTML=`<h3 style="margin:0;font-size:26px;text-transform:uppercase;">${iName}</h3><p style="margin:5px 0;font-size:16px;"><strong>${iCode}</strong> | V: ${vCode}</p><div style="font-size:20px;margin-top:15px;font-weight:bold;">${date}/${iCode}/${vCode}/1<br><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${date}/${iCode}/${vCode}/1" style="margin-top:10px; border:2px solid black; padding:5px;"></div><p style="font-size:14px;margin:10px 0 0 0;">Bag 1 of ${packs}</p>`; }
+        function addToQueue(){ const date=document.getElementById('date').value, iName=document.getElementById('ing_name').value, iCode=document.getElementById('ing_code').value, vName=document.getElementById('ven_name').value, vCode=document.getElementById('ven_code').value, wt=document.getElementById('wt').value, packs=document.getElementById('packs').value; if(!iCode||!vCode||!wt||!packs)return alert("Fill all fields!"); queue.push({dateRaw:date,dateFmt:date.replace(/-/g,''),ingName:iName,ingCode:iCode,venName:vName,venCode:vCode,weight:wt,packs:packs}); renderQueue(); clearForm(false); }
+        function renderQueue(){ if(queue.length===0){document.getElementById('queueList').innerHTML="Queue is empty.";return;} document.getElementById('queueList').innerHTML=queue.map((q,idx)=>`<div style="margin-bottom:10px; border-bottom:2px solid #e2e8f0; padding-bottom:10px; color:#0ea5e9;">[${idx+1}] ${q.packs}x ${q.ingName} (${q.weight}kg)</div>`).join(''); }
+        function clearForm(full=true){ document.getElementById('ing_name').value=''; document.getElementById('ing_code').value=''; document.getElementById('packs').value=''; if(full){document.getElementById('ven_name').value=''; document.getElementById('ven_code').value=''; document.getElementById('wt').value='';} document.getElementById('previewBox').innerHTML=`<span style="color:#94a3b8;font-weight:bold;">Awaiting material selection...</span>`; }
+        async function printAll(){ if(queue.length===0)return alert("Queue empty!"); await fetch('/log-inwarding',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({queue})}); let printWindow=window.open('','_blank'); let html=`<html><head><style>@page{size:${document.getElementById('printer_size').value==="75x75"?"75mm 75mm":"100mm 150mm"};margin:0;} body{margin:0;font-family:sans-serif;text-align:center;} .page{width:100%;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;page-break-after:always;}</style></head><body>`; queue.forEach(q=>{ for(let i=1;i<=q.packs;i++){ let bc=`${q.dateFmt}/${q.ingCode}/${q.venCode}/${i}`; html+=`<div class="page"><h2 style="margin:5px 0;font-size:26px;text-transform:uppercase;">${q.ingName}</h2><p style="margin:2px 0;font-size:16px;">Code: <strong>${q.ingCode}</strong> | V: <strong>${q.venCode}</strong></p><p style="margin:2px 0 10px 0;font-size:14px;">N.W: ${q.weight} KG | Bag ${i} of ${q.packs}</p><img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${bc}"><p style="margin-top:8px;font-size:16px;font-weight:bold;">${bc}</p></div>`; } }); html+=`</body><script>window.onload=()=>{window.print();window.close();}<\/script></html>`; printWindow.document.write(html); printWindow.document.close(); queue=[]; renderQueue(); }
     </script>
 </body>
 </html>
