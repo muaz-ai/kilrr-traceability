@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;900&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Outfit', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 50px; }
-        .nav-top { background: #ffffff; border-bottom: 4px solid #0ea5e9; padding: 15px 25px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        body { font-family: 'Outfit', sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 50px; }
+        .nav-top { background: #ffffff; border-bottom: 4px solid #ea580c; padding: 15px 25px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .brand { display: flex; align-items: center; gap: 12px; font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: #0f172a; letter-spacing: 1px; text-decoration: none; text-transform: uppercase;}
         .brand img { height: 40px; }
         .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; width: 100%; justify-content: center; }
         @media(min-width: 900px){ .nav-links { width: auto; margin-top: 0; } }
-        .nav-btn { text-decoration: none; padding: 10px 15px; color: #64748b; font-weight: 800; font-size: 14px; text-transform: uppercase; border-radius: 8px; transition: 0.2s; background: #f8fafc; border: 1px solid #e2e8f0; }
-        .nav-btn:hover, .nav-btn.active { background: #0ea5e9; color: #ffffff; border-color: #0ea5e9; box-shadow: 0 4px 10px rgba(14,165,233,0.2);}
-        .nav-btn.logout { background: #fef2f2; color: #ef4444; border-color: #fca5a5; } .nav-btn.logout:hover { background: #ef4444; color: #ffffff; }
+        .nav-btn { text-decoration: none; padding: 10px 15px; color: #64748b; font-weight: 800; font-size: 14px; text-transform: uppercase; border-radius: 8px; transition: 0.2s; background: #f1f5f9; border: 1px solid #e2e8f0; }
+        .nav-btn:hover, .nav-btn.active { background: #0f172a; color: #ffffff; border-color: #0f172a; box-shadow: 0 4px 10px rgba(15,23,42,0.2);}
+        .nav-btn.logout { background: #fee2e2; color: #ef4444; border-color: #fca5a5; } .nav-btn.logout:hover { background: #ef4444; color: #ffffff; }
 
         .card { background: #ffffff; border-radius: 20px; padding: 40px; margin: 40px auto; max-width: 600px; box-shadow: 0 15px 35px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; border-top: 6px solid #10b981;}
         h2 { font-family: 'Space Grotesk', sans-serif; color: #0f172a; margin-top: 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; font-size: 26px; text-transform: uppercase;}
@@ -32,7 +32,8 @@
         
         #log { max-height: 300px; overflow-y: auto; background: #ffffff; border: 2px solid #e2e8f0; padding: 15px; border-radius: 12px; margin-top: 25px;}
         .log-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f1f5f9; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; }
-        .log-item strong { color: #0ea5e9; font-family: 'Space Grotesk', monospace; font-size: 18px;}
+        .log-item strong { color: #0f172a; font-family: 'Space Grotesk', monospace; font-size: 18px;}
+        .btn-mini-del { width: auto; margin: 0; background: #fef2f2; border: 1px solid #fca5a5; color: #ef4444; padding: 8px 12px; font-size: 12px; border-radius: 8px; cursor:pointer;}
     </style>
 </head>
 <body>
@@ -78,7 +79,8 @@
         function startSession(){ sessionName=document.getElementById('session').value.trim(); if(!sessionName)return alert("Enter session name!"); document.getElementById('setup').style.display='none'; document.getElementById('work').style.display='block'; document.getElementById('sess_title').innerText="Session: "+sessionName.toUpperCase(); loadLog(); setTimeout(()=>document.getElementById('scan_input').focus(),500); }
         async function processScan(){ const tag=document.getElementById('scan_input').value.trim(); if(!tag)return; currentTag=tag; const parts=tag.split('/'); currentProdCode=parts.length>=2?parts[1]:tag; const res=await fetch('/get-inventory'); const inv=await res.json(); const existing=inv.find(i=>i.rm_tag===tag); originalWt=existing?existing.current_weight:(parts.length>=4?parseFloat(parts[3]):0); document.getElementById('info_box').style.display='block'; document.getElementById('prod_code').innerText=existing&&existing.ingredient_name?`${existing.ingredient_name} (${currentProdCode})`:currentProdCode; document.getElementById('old_wt').innerText=`${originalWt} KG`; document.getElementById('new_wt').focus(); }
         async function submitAudit(){ const nw=document.getElementById('new_wt').value; if(!nw||!currentTag)return alert("Scan tag and enter new weight!"); await fetch('/audit-stock',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_name:sessionName,rm_tag:currentTag,product_code:currentProdCode,original_weight:originalWt,current_weight:parseFloat(nw)})}); document.getElementById('scan_input').value=''; document.getElementById('new_wt').value=''; document.getElementById('info_box').style.display='none'; currentTag=""; loadLog(); document.getElementById('scan_input').focus(); }
-        async function loadLog(){ const res=await fetch(`/audit-session/${sessionName}`); const data=await res.json(); document.getElementById('log').innerHTML=data.map(d=>`<div class="log-item"><div><strong>${d.rm_tag}</strong><br><span style="color:#64748b;font-size:14px;font-weight:bold;">${d.ingredient_name||d.product_code}</span></div><div style="text-align:right;"><span style="color:#10b981;font-weight:900;font-size:18px;">${d.current_weight} KG</span><br><span style="color:#ef4444;text-decoration:line-through;font-size:14px;font-weight:bold;">was ${d.original_weight}</span></div></div>`).join(''); }
+        async function loadLog(){ const res=await fetch(`/audit-session/${sessionName}`); const data=await res.json(); document.getElementById('log').innerHTML=data.map(d=>`<div class="log-item"><div><strong>${d.rm_tag}</strong><br><span style="color:#64748b;font-size:14px;font-weight:bold;">${d.ingredient_name||d.product_code}</span></div><div style="text-align:right;"><span style="color:#10b981;font-weight:900;font-size:18px;">${d.current_weight} KG</span><br><span style="color:#ef4444;text-decoration:line-through;font-size:14px;font-weight:bold;margin-right:10px;">was ${d.original_weight}</span><button class="btn-mini-del" onclick="delInv('${d.rm_tag}')">🗑️</button></div></div>`).join(''); }
+        function delInv(tag){const pin=prompt("Manager PIN (1234) to delete audit entry:");if(!pin)return;fetch('/delete-inventory',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rm_tag:tag,pin})}).then(()=>loadLog());}
     </script>
 </body>
 </html>
