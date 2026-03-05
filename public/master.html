@@ -6,52 +6,54 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;900&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Outfit', sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 50px; }
-        .nav-top { background: #ffffff; border-bottom: 4px solid #ea580c; padding: 15px 25px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .brand { display: flex; align-items: center; gap: 12px; font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: #0f172a; letter-spacing: 1px; text-decoration: none; text-transform: uppercase;}
-        .brand img { height: 40px; }
-        .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; width: 100%; justify-content: center; }
-        @media(min-width: 900px){ .nav-links { width: auto; margin-top: 0; } }
-        .nav-btn { text-decoration: none; padding: 10px 15px; color: #64748b; font-weight: 800; font-size: 14px; text-transform: uppercase; border-radius: 8px; transition: 0.2s; background: #f1f5f9; border: 1px solid #e2e8f0; }
-        .nav-btn:hover, .nav-btn.active { background: #0f172a; color: #ffffff; border-color: #0f172a; box-shadow: 0 4px 10px rgba(15,23,42,0.2);}
-        .nav-btn.logout { background: #fee2e2; color: #ef4444; border-color: #fca5a5; } .nav-btn.logout:hover { background: #ef4444; color: #ffffff; }
+        .nav-top { background: #ffffff; border-bottom: 6px solid #ea580c; padding: 20px 35px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 1000; }
+        .brand { display: flex; align-items: center; gap: 15px; font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 900; color: #0f172a; letter-spacing: 1px; text-decoration: none; text-transform: uppercase;}
+        .brand img { height: 45px; }
+        .nav-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 15px; width: 100%; justify-content: center; }
+        @media(min-width: 1000px){ .nav-links { width: auto; margin-top: 0; } }
+        .nav-btn { text-decoration: none; padding: 12px 20px; color: #475569; font-weight: 900; font-size: 15px; text-transform: uppercase; border-radius: 10px; transition: 0.3s; background: #f1f5f9; border: 2px solid transparent; letter-spacing: 1px;}
+        .nav-btn:hover { background: #fff7ed; color: #ea580c; border-color: #ffedd5; transform: translateY(-2px);}
+        .nav-btn.active { background: #ea580c; color: #ffffff; box-shadow: 0 6px 15px rgba(234, 88, 12, 0.3); }
+        .nav-btn.logout { background: #fef2f2; color: #ef4444; } .nav-btn.logout:hover { background: #ef4444; color: #ffffff; border-color: #ef4444;}
 
         /* The Bright Vault Lock Screen */
-        #auth_wall { height: calc(100vh - 80px); display: flex; justify-content: center; align-items: center; }
-        .auth-card { background: #ffffff; padding: 60px 50px; border-radius: 24px; border: 4px solid #ef4444; text-align: center; box-shadow: 0 20px 50px rgba(239,68,68,0.15); width: 90%; max-width: 450px;}
-        .auth-card h1 { font-family: 'Space Grotesk', sans-serif; color: #ef4444; font-size: 36px; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px;}
-        .auth-card p { color: #475569; font-weight: 800; text-transform: uppercase; margin-bottom: 30px;}
-        .auth-card input { width: 100%; padding: 20px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; background: #f8fafc; color: #0f172a; font-size: 24px; text-align: center; letter-spacing: 5px; margin-bottom: 25px; font-family: 'Space Grotesk', sans-serif;}
-        .auth-card input:focus { border-color: #ef4444; outline: none; box-shadow: 0 0 0 4px rgba(239,68,68,0.2);}
-        .auth-card button { width: 100%; background: #ef4444; color: white; border: none; padding: 20px; border-radius: 12px; font-size: 18px; font-weight: 900; font-family: 'Outfit', sans-serif; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; box-shadow: 0 6px 15px rgba(239,68,68,0.3);}
-        .auth-card button:hover { background: #dc2626; transform: translateY(-2px);}
+        #auth_wall { height: calc(100vh - 120px); display: flex; justify-content: center; align-items: center; }
+        .auth-card { background: #ffffff; padding: 60px 50px; border-radius: 24px; border: 4px solid #ef4444; text-align: center; box-shadow: 0 20px 50px rgba(239,68,68,0.15); width: 90%; max-width: 480px;}
+        .auth-card h1 { font-family: 'Space Grotesk', sans-serif; color: #ef4444; font-size: 42px; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px;}
+        .auth-card p { color: #475569; font-weight: 900; text-transform: uppercase; margin-bottom: 35px; letter-spacing: 1px; font-size: 15px;}
+        .auth-card input { width: 100%; padding: 25px; box-sizing: border-box; border-radius: 16px; border: 3px solid #cbd5e1; background: #f8fafc; color: #0f172a; font-size: 28px; text-align: center; letter-spacing: 10px; margin-bottom: 30px; font-family: 'Space Grotesk', sans-serif;}
+        .auth-card input:focus { border-color: #ef4444; outline: none; box-shadow: 0 0 0 5px rgba(239,68,68,0.2);}
+        .auth-card button { width: 100%; background: #ef4444; color: white; border: none; padding: 25px; border-radius: 16px; font-size: 20px; font-weight: 900; font-family: 'Outfit', sans-serif; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; box-shadow: 0 8px 20px rgba(239,68,68,0.3);}
+        .auth-card button:hover { background: #dc2626; transform: translateY(-3px);}
 
         /* Master Data Spread Layout */
-        .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 40px;}
+        .container { max-width: 1400px; margin: 50px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 40px;}
         
-        .section { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 35px; box-shadow: 0 15px 40px rgba(0,0,0,0.05); border-top: 6px solid #0f172a;}
-        h2 { margin: 0 0 25px 0; font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px;}
+        .section { background: #ffffff; border: 2px solid #e2e8f0; border-radius: 24px; padding: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.05); border-top: 8px solid #0f172a;}
+        h2 { margin: 0 0 30px 0; font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 900; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; border-bottom: 3px solid #f1f5f9; padding-bottom: 20px;}
         
-        .add-form { display: flex; gap: 10px; margin-bottom: 25px;}
-        .add-form input { flex: 1; padding: 16px; border-radius: 10px; border: 2px solid #cbd5e1; background: #f8fafc; color: #0f172a; font-size: 15px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; width: 10px;}
-        .add-form input:focus { border-color: #ea580c; outline: none;}
-        .add-form button { background: #ea580c; color: white; border: none; padding: 0 25px; border-radius: 10px; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase;}
-        .add-form button:hover { background: #c2410c; }
+        .add-form { display: flex; gap: 15px; margin-bottom: 30px;}
+        .add-form input { flex: 1; padding: 18px; border-radius: 12px; border: 2px solid #cbd5e1; background: #f8fafc; color: #0f172a; font-size: 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; width: 10px;}
+        .add-form input:focus { border-color: #ea580c; outline: none; background: #ffffff; box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.15);}
+        .add-form button { background: #ea580c; color: white; border: none; padding: 0 30px; border-radius: 12px; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.2s;}
+        .add-form button:hover { background: #c2410c; transform: translateY(-2px);}
         
-        ul { list-style: none; padding: 0; margin: 0; }
-        li { background: #ffffff; border: 2px solid #e2e8f0; margin-bottom: 10px; padding: 15px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;}
-        .li-text { display: flex; flex-direction: column; gap: 5px; }
-        .li-code { font-family: 'Space Grotesk', monospace; color: #0ea5e9; font-weight: 900; font-size: 18px;}
-        .li-name { color: #475569; font-size: 14px; font-weight: 800; text-transform: uppercase;}
-        .btn-del { background: #fee2e2; color: #ef4444; border: 2px solid #fca5a5; padding: 8px 15px; border-radius: 8px; font-size: 14px; font-weight: 900; cursor: pointer; transition: 0.2s;}
+        ul { list-style: none; padding: 0; margin: 0; max-height: 500px; overflow-y: auto;}
+        li { background: #ffffff; border: 2px solid #e2e8f0; margin-bottom: 12px; padding: 20px 25px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center;}
+        .li-text { display: flex; flex-direction: column; gap: 6px; }
+        .li-code { font-family: 'Space Grotesk', monospace; color: #ea580c; font-weight: 900; font-size: 20px;}
+        .li-name { color: #475569; font-size: 15px; font-weight: 800; text-transform: uppercase;}
+        .btn-del { background: #fef2f2; color: #ef4444; border: 2px solid #fca5a5; padding: 10px 18px; border-radius: 10px; font-size: 14px; font-weight: 900; cursor: pointer; transition: 0.2s;}
         .btn-del:hover { background: #ef4444; color: white; }
         
         /* Recipe Specifics */
-        .rec-select { width: 100%; padding: 16px; border-radius: 10px; background: #f8fafc; color: #0f172a; border: 2px solid #cbd5e1; margin-bottom: 15px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px;}
-        .rec-select:focus { border-color: #ea580c; outline: none;}
-        .ing-row { display: flex; gap: 10px; margin-bottom: 10px;}
-        .btn-save-rec { width: 100%; background: #10b981; color: white; border: none; padding: 20px; border-radius: 12px; font-weight: 900; font-size: 18px; cursor: pointer; margin-top: 15px; text-transform: uppercase; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);}
-        .btn-save-rec:hover { background: #059669; transform: translateY(-2px);}
-        .btn-secondary { width: 100%; background: #fff7ed; color: #ea580c; border: 2px dashed #ea580c; padding: 15px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 16px;}
+        .rec-select { width: 100%; padding: 20px; border-radius: 12px; background: #f8fafc; color: #0f172a; border: 2px solid #cbd5e1; margin-bottom: 15px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; transition: 0.2s;}
+        .rec-select:focus { border-color: #ea580c; outline: none; background: #ffffff; box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.15);}
+        .ing-row { display: flex; gap: 15px; margin-bottom: 15px;}
+        .btn-save-rec { width: 100%; background: #10b981; color: white; border: none; padding: 25px; border-radius: 16px; font-weight: 900; font-size: 20px; cursor: pointer; margin-top: 20px; text-transform: uppercase; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3); transition: 0.2s;}
+        .btn-save-rec:hover { background: #059669; transform: translateY(-3px);}
+        .btn-secondary { width: 100%; background: #fff7ed; color: #ea580c; border: 3px dashed #ea580c; padding: 20px; border-radius: 16px; font-weight: 900; cursor: pointer; font-size: 18px; text-transform: uppercase; transition: 0.2s;}
+        .btn-secondary:hover { background: #ffedd5; transform: translateY(-2px);}
     </style>
 </head>
 <body>
@@ -72,7 +74,7 @@
         <div class="auth-card">
             <h1>🔒 LOCKED</h1>
             <p>Master Level Clearance Required</p>
-            <input type="password" id="vault_pass" placeholder="••••••••">
+            <input type="password" id="vault_pass" placeholder="••••••••" autocomplete="off">
             <button onclick="unlock()">ACCESS VAULT</button>
         </div>
     </div>
@@ -80,21 +82,21 @@
     <div class="container" id="content" style="display:none;">
         <div class="section">
             <h2>Raw Materials</h2>
-            <div class="add-form"><input type="text" id="iCode" placeholder="Code (e.g. JRA)"><input type="text" id="iName" placeholder="Name"><button onclick="addIng()">Add</button></div>
+            <div class="add-form"><input type="text" id="iCode" placeholder="Code (e.g. JRA)" autocomplete="off"><input type="text" id="iName" placeholder="Ingredient Name" autocomplete="off"><button onclick="addIng()">Add</button></div>
             <ul id="ing_list"></ul>
         </div>
         <div class="section">
             <h2>Vendors</h2>
-            <div class="add-form"><input type="text" id="vCode" placeholder="Code (e.g. V01)"><input type="text" id="vName" placeholder="Name"><button onclick="addVen()">Add</button></div>
+            <div class="add-form"><input type="text" id="vCode" placeholder="Code (e.g. V01)" autocomplete="off"><input type="text" id="vName" placeholder="Vendor Name" autocomplete="off"><button onclick="addVen()">Add</button></div>
             <ul id="ven_list"></ul>
         </div>
         <div class="section">
             <h2>Recipe Builder</h2>
-            <input type="text" class="rec-select" id="rFgCode" placeholder="New Flavour Name (e.g. Chaat Masala)">
+            <input type="text" class="rec-select" id="rFgCode" placeholder="New Flavour Name (e.g. Chaat Masala)" autocomplete="off">
             <div id="rec_ings"></div>
             <button class="btn-secondary" onclick="addRecipeRow()">+ Add Ingredient Row</button>
             <button class="btn-save-rec" onclick="saveRecipe()">💾 SAVE RECIPE</button>
-            <h3 style="color:#475569; font-size:16px; margin-top:35px; border-bottom:2px solid #e2e8f0; padding-bottom:10px; text-transform:uppercase;">Existing Recipes</h3>
+            <h3 style="color:#475569; font-size:18px; margin-top:45px; border-bottom:3px solid #e2e8f0; padding-bottom:15px; text-transform:uppercase; letter-spacing: 1px;">Existing Recipes</h3>
             <ul id="rec_list"></ul>
         </div>
     </div>
@@ -102,13 +104,13 @@
     <script>
         let vaultData=null; document.getElementById('vault_pass').addEventListener('keypress', e=>{if(e.key==='Enter')unlock();});
         async function unlock(){ const pwd=document.getElementById('vault_pass').value; const res=await fetch('/vault-access',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pwd})}); const data=await res.json(); if(data.error)return alert("❌ Access Denied"); vaultData=data; document.getElementById('auth_wall').style.display='none'; document.getElementById('content').style.display='grid'; render(); }
-        function render(){ document.getElementById('ing_list').innerHTML=vaultData.ingredients.map(i=>`<li><div class="li-text"><span class="li-code">${i.product_code}</span><span class="li-name">${i.ingredient_name}</span></div><button class="btn-del" onclick="delIng('${i.product_code}')">🗑️ Del</button></li>`).join(''); document.getElementById('ven_list').innerHTML=vaultData.vendors.map(v=>`<li><div class="li-text"><span class="li-code">${v.vendor_code}</span><span class="li-name">${v.vendor_name}</span></div><button class="btn-del" onclick="delVen('${v.vendor_code}')">🗑️ Del</button></li>`).join(''); const grouped=vaultData.recipes.reduce((acc,r)=>{acc[r.fg_code]=acc[r.fg_code]||[];acc[r.fg_code].push(r.product_code);return acc;},{}); document.getElementById('rec_list').innerHTML=Object.entries(grouped).map(([fg,ings])=>`<li><div class="li-text"><span class="li-code">${fg}</span><span class="li-name">${ings.join(', ')}</span></div></li>`).join(''); }
+        function render(){ document.getElementById('ing_list').innerHTML=vaultData.ingredients.map(i=>`<li><div class="li-text"><span class="li-code">${i.product_code}</span><span class="li-name">${i.ingredient_name}</span></div><button class="btn-del" onclick="delIng('${i.product_code}')">🗑️ Del</button></li>`).join(''); document.getElementById('ven_list').innerHTML=vaultData.vendors.map(v=>`<li><div class="li-text"><span class="li-code">${v.vendor_code}</span><span class="li-name">${v.vendor_name}</span></div><button class="btn-del" onclick="delVen('${v.vendor_code}')">🗑️ Del</button></li>`).join(''); const grouped=vaultData.recipes.reduce((acc,r)=>{acc[r.fg_code]=acc[r.fg_code]||[];acc[r.fg_code].push(r.product_code);return acc;},{}); document.getElementById('rec_list').innerHTML=Object.entries(grouped).map(([fg,ings])=>`<li><div class="li-text"><span class="li-code">${fg}</span><span class="li-name" style="line-height:1.5;">${ings.join(', ')}</span></div></li>`).join(''); }
         async function refresh(){ const res=await fetch('/vault-access',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:document.getElementById('vault_pass').value})}); vaultData=await res.json(); render(); }
-        async function addIng(){ await fetch('/add-ingredient',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:document.getElementById('iCode').value,name:document.getElementById('iName').value})}); refresh(); }
+        async function addIng(){ await fetch('/add-ingredient',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:document.getElementById('iCode').value,name:document.getElementById('iName').value})}); document.getElementById('iCode').value=''; document.getElementById('iName').value=''; refresh(); }
         async function delIng(code){ const pin=prompt("Manager PIN (1234):"); if(!pin)return; await fetch('/delete-ingredient',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,pin})}); refresh(); }
-        async function addVen(){ await fetch('/add-vendor',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:document.getElementById('vCode').value,name:document.getElementById('vName').value})}); refresh(); }
+        async function addVen(){ await fetch('/add-vendor',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:document.getElementById('vCode').value,name:document.getElementById('vName').value})}); document.getElementById('vCode').value=''; document.getElementById('vName').value=''; refresh(); }
         async function delVen(code){ const pin=prompt("Manager PIN (1234):"); if(!pin)return; await fetch('/delete-vendor',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,pin})}); refresh(); }
-        function addRecipeRow(){ const div=document.createElement('div'); div.className='ing-row'; div.innerHTML=`<select class="rec-select" style="margin:0;"><option value="">Select Material...</option>${vaultData.ingredients.map(i=>`<option value="${i.product_code}">${i.ingredient_name} (${i.product_code})</option>`).join('')}</select><button class="btn-del" style="border-radius:10px; margin:0;" onclick="this.parentElement.remove()">X</button>`; document.getElementById('rec_ings').appendChild(div); }
+        function addRecipeRow(){ const div=document.createElement('div'); div.className='ing-row'; div.innerHTML=`<select class="rec-select" style="margin:0;"><option value="">Select Material...</option>${vaultData.ingredients.map(i=>`<option value="${i.product_code}">${i.ingredient_name} (${i.product_code})</option>`).join('')}</select><button class="btn-del" style="border-radius:12px; margin:0; padding:0 25px; font-size:20px;" onclick="this.parentElement.remove()">X</button>`; document.getElementById('rec_ings').appendChild(div); }
         async function saveRecipe(){ const pin=prompt("Manager PIN (1234) to authorize:"); if(!pin)return; const fg=document.getElementById('rFgCode').value; const selects=document.querySelectorAll('#rec_ings select'); let ings=[]; selects.forEach(s=>{if(s.value)ings.push(s.value);}); if(!fg||ings.length===0)return alert("Fill flavour name and add ingredients!"); await fetch('/update-recipe-secure',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fg_code:fg,ingredients:ings,pin:pin})}); alert("Recipe Saved!"); document.getElementById('rFgCode').value=''; document.getElementById('rec_ings').innerHTML=''; refresh(); }
     </script>
 </body>
