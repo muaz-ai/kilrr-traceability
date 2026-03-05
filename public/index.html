@@ -5,23 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;900&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Outfit', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 50px; }
-        .nav-top { background: #ffffff; border-bottom: 4px solid #0ea5e9; padding: 15px 25px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        body { font-family: 'Outfit', sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 50px; }
+        .nav-top { background: #ffffff; border-bottom: 4px solid #ea580c; padding: 15px 25px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .brand { display: flex; align-items: center; gap: 12px; font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: #0f172a; letter-spacing: 1px; text-decoration: none; text-transform: uppercase;}
         .brand img { height: 40px; }
         .nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; width: 100%; justify-content: center; }
         @media(min-width: 900px){ .nav-links { width: auto; margin-top: 0; } }
-        .nav-btn { text-decoration: none; padding: 10px 15px; color: #64748b; font-weight: 800; font-size: 14px; text-transform: uppercase; border-radius: 8px; transition: 0.2s; background: #f8fafc; border: 1px solid #e2e8f0; }
-        .nav-btn:hover, .nav-btn.active { background: #0ea5e9; color: #ffffff; border-color: #0ea5e9; box-shadow: 0 4px 10px rgba(14,165,233,0.2);}
-        .nav-btn.logout { background: #fef2f2; color: #ef4444; border-color: #fca5a5; } .nav-btn.logout:hover { background: #ef4444; color: #ffffff; }
+        .nav-btn { text-decoration: none; padding: 10px 15px; color: #64748b; font-weight: 800; font-size: 14px; text-transform: uppercase; border-radius: 8px; transition: 0.2s; background: #f1f5f9; border: 1px solid #e2e8f0; }
+        .nav-btn:hover, .nav-btn.active { background: #0f172a; color: #ffffff; border-color: #0f172a; box-shadow: 0 4px 10px rgba(15,23,42,0.2);}
+        .nav-btn.logout { background: #fee2e2; color: #ef4444; border-color: #fca5a5; } .nav-btn.logout:hover { background: #ef4444; color: #ffffff; }
 
         .container { max-width: 1200px; margin: 50px auto; padding: 0 20px; text-align: center; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 40px; }
         
         .app-card { background: #ffffff; border: 2px solid #e2e8f0; border-radius: 24px; padding: 50px 30px; text-decoration: none; color: #0f172a; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .app-card:hover { transform: translateY(-8px); border-color: #0ea5e9; box-shadow: 0 20px 40px rgba(14,165,233,0.15); }
-        .icon { font-size: 60px; background: #f0f9ff; padding: 20px; border-radius: 20px; color: #0ea5e9;}
-        .title { font-weight: 900; font-size: 22px; text-transform: uppercase; letter-spacing: 1px; font-family: 'Space Grotesk', sans-serif;}
+        .app-card:hover { transform: translateY(-8px); border-color: #ea580c; box-shadow: 0 20px 40px rgba(234,88,12,0.15); }
+        .icon { font-size: 60px; background: #fff7ed; padding: 20px; border-radius: 20px; border: 1px solid #ffedd5;}
+        .title { font-weight: 900; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; font-family: 'Space Grotesk', sans-serif;}
     </style>
 </head>
 <body>
@@ -38,10 +38,10 @@
         </div>
     </nav>
     <div class="container">
-        <h1 style="font-family:'Space Grotesk', sans-serif; font-size:36px; color:#0ea5e9; text-transform:uppercase;">Select Module</h1>
+        <h1 style="font-family:'Space Grotesk', sans-serif; font-size:32px; color:#ea580c; text-transform:uppercase;">Select Module</h1>
         <div class="grid">
             <a href="inwarding.html" class="app-card"><span class="icon">📦</span><span class="title">RM Inwarding</span></a>
-            <a href="scanner.html" class="app-card" style="border-color:#0ea5e9; border-width:3px;"><span class="icon">🏭</span><span class="title">Batch Scanner</span></a>
+            <a href="scanner.html" class="app-card"><span class="icon">🏭</span><span class="title">Batch Scanner</span></a>
             <a href="audit.html" class="app-card"><span class="icon">📋</span><span class="title">Stock Audit</span></a>
             <a href="dashboard.html" class="app-card"><span class="icon">📊</span><span class="title">Manager Dashboard</span></a>
             <a href="master.html" class="app-card"><span class="icon">⚙️</span><span class="title">Master Data</span></a>
