@@ -6,13 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        /* 🔥 PREMIUM INDUSTRIAL RESET 🔥 */
+        /* 🔥 PREMIUM INDUSTRIAL + AMBIENT RESET 🔥 */
         :root {
             --kilrr-orange: #ea580c;
             --kilrr-orange-hover: #c2410c;
-            --navy-command: #0b1121; /* Deep industrial navy */
-            --bg-industrial: #e2e8f0; /* Soft grey backdrop */
-            --card-white: #ffffff;
+            --navy-command: #0b1121;
+            --card-white: rgba(255, 255, 255, 0.95); /* Slight transparency to let the glow bleed through */
             --text-dark: #0f172a;
             --text-mid: #334155;
             --border-heavy: #cbd5e1;
@@ -20,8 +19,24 @@
             --danger-red: #dc2626;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-industrial); color: var(--text-dark); margin: 0; padding-bottom: 80px; -webkit-font-smoothing: antialiased; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f8fafc; 
+            color: var(--text-dark); 
+            margin: 0; 
+            padding-bottom: 80px; 
+            -webkit-font-smoothing: antialiased; 
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
         
+        /* 🔥 THE GLOWING AMBIENT ORBS (From the previous design) 🔥 */
+        .bg-orb { position: absolute; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.6; animation: floatOrb 15s ease-in-out infinite alternate; pointer-events: none;}
+        .orb-1 { width: 600px; height: 600px; background: rgba(234, 88, 12, 0.35); top: -100px; left: -150px; }
+        .orb-2 { width: 700px; height: 700px; background: rgba(56, 189, 248, 0.25); bottom: -200px; right: -150px; animation-delay: -5s; }
+        @keyframes floatOrb { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(60px) scale(1.1); } }
+
         /* 🔥 THE NAVY COMMAND BAR 🔥 */
         .nav-top { background: var(--navy-command); border-bottom: 6px solid var(--kilrr-orange); padding: 0 40px; display: flex; justify-content: space-between; align-items: center; height: 90px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
         .brand { display: flex; align-items: center; gap: 15px; font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 900; color: #ffffff; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;}
@@ -39,19 +54,19 @@
         .container { max-width: 1500px; margin: 40px auto; padding: 0 40px; display: grid; grid-template-columns: 1fr; gap: 40px;}
         @media(min-width: 1024px){ .container{grid-template-columns: 1fr 1fr;} }
         
-        /* 🔥 BOLD WHITE CARDS 🔥 */
-        .card { background: var(--card-white); border: 2px solid var(--border-heavy); border-radius: 20px; padding: 50px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
+        /* 🔥 BOLD HEAVY-DUTY CARDS 🔥 */
+        .card { background: var(--card-white); backdrop-filter: blur(20px); border: 2px solid var(--border-heavy); border-radius: 20px; padding: 50px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
         .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: var(--kilrr-orange); }
         .card-right::before { background: var(--success-green); }
 
-        h2 { margin: 0 0 35px 0; font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 900; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px; border-bottom: 3px solid var(--bg-industrial); padding-bottom: 20px;}
+        h2 { margin: 0 0 35px 0; font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 900; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px; border-bottom: 3px solid #e2e8f0; padding-bottom: 20px;}
         
         /* 🔥 MASSIVE HIGH-VISIBILITY INPUTS 🔥 */
         .form-group { margin-bottom: 30px; }
         label { display: block; font-size: 16px; font-weight: 800; color: var(--text-mid); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px; }
         
-        input, select { width: 100%; padding: 22px; box-sizing: border-box; border-radius: 12px; border: 3px solid var(--border-heavy); font-size: 20px; font-family: 'Inter', sans-serif; font-weight: 700; color: var(--text-dark); background: #f8fafc; transition: all 0.2s ease;}
-        input:focus, select:focus { border-color: var(--kilrr-orange); background: #ffffff; outline: none; box-shadow: 0 0 0 5px rgba(234, 88, 12, 0.15); }
+        input, select { width: 100%; padding: 22px; box-sizing: border-box; border-radius: 12px; border: 3px solid var(--border-heavy); font-size: 20px; font-family: 'Inter', sans-serif; font-weight: 700; color: var(--text-dark); background: #ffffff; transition: all 0.2s ease;}
+        input:focus, select:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 5px rgba(234, 88, 12, 0.15); }
         input::placeholder { color: #94a3b8; font-weight: 600; }
 
         .print-range-row { display: flex; gap: 25px; margin-bottom: 40px; }
@@ -60,7 +75,7 @@
 
         /* 🔥 CUSTOM DROPDOWNS 🔥 */
         .custom-dropdown-container { position: relative; width: 100%; }
-        .custom-dropdown-list { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: var(--card-white); border: 3px solid var(--kilrr-orange); border-radius: 12px; max-height: 350px; overflow-y: auto; z-index: 9999; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2); display: none; padding: 10px; }
+        .custom-dropdown-list { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: #ffffff; border: 3px solid var(--kilrr-orange); border-radius: 12px; max-height: 350px; overflow-y: auto; z-index: 9999; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2); display: none; padding: 10px; }
         .custom-dropdown-item { padding: 18px 20px; font-size: 18px; font-weight: 700; color: var(--text-dark); border-radius: 8px; cursor: pointer; transition: 0.1s; margin-bottom: 4px; border: 2px solid transparent;}
         .custom-dropdown-item:hover, .custom-dropdown-item.active-item { background: #fff7ed; color: var(--kilrr-orange); border-color: #ffedd5;}
 
@@ -103,6 +118,9 @@
     </style>
 </head>
 <body>
+
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
 
     <nav class="nav-top">
         <a href="index.html" class="brand">
