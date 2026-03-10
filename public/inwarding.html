@@ -1,159 +1,203 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Kilrr - RM Inwarding</title>
+    <meta charset="UTF-8">
+    <title>Kilrr Traceability - RM Inwarding</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;900&family=Outfit:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* 🔥 THE MODERN ENGINEERING MESH BACKGROUND 🔥 */
-        body { font-family: 'Outfit', sans-serif; background-color: #f4f7f9; background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px); background-size: 30px 30px; color: #0f172a; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
-        
-        /* 🔥 FLOATING FROSTED PILL NAVBAR 🔥 */
-        .nav-wrapper { position: sticky; top: 20px; z-index: 1000; padding: 0 20px; animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-        .nav-top { max-width: 1200px; margin: 0 auto; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.4); padding: 15px 30px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; box-shadow: 0 20px 40px rgba(0,0,0,0.04); border-radius: 50px; }
-        .brand { display: flex; align-items: center; gap: 15px; font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: #ea580c; letter-spacing: 1px; text-decoration: none; text-transform: uppercase;}
-        .brand img { height: 35px; }
-        .nav-links { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .nav-btn { text-decoration: none; padding: 12px 24px; color: #64748b; font-weight: 700; font-size: 14px; text-transform: uppercase; border-radius: 30px; transition: all 0.3s ease; letter-spacing: 1px;}
-        .nav-btn:hover { background: rgba(234, 88, 12, 0.08); color: #ea580c; transform: translateY(-2px);}
-        .nav-btn.active { background: #ea580c; color: #ffffff; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.25); }
-        .nav-btn.logout { color: #ef4444; } .nav-btn.logout:hover { background: #fef2f2; color: #ef4444; }
+        /* CORE ENTERPRISE RESET */
+        :root {
+            --primary: #ea580c; /* Kilrr Orange */
+            --primary-hover: #c2410c;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-light: #e2e8f0;
+            --border-input: #cbd5e1;
+            --success: #059669;
+            --success-hover: #047857;
+            --danger: #dc2626;
+            --danger-light: #fef2f2;
+        }
 
-        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding-bottom: 80px; -webkit-font-smoothing: antialiased; }
+        
+        /* FULL-WIDTH EDGE-TO-EDGE NAVBAR */
+        .nav-top { background: var(--card-bg); border-bottom: 1px solid var(--border-light); padding: 0 40px; display: flex; justify-content: space-between; align-items: center; height: 80px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .brand { display: flex; align-items: center; gap: 12px; font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 800; color: var(--text-main); text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px;}
+        .brand img { height: 36px; }
+        
+        .nav-links { display: flex; gap: 4px; height: 100%; align-items: center;}
+        .nav-btn { text-decoration: none; padding: 10px 16px; color: var(--text-muted); font-weight: 600; font-size: 14px; border-radius: 6px; transition: 0.2s; position: relative;}
+        .nav-btn:hover { background: var(--bg-color); color: var(--text-main); }
+        .nav-btn.active { color: var(--primary); background: #fff7ed; font-weight: 700;}
+        .nav-btn.logout { color: var(--danger); } 
+        .nav-btn.logout:hover { background: var(--danger-light); }
 
-        /* 🔥 PREMIUM SOFT UI CARDS 🔥 */
-        .container { max-width: 1300px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr; gap: 40px;}
-        @media(min-width: 1024px){ .container{grid-template-columns: 1fr 1fr;} }
+        /* WIDE ENTERPRISE GRID */
+        .container { max-width: 1440px; margin: 40px auto; padding: 0 40px; display: grid; grid-template-columns: 1fr; gap: 32px;}
+        @media(min-width: 1024px){ .container{grid-template-columns: repeat(2, 1fr);} }
         
-        .card { background: #ffffff; border-radius: 32px; padding: 50px; box-shadow: 0 20px 50px -10px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02); animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(30px); }
-        .card-right { animation-delay: 0.15s; }
-        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        /* SHARP CARDS */
+        .card { background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); }
+        .card-header { display: flex; align-items: center; border-bottom: 1px solid var(--border-light); padding-bottom: 20px; margin-bottom: 30px; }
+        .card-header h2 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px;}
+        
+        /* HIGH-LEGIBILITY INPUTS */
+        .form-group { margin-bottom: 24px; }
+        label { display: block; font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+        input, select { width: 100%; padding: 16px; box-sizing: border-box; border-radius: 8px; border: 1px solid var(--border-input); font-size: 16px; font-family: 'Inter', sans-serif; font-weight: 500; color: var(--text-main); background: #ffffff; transition: all 0.2s ease; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);}
+        input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.2); }
+        input::placeholder { color: #94a3b8; }
 
-        h2 { font-family: 'Space Grotesk', sans-serif; color: #0f172a; margin-top: 0; margin-bottom: 30px; font-size: 28px; text-transform: uppercase; letter-spacing: 1px; font-weight: 900; position: relative;}
-        h2::after { content: ''; position: absolute; left: 0; bottom: -10px; width: 40px; height: 4px; background: #ea580c; border-radius: 2px;}
-        
-        label { display: block; font-weight: 800; color: #64748b; font-size: 12px; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1.5px;}
-        input, select { width: 100%; padding: 22px 25px; box-sizing: border-box; border-radius: 16px; border: 2px solid transparent; background: #f4f7f9; font-size: 18px; font-family: 'Outfit', sans-serif; font-weight: 700; color: #0f172a; margin-bottom: 25px; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);}
-        input:focus, select:focus { background: #ffffff; border-color: #ea580c; outline: none; box-shadow: 0 10px 25px rgba(234, 88, 12, 0.1); transform: translateY(-2px); }
-        
-        .print-range-row { display: flex; gap: 20px; margin-bottom: 10px; }
+        .print-range-row { display: flex; gap: 20px; margin-bottom: 32px; }
         .print-range-row > div { flex: 1; }
-        .print-range-row input { text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 22px;}
+        .print-range-row input { text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700;}
 
-        /* Custom Dropdowns with Keyboard Support */
+        /* PRECISION DROPDOWNS */
         .custom-dropdown-container { position: relative; width: 100%; }
-        .custom-dropdown-list { position: absolute; top: calc(100% - 15px); left: 0; right: 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; max-height: 280px; overflow-y: auto; z-index: 9999; box-shadow: 0 20px 40px rgba(0,0,0,0.1); display: none; padding: 10px; }
-        .custom-dropdown-item { padding: 18px 20px; font-size: 16px; font-weight: 700; color: #0f172a; border-radius: 10px; cursor: pointer; transition: 0.2s; margin-bottom: 2px;}
-        .custom-dropdown-item:hover, .custom-dropdown-item.active-item { background: #fff7ed; color: #ea580c; padding-left: 25px; }
+        .custom-dropdown-list { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 8px; max-height: 300px; overflow-y: auto; z-index: 9999; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); display: none; padding: 8px; }
+        .custom-dropdown-item { padding: 14px 16px; font-size: 15px; font-weight: 500; color: var(--text-main); border-radius: 6px; cursor: pointer; transition: 0.1s; }
+        .custom-dropdown-item:hover, .custom-dropdown-item.active-item { background: #fff7ed; color: var(--primary); font-weight: 600;}
 
-        /* Elegant Buttons */
-        button { width: 100%; padding: 22px; border: none; border-radius: 16px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 16px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 15px; position: relative;}
+        /* INDUSTRIAL BUTTONS */
+        button { width: 100%; padding: 18px; border: none; border-radius: 8px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s ease; margin-bottom: 12px; }
         
-        .btn-primary { background: #0f172a; color: #ffffff; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2); }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(15, 23, 42, 0.3); background: #1e293b;}
+        .btn-primary { background: var(--primary); color: #ffffff; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25); }
         
-        .btn-secondary { background: transparent; color: #64748b; border: 2px solid #e2e8f0; }
-        .btn-secondary:hover { background: #f8fafc; color: #0f172a; border-color: #cbd5e1; }
+        .btn-secondary { background: #ffffff; color: var(--text-main); border: 1px solid var(--border-input); box-shadow: 0 1px 2px rgba(0,0,0,0.05);}
+        .btn-secondary:hover { background: var(--bg-color); border-color: var(--border-light); }
 
-        .btn-print { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3); font-size: 20px;}
-        .btn-print:hover { transform: translateY(-4px); box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);}
-        .btn-print.pulse-anim { animation: smoothPulse 2s infinite; }
+        .btn-print { background: var(--success); color: white; font-size: 18px; margin-top: 10px;}
+        .btn-print:hover { background: var(--success-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);}
         
-        @keyframes smoothPulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+        .btn-remove-queue { width: auto; padding: 8px 16px; margin: 0; font-size: 13px; background: #ffffff; color: var(--danger); border: 1px solid #fecaca; border-radius: 6px; font-weight: 600;}
+        .btn-remove-queue:hover { background: var(--danger-light); border-color: #f87171;}
 
-        .btn-remove-queue { width: auto; padding: 12px 20px; margin: 0; font-size: 13px; background: transparent; color: #ef4444; border: 2px solid #fecaca; border-radius: 10px; letter-spacing: 1px;}
-        .btn-remove-queue:hover { background: #ef4444; color: white; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(239,68,68,0.2);}
-
-        /* 3D Label Preview */
-        .print-preview { background: #ffffff; color: #000000; padding: 40px; text-align: center; font-family: sans-serif; border-radius: 20px; margin-bottom: 30px; border: 2px dashed #cbd5e1; transition: all 0.4s ease; display: flex; justify-content: center; align-items: center; min-height: 200px;}
-        .print-preview.active-preview { border-style: solid; border-color: #e2e8f0; box-shadow: 0 20px 40px rgba(0,0,0,0.06); transform: scale(1.02); }
+        /* CLEAN PREVIEW & QUEUE */
+        .print-preview { background: #ffffff; padding: 40px; text-align: center; border-radius: 8px; margin-bottom: 24px; border: 2px dashed var(--border-input); display: flex; justify-content: center; align-items: center; min-height: 250px; transition: border-color 0.2s;}
+        .print-preview.active-preview { border-style: solid; border-color: var(--border-light); background: #f8fafc; }
         
-        #queueList { margin-bottom: 30px; }
-        .queue-item-anim { background: #f8fafc; padding: 20px 25px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border: 1px solid #e2e8f0; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; transition: 0.3s;}
-        .queue-item-anim:hover { background: #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,0.03); transform: translateX(5px);}
+        #queueList { margin-bottom: 24px; }
+        .queue-item { background: #ffffff; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border: 1px solid var(--border-light); box-shadow: 0 1px 3px rgba(0,0,0,0.02);}
 
-        /* Premium Toggle Switch */
-        .toggle-box { background: #ffffff; padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 30px; display: flex; align-items: center; gap: 20px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.02);}
-        .toggle-box:hover { border-color: #ea580c; box-shadow: 0 10px 25px rgba(234,88,12,0.1); transform: translateY(-2px);}
-        .toggle-box input[type="checkbox"] { width: 28px; height: 28px; margin: 0; cursor: pointer; accent-color: #ea580c;}
-        .toggle-text { display: flex; flex-direction: column; gap: 6px; }
-        .toggle-title { color: #0f172a; font-size: 16px; font-weight: 900; font-family: 'Space Grotesk', sans-serif; text-transform: uppercase; letter-spacing: 1px;}
-        .toggle-desc { color: #64748b; font-size: 13px; font-weight: 500; line-height: 1.5;}
+        /* FUNCTIONAL TOGGLE */
+        .toggle-box { background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid var(--border-input); margin-bottom: 24px; display: flex; align-items: flex-start; gap: 16px; cursor: pointer; transition: 0.2s; }
+        .toggle-box:hover { border-color: var(--primary); background: #fff7ed;}
+        .toggle-box input[type="checkbox"] { width: 24px; height: 24px; margin: 0; margin-top: 2px; cursor: pointer; accent-color: var(--primary);}
+        .toggle-text { display: flex; flex-direction: column; gap: 4px; }
+        .toggle-title { color: var(--text-main); font-size: 15px; font-weight: 700; }
+        .toggle-desc { color: var(--text-muted); font-size: 13px; font-weight: 400; line-height: 1.4;}
+        
+        @media (max-width: 768px) {
+            .nav-top { padding: 0 20px; height: auto; padding-top: 15px; padding-bottom: 15px; }
+            .container { padding: 0 15px; }
+            .card { padding: 24px; }
+            .print-range-row { flex-direction: column; gap: 12px; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="nav-wrapper">
-        <nav class="nav-top">
-            <a href="index.html" class="brand"><img src="logo.png" alt="Kilrr" onerror="this.style.display='none'"> Factory OS</a>
-            <div class="nav-links">
-                <a href="index.html" class="nav-btn">Hub</a>
-                <a href="inwarding.html" class="nav-btn active">Inwarding</a>
-                <a href="scanner.html" class="nav-btn">Scanner</a>
-                <a href="audit.html" class="nav-btn">Audit</a>
-                <a href="dashboard.html" class="nav-btn">Dashboard</a>
-                <a href="master.html" class="nav-btn">Master Data</a>
-                <a href="/api/logout" class="nav-btn logout">Exit</a>
-            </div>
-        </nav>
-    </div>
+    <nav class="nav-top">
+        <a href="index.html" class="brand">
+            <img src="logo.png" alt="Kilrr" onerror="this.style.display='none'">
+            Factory OS
+        </a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn">Hub</a>
+            <a href="inwarding.html" class="nav-btn active">Inwarding</a>
+            <a href="scanner.html" class="nav-btn">Scanner</a>
+            <a href="audit.html" class="nav-btn">Audit</a>
+            <a href="dashboard.html" class="nav-btn">Dashboard</a>
+            <a href="master.html" class="nav-btn">Master Data</a>
+            <a href="/api/logout" class="nav-btn logout">Exit</a>
+        </div>
+    </nav>
     
     <div class="container">
-        <div class="card card-left">
-            <h2>Material Intake</h2>
+        <div class="card">
+            <div class="card-header">
+                <h2>Material Intake Setup</h2>
+            </div>
+            
             <div style="display:flex; gap:20px;">
-                <div style="flex:1;"><label>Date Received</label><input type="date" id="date" onchange="updatePreview()"></div>
-                <div style="flex:1;"><label>Net Wt / Bag (KG)</label><input type="number" id="wt" placeholder="e.g. 25" oninput="updatePreview()"></div>
+                <div class="form-group" style="flex:1;">
+                    <label>Date Received</label>
+                    <input type="date" id="date" onchange="updatePreview()">
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>Net Wt / Bag (KG)</label>
+                    <input type="number" id="wt" placeholder="e.g. 25" oninput="updatePreview()">
+                </div>
             </div>
             
-            <label>Raw Material</label>
-            <div class="custom-dropdown-container">
-                <input type="text" id="ing_input" placeholder="Search Material Database..." autocomplete="off">
+            <div class="form-group">
+                <label>Raw Material</label>
+                <div class="custom-dropdown-container">
+                    <input type="text" id="ing_input" placeholder="Search Master Database..." autocomplete="off">
+                </div>
+                <input type="hidden" id="ing_code"><input type="hidden" id="ing_name">
             </div>
-            <input type="hidden" id="ing_code"><input type="hidden" id="ing_name">
             
-            <label>Supplier / Vendor</label>
-            <div class="custom-dropdown-container">
-                <input type="text" id="ven_input" placeholder="Search Vendor Database..." autocomplete="off">
+            <div class="form-group">
+                <label>Supplier / Vendor</label>
+                <div class="custom-dropdown-container">
+                    <input type="text" id="ven_input" placeholder="Search Vendor Database..." autocomplete="off">
+                </div>
+                <input type="hidden" id="ven_code"><input type="hidden" id="ven_name">
             </div>
-            <input type="hidden" id="ven_code"><input type="hidden" id="ven_name">
             
             <div class="print-range-row">
-                <div><label>Total Bags</label><input type="number" id="packs" placeholder="Total" oninput="autoFillRange(); updatePreview();"></div>
-                <div><label>Print Start</label><input type="number" id="start_no" placeholder="1" oninput="updatePreview()"></div>
-                <div><label>Print End</label><input type="number" id="end_no" placeholder="Max" oninput="updatePreview()"></div>
+                <div class="form-group">
+                    <label>Total Bags</label>
+                    <input type="number" id="packs" placeholder="Qty" oninput="autoFillRange(); updatePreview();">
+                </div>
+                <div class="form-group">
+                    <label>Print Start</label>
+                    <input type="number" id="start_no" placeholder="1" oninput="updatePreview()">
+                </div>
+                <div class="form-group">
+                    <label>Print End</label>
+                    <input type="number" id="end_no" placeholder="Max" oninput="updatePreview()">
+                </div>
             </div>
 
             <button class="btn-primary" onclick="addToQueue()">Stage To Print Queue</button>
             <button class="btn-secondary" onclick="clearForm()">Reset Interface</button>
         </div>
 
-        <div class="card card-right">
-            <h2>Print Engine</h2>
+        <div class="card">
+            <div class="card-header">
+                <h2>Print Execution</h2>
+            </div>
             
-            <div style="display: none;">
+            <div class="form-group" style="display: none;">
                 <select id="printer_size"><option value="75x75">75mm x 75mm</option></select>
             </div>
             
             <label>Label Preview</label>
             <div class="print-preview" id="previewBox">
-                <span style="color:#94a3b8; font-weight:700; font-size:16px;">Awaiting Data Input...</span>
+                <span style="color:#94a3b8; font-weight:600; font-size:15px;">Awaiting Data Input...</span>
             </div>
             
             <label>Active Print Queue</label>
             <div id="queueList">
-                <span style="color:#94a3b8; font-size: 14px; font-weight: 500;">No labels staged for printing.</span>
+                <span style="color:#94a3b8; font-size: 14px; font-weight: 500;">No labels staged.</span>
             </div>
 
             <div class="toggle-box" onclick="toggleCheckbox()">
                 <input type="checkbox" id="log_db_check" checked onclick="event.stopPropagation()">
                 <div class="toggle-text">
-                    <span class="toggle-title">Sync to Cloud Database</span>
+                    <span class="toggle-title">Log to Database Dashboard</span>
                     <span class="toggle-desc">Uncheck this box to disable analytics syncing if you are re-printing damaged labels.</span>
                 </div>
             </div>
 
-            <button id="mainPrintBtn" class="btn-print" onclick="printAll()">Execute Print Sequence</button>
+            <button class="btn-print" onclick="printAll()">Execute Print Sequence</button>
         </div>
     </div>
     
@@ -238,7 +282,7 @@
             const pBox = document.getElementById('previewBox');
 
             if(!iCode || !vCode) { 
-                pBox.innerHTML=`<span style="color:#94a3b8; font-weight:700; font-size:16px;">Awaiting Data Input...</span>`; 
+                pBox.innerHTML=`<span style="color:#94a3b8; font-weight:600; font-size:15px;">Awaiting Data Input...</span>`; 
                 pBox.classList.remove('active-preview');
                 return; 
             }
@@ -248,13 +292,12 @@
             const dObj = new Date(dateRaw); const dd = String(dObj.getDate()).padStart(2, '0'); const mm = String(dObj.getMonth()+1).padStart(2, '0'); const yyyy = dObj.getFullYear();
             const displayDate = `${dd}/${mm}/${yyyy}`; const barcodeDate = `${dd}${mm}`; const bc = `${barcodeDate}/${iCode}/${vCode}/${startNo}`;
 
-            // Format strictly matches thermal printer output
             pBox.innerHTML=`
                 <div style="font-family: Arial, sans-serif; color: black; max-width: 250px; margin: 0 auto; text-align: center;">
                     <h2 style="margin:0 0 5px 0; font-size:24px; text-transform:uppercase; font-weight:900; letter-spacing:0;">${iName}</h2>
                     <div style="margin:0 0 10px 0; font-size:14px; font-weight:bold;">Mat: ${iCode} | Ven: ${vCode}</div>
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${bc}" style="margin:0 0 5px 0; width:160px; height:160px; border:2px solid black; padding:4px; border-radius:8px;">
-                    <div style="margin:0 0 8px 0; font-size:18px; font-weight:900; font-family:'Space Grotesk', sans-serif;">${bc}</div>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${bc}" style="margin:0 0 5px 0; width:160px; height:160px; border:2px solid black; padding:4px; border-radius:4px;">
+                    <div style="margin:0 0 8px 0; font-size:18px; font-weight:900; font-family:Arial, sans-serif;">${bc}</div>
                     <div style="margin:0 0 3px 0; font-size:14px; font-weight:bold;">Date: ${displayDate}</div>
                     <div style="margin:0; font-size:14px; font-weight:bold;">Net Wt: ${wt} KG</div>
                 </div>
@@ -275,22 +318,18 @@
         }
 
         function renderQueue(){ 
-            const printBtn = document.getElementById('mainPrintBtn');
             if(queue.length===0){
-                document.getElementById('queueList').innerHTML="<span style='color:#94a3b8; font-size: 14px; font-weight: 500;'>No labels staged for printing.</span>";
-                printBtn.classList.remove('pulse-anim');
+                document.getElementById('queueList').innerHTML="<span style='color:#94a3b8; font-size: 14px; font-weight: 500;'>No labels staged.</span>";
                 return;
             } 
-            
-            printBtn.classList.add('pulse-anim'); 
             
             document.getElementById('queueList').innerHTML=queue.map((q,idx)=> { 
                 const numTags = q.endNo - q.startNo + 1; 
                 return `
-                <div class="queue-item-anim">
+                <div class="queue-item">
                     <div>
-                        <span style="color:#0f172a; font-size:18px; font-weight:900; display:block; margin-bottom:4px;">${q.ingName} (${q.weight}kg)</span>
-                        <span style="color:#64748b; font-size:13px; font-weight:600; font-family:'Outfit', sans-serif;">Printing ${numTags} tags (Bag ${q.startNo} to ${q.endNo})</span>
+                        <span style="color:#0f172a; font-size:16px; font-weight:700; display:block; margin-bottom:4px;">${q.ingName} (${q.weight}kg)</span>
+                        <span style="color:#64748b; font-size:13px; font-weight:500;">Printing ${numTags} tags (Bag ${q.startNo} to ${q.endNo})</span>
                     </div>
                     <button class="btn-remove-queue" onclick="removeFromQueue(${idx})">Remove</button>
                 </div>`; 
