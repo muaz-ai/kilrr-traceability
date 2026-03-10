@@ -5,58 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;900&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Outfit', sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 50px; }
-        .nav-top { background: #ffffff; border-bottom: 6px solid #ea580c; padding: 20px 35px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 1000; }
-        .brand { display: flex; align-items: center; gap: 15px; font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 900; color: #0f172a; letter-spacing: 1px; text-decoration: none; text-transform: uppercase;}
+        /* 🔥 AMBIENT BACKGROUND & CORE SETUP 🔥 */
+        body { font-family: 'Outfit', sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 50px; overflow-x: hidden; position: relative;}
+        
+        .bg-orb { position: absolute; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.5; animation: floatOrb 15s ease-in-out infinite alternate; pointer-events: none;}
+        .orb-1 { width: 500px; height: 500px; background: #ea580c; top: -100px; left: -100px; }
+        .orb-2 { width: 600px; height: 600px; background: #38bdf8; bottom: -200px; right: -100px; animation-delay: -5s; }
+        @keyframes floatOrb { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(50px) scale(1.1); } }
+
+        /* NAVBAR */
+        .nav-top { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); border-bottom: 6px solid #ea580c; padding: 20px 35px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .brand { display: flex; align-items: center; gap: 15px; font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 900; color: #0f172a; letter-spacing: 1px; text-decoration: none; text-transform: uppercase; transition: 0.3s;}
+        .brand:hover { transform: scale(1.02); }
         .brand img { height: 45px; }
         .nav-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 15px; width: 100%; justify-content: center; }
         @media(min-width: 1000px){ .nav-links { width: auto; margin-top: 0; } }
-        .nav-btn { text-decoration: none; padding: 12px 20px; color: #475569; font-weight: 900; font-size: 15px; text-transform: uppercase; border-radius: 10px; transition: 0.3s; background: #f1f5f9; border: 2px solid transparent; letter-spacing: 1px;}
-        .nav-btn:hover { background: #fff7ed; color: #ea580c; border-color: #ffedd5; transform: translateY(-2px);}
+        .nav-btn { text-decoration: none; padding: 12px 20px; color: #475569; font-weight: 900; font-size: 15px; text-transform: uppercase; border-radius: 10px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: #f1f5f9; border: 2px solid transparent; letter-spacing: 1px;}
+        .nav-btn:hover { background: #fff7ed; color: #ea580c; border-color: #ffedd5; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(234, 88, 12, 0.15);}
         .nav-btn.active { background: #ea580c; color: #ffffff; box-shadow: 0 6px 15px rgba(234, 88, 12, 0.3); }
         .nav-btn.logout { background: #fef2f2; color: #ef4444; } .nav-btn.logout:hover { background: #ef4444; color: #ffffff; border-color: #ef4444;}
 
+        /* STAGGERED CARDS */
         .container { max-width: 1300px; margin: 50px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr; gap: 40px;}
         @media(min-width: 1000px){ .container{grid-template-columns: 1fr 1fr;} }
         
-        .card { background: #ffffff; border-radius: 24px; padding: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; border-top: 8px solid #ea580c;}
+        .card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 24px; padding: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.4); border-top: 8px solid #ea580c; opacity: 0; transform: translateY(30px); }
+        
+        /* Entrance Animations */
+        .card-left { animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards; }
+        .card-right { animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards; }
+        
+        @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.9) translateY(10px); } 70% { transform: scale(1.02) translateY(-2px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+
         h2 { font-family: 'Space Grotesk', sans-serif; color: #0f172a; margin-top: 0; border-bottom: 3px solid #f1f5f9; padding-bottom: 20px; font-size: 26px; text-transform: uppercase; letter-spacing: 1px;}
         
         label { display: block; font-weight: 900; color: #475569; font-size: 13px; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px;}
-        input, select { width: 100%; padding: 20px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 18px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #0f172a; margin-bottom: 25px; background: #f8fafc; transition: 0.2s; }
-        input:focus, select:focus { border-color: #ea580c; background: #ffffff; outline: none; box-shadow: 0 0 0 5px rgba(234, 88, 12, 0.15); }
+        input, select { width: 100%; padding: 20px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 18px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #0f172a; margin-bottom: 25px; background: #f8fafc; transition: all 0.3s ease; }
+        input:focus, select:focus { border-color: #ea580c; background: #ffffff; outline: none; box-shadow: 0 0 0 6px rgba(234, 88, 12, 0.15); transform: translateY(-2px); }
         
         .print-range-row { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 25px; }
         .print-range-row > div { flex: 1; min-width: 120px; }
         .print-range-row input { margin-bottom: 0; text-align: center;}
 
-        /* Custom Dropdowns */
+        /* Custom Dropdowns with Keyboard Support */
         .custom-dropdown-container { position: relative; width: 100%; }
-        .custom-dropdown-list { position: absolute; top: calc(100% - 20px); left: 0; right: 0; background: #ffffff; border: 2px solid #cbd5e1; border-radius: 12px; max-height: 280px; overflow-y: auto; z-index: 9999; box-shadow: 0 20px 50px rgba(0,0,0,0.15); display: none; }
+        .custom-dropdown-list { position: absolute; top: calc(100% - 20px); left: 0; right: 0; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); border: 2px solid #ea580c; border-radius: 12px; max-height: 280px; overflow-y: auto; z-index: 9999; box-shadow: 0 25px 50px rgba(234,88,12,0.2); display: none; animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         .custom-dropdown-item { padding: 18px 20px; font-size: 16px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s; }
         .custom-dropdown-item:last-child { border-bottom: none; }
-        .custom-dropdown-item:hover { background: #fff7ed; color: #ea580c; padding-left: 25px; border-left: 4px solid #ea580c; }
+        .custom-dropdown-item:hover, .custom-dropdown-item.active-item { background: #fff7ed; color: #ea580c; padding-left: 25px; border-left: 4px solid #ea580c; }
 
-        button { width: 100%; padding: 22px; border: none; border-radius: 12px; font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 18px; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: 0.2s; margin-bottom: 15px; }
-        .btn-primary { background: #ea580c; color: #ffffff; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3); }
-        .btn-primary:hover { background: #c2410c; transform: translateY(-3px); box-shadow: 0 12px 25px rgba(234, 88, 12, 0.4); }
+        /* Smooth Buttons */
+        button { width: 100%; padding: 22px; border: none; border-radius: 12px; font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 18px; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-bottom: 15px; position: relative; overflow: hidden;}
+        
+        .btn-primary { background: linear-gradient(135deg, #ea580c, #c2410c); color: #ffffff; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3); }
+        .btn-primary:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 15px 30px rgba(234, 88, 12, 0.4); }
+        .btn-primary:active { transform: translateY(0) scale(0.98); }
+        
         .btn-secondary { background: #f1f5f9; color: #475569; border: 2px solid #cbd5e1; }
-        .btn-print { background: #10b981; color: white; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3); font-size: 20px;}
-        .btn-print:hover { background: #059669; transform: translateY(-3px); box-shadow: 0 12px 25px rgba(16, 185, 129, 0.4);}
+        .btn-secondary:hover { background: #e2e8f0; color: #0f172a; transform: translateY(-2px); }
 
-        .print-preview { background: #ffffff; color: #000000; padding: 35px; text-align: center; font-family: sans-serif; border-radius: 16px; margin-bottom: 25px; border: 3px solid #cbd5e1; box-shadow: inset 0 0 20px rgba(0,0,0,0.05);}
+        .btn-print { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3); font-size: 20px;}
+        .btn-print:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);}
+        .btn-print.pulse-anim { animation: smoothPulse 2s infinite; }
+        
+        @keyframes smoothPulse { 
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); } 
+            70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); } 
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } 
+        }
+
+        .btn-remove-queue { width: auto; padding: 10px 15px; margin: 0; font-size: 14px; background: #fef2f2; color: #ef4444; border: 2px solid #fca5a5; box-shadow: none; border-radius: 8px;}
+        .btn-remove-queue:hover { background: #ef4444; color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(239,68,68,0.2);}
+
+        /* 3D Hover Preview */
+        .print-preview { background: #ffffff; color: #000000; padding: 35px; text-align: center; font-family: sans-serif; border-radius: 16px; margin-bottom: 25px; border: 3px solid #cbd5e1; box-shadow: inset 0 0 20px rgba(0,0,0,0.05); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s; perspective: 1000px;}
+        .print-preview:hover { transform: scale(1.02) rotateX(2deg) rotateY(-2deg); box-shadow: 15px 15px 30px rgba(0,0,0,0.1), inset 0 0 10px rgba(0,0,0,0.02); border-color:#94a3b8;}
+        
         #queueList { background: #f8fafc; padding: 25px; border-radius: 16px; border: 2px solid #e2e8f0; min-height: 120px; margin-bottom: 25px; font-family: 'Space Grotesk', monospace; color: #0f172a; font-size: 16px; font-weight: 700;}
+        .queue-item-anim { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
         /* Toggle Switch UI */
-        .toggle-box { background: #fff7ed; padding: 20px; border-radius: 16px; border: 2px solid #ffedd5; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; cursor: pointer; transition: 0.2s; }
-        .toggle-box:hover { background: #ffedd5; border-color: #fdba74; }
-        .toggle-box input[type="checkbox"] { width: 30px; height: 30px; margin: 0; cursor: pointer; accent-color: #ea580c; }
+        .toggle-box { background: #fff7ed; padding: 20px; border-radius: 16px; border: 2px solid #ffedd5; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; cursor: pointer; transition: all 0.3s ease; }
+        .toggle-box:hover { background: #ffedd5; border-color: #fdba74; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(234,88,12,0.1);}
+        .toggle-box input[type="checkbox"] { width: 30px; height: 30px; margin: 0; cursor: pointer; accent-color: #ea580c; transition: 0.2s;}
         .toggle-text { display: flex; flex-direction: column; gap: 4px; }
         .toggle-title { color: #ea580c; font-size: 18px; font-weight: 900; font-family: 'Space Grotesk', sans-serif; text-transform: uppercase;}
         .toggle-desc { color: #475569; font-size: 14px; font-weight: 700; line-height: 1.4;}
     </style>
 </head>
 <body>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
     <nav class="nav-top">
         <a href="index.html" class="brand"><img src="logo.png" alt="Kilrr" onerror="this.style.display='none'"> Factory OS</a>
         <div class="nav-links">
@@ -69,8 +111,9 @@
             <a href="/api/logout" class="nav-btn logout">🚪 EXIT</a>
         </div>
     </nav>
+    
     <div class="container">
-        <div class="card">
+        <div class="card card-left">
             <h2>Material Intake & Print Range</h2>
             <div style="display:flex; gap:20px;">
                 <div style="flex:1;"><label>Date Received</label><input type="date" id="date" onchange="updatePreview()"></div>
@@ -79,13 +122,13 @@
             
             <label>Ingredient</label>
             <div class="custom-dropdown-container">
-                <input type="text" id="ing_input" placeholder="Tap to select Material..." autocomplete="off">
+                <input type="text" id="ing_input" placeholder="Tap or type to select Material..." autocomplete="off">
             </div>
             <input type="hidden" id="ing_code"><input type="hidden" id="ing_name">
             
             <label>Vendor</label>
             <div class="custom-dropdown-container">
-                <input type="text" id="ven_input" placeholder="Tap to select Vendor..." autocomplete="off">
+                <input type="text" id="ven_input" placeholder="Tap or type to select Vendor..." autocomplete="off">
             </div>
             <input type="hidden" id="ven_code"><input type="hidden" id="ven_name">
             
@@ -98,7 +141,8 @@
             <button class="btn-primary" onclick="addToQueue()">➕ Stage for Printing</button>
             <button class="btn-secondary" onclick="clearForm()">Reset Form</button>
         </div>
-        <div class="card">
+
+        <div class="card card-right">
             <h2>Thermal Print Queue</h2>
             <label>Select Printer Config</label>
             <select id="printer_size"><option value="75x75">75mm x 75mm (Industrial)</option><option value="100x150">100mm x 150mm (Large)</option></select>
@@ -117,7 +161,7 @@
                 </div>
             </div>
 
-            <button class="btn-print" onclick="printAll()">🖨️ EXECUTE PRINT JOB</button>
+            <button id="mainPrintBtn" class="btn-print" onclick="printAll()">🖨️ EXECUTE PRINT JOB</button>
         </div>
     </div>
     
@@ -127,19 +171,67 @@
         function toggleCheckbox() { const cb = document.getElementById('log_db_check'); cb.checked = !cb.checked; }
         function autoFillRange() { const total = document.getElementById('packs').value; if(total) { document.getElementById('start_no').value = 1; document.getElementById('end_no').value = total; } else { document.getElementById('start_no').value = ''; document.getElementById('end_no').value = ''; } }
 
+        // Upgraded Custom Dropdown with Keyboard Navigation
         function attachCustomDropdown(inputId, dataArray, searchKey, displayKey, codeKey, nameHiddenId, codeHiddenId) {
-            const inp = document.getElementById(inputId); const list = document.createElement('div'); list.className = 'custom-dropdown-list'; inp.parentNode.appendChild(list);
+            const inp = document.getElementById(inputId); 
+            const list = document.createElement('div'); 
+            list.className = 'custom-dropdown-list'; 
+            inp.parentNode.appendChild(list);
+            let currentFocus = -1;
+
             function renderList(filterTxt = "") {
-                list.innerHTML = ''; const matches = dataArray.filter(item => item[searchKey].toLowerCase().includes(filterTxt.toLowerCase()) || item[codeKey].toLowerCase().includes(filterTxt.toLowerCase()));
+                list.innerHTML = ''; 
+                currentFocus = -1;
+                const matches = dataArray.filter(item => item[searchKey].toLowerCase().includes(filterTxt.toLowerCase()) || item[codeKey].toLowerCase().includes(filterTxt.toLowerCase()));
                 if(matches.length === 0) { list.style.display = 'none'; return; }
+                
                 matches.forEach(match => {
-                    let div = document.createElement('div'); div.className = 'custom-dropdown-item'; div.innerHTML = `<strong>${match[codeKey]}</strong> - ${match[displayKey]}`;
-                    div.onclick = () => { inp.value = match[displayKey]; document.getElementById(nameHiddenId).value = match[displayKey]; document.getElementById(codeHiddenId).value = match[codeKey]; list.style.display = 'none'; updatePreview(); };
+                    let div = document.createElement('div'); 
+                    div.className = 'custom-dropdown-item'; 
+                    div.innerHTML = `<strong>${match[codeKey]}</strong> - ${match[displayKey]}`;
+                    div.onclick = () => { selectItem(match); };
                     list.appendChild(div);
                 });
                 list.style.display = 'block';
             }
-            inp.addEventListener('input', function() { renderList(this.value); }); inp.addEventListener('focus', function() { renderList(""); });
+
+            function selectItem(match) {
+                inp.value = match[displayKey]; 
+                document.getElementById(nameHiddenId).value = match[displayKey]; 
+                document.getElementById(codeHiddenId).value = match[codeKey]; 
+                list.style.display = 'none'; 
+                updatePreview();
+            }
+
+            inp.addEventListener('input', function() { renderList(this.value); }); 
+            inp.addEventListener('focus', function() { renderList(this.value); });
+
+            // Keyboard Support Logic
+            inp.addEventListener('keydown', function(e) {
+                let items = list.getElementsByClassName('custom-dropdown-item');
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault(); currentFocus++; addActive(items);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault(); currentFocus--; addActive(items);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (currentFocus > -1 && items.length > 0) { items[currentFocus].click(); }
+                }
+            });
+
+            function addActive(items) {
+                if (!items || items.length === 0) return false;
+                removeActive(items);
+                if (currentFocus >= items.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = (items.length - 1);
+                items[currentFocus].classList.add('active-item');
+                items[currentFocus].scrollIntoView({ block: 'nearest' });
+            }
+
+            function removeActive(items) {
+                for (let i = 0; i < items.length; i++) items[i].classList.remove('active-item');
+            }
+
             document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
         }
 
@@ -157,14 +249,15 @@
             const dObj = new Date(dateRaw); const dd = String(dObj.getDate()).padStart(2, '0'); const mm = String(dObj.getMonth()+1).padStart(2, '0'); const yyyy = dObj.getFullYear();
             const displayDate = `${dd}/${mm}/${yyyy}`; const barcodeDate = `${dd}${mm}`; const bc = `${barcodeDate}/${iCode}/${vCode}/${startNo}`;
 
+            // Rigid Preview styling mimicking final print, no overlapping
             document.getElementById('previewBox').innerHTML=`
                 <div style="font-family: Arial, sans-serif; color: black; max-width: 250px; margin: 0 auto; text-align: center;">
-                    <h2 style="margin:0 0 5px 0; font-size:26px; text-transform:uppercase; font-weight:900;">${iName}</h2>
-                    <div style="margin:0 0 10px 0; font-size:15px; font-weight:bold;">Mat: ${iCode} | Ven: ${vCode}</div>
+                    <h2 style="margin:0 0 5px 0; font-size:24px; text-transform:uppercase; font-weight:900;">${iName}</h2>
+                    <div style="margin:0 0 10px 0; font-size:14px; font-weight:bold;">Mat: ${iCode} | Ven: ${vCode}</div>
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${bc}" style="margin:0 0 5px 0; width:160px; height:160px; border:2px solid black; padding:4px;">
                     <div style="margin:0 0 8px 0; font-size:20px; font-weight:900;">${bc}</div>
-                    <div style="margin:0 0 3px 0; font-size:15px; font-weight:bold;">Date: ${displayDate}</div>
-                    <div style="margin:0; font-size:15px; font-weight:bold;">Net Wt: ${wt} KG</div>
+                    <div style="margin:0 0 3px 0; font-size:14px; font-weight:bold;">Date: ${displayDate}</div>
+                    <div style="margin:0; font-size:14px; font-weight:bold;">Net Wt: ${wt} KG</div>
                 </div>
             `;
         }
@@ -182,9 +275,30 @@
             renderQueue(); clearForm(false); 
         }
 
+        // 🔥 Animated Queue Rendering with Remove Button
         function renderQueue(){ 
-            if(queue.length===0){document.getElementById('queueList').innerHTML="Queue is empty.";return;} 
-            document.getElementById('queueList').innerHTML=queue.map((q,idx)=> { const numTags = q.endNo - q.startNo + 1; return `<div style="margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:15px; color:#ea580c; font-size:18px; font-weight:900;">[${idx+1}] Printing ${numTags} tags (Bag ${q.startNo} to ${q.endNo}) of ${q.ingName} (${q.weight}kg)</div>`; }).join(''); 
+            const printBtn = document.getElementById('mainPrintBtn');
+            if(queue.length===0){
+                document.getElementById('queueList').innerHTML="<span style='color:#94a3b8; font-weight:700;'>Queue is empty.</span>";
+                printBtn.classList.remove('pulse-anim');
+                return;
+            } 
+            
+            printBtn.classList.add('pulse-anim'); // Add glowing attention pulse to print button
+            
+            document.getElementById('queueList').innerHTML=queue.map((q,idx)=> { 
+                const numTags = q.endNo - q.startNo + 1; 
+                return `
+                <div class="queue-item-anim" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:15px;">
+                    <span style="color:#ea580c; font-size:16px; font-weight:900;">[${idx+1}] Printing ${numTags} tags (Bag ${q.startNo} to ${q.endNo}) of ${q.ingName} (${q.weight}kg)</span>
+                    <button class="btn-remove-queue" onclick="removeFromQueue(${idx})">🗑️ Remove</button>
+                </div>`; 
+            }).join(''); 
+        }
+
+        function removeFromQueue(index) {
+            queue.splice(index, 1);
+            renderQueue();
         }
 
         function clearForm(full=true){ 
@@ -194,13 +308,12 @@
         }
 
         async function printAll(){ 
-            if(queue.length===0) return alert("Queue empty!"); 
+            if(queue.length===0) return alert("Queue is empty. Stage materials first!"); 
             const shouldLog = document.getElementById('log_db_check').checked;
             if(shouldLog) { await fetch('/log-inwarding',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({queue})}); }
             
             let printWindow=window.open('','_blank'); 
             
-            // Scaled Up CSS for Print Engine - Using rigid block display to avoid overlap
             let html=`<html><head><style>
                 @page { size: ${document.getElementById('printer_size').value==="75x75" ? "75mm 75mm" : "100mm 150mm"}; margin: 0; } 
                 body { margin: 0; padding: 0; font-family: Arial, sans-serif; text-align: center; color: black; background: white; width: 100%; height: 100%; } 
