@@ -5,8 +5,8 @@
     <title>Kilrr Traceability - RM Inwarding</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <style>
-        /* 🔥 PREMIUM INDUSTRIAL + AMBIENT RESET 🔥 */
         :root {
             --kilrr-orange: #ea580c;
             --kilrr-orange-hover: #c2410c;
@@ -183,7 +183,7 @@
             <h2>Print Execution Engine</h2>
             
             <div class="form-group" style="display: none;">
-                <select id="printer_size"><option value="75x75">75mm x 75mm</option></select>
+                <select id="printer_size"><option value="75x75">75mm x 75mm</option><option value="100x150">100mm x 150mm</option></select>
             </div>
             
             <label>Live Label Preview (First Tag)</label>
@@ -298,11 +298,15 @@
             const dObj = new Date(dateRaw); const dd = String(dObj.getDate()).padStart(2, '0'); const mm = String(dObj.getMonth()+1).padStart(2, '0'); const yyyy = dObj.getFullYear();
             const displayDate = `${dd}/${mm}/${yyyy}`; const barcodeDate = `${dd}${mm}`; const bc = `${barcodeDate}/${iCode}/${vCode}/${startNo}`;
 
+            // Generate Instant Local Base64 QR Code for Preview
+            const qrPreview = new QRious({ value: bc, size: 180, level: 'M' });
+            const qrImgData = qrPreview.toDataURL('image/png');
+
             pBox.innerHTML=`
                 <div style="font-family: Arial, sans-serif; color: black; max-width: 280px; margin: 0 auto; text-align: center;">
                     <h2 style="margin:0 0 8px 0; font-size:28px; text-transform:uppercase; font-weight:900; border:none; padding:0; letter-spacing:0;">${iName}</h2>
                     <div style="margin:0 0 12px 0; font-size:16px; font-weight:bold;">Mat: ${iCode} | Ven: ${vCode}</div>
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${bc}" style="margin:0 0 8px 0; width:180px; height:180px; border:3px solid black; padding:4px; border-radius:4px;">
+                    <img src="${qrImgData}" style="margin:0 0 8px 0; width:160px; height:160px; border:3px solid black; padding:4px; border-radius:4px;">
                     <div style="margin:0 0 10px 0; font-size:22px; font-weight:900; font-family:Arial, sans-serif;">${bc}</div>
                     <div style="margin:0 0 5px 0; font-size:16px; font-weight:bold;">Date: ${displayDate}</div>
                     <div style="margin:0; font-size:16px; font-weight:bold;">Net Wt: ${wt} KG</div>
@@ -358,13 +362,13 @@
             
             const printBtn = document.getElementById('mainPrintBtn');
             const originalText = printBtn.innerText;
-            printBtn.innerText = "⏳ PREPARING PRINT...";
+            printBtn.innerText = "⏳ GENERATING BURST PRINT...";
             printBtn.disabled = true;
             printBtn.style.opacity = "0.7";
 
             const shouldLog = document.getElementById('log_db_check').checked;
 
-            // 🔥 NON-BLOCKING BACKGROUND LOGGING 🔥
+            // Background Database Sync
             if(shouldLog) { 
                 fetch('/log-inwarding', {
                     method:'POST',
@@ -373,14 +377,14 @@
                 }).catch(err => console.error("Sync error:", err)); 
             }
             
-            // 🔥 INSTANT PRINT WINDOW GENERATION 🔥
+            // Instant Print Spooling (Zero Network Lag)
             setTimeout(() => {
-                let printWindow=window.open('','_blank'); 
+                let printWindow = window.open('','_blank'); 
                 
                 let html=`<html><head><style>
                     @page { size: ${document.getElementById('printer_size').value==="75x75" ? "75mm 75mm" : "100mm 150mm"}; margin: 0; } 
                     body { margin: 0; padding: 0; font-family: Arial, sans-serif; text-align: center; color: black; background: white; width: 100%; height: 100%; } 
-                    .page { width: 100%; height: 100%; box-sizing: border-box; padding-top: 10px; page-break-after: always; display: block; }
+                    .page { width: 100%; height: 100vh; box-sizing: border-box; padding-top: 10px; page-break-after: always; display: block; }
                     h2 { margin: 0 0 3px 0; font-size: 26px; text-transform: uppercase; font-weight: 900; line-height: 1; }
                     .codes { margin: 0 0 5px 0; font-size: 15px; font-weight: bold; }
                     img { width: 160px; height: 160px; margin: 0 0 5px 0; }
@@ -390,13 +394,19 @@
                 
                 queue.forEach(q=>{ 
                     const dObj = new Date(q.dateRaw); const dd = String(dObj.getDate()).padStart(2, '0'); const mm = String(dObj.getMonth()+1).padStart(2, '0'); const yyyy = dObj.getFullYear(); const dispDate = `${dd}/${mm}/${yyyy}`;
+                    
                     for(let i = q.startNo; i <= q.endNo; i++){ 
                         let bc=`${q.dateFmt}/${q.ingCode}/${q.venCode}/${i}`; 
+                        
+                        // Generate Base64 Image Instantly in Memory
+                        let qrEngine = new QRious({ value: bc, size: 200, level: 'M' });
+                        let localQrData = qrEngine.toDataURL('image/png');
+
                         html+=`
                         <div class="page">
                             <h2>${q.ingName}</h2>
                             <div class="codes">Mat: ${q.ingCode} | Ven: ${q.venCode}</div>
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${bc}">
+                            <img src="${localQrData}">
                             <div class="bc-text">${bc}</div>
                             <div class="details">Date: ${dispDate}</div>
                             <div class="details">Net Wt: ${q.weight} KG</div>
@@ -404,24 +414,24 @@
                     } 
                 }); 
                 
-                // Allow images to load before forcing print dialog
+                // Print immediately since no network images need to load
                 html+=`</body><script>
                     window.onload = () => { 
-                        setTimeout(() => { window.print(); window.close(); }, 500); 
+                        window.print(); 
+                        window.close(); 
                     };
                 <\/script></html>`; 
                 
                 printWindow.document.write(html); 
                 printWindow.document.close(); 
                 
-                // Reset queue UI instantly
                 queue=[]; 
                 renderQueue(); 
                 document.getElementById('log_db_check').checked = true;
                 printBtn.innerText = originalText;
                 printBtn.disabled = false;
                 printBtn.style.opacity = "1";
-            }, 100);
+            }, 50);
         }
     </script>
 </body>
