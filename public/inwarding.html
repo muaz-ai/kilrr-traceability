@@ -11,7 +11,7 @@
             --kilrr-orange: #ea580c;
             --kilrr-orange-hover: #c2410c;
             --navy-command: #0b1121;
-            --card-white: rgba(255, 255, 255, 0.95); /* Slight transparency to let the glow bleed through */
+            --card-white: rgba(255, 255, 255, 0.95);
             --text-dark: #0f172a;
             --text-mid: #334155;
             --border-heavy: #cbd5e1;
@@ -31,13 +31,11 @@
             min-height: 100vh;
         }
         
-        /* 🔥 THE GLOWING AMBIENT ORBS (From the previous design) 🔥 */
         .bg-orb { position: absolute; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.6; animation: floatOrb 15s ease-in-out infinite alternate; pointer-events: none;}
         .orb-1 { width: 600px; height: 600px; background: rgba(234, 88, 12, 0.35); top: -100px; left: -150px; }
         .orb-2 { width: 700px; height: 700px; background: rgba(56, 189, 248, 0.25); bottom: -200px; right: -150px; animation-delay: -5s; }
         @keyframes floatOrb { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(60px) scale(1.1); } }
 
-        /* 🔥 THE NAVY COMMAND BAR 🔥 */
         .nav-top { background: var(--navy-command); border-bottom: 6px solid var(--kilrr-orange); padding: 0 40px; display: flex; justify-content: space-between; align-items: center; height: 90px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
         .brand { display: flex; align-items: center; gap: 15px; font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 900; color: #ffffff; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;}
         .brand img { height: 45px; background: white; padding: 5px; border-radius: 8px;}
@@ -50,18 +48,15 @@
         .nav-btn.logout { color: #fca5a5; border: 2px solid #ef4444; padding: 12px 20px;} 
         .nav-btn.logout:hover { background: #ef4444; color: #ffffff; }
 
-        /* 🔥 WIDE, SPACIOUS GRID 🔥 */
         .container { max-width: 1500px; margin: 40px auto; padding: 0 40px; display: grid; grid-template-columns: 1fr; gap: 40px;}
         @media(min-width: 1024px){ .container{grid-template-columns: 1fr 1fr;} }
         
-        /* 🔥 BOLD HEAVY-DUTY CARDS 🔥 */
         .card { background: var(--card-white); backdrop-filter: blur(20px); border: 2px solid var(--border-heavy); border-radius: 20px; padding: 50px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
         .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: var(--kilrr-orange); }
         .card-right::before { background: var(--success-green); }
 
         h2 { margin: 0 0 35px 0; font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 900; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px; border-bottom: 3px solid #e2e8f0; padding-bottom: 20px;}
         
-        /* 🔥 MASSIVE HIGH-VISIBILITY INPUTS 🔥 */
         .form-group { margin-bottom: 30px; }
         label { display: block; font-size: 16px; font-weight: 800; color: var(--text-mid); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px; }
         
@@ -73,13 +68,11 @@
         .print-range-row > div { flex: 1; }
         .print-range-row input { text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: var(--kilrr-orange);}
 
-        /* 🔥 CUSTOM DROPDOWNS 🔥 */
         .custom-dropdown-container { position: relative; width: 100%; }
         .custom-dropdown-list { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: #ffffff; border: 3px solid var(--kilrr-orange); border-radius: 12px; max-height: 350px; overflow-y: auto; z-index: 9999; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2); display: none; padding: 10px; }
         .custom-dropdown-item { padding: 18px 20px; font-size: 18px; font-weight: 700; color: var(--text-dark); border-radius: 8px; cursor: pointer; transition: 0.1s; margin-bottom: 4px; border: 2px solid transparent;}
         .custom-dropdown-item:hover, .custom-dropdown-item.active-item { background: #fff7ed; color: var(--kilrr-orange); border-color: #ffedd5;}
 
-        /* 🔥 HEAVY INDUSTRIAL BUTTONS 🔥 */
         button { width: 100%; padding: 25px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 22px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: all 0.2s ease; margin-bottom: 15px; }
         
         .btn-primary { background: var(--kilrr-orange); color: #ffffff; box-shadow: 0 10px 25px rgba(234, 88, 12, 0.3); }
@@ -94,14 +87,12 @@
         .btn-remove-queue { width: auto; padding: 12px 20px; margin: 0; font-size: 16px; background: #ffffff; color: var(--danger-red); border: 2px solid #fecaca; border-radius: 8px; font-weight: 800;}
         .btn-remove-queue:hover { background: #fef2f2; border-color: #f87171;}
 
-        /* 🔥 CLEAN PREVIEW & QUEUE 🔥 */
         .print-preview { background: #ffffff; padding: 50px; text-align: center; border-radius: 16px; margin-bottom: 35px; border: 3px dashed var(--border-heavy); display: flex; justify-content: center; align-items: center; min-height: 250px; transition: border-color 0.2s;}
         .print-preview.active-preview { border-style: solid; border-color: var(--border-heavy); background: #f8fafc; }
         
         #queueList { margin-bottom: 35px; }
         .queue-item { background: #ffffff; padding: 25px 30px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border: 2px solid var(--border-heavy); box-shadow: 0 4px 10px rgba(0,0,0,0.05);}
 
-        /* 🔥 FUNCTIONAL SAFETY TOGGLE 🔥 */
         .toggle-box { background: #fff7ed; padding: 25px 30px; border-radius: 12px; border: 3px solid #ffedd5; margin-bottom: 35px; display: flex; align-items: center; gap: 25px; cursor: pointer; transition: 0.2s; }
         .toggle-box:hover { border-color: #fdba74; background: #ffedd5;}
         .toggle-box input[type="checkbox"] { width: 35px; height: 35px; margin: 0; cursor: pointer; accent-color: var(--kilrr-orange);}
@@ -213,7 +204,7 @@
                 </div>
             </div>
 
-            <button class="btn-print" onclick="printAll()">Execute Print Sequence</button>
+            <button id="mainPrintBtn" class="btn-print" onclick="printAll()">Execute Print Sequence</button>
         </div>
     </div>
     
@@ -223,7 +214,6 @@
         function toggleCheckbox() { const cb = document.getElementById('log_db_check'); cb.checked = !cb.checked; }
         function autoFillRange() { const total = document.getElementById('packs').value; if(total) { document.getElementById('start_no').value = 1; document.getElementById('end_no').value = total; } else { document.getElementById('start_no').value = ''; document.getElementById('end_no').value = ''; } }
 
-        // Keyboard Supported Dropdown Engine
         function attachCustomDropdown(inputId, dataArray, searchKey, displayKey, codeKey, nameHiddenId, codeHiddenId) {
             const inp = document.getElementById(inputId); 
             const list = document.createElement('div'); 
@@ -363,43 +353,75 @@
             updatePreview();
         }
 
-        async function printAll(){ 
+        function printAll(){ 
             if(queue.length===0) return alert("Print queue is empty!"); 
+            
+            const printBtn = document.getElementById('mainPrintBtn');
+            const originalText = printBtn.innerText;
+            printBtn.innerText = "⏳ PREPARING PRINT...";
+            printBtn.disabled = true;
+            printBtn.style.opacity = "0.7";
+
             const shouldLog = document.getElementById('log_db_check').checked;
-            if(shouldLog) { await fetch('/log-inwarding',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({queue})}); }
+
+            // 🔥 NON-BLOCKING BACKGROUND LOGGING 🔥
+            if(shouldLog) { 
+                fetch('/log-inwarding', {
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({queue})
+                }).catch(err => console.error("Sync error:", err)); 
+            }
             
-            let printWindow=window.open('','_blank'); 
-            
-            let html=`<html><head><style>
-                @page { size: ${document.getElementById('printer_size').value==="75x75" ? "75mm 75mm" : "100mm 150mm"}; margin: 0; } 
-                body { margin: 0; padding: 0; font-family: Arial, sans-serif; text-align: center; color: black; background: white; width: 100%; height: 100%; } 
-                .page { width: 100%; height: 100%; box-sizing: border-box; padding-top: 10px; page-break-after: always; display: block; }
-                h2 { margin: 0 0 3px 0; font-size: 26px; text-transform: uppercase; font-weight: 900; line-height: 1; }
-                .codes { margin: 0 0 5px 0; font-size: 15px; font-weight: bold; }
-                img { width: 160px; height: 160px; margin: 0 0 5px 0; }
-                .bc-text { margin: 0 0 5px 0; font-size: 20px; font-weight: 900; }
-                .details { margin: 0 0 2px 0; font-size: 15px; font-weight: bold; }
-            </style></head><body>`; 
-            
-            queue.forEach(q=>{ 
-                const dObj = new Date(q.dateRaw); const dd = String(dObj.getDate()).padStart(2, '0'); const mm = String(dObj.getMonth()+1).padStart(2, '0'); const yyyy = dObj.getFullYear(); const dispDate = `${dd}/${mm}/${yyyy}`;
-                for(let i = q.startNo; i <= q.endNo; i++){ 
-                    let bc=`${q.dateFmt}/${q.ingCode}/${q.venCode}/${i}`; 
-                    html+=`
-                    <div class="page">
-                        <h2>${q.ingName}</h2>
-                        <div class="codes">Mat: ${q.ingCode} | Ven: ${q.venCode}</div>
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${bc}">
-                        <div class="bc-text">${bc}</div>
-                        <div class="details">Date: ${dispDate}</div>
-                        <div class="details">Net Wt: ${q.weight} KG</div>
-                    </div>`; 
-                } 
-            }); 
-            
-            html+=`</body><script>window.onload=()=>{window.print();window.close();}<\/script></html>`; 
-            printWindow.document.write(html); printWindow.document.close(); queue=[]; renderQueue(); 
-            document.getElementById('log_db_check').checked = true;
+            // 🔥 INSTANT PRINT WINDOW GENERATION 🔥
+            setTimeout(() => {
+                let printWindow=window.open('','_blank'); 
+                
+                let html=`<html><head><style>
+                    @page { size: ${document.getElementById('printer_size').value==="75x75" ? "75mm 75mm" : "100mm 150mm"}; margin: 0; } 
+                    body { margin: 0; padding: 0; font-family: Arial, sans-serif; text-align: center; color: black; background: white; width: 100%; height: 100%; } 
+                    .page { width: 100%; height: 100%; box-sizing: border-box; padding-top: 10px; page-break-after: always; display: block; }
+                    h2 { margin: 0 0 3px 0; font-size: 26px; text-transform: uppercase; font-weight: 900; line-height: 1; }
+                    .codes { margin: 0 0 5px 0; font-size: 15px; font-weight: bold; }
+                    img { width: 160px; height: 160px; margin: 0 0 5px 0; }
+                    .bc-text { margin: 0 0 5px 0; font-size: 20px; font-weight: 900; }
+                    .details { margin: 0 0 2px 0; font-size: 15px; font-weight: bold; }
+                </style></head><body>`; 
+                
+                queue.forEach(q=>{ 
+                    const dObj = new Date(q.dateRaw); const dd = String(dObj.getDate()).padStart(2, '0'); const mm = String(dObj.getMonth()+1).padStart(2, '0'); const yyyy = dObj.getFullYear(); const dispDate = `${dd}/${mm}/${yyyy}`;
+                    for(let i = q.startNo; i <= q.endNo; i++){ 
+                        let bc=`${q.dateFmt}/${q.ingCode}/${q.venCode}/${i}`; 
+                        html+=`
+                        <div class="page">
+                            <h2>${q.ingName}</h2>
+                            <div class="codes">Mat: ${q.ingCode} | Ven: ${q.venCode}</div>
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${bc}">
+                            <div class="bc-text">${bc}</div>
+                            <div class="details">Date: ${dispDate}</div>
+                            <div class="details">Net Wt: ${q.weight} KG</div>
+                        </div>`; 
+                    } 
+                }); 
+                
+                // Allow images to load before forcing print dialog
+                html+=`</body><script>
+                    window.onload = () => { 
+                        setTimeout(() => { window.print(); window.close(); }, 500); 
+                    };
+                <\/script></html>`; 
+                
+                printWindow.document.write(html); 
+                printWindow.document.close(); 
+                
+                // Reset queue UI instantly
+                queue=[]; 
+                renderQueue(); 
+                document.getElementById('log_db_check').checked = true;
+                printBtn.innerText = originalText;
+                printBtn.disabled = false;
+                printBtn.style.opacity = "1";
+            }, 100);
         }
     </script>
 </body>
