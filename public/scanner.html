@@ -23,14 +23,17 @@
         .nav-btn.active { color: #ffffff; background: var(--kilrr-orange); }
         .nav-btn.logout { color: #fca5a5; border: 2px solid #ef4444; padding: 12px 20px;} 
         
-        .card { max-width: 950px; margin: 50px auto; background: var(--card-white); backdrop-filter: blur(20px); border: 2px solid var(--border-heavy); border-radius: 20px; padding: 50px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
+        .card { margin: 40px auto; background: var(--card-white); backdrop-filter: blur(20px); border: 2px solid var(--border-heavy); border-radius: 20px; padding: 50px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
         .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: var(--kilrr-orange); }
+        
+        #setup { max-width: 950px; }
+        #work { max-width: 1450px; } /* Wider card for split view */
+
         h2 { margin: 0 0 35px 0; font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; border-bottom: 3px solid #e2e8f0; padding-bottom: 20px;}
         
         label { display: block; font-size: 16px; font-weight: 800; color: var(--text-mid); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px; }
         input, select { width: 100%; padding: 22px; box-sizing: border-box; border-radius: 12px; border: 3px solid var(--border-heavy); font-size: 20px; font-family: 'Inter', sans-serif; font-weight: 700; background: #ffffff; margin-bottom: 30px; transition: 0.2s;}
         input:focus, select:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 5px rgba(234, 88, 12, 0.15); }
-        input::placeholder { color: #94a3b8; }
         
         .custom-dropdown-container { position: relative; width: 100%; }
         .custom-dropdown-list { position: absolute; top: calc(100% - 25px); left: 0; right: 0; background: #ffffff; border: 3px solid var(--kilrr-orange); border-radius: 12px; max-height: 350px; overflow-y: auto; z-index: 9999; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2); display: none; padding: 10px; }
@@ -41,25 +44,30 @@
         .btn-primary { background: var(--kilrr-orange); color: #ffffff; box-shadow: 0 10px 25px rgba(234, 88, 12, 0.3); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(234, 88, 12, 0.4); }
         .btn-manual { background: #fff7ed; color: var(--kilrr-orange); border: 3px solid var(--kilrr-orange); }
-        .btn-danger { background: #ffffff; color: var(--danger-red); border: 3px solid #fecaca; margin-top:40px;}
+        .btn-danger { background: #ffffff; color: var(--danger-red); border: 3px solid #fecaca; margin-top:20px;}
         .btn-lock { background: var(--navy-command); color: white; box-shadow: 0 10px 25px rgba(11, 17, 33, 0.3);}
         .btn-lock:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(11, 17, 33, 0.4);}
 
+        /* 🔥 SPLIT VIEW CSS 🔥 */
+        .work-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: start; }
+        @media (max-width: 1024px) { .work-grid { grid-template-columns: 1fr; } }
+        
         .manual-box { background: #f8fafc; padding: 40px; border: 3px dashed var(--border-heavy); border-radius: 20px; margin-bottom: 30px; text-align: center; }
         .hybrid-input-row { display: flex; gap: 20px; }
         .manual-box input { border-color: var(--navy-command); margin: 0; text-align: center; font-size: 24px; text-transform: uppercase;}
         .btn-add-manual { background: var(--navy-command); width: auto; padding: 0 40px; margin: 0; border-radius: 12px; color: white;}
         
         #reader { width: 100%; border-radius: 20px; overflow: hidden; border: 4px solid var(--border-heavy); margin-bottom: 30px;}
-        h3 { font-size: 22px; font-family: 'Space Grotesk', sans-serif; color: var(--text-dark); text-transform: uppercase; letter-spacing: 2px; border-bottom: 3px solid #e2e8f0; padding-bottom: 15px; margin-top: 40px; font-weight: 900;}
+        h3 { font-size: 22px; font-family: 'Space Grotesk', sans-serif; color: var(--text-dark); text-transform: uppercase; letter-spacing: 2px; border-bottom: 3px solid #e2e8f0; padding-bottom: 15px; margin-top: 0; font-weight: 900;}
         
-        #checklist > div { padding: 25px 30px; margin: 15px 0; border-radius: 12px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; border: 2px solid var(--border-heavy); background: #ffffff; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);}
+        .checklist-container { background: #f8fafc; border: 3px solid var(--border-heavy); border-radius: 20px; padding: 30px; margin-bottom: 30px; max-height: 400px; overflow-y: auto;}
+        #checklist > div { padding: 20px 25px; margin: 10px 0; border-radius: 12px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; border: 2px solid var(--border-heavy); background: #ffffff; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);}
         .check-pending { border-left: 10px solid #94a3b8 !important; }
         .check-done { border-color: var(--success-green) !important; background: #ecfdf5 !important; color: #047857; border-left: 10px solid var(--success-green) !important; }
         
-        #scan_log { height: 350px; overflow-y: auto; background: #ffffff; border: 3px solid #e2e8f0; padding: 25px; border-radius: 16px; }
-        .scan-log-item { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 2px solid #f1f5f9; background: #f8fafc; border-radius: 12px; margin-bottom: 12px; }
-        .btn-mini-del { width: auto; margin: 0; background: #ffffff; border: 2px solid #fecaca; color: var(--danger-red); padding: 15px 25px; font-size: 16px; border-radius: 8px; font-weight: 800;}
+        #scan_log { max-height: 250px; overflow-y: auto; background: #ffffff; border: 3px solid #e2e8f0; padding: 20px; border-radius: 16px; }
+        .scan-log-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 2px solid #f1f5f9; background: #f8fafc; border-radius: 12px; margin-bottom: 10px; }
+        .btn-mini-del { width: auto; margin: 0; background: #ffffff; border: 2px solid #fecaca; color: var(--danger-red); padding: 12px 20px; font-size: 14px; border-radius: 8px; font-weight: 800;}
     </style>
 </head>
 <body>
@@ -77,11 +85,10 @@
         <label>1. Target Flavour Profile</label>
         <div class="custom-dropdown-container"><input type="text" id="fg_select" placeholder="Search Master Recipe..." autocomplete="off"></div>
         
-        <!-- 🔥 FLEXIBLE SUB-BATCHING 🔥 -->
         <div style="display:flex; gap:20px;">
             <div style="flex:1;">
                 <label>2. Master Lot Code</label>
-                <input type="text" id="master_lot" placeholder="e.g. LK-123" autocomplete="off" style="text-transform:uppercase;">
+                <input type="text" id="master_lot" placeholder="e.g. LK-190" autocomplete="off" style="text-transform:uppercase;">
             </div>
             <div style="flex:1;">
                 <label>Run / Sub-Batch ID</label>
@@ -95,35 +102,45 @@
         <button class="btn-primary" onclick="start()">🚀 ENGAGE SYSTEM</button>
     </div>
     
-    <!-- WORK SCREEN -->
+    <!-- WORK SCREEN (SPLIT VIEW) -->
     <div class="card" id="work" style="display:none;">
         <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom:3px solid #e2e8f0; padding-bottom:20px; margin-bottom:35px;">
             <h2 id="title" style="color:var(--kilrr-orange); font-size:48px; border:none; padding:0; margin:0;"></h2>
             <div id="run_badge" style="background:var(--navy-command); color:white; padding:10px 20px; border-radius:12px; font-family:'Space Grotesk', sans-serif; font-size:24px; font-weight:900;"></div>
         </div>
 
-        <div class="manual-box">
-            <label style="color:var(--text-dark); font-size: 20px; margin-bottom: 20px;">⚡ SCAN OR ENTER BARCODE</label>
-            <div class="hybrid-input-row">
-                <input type="text" id="rm_tag_manual" placeholder="Awaiting Input..." autocomplete="off">
-                <button class="btn-add-manual" onclick="manualScan()">ADD BAG</button>
-            </div>
-        </div>
-        <div id="reader" style="display:none;"></div>
-        <button class="btn-manual" onclick="toggleCamera()" id="camToggleBtn">📷 Activate Mobile Camera Scanner</button>
+        <!-- 🔥 TWO COLUMN LAYOUT 🔥 -->
+        <div class="work-grid">
+            
+            <!-- LEFT COLUMN: SCANNER & ACTIONS -->
+            <div class="work-left">
+                <div class="manual-box">
+                    <label style="color:var(--text-dark); font-size: 20px; margin-bottom: 20px;">⚡ SCAN OR ENTER BARCODE</label>
+                    <div class="hybrid-input-row">
+                        <input type="text" id="rm_tag_manual" placeholder="Awaiting Input..." autocomplete="off">
+                        <button class="btn-add-manual" onclick="manualScan()">ADD BAG</button>
+                    </div>
+                </div>
+                <div id="reader" style="display:none;"></div>
+                <button class="btn-manual" onclick="toggleCamera()" id="camToggleBtn">📷 Activate Mobile Camera Scanner</button>
 
-        <h3>Run-Specific Recipe Validation</h3>
-        <div id="checklist"></div>
-        
-        <h3>System Scan Log</h3>
-        <div id="scan_log"></div>
-        
-        <div style="display:flex; gap:20px; margin-top:40px;">
-            <button class="btn-lock" onclick="lockAndNext()" style="flex:2; background:var(--success-green); border:3px solid #047857; box-shadow: 0 10px 25px rgba(5, 150, 105, 0.3);">✅ LOCK & START NEXT RUN</button>
-            <button class="btn-lock" onclick="lockAndExit()" style="flex:1;">🔒 FINALIZE LOT</button>
+                <div style="display:flex; gap:20px; margin-top:30px;">
+                    <button class="btn-lock" onclick="lockAndNext()" style="flex:2; background:var(--success-green); border:3px solid #047857; box-shadow: 0 10px 25px rgba(5, 150, 105, 0.3);">✅ LOCK & START NEXT RUN</button>
+                    <button class="btn-lock" onclick="lockAndExit()" style="flex:1;">🔒 FINALIZE LOT</button>
+                </div>
+                <button class="btn-danger" onclick="deleteWholeBatch()">⚠️ Void Current Run (Manager PIN)</button>
+            </div>
+
+            <!-- RIGHT COLUMN: LIVE DATA FEED -->
+            <div class="work-right">
+                <h3>Recipe Validation Feed</h3>
+                <div class="checklist-container" id="checklist"></div>
+                
+                <h3 style="margin-top: 20px;">Live Scan Log</h3>
+                <div id="scan_log"></div>
+            </div>
+
         </div>
-        
-        <button class="btn-danger" onclick="deleteWholeBatch()">⚠️ Void Current Run (Manager PIN)</button>
     </div>
     
     <script>
@@ -205,17 +222,42 @@
             
             document.getElementById('checklist').innerHTML=req.map(i=>`<div class="${sCodes.includes(i.product_code)?'check-done':'check-pending'}"><span>${i.ingredient_name} <span style="color:#64748b;font-size:14px; font-weight: 700;">(${i.product_code})</span></span><span>${sCodes.includes(i.product_code)?'✅ Validated':'⏳ Pending'}</span></div>`).join(''); 
             
-            if(scans.length===0){ document.getElementById('scan_log').innerHTML="<div style='color:#64748b;text-align:center;padding:40px;font-weight:800; font-size:20px; border: 2px dashed #cbd5e1; border-radius: 12px;'>Awaiting material scan for this run...</div>"; } else { document.getElementById('scan_log').innerHTML=scans.map(s=>`<div class="scan-log-item"><span style="color:#0f172a;font-family:'Space Grotesk',monospace;font-size:22px;font-weight:900;">${s.rm_tag}</span><button class="btn-mini-del" onclick="deleteSpecificScan('${s.rm_tag}')">🗑️ Void</button></div>`).reverse().join(''); } 
+            if(scans.length===0){ document.getElementById('scan_log').innerHTML="<div style='color:#64748b;text-align:center;padding:20px;font-weight:800; font-size:16px; border: 2px dashed #cbd5e1; border-radius: 12px;'>Awaiting material scan...</div>"; } else { document.getElementById('scan_log').innerHTML=scans.map(s=>`<div class="scan-log-item"><span style="color:#0f172a;font-family:'Space Grotesk',monospace;font-size:20px;font-weight:900;">${s.rm_tag}</span><button class="btn-mini-del" onclick="deleteSpecificScan('${s.rm_tag}')">🗑️ Void</button></div>`).reverse().join(''); } 
         }
 
         function deleteSpecificScan(tag) { const pin=prompt("Manager PIN (1234) required:"); if(!pin)return; fetch('/delete-specific-scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:tag,pin})}).then(()=>update()); }
         function deleteWholeBatch() { const pin=prompt(`⚠️ Manager PIN (1234) to void Mixer Run ${curSub}:`); if(!pin)return; fetch('/delete-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,pin})}).then(()=>location.reload()); }
         
-        // 🔥 CUSTOMIZED NEXT-RUN PROMPT 🔥
+        // 🔥 AUTO-CALCULATING PATTERN LOGIC 🔥
+        function getNextSubBatchCode(currentCode) {
+            // Check for paired batch pattern (e.g., B1-B2)
+            const regexPair = /^B(\d+)-B(\d+)$/i;
+            const matchPair = currentCode.match(regexPair);
+            if (matchPair) {
+                const start = parseInt(matchPair[1]);
+                const end = parseInt(matchPair[2]);
+                const step = end - start + 1; // Number of batches in this group
+                const nextStart = end + 1;
+                const nextEnd = nextStart + step - 1;
+                return `B${nextStart}-B${nextEnd}`;
+            }
+            // Check for single batch pattern (e.g., B1)
+            const regexSingle = /^B(\d+)$/i;
+            const matchSingle = currentCode.match(regexSingle);
+            if (matchSingle) {
+                const num = parseInt(matchSingle[1]);
+                return `B${num + 1}`;
+            }
+            return ""; // No pattern detected
+        }
+
         function lockAndNext() { 
             if(!confirm(`Finalize Run: ${curSub} and lock records?`)) return; 
             
-            const nextSub = prompt("Enter the ID for the NEXT run (e.g. B3-B4, Drum2):");
+            // Auto-calculate the next logical batch pair
+            let suggestedNext = getNextSubBatchCode(curSub);
+            const nextSub = prompt("Confirm or edit the ID for the NEXT run:", suggestedNext);
+            
             if(!nextSub) {
                 alert("Next run creation cancelled. You can finalize the lot or start the next run manually from the main menu.");
                 return;
