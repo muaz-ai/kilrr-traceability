@@ -79,7 +79,36 @@ app.use((req, res, next) => {
 app.use(express.static("public"));
 
 // --- POSTGRES APIs ---
+// --- SUB-ASSEMBLY & PRE-PROCESSING API ---
+app.post("/create-sub-assembly", async (req, res) => {
+    const { parents, product_code, weight, process_type, operator } = req.body;
+    try {
+        await pool.query("BEGIN");
+        
+        // Create table to store the unbroken traceability chain if it doesn't exist
+        await pool.query(`CREATE TABLE IF NOT EXISTS sub_assemblies (id SERIAL PRIMARY KEY, sub_tag TEXT, parent_tag TEXT, process_type TEXT, operator TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
+        
+        // Generate a unique barcode for the new Roasted/Ground batch
+        const d = new Date();
+        const ddmm = `${String(d.getDate()).padStart(2, '0')}${String(d.getMonth()+1).padStart(2, '0')}`;
+        const randomId = Math.floor(1000 + Math.random() * 9000); 
+        const subTag = `${ddmm}/${product_code}/SUB/${randomId}`;
 
+        // Add the new processed material into actual inventory
+        await pool.query(`INSERT INTO inventory (rm_tag, product_code, original_weight, current_weight, last_audited) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)`, [subTag, product_code, weight, weight]);
+        
+        // Permanently link the new bag to EVERY raw material parent bag scanned
+        for(let parentTag of parents) {
+            await pool.query(`INSERT INTO sub_assemblies (sub_tag, parent_tag, process_type, operator) VALUES ($1, $2, $3, $4)`, [subTag, parentTag, process_type, operator]);
+        }
+
+        await pool.query("COMMIT");
+        res.json({ success: true, sub_tag: subTag });
+    } catch(e) { 
+        await pool.query("ROLLBACK"); 
+        res.status(500).json({error: e.message}); 
+    }
+});
 // 1. INWARDING LOGS
 app.post("/log-inwarding", async (req, res) => {
     try {
