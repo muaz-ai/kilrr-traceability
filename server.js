@@ -13,6 +13,21 @@ const pool = new Pool({
     connectionString: "postgresql://neondb_owner:npg_VgjU3LqG5Xou@ep-cold-cherry-a1yzxv4e-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 });
 
+// --- GOOGLE SHEETS LIVE SYNC ENGINE ---
+const SHEET_WEBHOOK = "https://script.google.com/macros/s/AKfycbzUEyQZgLY6e0MQYhF28XQlYklNZWEgzzPI6aC9CUMa1DSgh57TqN6y8bjz0rvUeaNccw/exec";
+
+async function pushToSheets(eventType, operator, payload) {
+    try {
+        await fetch(SHEET_WEBHOOK, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ event_type: eventType, operator: operator || "System", payload: payload })
+        });
+    } catch (e) {
+        console.log("⚠️ Google Sheet Sync Failed:", e.message);
+    }
+}
+
 // Initialize Cloud Database Tables
 const initDB = async () => {
     try {
@@ -24,6 +39,7 @@ const initDB = async () => {
         await pool.query(`CREATE TABLE IF NOT EXISTS inventory (rm_tag TEXT PRIMARY KEY, product_code TEXT, original_weight REAL, current_weight REAL, last_audited TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
         await pool.query(`CREATE TABLE IF NOT EXISTS audit_history (id SERIAL PRIMARY KEY, session_name TEXT, rm_tag TEXT, product_code TEXT, audited_weight REAL, audited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
         await pool.query(`CREATE TABLE IF NOT EXISTS inwarding_logs (id SERIAL PRIMARY KEY, date_received TEXT, ingredient_name TEXT, ingredient_code TEXT, vendor_name TEXT, vendor_code TEXT, weight REAL, packs INTEGER, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
+        await pool.query(`CREATE TABLE IF NOT EXISTS sub_assemblies (id SERIAL PRIMARY KEY, sub_tag TEXT, parent_tag TEXT, process_type TEXT, operator TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
         console.log("✅ Neon Cloud Vault Initialized");
     } catch(e) { console.error("Database Init Error:", e); }
 };
@@ -32,7 +48,6 @@ initDB();
 // --- THE SECURITY FIREWALL ---
 app.post("/api/login", (req, res) => {
     const { password } = req.body;  
-    // Strict Session Cookie (expires when browser is closed)
     if (password === "Kilrrspicesadmin") { 
         res.setHeader('Set-Cookie', 'kilrr_auth=admin; Path=/; HttpOnly');
         return res.json({ success: true, role: 'admin' });
@@ -44,30 +59,20 @@ app.post("/api/login", (req, res) => {
     }
 });
 
-// 🔥 NEW LOGOUT ENDPOINT
 app.get("/api/logout", (req, res) => {
-    // Overwrite the cookie with an immediate expiration
     res.setHeader('Set-Cookie', 'kilrr_auth=; Path=/; Max-Age=0');
     res.redirect('/login.html');
 });
 
-// Middleware to block unauthorized access to pages
 app.use((req, res, next) => {
     const url = req.path === '/' ? '/index.html' : req.path;
     if (url.endsWith('.html')) {
         if (url === '/login.html') return next(); 
-        
         const cookies = req.headers.cookie || "";
-        if (!cookies.includes("kilrr_auth=")) {
-            return res.redirect('/login.html'); 
-        }
-        
+        if (!cookies.includes("kilrr_auth=")) return res.redirect('/login.html'); 
         if (url === '/dashboard.html' || url === '/master.html') {
             if (!cookies.includes("kilrr_auth=admin")) {
-                const sciFiDenied = `
-                <!DOCTYPE html>
-                <html>
-                <head><title>SECURITY BREACH</title><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet"><style>body { margin: 0; padding: 0; background: #050505; color: #ff3333; font-family: 'Space Grotesk', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; } .container { text-align: center; position: relative; z-index: 2; padding: 50px; background: rgba(20, 0, 0, 0.8); border: 2px solid #ff3333; border-radius: 20px; box-shadow: 0 0 40px rgba(255, 51, 51, 0.3), inset 0 0 20px rgba(255, 51, 51, 0.1); backdrop-filter: blur(10px); max-width: 90%; } h1 { font-size: 50px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 5px; text-shadow: 0 0 15px #ff3333; animation: glitch 2s infinite; font-weight: 900;} p { color: #ff9999; font-size: 18px; margin-bottom: 40px; letter-spacing: 2px; font-weight: 700; text-transform: uppercase;} .btn { display: inline-block; padding: 18px 40px; color: #fff; text-decoration: none; text-transform: uppercase; font-weight: 900; background: transparent; border: 2px solid #ff3333; border-radius: 8px; transition: 0.3s; letter-spacing: 3px; font-size: 16px;} .btn:hover { background: #ff3333; color: #000; box-shadow: 0 0 30px #ff3333; transform: scale(1.05);} .radar { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80vw; height: 80vw; max-width: 800px; max-height: 800px; border-radius: 50%; border: 1px solid rgba(255, 51, 51, 0.1); z-index: 1; pointer-events: none; } .radar::before { content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid rgba(255, 51, 51, 0.3); animation: pulse 2.5s ease-out infinite; } @keyframes pulse { 0% { transform: scale(0.1); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } } @keyframes glitch { 0% { text-shadow: 3px 0 0 red, -3px 0 0 blue; } 5% { text-shadow: -3px 0 0 red, 3px 0 0 blue; } 10% { text-shadow: 3px 0 0 red, -3px 0 0 blue; } 15% { text-shadow: 0 0 0 #ff3333; } 100% { text-shadow: 0 0 0 #ff3333; } }</style></head><body><div class="radar"></div><div class="container"><h1>⚠️ RESTRICTED</h1><p>Manager Clearance Required.</p><a href="/" class="btn">Return to Scanner</a></div></body></html>`;
+                const sciFiDenied = `<!DOCTYPE html><html><head><title>SECURITY BREACH</title><style>body{background:#050505;color:#ff3333;font-family:sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;} .box{text-align:center;border:2px solid red;padding:50px;} a{color:white;text-decoration:none;border:1px solid white;padding:10px;display:inline-block;margin-top:20px;}</style></head><body><div class="box"><h1>⚠️ RESTRICTED</h1><p>Manager Clearance Required.</p><a href="/">Return to Hub</a></div></body></html>`;
                 return res.send(sciFiDenied);
             }
         }
@@ -75,46 +80,17 @@ app.use((req, res, next) => {
     next();
 });
 
-// 🔥 THE MISSING LINE THAT SERVES YOUR HTML FILES 🔥
 app.use(express.static("public"));
 
 // --- POSTGRES APIs ---
-// --- SUB-ASSEMBLY & PRE-PROCESSING API ---
-app.post("/create-sub-assembly", async (req, res) => {
-    const { parents, product_code, weight, process_type, operator } = req.body;
-    try {
-        await pool.query("BEGIN");
-        
-        // Create table to store the unbroken traceability chain if it doesn't exist
-        await pool.query(`CREATE TABLE IF NOT EXISTS sub_assemblies (id SERIAL PRIMARY KEY, sub_tag TEXT, parent_tag TEXT, process_type TEXT, operator TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
-        
-        // Generate a unique barcode for the new Roasted/Ground batch
-        const d = new Date();
-        const ddmm = `${String(d.getDate()).padStart(2, '0')}${String(d.getMonth()+1).padStart(2, '0')}`;
-        const randomId = Math.floor(1000 + Math.random() * 9000); 
-        const subTag = `${ddmm}/${product_code}/SUB/${randomId}`;
 
-        // Add the new processed material into actual inventory
-        await pool.query(`INSERT INTO inventory (rm_tag, product_code, original_weight, current_weight, last_audited) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)`, [subTag, product_code, weight, weight]);
-        
-        // Permanently link the new bag to EVERY raw material parent bag scanned
-        for(let parentTag of parents) {
-            await pool.query(`INSERT INTO sub_assemblies (sub_tag, parent_tag, process_type, operator) VALUES ($1, $2, $3, $4)`, [subTag, parentTag, process_type, operator]);
-        }
-
-        await pool.query("COMMIT");
-        res.json({ success: true, sub_tag: subTag });
-    } catch(e) { 
-        await pool.query("ROLLBACK"); 
-        res.status(500).json({error: e.message}); 
-    }
-});
-// 1. INWARDING LOGS
+// 1. INWARDING
 app.post("/log-inwarding", async (req, res) => {
     try {
         await pool.query("BEGIN");
         for(let item of req.body.queue) {
             await pool.query("INSERT INTO inwarding_logs (date_received, ingredient_name, ingredient_code, vendor_name, vendor_code, weight, packs) VALUES ($1, $2, $3, $4, $5, $6, $7)", [item.dateRaw, item.ingName, item.ingCode, item.venName, item.venCode, item.weight, item.packs]);
+            pushToSheets("RM_INWARDING", "Receiver", { material: item.ingName, vendor: item.venName, weight_per_bag: item.weight, packs: item.packs });
         }
         await pool.query("COMMIT");
         res.json({ success: true });
@@ -130,7 +106,32 @@ app.post("/delete-inwarding-log", async (req, res) => {
     res.json({ success: true });
 });
 
-// 2. AUDIT & INVENTORY
+// 2. SUB-ASSEMBLY & PRE-PROCESSING
+app.post("/create-sub-assembly", async (req, res) => {
+    const { parents, product_code, weight, process_type, operator } = req.body;
+    try {
+        await pool.query("BEGIN");
+        const d = new Date();
+        const ddmm = `${String(d.getDate()).padStart(2, '0')}${String(d.getMonth()+1).padStart(2, '0')}`;
+        const randomId = Math.floor(1000 + Math.random() * 9000); 
+        const subTag = `${ddmm}/${product_code}/SUB/${randomId}`;
+
+        await pool.query(`INSERT INTO inventory (rm_tag, product_code, original_weight, current_weight, last_audited) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)`, [subTag, product_code, weight, weight]);
+        
+        for(let parentTag of parents) {
+            await pool.query(`INSERT INTO sub_assemblies (sub_tag, parent_tag, process_type, operator) VALUES ($1, $2, $3, $4)`, [subTag, parentTag, process_type, operator]);
+        }
+
+        await pool.query("COMMIT");
+        pushToSheets("SUB_ASSEMBLY_CREATED", operator, { sub_tag: subTag, process: process_type, target_product: product_code, output_weight: weight, parent_bags_used: parents.length });
+        res.json({ success: true, sub_tag: subTag });
+    } catch(e) { 
+        await pool.query("ROLLBACK"); 
+        res.status(500).json({error: e.message}); 
+    }
+});
+
+// 3. AUDIT
 app.post("/audit-stock", async (req, res) => {
     const { session_name, rm_tag, product_code, original_weight, current_weight } = req.body;
     try {
@@ -138,6 +139,7 @@ app.post("/audit-stock", async (req, res) => {
         await pool.query(`INSERT INTO audit_history (session_name, rm_tag, product_code, audited_weight) VALUES ($1, $2, $3, $4)`, [session_name, rm_tag, product_code, current_weight]);
         await pool.query(`INSERT INTO inventory (rm_tag, product_code, original_weight, current_weight, last_audited) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP) ON CONFLICT(rm_tag) DO UPDATE SET current_weight = $5, last_audited = CURRENT_TIMESTAMP`, [rm_tag, product_code, original_weight, current_weight, current_weight]);
         await pool.query("COMMIT");
+        pushToSheets("STOCK_AUDITED", session_name, { tag: rm_tag, prev_weight: original_weight, new_weight: current_weight });
         res.json({ success: true });
     } catch(e) { await pool.query("ROLLBACK"); res.status(500).json({error: e.message}); }
 });
@@ -160,7 +162,7 @@ app.post("/delete-inventory", async (req, res) => {
     res.json({ success: true });
 });
 
-// 3. MASTER DATA
+// 4. MASTER DATA
 app.post("/add-ingredient", async (req, res) => {
     await pool.query("INSERT INTO ingredients (product_code, ingredient_name) VALUES ($1, $2) ON CONFLICT (product_code) DO UPDATE SET ingredient_name = $2", [req.body.code.toUpperCase(), req.body.name]);
     res.json({ success: true });
@@ -200,11 +202,11 @@ app.post("/update-recipe-secure", async (req, res) => {
             await pool.query("INSERT INTO recipes (fg_code, product_code) VALUES ($1, $2)", [req.body.fg_code, code]);
         }
         await pool.query("COMMIT");
-        res.json({ success: true, message: "Recipe Saved!" });
+        pushToSheets("RECIPE_UPDATED", "Manager", { recipe: req.body.fg_code, ingredients_count: req.body.ingredients.length });
+        res.json({ success: true });
     } catch(e) { await pool.query("ROLLBACK"); res.status(500).json({error: e.message}); }
 });
 
-// 🔥 VAULT ACCESS ENDPOINT 🔥
 app.post("/vault-access", async (req, res) => {
     if (req.body.password !== "Action123") return res.status(403).json({ error: "Denied" });
     try {
@@ -212,12 +214,10 @@ app.post("/vault-access", async (req, res) => {
         const vendors = await pool.query("SELECT * FROM vendors ORDER BY vendor_name ASC");
         const recipes = await pool.query("SELECT * FROM recipes");
         res.json({ ingredients: ingredients.rows, vendors: vendors.rows, recipes: recipes.rows });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
+    } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// 4. PRODUCTION SCANNER
+// 5. PRODUCTION BATCH ENGINE
 app.get("/recipe-requirements/:fg", async (req, res) => {
     const result = await pool.query("SELECT r.product_code, i.ingredient_name FROM recipes r JOIN ingredients i ON r.product_code = i.product_code WHERE r.fg_code = $1", [req.params.fg]);
     res.json(result.rows);
@@ -238,35 +238,35 @@ app.post("/create-batch", async (req, res) => {
     const opName = req.body.operator_name || "Unknown";
     try {
         await pool.query("INSERT INTO batches (batch_code, fg_code, operator_name) VALUES ($1, $2, $3)", [req.body.batch_code.toUpperCase(), req.body.fg_code, opName]);
+        pushToSheets("BATCH_STARTED", opName, { batch: req.body.batch_code, flavour: req.body.fg_code });
         res.json({ success: true });
     } catch(e) { res.status(500).json({ error: "Batch already exists!" }); }
 });
 app.post("/scan", async (req, res) => {
     const parts = req.body.rm_tag.split("/");
-    await pool.query("INSERT INTO scans (batch_code, rm_tag, product_code) VALUES ($1, $2, $3)", [req.body.batch_code, req.body.rm_tag, parts[1]]);
+    const pCode = parts.length >= 2 ? parts[1] : req.body.rm_tag;
+    await pool.query("INSERT INTO scans (batch_code, rm_tag, product_code) VALUES ($1, $2, $3)", [req.body.batch_code, req.body.rm_tag, pCode]);
+    pushToSheets("MATERIAL_SCANNED", "Operator", { batch: req.body.batch_code, tag: req.body.rm_tag });
     res.json({ success: true });
 });
 app.post("/delete-specific-scan", async (req, res) => {
     if (req.body.pin !== "1234") return res.status(403).json({ error: "Wrong PIN" });
     await pool.query("DELETE FROM scans WHERE batch_code = $1 AND rm_tag = $2", [req.body.batch_code, req.body.rm_tag]);
+    pushToSheets("SCAN_VOIDED", "Manager", { batch: req.body.batch_code, voided_tag: req.body.rm_tag });
     res.json({ success: true });
 });
 app.post("/delete-batch", async (req, res) => {
     if (req.body.pin !== "1234") return res.status(403).json({ error: "Wrong PIN" });
     await pool.query("DELETE FROM batches WHERE batch_code = $1", [req.body.batch_code]);
     await pool.query("DELETE FROM scans WHERE batch_code = $1", [req.body.batch_code]);
+    pushToSheets("BATCH_DELETED", "Manager", { deleted_batch: req.body.batch_code });
     res.json({ success: true });
 });
 app.post("/lock-batch", async (req, res) => {
     await pool.query("UPDATE batches SET status = 'LOCKED' WHERE batch_code = $1", [req.body.batch_code]);
-    res.json({ success: true });
-});
-app.post("/unlock-batch", async (req, res) => {
-    if (req.body.pin !== "1234") return res.status(403).json({ error: "Wrong PIN" });
-    await pool.query("UPDATE batches SET status = 'OPEN' WHERE batch_code = $1", [req.body.batch_code]);
+    pushToSheets("BATCH_FINALIZED", "Supervisor", { locked_batch: req.body.batch_code });
     res.json({ success: true });
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Kilrr System Active on Port ${PORT}`));
-
