@@ -79,7 +79,6 @@
     </nav>
 
     <div class="container">
-        <!-- LEFT: INPUT (PARENT MATERIALS) -->
         <div class="card card-left">
             <h2>1. Parent Material Input</h2>
             <div class="manual-box">
@@ -93,14 +92,8 @@
             <div id="scan_log">
                 <div style='color:#94a3b8;text-align:center;padding:20px;font-weight:800;'>Scan raw materials to begin...</div>
             </div>
-            
-            <div style="display:flex; justify-content:space-between; font-family:'Space Grotesk', sans-serif; font-size:24px; font-weight:900; padding:20px; background:#f1f5f9; border-radius:12px;">
-                <span>EST. GROSS INPUT:</span>
-                <span id="gross_input" style="color:var(--navy-command);">0.00 KG</span>
-            </div>
         </div>
 
-        <!-- RIGHT: OUTPUT (SUB-ASSEMBLY) -->
         <div class="card card-right">
             <h2>2. Processing & Output</h2>
             
@@ -132,7 +125,6 @@
     
     <script>
         let parentTags = [];
-        let estInputWeight = 0;
         
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         document.body.addEventListener('click', () => { if(audioCtx.state === 'suspended') audioCtx.resume(); }, { once: true });
@@ -205,12 +197,6 @@
             } else {
                 parentTags.push(cleanTag);
                 playBeep(true); showFlash(true, "✅ RECORDED");
-                
-                // Extract assumed weight if it's a standard tag
-                if(parts.length >= 4 && !isNaN(parts[3])) {
-                    // This is a rough estimation for the UI display, actual is checked in backend
-                    estInputWeight += 0; // We will let the backend handle exact weight tracking later
-                }
                 updateLog();
             }
             document.getElementById('rm_tag_manual').value=""; document.getElementById('rm_tag_manual').focus(); 
@@ -225,10 +211,8 @@
             const logBox = document.getElementById('scan_log');
             if(parentTags.length === 0) {
                 logBox.innerHTML = "<div style='color:#94a3b8;text-align:center;padding:20px;font-weight:800;'>Scan raw materials to begin...</div>";
-                document.getElementById('gross_input').innerText = "0.00 KG";
             } else {
                 logBox.innerHTML = parentTags.map(t => `<div class="scan-log-item"><span style="font-family:'Space Grotesk',monospace;font-size:20px;font-weight:900;">${t}</span><button class="btn-mini-del" onclick="removeTag('${t}')">X</button></div>`).join('');
-                document.getElementById('gross_input').innerText = "CALCULATING..."; // A placeholder until connected to backend
             }
         }
 
@@ -242,7 +226,6 @@
 
             if(!outCode || !outWt || !opName) return alert("Please fill out the Target Product, Output Weight, and Operator Name!");
 
-            // Ask the backend to log this sub-assembly and give us an ID
             const res = await fetch('/create-sub-assembly', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -252,12 +235,10 @@
             const data = await res.json();
             if(data.error) return alert("❌ Error: " + data.error);
 
-            // Generate Print Data
-            const subTag = data.sub_tag; // e.g. 2405/R-BSN/SUB/101
+            const subTag = data.sub_tag; 
             const dObj = new Date(); const dd = String(dObj.getDate()).padStart(2, '0'); const mm = String(dObj.getMonth()+1).padStart(2, '0'); const yyyy = dObj.getFullYear();
             const dispDate = `${dd}/${mm}/${yyyy}`;
 
-            // Burst Print Logic
             let printWindow = window.open('','_blank'); 
             let html=`<html><head><style>
                 @page { size: 75mm 75mm; margin: 0; } 
@@ -286,7 +267,6 @@
             printWindow.document.write(html); 
             printWindow.document.close(); 
 
-            // Reset UI
             parentTags = []; updateLog();
             document.getElementById('output_wt').value = "";
             alert("Sub-Assembly successfully logged to database!");
