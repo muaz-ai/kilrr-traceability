@@ -8,27 +8,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --card-white: rgba(255, 255, 255, 0.95); --border-heavy: #cbd5e1; }
-        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; padding-bottom: 100px; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 100px; min-height: 100vh; }
         
-        /* Navigation */
+        /* Consistent Header */
         .nav-top { background: var(--navy-command); border-bottom: 6px solid var(--kilrr-orange); padding: 0 40px; display: flex; justify-content: space-between; align-items: center; height: 90px; }
         .brand { font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 2px; }
         .nav-links { display: flex; gap: 20px; }
         .nav-btn { color: white; text-decoration: none; font-weight: 700; font-size: 18px; }
-
-        /* Card Layout */
-        .card { background: white; margin: 20px auto; max-width: 800px; padding: 40px; border-radius: 20px; border: 2px solid var(--border-heavy); }
-        h2 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; margin-top: 0; }
-        input { width: 100%; padding: 20px; box-sizing: border-box; border-radius: 12px; border: 3px solid var(--border-heavy); font-size: 18px; margin-bottom: 15px; }
-        button { width: 100%; padding: 20px; background: var(--kilrr-orange); color: white; border: none; border-radius: 12px; font-weight: 900; font-size: 18px; cursor: pointer; }
         
-        /* Live Data */
-        .inv-card { background: #f8fafc; padding: 15px; border-radius: 12px; border: 2px solid #e2e8f0; display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 800; }
-
+        /* Card Layout */
+        .card { background: var(--card-white); margin: 30px auto; max-width: 800px; padding: 40px; border-radius: 20px; border: 2px solid var(--border-heavy); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        h2 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; margin-top: 0; border-bottom: 3px solid #e2e8f0; padding-bottom: 15px; }
+        input { width: 100%; padding: 20px; box-sizing: border-box; border-radius: 12px; border: 3px solid var(--border-heavy); font-size: 18px; margin-bottom: 15px; font-weight: 700; }
+        button { width: 100%; padding: 20px; background: var(--kilrr-orange); color: white; border: none; border-radius: 12px; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; }
+        
+        /* Inventory Breakdown */
+        .inv-card { background: #f8fafc; padding: 20px; border-radius: 12px; border: 2px solid #e2e8f0; display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 800; font-size: 18px; }
+        
+        /* Mobile Optimization */
         @media (max-width: 1024px) {
             .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; height: 75px; border-top: 4px solid var(--kilrr-orange); border-bottom: none; justify-content: center; z-index: 1000; }
             .brand { display: none; }
             .nav-links { width: 100%; justify-content: space-around; }
+            .card { margin: 15px; padding: 25px; }
         }
     </style>
 </head>
@@ -42,21 +44,24 @@
         </div>
     </nav>
 
+    <!-- SETUP SCREEN -->
     <div class="card" id="setup_screen">
         <h2>Batch Setup</h2>
         <input type="text" id="batch_code" placeholder="Enter Batch Code (e.g. SH-191-B1)">
         <button onclick="startBatch()">START BATCH</button>
     </div>
 
+    <!-- SCANNER SCREEN -->
     <div class="card" id="scanner_screen" style="display:none;">
         <h2 id="display_batch">Batch: --</h2>
         <div style="display:flex; gap:10px;">
             <input type="text" id="rm_tag" placeholder="Scan Tag...">
-            <button onclick="manualScan()">ADD</button>
+            <button onclick="manualScan()" style="width: 30%;">ADD</button>
         </div>
         <div id="reader"></div>
-        <button style="background:var(--navy-command);" onclick="toggleCamera()">📷 Toggle Camera</button>
-        <h2 style="margin-top:30px;">Live Ingredient Breakdown</h2>
+        <button style="background:var(--navy-command); margin-bottom: 20px;" onclick="toggleCamera()">📷 Toggle Camera</button>
+        
+        <h2>Live Ingredient Breakdown</h2>
         <div id="live_inv_breakdown"></div>
     </div>
 
