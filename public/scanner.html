@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --card-white: rgba(255, 255, 255, 0.95); --text-dark: #0f172a; --text-mid: #334155; --border-heavy: #cbd5e1; --success-green: #059669; --danger-red: #dc2626; }
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: var(--text-dark); margin: 0; padding-bottom: 80px; position: relative; overflow-x: hidden; min-height: 100vh; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: var(--text-dark); margin: 0; padding-bottom: 120px; position: relative; overflow-x: hidden; min-height: 100vh; }
         .bg-orb { position: absolute; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.6; pointer-events: none;}
         .orb-1 { width: 600px; height: 600px; background: rgba(234, 88, 12, 0.35); top: -100px; left: -150px; }
         .orb-2 { width: 700px; height: 700px; background: rgba(56, 189, 248, 0.25); bottom: -200px; right: -150px; }
@@ -47,20 +47,60 @@
         .btn-lock { background: var(--navy-command); color: white; box-shadow: 0 10px 25px rgba(11, 17, 33, 0.3);}
 
         .work-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: start; }
+        
+        .setup-row { display: flex; gap: 15px; }
+        .action-row { display: flex; gap: 15px; margin-top: 30px; }
+        .hybrid-input-row { display: flex; gap: 15px; }
+        
+        /* 🔥 MOBILE APP INTERFACE UPGRADE 🔥 */
         @media (max-width: 1024px) { 
             .work-grid { grid-template-columns: 1fr; gap: 30px;} 
-            .nav-top { padding: 0 20px; }
-            .card { padding: 25px; }
+            .nav-top { 
+                position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: 75px; padding: 0 10px; border-bottom: none; border-top: 4px solid var(--kilrr-orange); justify-content: center; box-shadow: 0 -10px 20px rgba(0,0,0,0.15);
+            }
+            .brand { display: none; }
+            .nav-links { width: 100%; justify-content: space-between; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 5px; }
+            .nav-btn { font-size: 13px; padding: 10px 12px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+            .nav-btn.logout { display: none; }
+            
+            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 18px; }
+            .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 18px; }
+            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 18px; }
+            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 18px; }
+            .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 18px; }
+            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 18px; }
+            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 18px; }
+            
+            .card { padding: 25px; margin: 15px; border-radius: 16px;}
+            h2 { font-size: 24px; }
+
+            /* Fix Squeezing on Mobile */
+            .setup-row { flex-direction: column; gap: 0; }
+            .setup-row > div { margin-bottom: 10px; }
+            .hybrid-input-row { flex-direction: column; gap: 10px; }
+            .btn-add-manual { width: 100% !important; padding: 20px !important; margin: 0 !important; }
+            .action-row { flex-direction: column; gap: 10px; margin-top: 15px;}
+            .action-row button { width: 100%; margin: 0; }
+            
+            .manual-box { padding: 20px !important; }
+            .manual-box input { font-size: 20px !important; padding: 18px !important; }
+            .metrics-bar { flex-direction: column; }
         }
         
         .manual-box { background: #f8fafc; padding: 30px; border: 3px dashed var(--border-heavy); border-radius: 20px; margin-bottom: 30px; text-align: center; }
-        .hybrid-input-row { display: flex; gap: 15px; }
-        .manual-box input { border-color: var(--navy-command); margin: 0; text-align: center; font-size: 24px; font-weight: 900; text-transform: uppercase;}
-        .btn-add-manual { background: var(--navy-command); width: auto; padding: 0 30px; margin: 0; border-radius: 12px; color: white;}
+        .manual-box input { border-color: var(--navy-command); margin: 0; text-align: center; font-size: 28px; font-weight: 900; text-transform: uppercase;}
+        .btn-add-manual { background: var(--navy-command); width: auto; padding: 0 40px; margin: 0; border-radius: 12px; color: white;}
         
         #reader { width: 100%; border-radius: 20px; overflow: hidden; border: 4px solid var(--border-heavy); margin-bottom: 30px; background: black;}
         h3 { font-size: 22px; font-family: 'Space Grotesk', sans-serif; color: var(--text-dark); text-transform: uppercase; letter-spacing: 2px; border-bottom: 3px solid #e2e8f0; padding-bottom: 15px; margin-top: 0; font-weight: 900;}
         
+        .metrics-bar { display: flex; gap: 15px; margin-bottom: 25px; }
+        .metric-card { flex: 1; border-radius: 16px; padding: 20px; text-align: center; border: 3px solid transparent;}
+        .metric-bags { background: #fff7ed; border-color: #ffedd5; }
+        .metric-weight { background: #ecfdf5; border-color: #d1fae5; }
+        .metric-title { display: block; font-size: 14px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;}
+        .metric-value { font-size: 36px; font-weight: 900; font-family: 'Space Grotesk', sans-serif; color: var(--text-dark);}
+
         .checklist-container { background: #f8fafc; border: 3px solid var(--border-heavy); border-radius: 20px; padding: 20px; margin-bottom: 30px; max-height: 400px; overflow-y: auto;}
         #checklist > div { padding: 20px; margin: 10px 0; border-radius: 12px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; border: 2px solid var(--border-heavy); background: #ffffff; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);}
         .check-pending { border-left: 10px solid #94a3b8 !important; }
@@ -73,53 +113,6 @@
         #scan_flash { position: fixed; inset: 0; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; padding: 40px; font-family: 'Space Grotesk', sans-serif; font-size: 60px; font-weight: 900; color: white; opacity: 0; transition: opacity 0.2s ease-out; pointer-events: none; text-transform: uppercase;}
         .flash-green { background: rgba(5, 150, 105, 0.95); }
         .flash-red { background: rgba(220, 38, 38, 0.95); }
-        /* 🔥 MOBILE APP INTERFACE UPGRADE 🔥 */
-        @media (max-width: 768px) {
-            body { padding-bottom: 100px; padding-top: 15px; }
-            .nav-top { 
-                position: fixed; 
-                top: auto; 
-                bottom: 0; 
-                left: 0; 
-                right: 0; 
-                height: 75px; 
-                padding: 0 10px; 
-                border-bottom: none; 
-                border-top: 4px solid var(--kilrr-orange); 
-                justify-content: center;
-                box-shadow: 0 -10px 20px rgba(0,0,0,0.15);
-            }
-            .brand { display: none; /* Hide logo on mobile to save space for buttons */ }
-            .nav-links { 
-                width: 100%; 
-                justify-content: space-between; 
-                overflow-x: auto; 
-                -webkit-overflow-scrolling: touch; 
-                padding-bottom: 5px;
-            }
-            .nav-btn { 
-                font-size: 13px; 
-                padding: 10px 12px; 
-                border-radius: 12px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 4px;
-            }
-            .nav-btn.logout { display: none; /* Hide exit on mobile nav bar */ }
-            
-            /* Add Mobile Icons using CSS content */
-            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 18px; }
-            .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 18px; }
-            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 18px; }
-            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 18px; }
-            .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 18px; }
-            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 18px; }
-            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 18px; }
-            
-            .card { padding: 25px; margin: 15px auto; border-radius: 16px;}
-            h2 { font-size: 24px; }
-        }
     </style>
 </head>
 <body>
@@ -147,12 +140,12 @@
         <label>1. Target Flavour Profile</label>
         <div class="custom-dropdown-container"><input type="text" id="fg_select" placeholder="Search Master Recipe..." autocomplete="off"></div>
         
-        <div style="display:flex; gap:15px; flex-wrap: wrap;">
-            <div style="flex:1; min-width: 200px;">
+        <div class="setup-row">
+            <div style="flex:1;">
                 <label>2. Master Lot Code</label>
                 <input type="text" id="master_lot" placeholder="e.g. LK-190" autocomplete="off" style="text-transform:uppercase;">
             </div>
-            <div style="flex:1; min-width: 200px;">
+            <div style="flex:1;">
                 <label>Run / Sub-Batch ID</label>
                 <input type="text" id="sub_batch" placeholder="e.g. B1-B2" autocomplete="off" style="text-align:center; font-family:'Space Grotesk', sans-serif; font-size:20px; color:var(--kilrr-orange); text-transform:uppercase;">
             </div>
@@ -173,25 +166,36 @@
         <div class="work-grid">
             <div class="work-left">
                 <div class="manual-box">
-                    <label style="color:var(--text-dark); font-size: 18px; margin-bottom: 20px;">⚡ POINT & SHOOT WIRELESS SCANNER</label>
+                    <label style="color:var(--text-dark); font-size: 18px; margin-bottom: 20px;">⚡ POINT & SHOOT SCANNER</label>
                     <div class="hybrid-input-row">
                         <input type="text" id="rm_tag_manual" placeholder="READY..." autocomplete="off">
-                        <button class="btn-add-manual" onclick="manualScan()" style="display:none;">ADD</button>
+                        <button class="btn-add-manual" onclick="manualScan()">ADD</button>
                     </div>
-                    <p style="color: var(--success-green); font-weight: 800; margin-top: 15px; font-size: 14px;">Cursor is auto-locked. Just pull the trigger.</p>
                 </div>
                 
                 <div id="reader" style="display:none;"></div>
                 <button class="btn-manual" onclick="toggleCamera()" id="camToggleBtn">📷 Activate Mobile Camera Scanner</button>
 
-                <div style="display:flex; gap:15px; margin-top:30px; flex-wrap: wrap;">
-                    <button class="btn-lock" onclick="lockAndNext()" style="flex:2; min-width: 250px; background:var(--success-green); border:3px solid #047857;">✅ LOCK & START NEXT RUN</button>
-                    <button class="btn-lock" onclick="lockAndExit()" style="flex:1; min-width: 150px;">🔒 FINALIZE LOT</button>
+                <div class="action-row">
+                    <button class="btn-lock" onclick="lockAndNext()" style="flex:2; background:var(--success-green); border:3px solid #047857;">✅ LOCK & START NEXT RUN</button>
+                    <button class="btn-lock" onclick="lockAndExit()" style="flex:1;">🔒 FINALIZE LOT</button>
                 </div>
                 <button class="btn-danger" onclick="deleteWholeBatch()">⚠️ Void Current Run</button>
             </div>
 
             <div class="work-right">
+                
+                <div class="metrics-bar">
+                    <div class="metric-card metric-bags">
+                        <span class="metric-title" style="color:var(--kilrr-orange);">Bags Scanned</span>
+                        <span class="metric-value" id="metric_bags">0</span>
+                    </div>
+                    <div class="metric-card metric-weight">
+                        <span class="metric-title" style="color:var(--success-green);">KG Issued</span>
+                        <span class="metric-value" id="metric_weight">0.00</span>
+                    </div>
+                </div>
+
                 <h3>Recipe Validation Feed</h3>
                 <div class="checklist-container" id="checklist"></div>
                 <h3 style="margin-top: 20px;">Live Scan Log</h3>
@@ -203,18 +207,18 @@
     <script>
         let masterLot="", curSub="", curB="", curF="", curOp="", isProcessing=false, localScannedTags=[], html5QrcodeScanner=null;
         
+        // 🔥 NEW: Strict Validation Array 🔥
+        let validRecipeCodes = [];
+
         // Audio & Haptic Feedback Engine
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         document.body.addEventListener('click', () => { if(audioCtx.state === 'suspended') audioCtx.resume(); }, { once: true });
         
         function playFeedback(isSuccess) { 
-            // Vibrate if on Mobile
             if('vibrate' in navigator) {
                 if(isSuccess) navigator.vibrate(200);
                 else navigator.vibrate([200, 100, 200, 100, 200]);
             }
-            
-            // Audio Beep
             try { 
                 if(audioCtx.state==='suspended') audioCtx.resume(); 
                 const osc=audioCtx.createOscillator(); const gain=audioCtx.createGain(); 
@@ -304,11 +308,16 @@
             } 
         }
 
-        function startScannerUI() { 
+        async function startScannerUI() { 
             document.getElementById('setup').style.display='none'; 
             document.getElementById('work').style.display='block'; 
             document.getElementById('title').innerText=`LOT: ${masterLot}`; 
             document.getElementById('run_badge').innerText=`RUN: ${curSub}`; 
+            
+            // Fetch the recipe rules so the scanner knows what to reject
+            const req = await fetch(`/recipe-requirements/${curF}`).then(r=>r.json());
+            validRecipeCodes = req.map(i => i.product_code);
+
             update(); 
             setTimeout(()=>document.getElementById('rm_tag_manual').focus(),500); 
         }
@@ -319,17 +328,8 @@
                 rd.style.display='block'; 
                 document.getElementById('camToggleBtn').innerText="🚫 Deactivate Camera"; 
                 if(!html5QrcodeScanner){
-                    // Mobile Optimized Viewfinder
-                    let qrboxFunction = function(vw, vh) {
-                        let minEdgeSize = Math.min(vw, vh);
-                        let qrboxSize = Math.floor(minEdgeSize * 0.75); // 75% of screen width
-                        return { width: qrboxSize, height: qrboxSize };
-                    }
-                    html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
-                        fps: 15, 
-                        qrbox: qrboxFunction,
-                        videoConstraints: { facingMode: "environment" } // Forces back camera on phones
-                    }); 
+                    let qrboxFunction = function(vw, vh) { return { width: Math.floor(Math.min(vw, vh) * 0.75), height: Math.floor(Math.min(vw, vh) * 0.75) }; }
+                    html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: qrboxFunction, videoConstraints: { facingMode: "environment" } }); 
                     html5QrcodeScanner.render(txt => processScannedText(txt));
                 } 
             } else { 
@@ -352,6 +352,19 @@
             let cleanTag=txt, parts=txt.split('/'); 
             if(parts.length>=4) cleanTag=`${parts[0]}/${parts[1]}/${parts[2]}/${parts[3]}`; 
             
+            // Extract the product code from the barcode (the second segment)
+            let pCode = parts.length >= 2 ? parts[1] : cleanTag;
+            
+            // 🔥 STRICT RECIPE VALIDATION BLOCK 🔥
+            if(!validRecipeCodes.includes(pCode)) {
+                playFeedback(false); 
+                showFlash(false, "❌ WRONG MATERIAL!");
+                document.getElementById('rm_tag_manual').value=""; 
+                document.getElementById('rm_tag_manual').focus(); 
+                setTimeout(()=>isProcessing=false, 1000); 
+                return; 
+            }
+
             if(localScannedTags.includes(cleanTag)){ 
                 playFeedback(false); 
                 showFlash(false, "❌ DUPLICATE");
@@ -374,11 +387,22 @@
         async function update() { 
             const req=await fetch(`/recipe-requirements/${curF}`).then(r=>r.json()); 
             const scans=await fetch(`/current-scans/${curB}`).then(r=>r.json()); 
-            localScannedTags=scans.map(s=>s.rm_tag); const sCodes=scans.map(s=>s.product_code); 
             
+            localScannedTags=scans.map(s=>s.rm_tag); 
+            const sCodes=scans.map(s=>s.product_code); 
+            
+            // Update the new Metrics Dashboard
+            let totalWeight = scans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
+            document.getElementById('metric_bags').innerText = scans.length;
+            document.getElementById('metric_weight').innerText = totalWeight.toFixed(2);
+
             document.getElementById('checklist').innerHTML=req.map(i=>`<div class="${sCodes.includes(i.product_code)?'check-done':'check-pending'}"><span>${i.ingredient_name} <span style="color:#64748b;font-size:14px; font-weight: 700;">(${i.product_code})</span></span><span>${sCodes.includes(i.product_code)?'✅ Validated':'⏳ Pending'}</span></div>`).join(''); 
             
-            if(scans.length===0){ document.getElementById('scan_log').innerHTML="<div style='color:#64748b;text-align:center;padding:20px;font-weight:800; font-size:16px; border: 2px dashed #cbd5e1; border-radius: 12px;'>Awaiting material scan...</div>"; } else { document.getElementById('scan_log').innerHTML=scans.map(s=>`<div class="scan-log-item"><span style="color:#0f172a;font-family:'Space Grotesk',monospace;font-size:18px;font-weight:900;">${s.rm_tag}</span><button class="btn-mini-del" onclick="deleteSpecificScan('${s.rm_tag}')">🗑️ Void</button></div>`).reverse().join(''); } 
+            if(scans.length===0){ 
+                document.getElementById('scan_log').innerHTML="<div style='color:#94a3b8;text-align:center;padding:20px;font-weight:800; font-size:16px; border: 2px dashed #cbd5e1; border-radius: 12px;'>Awaiting material scan...</div>"; 
+            } else { 
+                document.getElementById('scan_log').innerHTML=scans.map(s=>`<div class="scan-log-item"><div><span style="color:#0f172a;font-family:'Space Grotesk',monospace;font-size:18px;font-weight:900; display:block;">${s.rm_tag}</span><span style="color:var(--success-green); font-size:14px; font-weight:800;">${s.weight ? s.weight + ' KG' : 'No Weight Data'}</span></div><button class="btn-mini-del" onclick="deleteSpecificScan('${s.rm_tag}')">🗑️ Void</button></div>`).reverse().join(''); 
+            } 
         }
 
         function deleteSpecificScan(tag) { const pin=prompt("Manager PIN (1234) required:"); if(!pin)return; fetch('/delete-specific-scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:tag,pin})}).then(()=>update()); }
