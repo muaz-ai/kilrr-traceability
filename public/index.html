@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Kilrr - Factory Hub</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --border-heavy: #cbd5e1; }
@@ -11,7 +11,7 @@
         .bg-orb { position: absolute; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.6; pointer-events: none;}
         .orb-1 { width: 600px; height: 600px; background: rgba(234, 88, 12, 0.35); top: -100px; left: -150px; }
         .orb-2 { width: 700px; height: 700px; background: rgba(56, 189, 248, 0.25); bottom: -200px; right: -150px; }
-        .nav-top { background: var(--navy-command); border-bottom: 6px solid var(--kilrr-orange); padding: 0 40px; display: flex; justify-content: space-between; align-items: center; height: 90px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.15); overflow-x: auto;}
+        .nav-top { background: var(--navy-command); border-bottom: 6px solid var(--kilrr-orange); padding: 0 40px; display: flex; justify-content: space-between; align-items: center; height: 90px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.15);}
         .brand { display: flex; align-items: center; gap: 15px; font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 900; color: #ffffff; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;}
         .brand img { height: 45px; background: white; padding: 5px; border-radius: 8px;}
         .brand span { color: var(--kilrr-orange); }
@@ -29,42 +29,15 @@
         .app-card:hover { transform: translateY(-10px); border-color: var(--kilrr-orange); box-shadow: 0 30px 60px rgba(234,88,12,0.2); }
         .icon { font-size: 70px; background: #fff7ed; padding: 25px; border-radius: 24px; border: 3px solid #ffedd5; color: var(--kilrr-orange); display: flex; justify-content: center; align-items: center; height: 90px; width: 90px;}
         .title { font-weight: 900; font-size: 26px; text-transform: uppercase; letter-spacing: 2px; font-family: 'Space Grotesk', sans-serif;}
-        /* 🔥 MOBILE APP INTERFACE UPGRADE 🔥 */
-        @media (max-width: 768px) {
+
+        /* 🔥 UNIVERSAL MOBILE APP INTERFACE 🔥 */
+        @media (max-width: 1024px) { 
             body { padding-bottom: 100px; padding-top: 15px; }
-            .nav-top { 
-                position: fixed; 
-                top: auto; 
-                bottom: 0; 
-                left: 0; 
-                right: 0; 
-                height: 75px; 
-                padding: 0 10px; 
-                border-bottom: none; 
-                border-top: 4px solid var(--kilrr-orange); 
-                justify-content: center;
-                box-shadow: 0 -10px 20px rgba(0,0,0,0.15);
-            }
-            .brand { display: none; /* Hide logo on mobile to save space for buttons */ }
-            .nav-links { 
-                width: 100%; 
-                justify-content: space-between; 
-                overflow-x: auto; 
-                -webkit-overflow-scrolling: touch; 
-                padding-bottom: 5px;
-            }
-            .nav-btn { 
-                font-size: 13px; 
-                padding: 10px 12px; 
-                border-radius: 12px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 4px;
-            }
-            .nav-btn.logout { display: none; /* Hide exit on mobile nav bar */ }
-            
-            /* Add Mobile Icons using CSS content */
+            .nav-top { position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: 75px; padding: 0 10px; border-bottom: none; border-top: 4px solid var(--kilrr-orange); justify-content: center; box-shadow: 0 -10px 20px rgba(0,0,0,0.15); z-index: 9999; background: var(--navy-command); }
+            .brand { display: none; }
+            .nav-links { width: 100%; justify-content: space-between; overflow-x: auto; padding-bottom: 5px; }
+            .nav-btn { font-size: 13px; padding: 10px 12px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; border: none; }
+            .nav-btn.logout { display: none; }
             .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 18px; }
             .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 18px; }
             .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 18px; }
@@ -72,9 +45,7 @@
             .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 18px; }
             .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 18px; }
             .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 18px; }
-            
-            .card { padding: 25px; margin: 15px auto; border-radius: 16px;}
-            h2 { font-size: 24px; }
+            .container { padding: 15px; margin-top: 20px; }
         }
     </style>
 </head>
@@ -98,7 +69,7 @@
         <p style="color: #475569; font-size: 22px; font-weight: 800; margin-top: 0; text-transform:uppercase; letter-spacing:1px;">Kilrr Enterprise Traceability</p>
         <div class="grid">
             <a href="inwarding.html" class="app-card"><div class="icon">📦</div><span class="title">RM Inwarding</span></a>
-            <a href="preprocess.html" class="app-card" style="border-color: var(--kilrr-orange);"><div class="icon">🔥</div><span class="title">Pre-Process</span></a>
+            <a href="preprocess.html" class="app-card"><div class="icon">🔥</div><span class="title">Pre-Process</span></a>
             <a href="scanner.html" class="app-card"><div class="icon">🏭</div><span class="title">Batch Scanner</span></a>
             <a href="audit.html" class="app-card"><div class="icon">📋</div><span class="title">Stock Audit</span></a>
             <a href="dashboard.html" class="app-card"><div class="icon">📊</div><span class="title">Dashboard</span></a>
