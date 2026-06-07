@@ -58,6 +58,53 @@
         #scan_flash { position: fixed; inset: 0; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; padding: 40px; font-family: 'Space Grotesk', sans-serif; font-size: 80px; font-weight: 900; color: white; opacity: 0; transition: opacity 0.2s ease-out; pointer-events: none; text-transform: uppercase;}
         .flash-green { background: rgba(5, 150, 105, 0.95); }
         .flash-red { background: rgba(220, 38, 38, 0.95); }
+        /* 🔥 MOBILE APP INTERFACE UPGRADE 🔥 */
+        @media (max-width: 768px) {
+            body { padding-bottom: 100px; padding-top: 15px; }
+            .nav-top { 
+                position: fixed; 
+                top: auto; 
+                bottom: 0; 
+                left: 0; 
+                right: 0; 
+                height: 75px; 
+                padding: 0 10px; 
+                border-bottom: none; 
+                border-top: 4px solid var(--kilrr-orange); 
+                justify-content: center;
+                box-shadow: 0 -10px 20px rgba(0,0,0,0.15);
+            }
+            .brand { display: none; /* Hide logo on mobile to save space for buttons */ }
+            .nav-links { 
+                width: 100%; 
+                justify-content: space-between; 
+                overflow-x: auto; 
+                -webkit-overflow-scrolling: touch; 
+                padding-bottom: 5px;
+            }
+            .nav-btn { 
+                font-size: 13px; 
+                padding: 10px 12px; 
+                border-radius: 12px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+            }
+            .nav-btn.logout { display: none; /* Hide exit on mobile nav bar */ }
+            
+            /* Add Mobile Icons using CSS content */
+            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 18px; }
+            .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 18px; }
+            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 18px; }
+            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 18px; }
+            .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 18px; }
+            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 18px; }
+            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 18px; }
+            
+            .card { padding: 25px; margin: 15px auto; border-radius: 16px;}
+            h2 { font-size: 24px; }
+        }
     </style>
 </head>
 <body>
