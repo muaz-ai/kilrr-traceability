@@ -14,7 +14,7 @@ const pool = new Pool({
 });
 
 // --- GOOGLE SHEETS LIVE SYNC ENGINE ---
-const SHEET_WEBHOOK = "https://script.google.com/macros/s/AKfycbzUEyQZgLY6e0MQYhF28XQlYklNZWEgzzPI6aC9CUMa1DSgh57TqN6y8bjz0rvUeaNccw/exec";
+const SHEET_WEBHOOK = "https://script.google.com/macros/s/AKfycbyDisr6R5BoY4c1LwRwoAtPzi8BRRKUfqkTU__Y0-ibJsH08aPt3S4uFmlA42GU8lg4FQ/exec";
 
 async function pushToSheets(eventType, operator, payload) {
     try {
