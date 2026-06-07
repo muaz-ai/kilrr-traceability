@@ -40,6 +40,53 @@
         .log-item { display: flex; justify-content: space-between; align-items: center; padding: 18px; border-bottom: 2px solid #f1f5f9; background: #f8fafc; border-radius: 12px; margin-bottom: 12px; }
         .log-item strong { color: #0f172a; font-family: 'Space Grotesk', monospace; font-size: 20px;}
         .btn-mini-del { width: auto; margin: 0; background: #fef2f2; border: 2px solid #fca5a5; color: #ef4444; padding: 10px 15px; font-size: 14px; border-radius: 10px; cursor:pointer;}
+        /* 🔥 MOBILE APP INTERFACE UPGRADE 🔥 */
+        @media (max-width: 768px) {
+            body { padding-bottom: 100px; padding-top: 15px; }
+            .nav-top { 
+                position: fixed; 
+                top: auto; 
+                bottom: 0; 
+                left: 0; 
+                right: 0; 
+                height: 75px; 
+                padding: 0 10px; 
+                border-bottom: none; 
+                border-top: 4px solid var(--kilrr-orange); 
+                justify-content: center;
+                box-shadow: 0 -10px 20px rgba(0,0,0,0.15);
+            }
+            .brand { display: none; /* Hide logo on mobile to save space for buttons */ }
+            .nav-links { 
+                width: 100%; 
+                justify-content: space-between; 
+                overflow-x: auto; 
+                -webkit-overflow-scrolling: touch; 
+                padding-bottom: 5px;
+            }
+            .nav-btn { 
+                font-size: 13px; 
+                padding: 10px 12px; 
+                border-radius: 12px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+            }
+            .nav-btn.logout { display: none; /* Hide exit on mobile nav bar */ }
+            
+            /* Add Mobile Icons using CSS content */
+            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 18px; }
+            .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 18px; }
+            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 18px; }
+            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 18px; }
+            .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 18px; }
+            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 18px; }
+            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 18px; }
+            
+            .card { padding: 25px; margin: 15px auto; border-radius: 16px;}
+            h2 { font-size: 24px; }
+        }
     </style>
 </head>
 <body>
