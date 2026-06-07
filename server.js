@@ -18,10 +18,11 @@ const SHEET_WEBHOOK = "https://script.google.com/macros/s/AKfycbzUEyQZgLY6e0MQYh
 
 async function pushToSheets(eventType, operator, payload) {
     try {
-        await fetch(SHEET_WEBHOOK, {
+        const response = await fetch(SHEET_WEBHOOK, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ event_type: eventType, operator: operator || "System", payload: payload })
+            body: JSON.stringify({ event_type: eventType, operator: operator || "System", payload: payload }),
+            redirect: "follow" 
         });
     } catch (e) {
         console.log("⚠️ Google Sheet Sync Failed:", e.message);
@@ -222,10 +223,19 @@ app.get("/recipe-requirements/:fg", async (req, res) => {
     const result = await pool.query("SELECT r.product_code, i.ingredient_name FROM recipes r JOIN ingredients i ON r.product_code = i.product_code WHERE r.fg_code = $1", [req.params.fg]);
     res.json(result.rows);
 });
+
+// 🔥 UPDATED: Now joins the Inventory table to pull physical weights for the dashboard 🔥
 app.get("/current-scans/:batch", async (req, res) => {
-    const result = await pool.query("SELECT s.product_code, s.rm_tag, i.ingredient_name FROM scans s LEFT JOIN ingredients i ON s.product_code = i.product_code WHERE s.batch_code = $1", [req.params.batch]);
+    const result = await pool.query(`
+        SELECT s.product_code, s.rm_tag, i.ingredient_name, inv.current_weight as weight 
+        FROM scans s 
+        LEFT JOIN ingredients i ON s.product_code = i.product_code 
+        LEFT JOIN inventory inv ON s.rm_tag = inv.rm_tag 
+        WHERE s.batch_code = $1
+    `, [req.params.batch]);
     res.json(result.rows);
 });
+
 app.get("/open-batches", async (req, res) => {
     const result = await pool.query("SELECT * FROM batches WHERE status = 'OPEN' ORDER BY created_at DESC");
     res.json(result.rows);
