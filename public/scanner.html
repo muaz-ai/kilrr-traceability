@@ -7,37 +7,33 @@
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; }
-        body { font-family: sans-serif; background: #f8fafc; margin: 0; padding-bottom: 100px; }
-        
-        /* Mobile Navigation Bar */
-        .nav-top { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--navy-command); display: flex; justify-content: space-around; align-items: center; z-index: 1000; border-top: 4px solid var(--kilrr-orange); }
-        .nav-btn { color: white; text-decoration: none; font-size: 12px; display: flex; flex-direction: column; align-items: center; }
-
-        /* Scanner Layout */
+        body { font-family: sans-serif; background: #f8fafc; margin: 0; padding-bottom: 80px; }
         .card { background: white; margin: 15px; padding: 20px; border-radius: 16px; border: 2px solid #e2e8f0; }
-        .input-row { display: flex; gap: 10px; margin-bottom: 20px; }
-        input { flex: 1; padding: 15px; border-radius: 8px; border: 2px solid #cbd5e1; font-size: 16px; }
-        button { padding: 15px 20px; background: var(--kilrr-orange); color: white; border: none; border-radius: 8px; font-weight: bold; }
-
-        /* Inventory Breakdown */
+        input { width: 100%; padding: 15px; box-sizing: border-box; border: 2px solid #cbd5e1; border-radius: 8px; margin-bottom: 10px; font-size: 16px; }
+        button { width: 100%; padding: 15px; background: var(--kilrr-orange); color: white; border: none; border-radius: 8px; font-weight: bold; margin-bottom: 10px; }
         .inv-card { background: #f1f5f9; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; }
-        
-        #reader { width: 100%; margin-bottom: 20px; }
+        .nav-top { position: fixed; bottom: 0; width: 100%; height: 70px; background: var(--navy-command); display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
+        .nav-btn { color: white; text-decoration: none; font-size: 12px; display: flex; flex-direction: column; align-items: center; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2 style="margin-top:0;">Batch Scanner</h2>
-        <div class="input-row">
-            <input type="text" id="rm_tag" placeholder="Scan or Type Tag...">
+    <!-- SETUP SCREEN -->
+    <div class="card" id="setup_screen">
+        <h3>Batch Setup</h3>
+        <input type="text" id="batch_code" placeholder="Enter Batch Code (e.g. SH-191-B1)">
+        <button onclick="startBatch()">START BATCH</button>
+    </div>
+
+    <!-- SCANNER SCREEN -->
+    <div class="card" id="scanner_screen" style="display:none;">
+        <h3 id="display_batch">Batch: --</h3>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="rm_tag" placeholder="Scan Tag...">
             <button onclick="manualScan()">ADD</button>
         </div>
         <div id="reader"></div>
-        <button style="width:100%; background:var(--navy-command);" onclick="toggleCamera()">📷 Toggle Camera</button>
-    </div>
-
-    <div class="card">
+        <button onclick="toggleCamera()">📷 Camera</button>
         <h3>Live Ingredient Breakdown</h3>
         <div id="live_inv_breakdown"></div>
     </div>
@@ -48,60 +44,41 @@
     </nav>
 
     <script>
-        let curB = "CURRENT-BATCH"; // You can link this to your setup screen
-        let validRecipeCodes = ["BP-CLN", "COR-CLN", "SALT", "AM", "BE"]; // Add your codes here
-        let localScannedTags = [];
+        let curB = "";
 
-        function manualScan() {
-            let val = document.getElementById('rm_tag').value.trim();
-            processScannedText(val);
+        function startBatch() {
+            curB = document.getElementById('batch_code').value.trim();
+            if(!curB) return alert("Enter Batch Code!");
+            document.getElementById('display_batch').innerText = "Batch: " + curB;
+            document.getElementById('setup_screen').style.display = 'none';
+            document.getElementById('scanner_screen').style.display = 'block';
+            update();
         }
 
-        async function processScannedText(txt) {
-            let pCode = txt.split('/')[1] || txt;
-            
-            if(!validRecipeCodes.includes(pCode)) {
-                alert("❌ WRONG MATERIAL!");
-                return;
-            }
-
-            // Save to server
-            await fetch('/scan', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ batch_code: curB, rm_tag: txt })
-            });
-            
+        async function manualScan() {
+            let val = document.getElementById('rm_tag').value.trim();
+            if(!val) return;
+            await fetch('/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ batch_code: curB, rm_tag: val }) });
             document.getElementById('rm_tag').value = "";
             update();
         }
 
         async function update() {
             const scans = await fetch(`/current-scans/${curB}`).then(r => r.json());
-            
             const breakdown = scans.reduce((acc, s) => {
                 acc[s.ingredient_name || s.product_code] = (acc[s.ingredient_name || s.product_code] || 0) + 1;
                 return acc;
             }, {});
-
             document.getElementById('live_inv_breakdown').innerHTML = Object.entries(breakdown).map(([name, count]) => `
-                <div class="inv-card">
-                    <span>${name}</span>
-                    <span>${count} Bags</span>
-                </div>
+                <div class="inv-card"><span>${name}</span><span>${count} Bags</span></div>
             `).join('');
         }
 
         function toggleCamera() {
-            const reader = document.getElementById('reader');
-            if(reader.innerHTML === "") {
-                new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 }).render(txt => processScannedText(txt));
-            } else {
-                reader.innerHTML = "";
-            }
+            const rd = document.getElementById('reader');
+            if(rd.innerHTML === "") { new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 }).render(txt => { document.getElementById('rm_tag').value = txt; manualScan(); }); }
+            else { rd.innerHTML = ""; }
         }
-
-        update();
     </script>
 </body>
 </html>
