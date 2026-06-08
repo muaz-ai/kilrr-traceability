@@ -3,94 +3,282 @@
 <head>
     <meta charset="UTF-8">
     <title>Kilrr Factory OS - Scanner</title>
+    <!-- CRITICAL: Prevents the "Desktop zoomed out" issue on mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; }
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; margin: 0; padding-bottom: 80px; }
+        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --card-white: rgba(255, 255, 255, 0.95); --text-dark: #0f172a; --text-mid: #334155; --border-heavy: #cbd5e1; --success-green: #059669; --danger-red: #dc2626; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: var(--text-dark); margin: 0; padding-bottom: 120px; position: relative; overflow-x: hidden; min-height: 100vh; }
         
-        /* Navigation */
-        .nav-top { background: var(--navy-command); border-bottom: 6px solid var(--kilrr-orange); padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
-        .brand { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: white; text-transform: uppercase; }
-        .nav-links { display: flex; gap: 20px; }
-        .nav-btn { color: white; text-decoration: none; font-weight: 700; font-size: 16px; }
+        /* Atmospheric UI Elements */
+        .bg-orb { position: absolute; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.6; pointer-events: none;}
+        .orb-1 { width: 600px; height: 600px; background: rgba(234, 88, 12, 0.35); top: -100px; left: -150px; }
+        .orb-2 { width: 700px; height: 700px; background: rgba(56, 189, 248, 0.25); bottom: -200px; right: -150px; }
+        
+        /* Premium Card Layout */
+        .card { max-width: 900px; margin: 40px auto; background: var(--card-white); backdrop-filter: blur(20px); border: 2px solid var(--border-heavy); border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: var(--kilrr-orange); }
 
-        /* Card Container */
-        .main-container { max-width: 600px; margin: 20px auto; padding: 20px; }
-        .card { background: white; padding: 30px; border-radius: 20px; border: 2px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        h2 { margin: 0 0 35px 0; font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; border-bottom: 3px solid #e2e8f0; padding-bottom: 20px;}
+        .subtitle-marathi { font-family: 'Inter', sans-serif; font-size: 16px; color: var(--kilrr-orange); letter-spacing: 2px; display: block; margin-top: 5px; }
         
-        h2 { font-family: 'Space Grotesk', sans-serif; margin-top: 0; color: var(--navy-command); }
-        input { width: 100%; padding: 15px; box-sizing: border-box; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 16px; margin-bottom: 10px; }
-        button { width: 100%; padding: 15px; background: var(--kilrr-orange); color: white; border: none; border-radius: 10px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+        label { display: block; font-size: 16px; font-weight: 800; color: var(--text-mid); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px; }
+        input, select { width: 100%; padding: 22px; box-sizing: border-box; border-radius: 12px; border: 3px solid var(--border-heavy); font-size: 20px; font-family: 'Inter', sans-serif; font-weight: 700; background: #ffffff; margin-bottom: 30px; transition: 0.2s;}
+        input:focus, select:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 5px rgba(234, 88, 12, 0.15); }
         
-        .inv-card { background: #f8fafc; padding: 15px; border-radius: 10px; border: 2px solid #e2e8f0; display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 800; }
+        /* Breakdown Grid */
+        .live-inventory-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .inv-card { background: #ffffff; padding: 20px; border-radius: 12px; border: 2px solid var(--border-heavy); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .inv-name { font-weight: 900; color: var(--navy-command); font-size: 18px; margin-bottom: 5px; text-transform: uppercase;}
+        .inv-count { font-size: 24px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; color: var(--kilrr-orange); }
+        .inv-weight { font-size: 14px; font-weight: 800; color: var(--success-green); background: #ecfdf5; padding: 4px 8px; border-radius: 6px; margin-top: 5px;}
+
+        button { width: 100%; padding: 25px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 20px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.2s; margin-bottom: 15px; }
+        .btn-primary { background: var(--kilrr-orange); color: #ffffff; box-shadow: 0 10px 25px rgba(234, 88, 12, 0.3); }
+        .btn-manual { background: var(--navy-command); color: white; width: auto; padding: 0 40px; margin: 0; }
+        
+        .hybrid-input-row { display: flex; gap: 15px; }
+        .manual-box { background: #f8fafc; padding: 30px; border: 3px dashed var(--border-heavy); border-radius: 20px; margin-bottom: 30px; text-align: center; }
+        .manual-box input { border-color: var(--navy-command); margin: 0; text-align: center; font-size: 24px; font-weight: 900; text-transform: uppercase;}
+        
+        #reader { width: 100%; border-radius: 20px; overflow: hidden; border: 4px solid var(--border-heavy); margin-bottom: 30px; background: black; display: none;}
+        
+        /* Validation Flash Screen */
+        #scan_flash { position: fixed; inset: 0; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; padding: 40px; font-family: 'Space Grotesk', sans-serif; font-size: 60px; font-weight: 900; color: white; opacity: 0; transition: opacity 0.2s ease-out; pointer-events: none; text-transform: uppercase;}
+        .flash-green { background: rgba(5, 150, 105, 0.95); }
+        .flash-red { background: rgba(220, 38, 38, 0.95); }
+
+        /* Custom Dropdown UI */
+        .custom-dropdown-container { position: relative; width: 100%; }
+        .custom-dropdown-list { position: absolute; top: calc(100% - 25px); left: 0; right: 0; background: #ffffff; border: 3px solid var(--kilrr-orange); border-radius: 12px; max-height: 350px; overflow-y: auto; z-index: 9999; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2); display: none; padding: 10px; }
+        .custom-dropdown-item { padding: 18px 20px; font-size: 18px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.1s; margin-bottom: 4px; }
+        .custom-dropdown-item:hover, .custom-dropdown-item.active-item { background: #fff7ed; color: var(--kilrr-orange); }
+
+        /* 🔥 UNIVERSAL MOBILE APP INTERFACE 🔥 */
+        .nav-top { background: var(--navy-command); border-bottom: 6px solid var(--kilrr-orange); padding: 0 40px; display: flex; justify-content: space-between; align-items: center; height: 90px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.15);}
+        .brand { display: flex; align-items: center; gap: 15px; font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 900; color: #ffffff; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;}
+        .brand span { color: var(--kilrr-orange); }
+        .nav-links { display: flex; gap: 8px; align-items: center;}
+        .nav-btn { text-decoration: none; padding: 14px 22px; color: #94a3b8; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; border-radius: 8px; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px;}
+        .nav-btn.active { color: #ffffff; background: var(--kilrr-orange); }
+        
+        @media (max-width: 1024px) { 
+            body { padding-bottom: 100px; padding-top: 15px; }
+            .nav-top { position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: 75px; padding: 0 10px; border-bottom: none; border-top: 4px solid var(--kilrr-orange); justify-content: center; box-shadow: 0 -10px 20px rgba(0,0,0,0.15); z-index: 9999; background: var(--navy-command); }
+            .brand { display: none; }
+            .nav-links { width: 100%; justify-content: space-between; overflow-x: auto; padding-bottom: 5px; }
+            .nav-btn { font-size: 13px; padding: 10px 12px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; border: none; }
+            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 18px; }
+            .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 18px; }
+            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 18px; }
+            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 18px; }
+            .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 18px; }
+            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 18px; }
+            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 18px; }
+            .card { padding: 25px; margin: 15px; border-radius: 16px;}
+            h2 { font-size: 24px; }
+            .hybrid-input-row { flex-direction: column; gap: 10px; }
+            .btn-manual { width: 100% !important; padding: 20px !important; margin: 0 !important; }
+        }
     </style>
 </head>
 <body>
+    <div class="bg-orb orb-1"></div><div class="bg-orb orb-2"></div>
+    <div id="scan_flash"></div>
 
     <nav class="nav-top">
-        <div class="brand">KILRR OS</div>
+        <a href="index.html" class="brand">Kilrr <span>OS</span></a>
         <div class="nav-links">
             <a href="index.html" class="nav-btn">Hub</a>
-            <a href="scanner.html" class="nav-btn" style="color:var(--kilrr-orange);">Scanner</a>
+            <a href="inwarding.html" class="nav-btn">Inwarding</a>
+            <a href="preprocess.html" class="nav-btn">Pre-Process</a>
+            <a href="scanner.html" class="nav-btn active">Scanner</a>
+            <a href="audit.html" class="nav-btn">Audit</a>
+            <a href="dashboard.html" class="nav-btn">Dashboard</a>
+            <a href="master.html" class="nav-btn">Master</a>
         </div>
     </nav>
 
-    <div class="main-container">
-        <!-- SETUP -->
-        <div class="card" id="setup_screen">
-            <h2>Batch Setup</h2>
-            <input type="text" id="batch_code" placeholder="Enter Batch Code (e.g. SH-191-B1)">
-            <button onclick="startBatch()">START BATCH</button>
+    <!-- SETUP SCREEN -->
+    <div class="card" id="setup">
+        <h2>Batch Setup <span class="subtitle-marathi">प्रोडक्शन एरिया</span></h2>
+        
+        <label>1. Target Flavour Profile</label>
+        <div class="custom-dropdown-container"><input type="text" id="fg_select" placeholder="Search Master Recipe..." autocomplete="off"></div>
+        
+        <label>2. Master Lot & Run Code</label>
+        <div class="hybrid-input-row" style="margin-bottom: 30px;">
+            <input type="text" id="master_lot" placeholder="Master Lot (e.g. LK-190)" style="margin-bottom:0; text-transform:uppercase;">
+            <input type="text" id="sub_batch" placeholder="Run ID (e.g. B1-B2)" style="margin-bottom:0; text-align:center; font-family:'Space Grotesk'; color:var(--kilrr-orange); text-transform:uppercase;">
         </div>
 
-        <!-- SCANNER -->
-        <div class="card" id="scanner_screen" style="display:none;">
-            <h2 id="display_batch">Batch: --</h2>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="rm_tag" placeholder="Scan Tag...">
-                <button onclick="manualScan()" style="width: 30%;">ADD</button>
-            </div>
-            <div id="reader"></div>
-            <button style="background:var(--navy-command); margin-top:10px;" onclick="toggleCamera()">📷 Camera</button>
-            
-            <h2 style="margin-top:30px;">Live Breakdown</h2>
-            <div id="live_inv_breakdown"></div>
-        </div>
+        <label>3. Lead Operator</label>
+        <select id="op_name">
+            <option value="" disabled selected>Select authorized personnel...</option>
+            <option value="Muaz">Muaz</option>
+            <option value="Arbaaz">Arbaaz</option>
+            <option value="Rahul">Rahul</option>
+        </select>
+        
+        <button class="btn-primary" onclick="start()">🚀 ENGAGE SYSTEM</button>
     </div>
+    
+    <!-- WORK SCREEN -->
+    <div class="card" id="work" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom:3px solid #e2e8f0; padding-bottom:20px; margin-bottom:35px; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h2 id="title" style="color:var(--kilrr-orange); font-size:32px; border:none; padding:0; margin:0;"></h2>
+                <span class="subtitle-marathi">प्रोडक्शन एरिया - Active Node</span>
+            </div>
+            <div id="run_badge" style="background:var(--navy-command); color:white; padding:10px 20px; border-radius:12px; font-family:'Space Grotesk', sans-serif; font-size:20px; font-weight:900;"></div>
+        </div>
 
+        <div class="manual-box">
+            <label style="color:var(--text-dark); font-size: 18px; margin-bottom: 20px;">⚡ POINT & SHOOT SCANNER</label>
+            <div class="hybrid-input-row">
+                <input type="text" id="rm_tag_manual" placeholder="READY..." autocomplete="off">
+                <button class="btn-manual" onclick="manualScan()">ADD</button>
+            </div>
+        </div>
+        
+        <div id="reader"></div>
+        <button style="background: #fff7ed; color: var(--kilrr-orange); border: 3px solid var(--kilrr-orange); margin-bottom: 30px;" onclick="toggleCamera()" id="camToggleBtn">📷 Activate Mobile Camera</button>
+
+        <!-- INTELLIGENT BREAKDOWN -->
+        <h3 style="font-family:'Space Grotesk'; text-transform:uppercase; font-size:22px; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:10px;">Ingredient Breakdown</h3>
+        <div id="live_inv_breakdown" class="live-inventory-grid"></div>
+
+    </div>
+    
     <script>
-        let curB = "";
-        function startBatch() {
-            curB = document.getElementById('batch_code').value.trim();
-            if(!curB) return alert("Enter Batch Code!");
-            document.getElementById('display_batch').innerText = "Batch: " + curB;
-            document.getElementById('setup_screen').style.display = 'none';
-            document.getElementById('scanner_screen').style.display = 'block';
-            update();
+        let masterLot="", curSub="", curB="", curF="", curOp="", isProcessing=false, validRecipeCodes=[], html5QrcodeScanner=null;
+        
+        // Haptic & Audio Engine
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        document.body.addEventListener('click', () => { if(audioCtx.state === 'suspended') audioCtx.resume(); }, { once: true });
+        
+        function playFeedback(isSuccess) { 
+            if('vibrate' in navigator) { if(isSuccess) navigator.vibrate(200); else navigator.vibrate([200, 100, 200, 100, 200]); }
+            try { 
+                if(audioCtx.state==='suspended') audioCtx.resume(); 
+                const osc=audioCtx.createOscillator(); const gain=audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination); 
+                if(isSuccess){osc.type='sine'; osc.frequency.value=1000; gain.gain.setValueAtTime(0.1,audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.1); osc.start(); osc.stop(audioCtx.currentTime+0.1);} 
+                else {osc.type='sawtooth'; osc.frequency.value=150; gain.gain.setValueAtTime(0.1,audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.5); osc.start(); osc.stop(audioCtx.currentTime+0.5);} 
+            } catch(e){} 
         }
-        async function manualScan() {
-            let val = document.getElementById('rm_tag').value.trim();
-            if(!val) return;
-            await fetch('/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ batch_code: curB, rm_tag: val }) });
-            document.getElementById('rm_tag').value = "";
-            update();
+
+        function showFlash(isSuccess, message) {
+            const flash = document.getElementById('scan_flash');
+            flash.className = isSuccess ? 'flash-green' : 'flash-red';
+            flash.innerText = message; flash.style.display = 'flex'; void flash.offsetWidth; flash.style.opacity = '1';
+            setTimeout(() => { flash.style.opacity = '0'; setTimeout(() => flash.style.display = 'none', 200); }, 600);
         }
-        async function update() {
-            const scans = await fetch(`/current-scans/${curB}`).then(r => r.json());
+
+        // Custom Dropdown Logic
+        function attachCustomDropdownArray(inputId, stringArray) {
+            const inp = document.getElementById(inputId); const list = document.createElement('div'); list.className = 'custom-dropdown-list'; inp.parentNode.appendChild(list); let currentFocus = -1;
+            function renderList(filterTxt = "") {
+                list.innerHTML = ''; currentFocus = -1; const matches = stringArray.filter(item => item.toLowerCase().includes(filterTxt.toLowerCase()));
+                if(matches.length === 0) { list.style.display = 'none'; return; }
+                matches.forEach(match => { let div = document.createElement('div'); div.className = 'custom-dropdown-item'; div.innerText = match; div.onclick = () => { inp.value = match; list.style.display = 'none'; }; list.appendChild(div); }); list.style.display = 'block';
+            }
+            inp.addEventListener('input', function() { renderList(this.value); }); inp.addEventListener('focus', function() { renderList(""); });
+            document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
+        }
+
+        window.onload = async () => { 
+            const rRes = await fetch('/get-recipes'); const rData = await rRes.json();
+            const flavors = [...new Set(rData.map(r=>r.fg_code))].filter(f=>f&&f.trim()!==""); attachCustomDropdownArray('fg_select', flavors);
+            document.getElementById('rm_tag_manual').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); manualScan(); }}); 
+        };
+        
+        async function start() { 
+            if(audioCtx.state==='suspended') audioCtx.resume(); 
+            masterLot = document.getElementById('master_lot').value.trim().toUpperCase(); 
+            curSub = document.getElementById('sub_batch').value.trim().toUpperCase();
+            curF = document.getElementById('fg_select').value.trim(); 
+            curOp = document.getElementById('op_name').value; 
+            
+            if(!masterLot||!curF||!curSub||!curOp) return alert("Fill all fields!"); 
+            curB = `${masterLot}-${curSub}`;
+            
+            const bRes = await fetch('/open-batches'); const openBatchesData = await bRes.json();
+            const isOpen = openBatchesData.find(b => b.batch_code === curB); 
+            
+            if(isOpen){ curF = isOpen.fg_code; startScannerUI(); } 
+            else { 
+                const res = await fetch('/create-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,fg_code:curF,operator_name:curOp})}); 
+                const data = await res.json(); 
+                if(data.error) return alert("❌ "+data.error); 
+                startScannerUI(); 
+            } 
+        }
+
+        async function startScannerUI() { 
+            document.getElementById('setup').style.display='none'; 
+            document.getElementById('work').style.display='block'; 
+            document.getElementById('title').innerText=`LOT: ${masterLot}`; 
+            document.getElementById('run_badge').innerText=`RUN: ${curSub}`; 
+            
+            const req = await fetch(`/recipe-requirements/${curF}`).then(r=>r.json());
+            validRecipeCodes = req.map(i => i.product_code);
+            update(); 
+            setTimeout(()=>document.getElementById('rm_tag_manual').focus(),500); 
+        }
+
+        function toggleCamera() { 
+            const rd=document.getElementById('reader'); 
+            if(rd.style.display==='none' || rd.style.display === ''){ 
+                rd.style.display='block'; 
+                document.getElementById('camToggleBtn').innerText="🚫 Deactivate Camera"; 
+                if(!html5QrcodeScanner){ html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 15, qrbox: {width: 250, height: 250}, videoConstraints: { facingMode: "environment" } }); html5QrcodeScanner.render(txt => processScannedText(txt)); } 
+            } else { rd.style.display='none'; document.getElementById('camToggleBtn').innerText="📷 Activate Mobile Camera"; } 
+        }
+        
+        function manualScan() { let val=document.getElementById('rm_tag_manual').value.trim(); if(!val) return; processScannedText(val); }
+        
+        async function processScannedText(txt) { 
+            if(isProcessing) return; isProcessing=true; 
+            let cleanTag=txt, parts=txt.split('/'); 
+            if(parts.length>=4) cleanTag=`${parts[0]}/${parts[1]}/${parts[2]}/${parts[3]}`; 
+            let pCode = parts.length >= 2 ? parts[1] : cleanTag;
+            
+            if(!validRecipeCodes.includes(pCode)) {
+                playFeedback(false); showFlash(false, "❌ WRONG MATERIAL!");
+                document.getElementById('rm_tag_manual').value=""; document.getElementById('rm_tag_manual').focus(); 
+                setTimeout(()=>isProcessing=false, 1000); return; 
+            }
+
+            await fetch('/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:cleanTag})}); 
+            playFeedback(true); showFlash(true, "✅ SCANNED");
+            
+            document.getElementById('rm_tag_manual').value=""; document.getElementById('rm_tag_manual').focus(); 
+            update(); setTimeout(()=>isProcessing=false, 300); 
+        }
+        
+        async function update() { 
+            const scans = await fetch(`/current-scans/${curB}`).then(r=>r.json()); 
+            
             const breakdown = scans.reduce((acc, s) => {
-                acc[s.ingredient_name || s.product_code] = (acc[s.ingredient_name || s.product_code] || 0) + 1;
+                let name = s.ingredient_name || s.product_code;
+                if (!acc[name]) acc[name] = { count: 0, weight: 0 };
+                acc[name].count += 1;
+                acc[name].weight += parseFloat(s.weight) || 0;
                 return acc;
             }, {});
-            document.getElementById('live_inv_breakdown').innerHTML = Object.entries(breakdown).map(([name, count]) => `
-                <div class="inv-card"><span>${name}</span><span>${count} Bags</span></div>
+
+            const breakdownHTML = Object.entries(breakdown).map(([name, data]) => `
+                <div class="inv-card">
+                    <span class="inv-name">${name}</span>
+                    <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                        <span class="inv-count">${data.count} <span style="font-size:16px;">Bags</span></span>
+                        <span class="inv-weight">${data.weight.toFixed(2)} KG</span>
+                    </div>
+                </div>
             `).join('');
-        }
-        function toggleCamera() {
-            const rd = document.getElementById('reader');
-            if(rd.innerHTML === "") { new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 }).render(txt => { document.getElementById('rm_tag').value = txt; manualScan(); }); }
-            else { rd.innerHTML = ""; }
+
+            document.getElementById('live_inv_breakdown').innerHTML = breakdownHTML || `<div style="text-align:center; padding: 20px; color: #94a3b8; font-weight:800; width:100%;">Awaiting material scans...</div>`;
         }
     </script>
 </body>
