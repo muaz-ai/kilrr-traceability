@@ -14,11 +14,12 @@ const pool = new Pool({
 });
 
 // --- GOOGLE SHEETS LIVE SYNC ENGINE ---
-const SHEET_WEBHOOK = "https://script.google.com/macros/s/AKfycbyDisr6R5BoY4c1LwRwoAtPzi8BRRKUfqkTU__Y0-ibJsH08aPt3S4uFmlA42GU8lg4FQ/exec";
+// ⚠️ PASTE YOUR BRAND NEW APPS SCRIPT URL HERE:
+const SHEET_WEBHOOK ="https://script.google.com/macros/s/AKfycbyDisr6R5BoY4c1LwRwoAtPzi8BRRKUfqkTU__Y0-ibJsH08aPt3S4uFmlA42GU8lg4FQ/exev";
 
 async function pushToSheets(eventType, operator, payload) {
     try {
-        const response = await fetch(SHEET_WEBHOOK, {
+        await fetch(SHEET_WEBHOOK, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ event_type: eventType, operator: operator || "System", payload: payload }),
@@ -85,12 +86,19 @@ app.use(express.static("public"));
 
 // --- POSTGRES APIs ---
 
-// 1. INWARDING
+// 1. INWARDING (Includes the Zero-Weight Fix for live inventory injection)
 app.post("/log-inwarding", async (req, res) => {
     try {
         await pool.query("BEGIN");
         for(let item of req.body.queue) {
             await pool.query("INSERT INTO inwarding_logs (date_received, ingredient_name, ingredient_code, vendor_name, vendor_code, weight, packs) VALUES ($1, $2, $3, $4, $5, $6, $7)", [item.dateRaw, item.ingName, item.ingCode, item.venName, item.venCode, item.weight, item.packs]);
+            
+            // Inject tags directly into inventory so the scanner can read their weights instantly
+            for(let i = item.startNo; i <= item.endNo; i++) {
+                let generatedTag = `${item.dateFmt}/${item.ingCode}/${item.venCode}/${i}`;
+                await pool.query("INSERT INTO inventory (rm_tag, product_code, original_weight, current_weight) VALUES ($1, $2, $3, $4) ON CONFLICT (rm_tag) DO NOTHING", [generatedTag, item.ingCode, item.weight, item.weight]);
+            }
+            
             pushToSheets("RM_INWARDING", "Receiver", { material: item.ingName, vendor: item.venName, weight_per_bag: item.weight, packs: item.packs });
         }
         await pool.query("COMMIT");
@@ -124,7 +132,7 @@ app.post("/create-sub-assembly", async (req, res) => {
         }
 
         await pool.query("COMMIT");
-        pushToSheets("SUB_ASSEMBLY_CREATED", operator, { sub_tag: subTag, process: process_type, target_product: product_code, output_weight: weight, parent_bags_used: parents.length });
+        pushToSheets("SUB_ASSEMBLY_CREATED", operator, { sub_tag: subTag, process: process_type, material: product_code, output_weight: weight, parent_bags_used: parents.length });
         res.json({ success: true, sub_tag: subTag });
     } catch(e) { 
         await pool.query("ROLLBACK"); 
@@ -140,7 +148,7 @@ app.post("/audit-stock", async (req, res) => {
         await pool.query(`INSERT INTO audit_history (session_name, rm_tag, product_code, audited_weight) VALUES ($1, $2, $3, $4)`, [session_name, rm_tag, product_code, current_weight]);
         await pool.query(`INSERT INTO inventory (rm_tag, product_code, original_weight, current_weight, last_audited) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP) ON CONFLICT(rm_tag) DO UPDATE SET current_weight = $5, last_audited = CURRENT_TIMESTAMP`, [rm_tag, product_code, original_weight, current_weight, current_weight]);
         await pool.query("COMMIT");
-        pushToSheets("STOCK_AUDITED", session_name, { tag: rm_tag, prev_weight: original_weight, new_weight: current_weight });
+        pushToSheets("STOCK_AUDITED", session_name, { tag: rm_tag, material: product_code, prev_weight: original_weight, new_weight: current_weight });
         res.json({ success: true });
     } catch(e) { await pool.query("ROLLBACK"); res.status(500).json({error: e.message}); }
 });
@@ -203,19 +211,9 @@ app.post("/update-recipe-secure", async (req, res) => {
             await pool.query("INSERT INTO recipes (fg_code, product_code) VALUES ($1, $2)", [req.body.fg_code, code]);
         }
         await pool.query("COMMIT");
-        pushToSheets("RECIPE_UPDATED", "Manager", { recipe: req.body.fg_code, ingredients_count: req.body.ingredients.length });
+        pushToSheets("RECIPE_UPDATED", "Manager", { batch: req.body.fg_code, ingredients_count: req.body.ingredients.length });
         res.json({ success: true });
     } catch(e) { await pool.query("ROLLBACK"); res.status(500).json({error: e.message}); }
-});
-
-app.post("/vault-access", async (req, res) => {
-    if (req.body.password !== "Action123") return res.status(403).json({ error: "Denied" });
-    try {
-        const ingredients = await pool.query("SELECT * FROM ingredients ORDER BY ingredient_name ASC");
-        const vendors = await pool.query("SELECT * FROM vendors ORDER BY vendor_name ASC");
-        const recipes = await pool.query("SELECT * FROM recipes");
-        res.json({ ingredients: ingredients.rows, vendors: vendors.rows, recipes: recipes.rows });
-    } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 // 5. PRODUCTION BATCH ENGINE
@@ -223,8 +221,6 @@ app.get("/recipe-requirements/:fg", async (req, res) => {
     const result = await pool.query("SELECT r.product_code, i.ingredient_name FROM recipes r JOIN ingredients i ON r.product_code = i.product_code WHERE r.fg_code = $1", [req.params.fg]);
     res.json(result.rows);
 });
-
-// 🔥 UPDATED: Now joins the Inventory table to pull physical weights for the dashboard 🔥
 app.get("/current-scans/:batch", async (req, res) => {
     const result = await pool.query(`
         SELECT s.product_code, s.rm_tag, i.ingredient_name, inv.current_weight as weight 
@@ -235,7 +231,6 @@ app.get("/current-scans/:batch", async (req, res) => {
     `, [req.params.batch]);
     res.json(result.rows);
 });
-
 app.get("/open-batches", async (req, res) => {
     const result = await pool.query("SELECT * FROM batches WHERE status = 'OPEN' ORDER BY created_at DESC");
     res.json(result.rows);
@@ -248,7 +243,7 @@ app.post("/create-batch", async (req, res) => {
     const opName = req.body.operator_name || "Unknown";
     try {
         await pool.query("INSERT INTO batches (batch_code, fg_code, operator_name) VALUES ($1, $2, $3)", [req.body.batch_code.toUpperCase(), req.body.fg_code, opName]);
-        pushToSheets("BATCH_STARTED", opName, { batch: req.body.batch_code, flavour: req.body.fg_code });
+        pushToSheets("BATCH_STARTED", opName, { batch: req.body.batch_code, material: req.body.fg_code });
         res.json({ success: true });
     } catch(e) { res.status(500).json({ error: "Batch already exists!" }); }
 });
@@ -256,7 +251,7 @@ app.post("/scan", async (req, res) => {
     const parts = req.body.rm_tag.split("/");
     const pCode = parts.length >= 2 ? parts[1] : req.body.rm_tag;
     await pool.query("INSERT INTO scans (batch_code, rm_tag, product_code) VALUES ($1, $2, $3)", [req.body.batch_code, req.body.rm_tag, pCode]);
-    pushToSheets("MATERIAL_SCANNED", "Operator", { batch: req.body.batch_code, tag: req.body.rm_tag });
+    pushToSheets("MATERIAL_SCANNED", "Operator", { batch: req.body.batch_code, tag: req.body.rm_tag, material: pCode });
     res.json({ success: true });
 });
 app.post("/delete-specific-scan", async (req, res) => {
@@ -269,7 +264,7 @@ app.post("/delete-batch", async (req, res) => {
     if (req.body.pin !== "1234") return res.status(403).json({ error: "Wrong PIN" });
     await pool.query("DELETE FROM batches WHERE batch_code = $1", [req.body.batch_code]);
     await pool.query("DELETE FROM scans WHERE batch_code = $1", [req.body.batch_code]);
-    pushToSheets("BATCH_DELETED", "Manager", { deleted_batch: req.body.batch_code });
+    pushToSheets("BATCH_DELETED", "Manager", { locked_batch: req.body.batch_code });
     res.json({ success: true });
 });
 app.post("/lock-batch", async (req, res) => {
