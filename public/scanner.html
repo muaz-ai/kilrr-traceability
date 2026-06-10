@@ -24,13 +24,17 @@
         input, select { width: 100%; padding: 16px; box-sizing: border-box; border-radius: 12px; border: 3px solid var(--border-heavy); font-size: 18px; font-weight: 700; margin-bottom: 20px;}
         button { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; text-transform: uppercase; cursor: pointer; margin-bottom: 10px; }
         .btn-primary { background: var(--kilrr-orange); color: white; }
+        .btn-danger { background: var(--danger-red); color: white; }
         .btn-resume { background: #fff7ed; color: var(--kilrr-orange); border: 3px solid var(--kilrr-orange); text-align: left; padding: 20px; font-size: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
         
-        .live-inventory-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
-        .inv-card { background: #ffffff; padding: 15px; border-radius: 12px; border: 2px solid var(--border-heavy); display: flex; justify-content: space-between; align-items: center; }
-        .inv-name { font-weight: 900; color: var(--navy-command); font-size: 16px;}
-        .inv-count { font-size: 20px; font-weight: 900; color: var(--kilrr-orange); }
-        .inv-weight { font-size: 14px; font-weight: 800; color: var(--success-green); background: #ecfdf5; padding: 4px 8px; border-radius: 6px;}
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .summary-box { background: #f8fafc; border: 2px solid var(--border-heavy); border-radius: 16px; padding: 20px; text-align: center; }
+        .summary-title { font-size: 14px; font-weight: 800; color: var(--text-mid); text-transform: uppercase; margin-bottom: 5px; }
+        .summary-value { font-size: 32px; font-weight: 900; color: var(--navy-command); font-family: 'Space Grotesk', sans-serif; }
+
+        .scanned-list { max-height: 350px; overflow-y: auto; background: #f8fafc; border: 2px solid var(--border-heavy); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+        .scanned-item { background: white; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .tag-text { font-family: 'Space Grotesk', monospace; font-size: 16px; font-weight: 700; }
 
         #scan_flash { position: fixed; inset: 0; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; padding: 40px; font-family: 'Space Grotesk', sans-serif; font-size: 50px; font-weight: 900; color: white; opacity: 0; transition: opacity 0.2s;}
         .flash-green { background: rgba(5, 150, 105, 0.95); } .flash-red { background: rgba(220, 38, 38, 0.95); }
@@ -88,17 +92,36 @@
             </select>
         </div>
 
+        <div class="summary-grid">
+            <div class="summary-box">
+                <div class="summary-title">Total Bags Scanned</div>
+                <div class="summary-value" id="total_bags">0</div>
+            </div>
+            <div class="summary-box">
+                <div class="summary-title">Total Weight (KG)</div>
+                <div class="summary-value" id="total_weight" style="color:var(--success-green);">0.00</div>
+            </div>
+        </div>
+
         <div style="display:flex; gap:10px; margin-bottom: 20px;">
             <input type="text" id="rm_tag_manual" placeholder="SCAN BARCODE..." autocomplete="off" style="margin:0;">
             <button style="width:auto; padding:0 25px; margin:0; background:var(--navy-command);" onclick="manualScan()">ADD</button>
         </div>
         
         <div id="reader" style="width:100%; border-radius:12px; overflow:hidden; display:none; margin-bottom:20px;"></div>
-        <button style="background: #fff7ed; color: var(--kilrr-orange); border: 3px solid var(--kilrr-orange);" onclick="toggleCamera()" id="camToggleBtn">📷 Activate Mobile Camera</button>
+        <button style="background: #fff7ed; color: var(--kilrr-orange); border: 3px solid var(--kilrr-orange); margin-bottom: 20px;" onclick="toggleCamera()" id="camToggleBtn">📷 Activate Mobile Camera</button>
 
-        <h3 style="font-family:'Space Grotesk'; font-size:18px; margin-top:30px; border-bottom:2px solid #e2e8f0; padding-bottom:10px;">Ingredient Breakdown</h3>
-        <div id="live_inv_breakdown" class="live-inventory-grid"></div>
-        <button style="background:var(--success-green); margin-top:30px;" onclick="location.reload()">⬅️ Back to Menu</button>
+        <h3 style="font-family:'Space Grotesk'; font-size:18px; margin-top:20px; border-bottom:2px solid #e2e8f0; padding-bottom:10px;">Scanned Tags Breakdown</h3>
+        <div class="scanned-list" id="scanned_items_list">
+            <div style="text-align:center; padding:30px; color:#94a3b8; font-weight:bold;">No bags scanned yet...</div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top: 40px;">
+            <button class="btn-primary" style="background:var(--success-green); padding: 25px 0; font-size:20px;" onclick="lockCurrentBatch()">🔒 LOCK BATCH</button>
+            <button class="btn-danger" style="padding: 25px 0; font-size:20px;" onclick="deleteCurrentBatch()">🗑️ DELETE BATCH</button>
+        </div>
+        
+        <button style="background:#f1f5f9; color:#334155; margin-top:20px;" onclick="location.reload()">⬅️ Back to Menu</button>
     </div>
     
     <script>
@@ -141,10 +164,7 @@
             await loadScannerUI(); 
         }
 
-        function updateOperator() {
-            curOp = document.getElementById('op_name_live').value;
-            // Optionally, you could add an API route to update the operator in the DB here.
-        }
+        function updateOperator() { curOp = document.getElementById('op_name_live').value; }
 
         async function loadScannerUI() { 
             document.getElementById('setup').style.display='none'; 
@@ -171,8 +191,11 @@
             if(parts.length>=4) cleanTag=`${parts[0]}/${parts[1]}/${parts[2]}/${parts[3]}`; 
             let pCode = parts.length >= 2 ? parts[1] : cleanTag;
             
-            if(!validRecipeCodes.includes(pCode) || localScannedTags.includes(cleanTag)) {
-                showFlash(false, "❌ REJECTED"); document.getElementById('rm_tag_manual').value=""; return; 
+            if(!validRecipeCodes.includes(pCode)) {
+                showFlash(false, "❌ REJECTED (Recipe)"); document.getElementById('rm_tag_manual').value=""; return; 
+            }
+            if(localScannedTags.includes(cleanTag)) {
+                showFlash(false, "❌ DUPLICATE SCAN"); document.getElementById('rm_tag_manual').value=""; return; 
             }
 
             await fetch('/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:cleanTag})}); 
@@ -183,23 +206,62 @@
             const scans = await fetch(`/current-scans/${curB}`).then(r=>r.json()); 
             localScannedTags = scans.map(s => s.rm_tag);
 
-            const breakdown = scans.reduce((acc, s) => {
-                let name = s.ingredient_name || s.product_code;
-                if (!acc[name]) acc[name] = { count: 0, weight: 0 };
-                acc[name].count += 1; acc[name].weight += parseFloat(s.weight) || 0;
-                return acc;
-            }, {});
+            let totalBags = scans.length;
+            let totalWeight = scans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
 
-            document.getElementById('live_inv_breakdown').innerHTML = Object.entries(breakdown).map(([name, data]) => `
-                <div class="inv-card">
-                    <span class="inv-name">${name}</span>
-                    <div style="text-align:right;">
-                        <span class="inv-count">${data.count} Bags</span><br>
-                        <span class="inv-weight">${data.weight.toFixed(2)} KG</span>
+            document.getElementById('total_bags').innerText = totalBags;
+            document.getElementById('total_weight').innerText = totalWeight.toFixed(2);
+
+            if(scans.length === 0) {
+                document.getElementById('scanned_items_list').innerHTML = `<div style="text-align:center; padding:30px; color:#94a3b8; font-weight:bold;">No bags scanned yet...</div>`;
+            } else {
+                document.getElementById('scanned_items_list').innerHTML = scans.map(s => `
+                    <div class="scanned-item">
+                        <span class="tag-text">${s.rm_tag}</span>
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <span style="font-weight:900; color:var(--success-green);">${parseFloat(s.weight||0).toFixed(1)} KG</span>
+                            <button style="background:#fee2e2; color:var(--danger-red); border:none; padding:8px 16px; border-radius:6px; font-weight:900; cursor:pointer;" onclick="deleteScan('${s.rm_tag}')">🗑️ VOID</button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         }
+
+        async function deleteScan(rmTag) {
+            let pin = prompt("Enter Manager PIN (1234) to delete this scanned item:");
+            if(!pin) return;
+            const res = await fetch('/delete-specific-scan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pin: pin, batch_code: curB, rm_tag: rmTag })
+            });
+            const data = await res.json();
+            if(data.error) return alert("❌ " + data.error);
+            showFlash(true, "🗑️ VOIDED");
+            update();
+        }
+
+        async function lockCurrentBatch() {
+            if(!confirm("🔒 Finalize and Lock this Batch?")) return;
+            await fetch('/lock-batch', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ batch_code: curB }) });
+            alert("✅ Batch locked successfully!");
+            location.reload();
+        }
+
+        async function deleteCurrentBatch() {
+            let pin = prompt("Enter Manager PIN (1234) to delete the ENTIRE batch:");
+            if(!pin) return;
+            const res = await fetch('/delete-batch', {
+                method: 'POST',
+                headers: { 'Content-Type':'application/json' },
+                body: JSON.stringify({ pin: pin, batch_code: curB })
+            });
+            const data = await res.json();
+            if(data.error) return alert("❌ " + data.error);
+            alert("🗑️ Batch deleted completely.");
+            location.reload();
+        }
+
         function showFlash(success, msg) { const f = document.getElementById('scan_flash'); f.className = success ? 'flash-green' : 'flash-red'; f.innerText = msg; f.style.display='flex'; f.style.opacity='1'; setTimeout(()=>{f.style.opacity='0'; setTimeout(()=>f.style.display='none',200);}, 600); }
     </script>
 </body>
