@@ -2,48 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Kilrr Traceability - Master Data</title>
+    <title>Kilrr Factory OS - Master Data</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --card-white: rgba(255, 255, 255, 0.95); --text-dark: #0f172a; --text-mid: #334155; --border-heavy: #cbd5e1; --success-green: #059669; --danger-red: #dc2626; }
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: var(--text-dark); margin: 0; padding-bottom: 80px; position: relative; overflow-x: hidden; min-height: 100vh; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: var(--text-dark); margin: 0; padding-bottom: 120px; position: relative; overflow-x: hidden; min-height: 100vh; }
+        
         .bg-orb { position: absolute; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.6; pointer-events: none;}
         .orb-1 { width: 600px; height: 600px; background: rgba(234, 88, 12, 0.35); top: -100px; left: -150px; }
         .orb-2 { width: 700px; height: 700px; background: rgba(56, 189, 248, 0.25); bottom: -200px; right: -150px; }
-        
+
         .nav-top { background: var(--navy-command); border-bottom: 6px solid var(--kilrr-orange); padding: 0 40px; display: flex; justify-content: space-between; align-items: center; height: 90px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.15);}
         .brand { display: flex; align-items: center; gap: 15px; font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 900; color: #ffffff; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;}
-        .brand img { height: 45px; background: white; padding: 5px; border-radius: 8px;}
         .brand span { color: var(--kilrr-orange); }
-        .nav-links { display: flex; gap: 8px; align-items: center; white-space: nowrap;}
+        .nav-links { display: flex; gap: 8px; align-items: center;}
         .nav-btn { text-decoration: none; padding: 14px 22px; color: #94a3b8; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; border-radius: 8px; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px;}
-        .nav-btn:hover { background: rgba(255,255,255,0.1); color: #ffffff; }
         .nav-btn.active { color: #ffffff; background: var(--kilrr-orange); }
-        .nav-btn.logout { color: #fca5a5; border: 2px solid #ef4444; padding: 12px 20px;} 
         
         .container { max-width: 1500px; margin: 40px auto; padding: 0 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px;}
-        .card { background: var(--card-white); backdrop-filter: blur(20px); border: 2px solid var(--border-heavy); border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); margin-bottom: 40px;}
+        .card { background: var(--card-white); backdrop-filter: blur(20px); border: 2px solid var(--border-heavy); border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); margin-bottom: 40px; position: relative; overflow: hidden;}
+        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: var(--navy-command); }
+        .card.orange-top::before { background: var(--kilrr-orange); }
         
-        h2 { margin: 0 0 20px 0; font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 900; text-transform: uppercase; border-bottom: 3px solid #e2e8f0; padding-bottom: 15px;}
+        h2 { margin: 0 0 25px 0; font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 900; text-transform: uppercase; border-bottom: 3px solid #e2e8f0; padding-bottom: 15px;}
         label { display: block; font-size: 14px; font-weight: 800; color: var(--text-mid); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
-        input, select { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 12px; border: 3px solid var(--border-heavy); font-size: 18px; font-family: 'Inter', sans-serif; font-weight: 700; background: #ffffff; margin-bottom: 20px;}
-        input:focus, select:focus { border-color: var(--kilrr-orange); outline: none; }
-        button { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.2s; }
-        .btn-primary { background: var(--kilrr-orange); color: #ffffff; margin-bottom: 30px;}
+        input, select { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 12px; border: 3px solid var(--border-heavy); font-size: 18px; font-family: 'Inter', sans-serif; font-weight: 700; background: #ffffff; margin-bottom: 25px;}
+        input:focus, select:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 5px rgba(234, 88, 12, 0.15); }
         
-        ul { list-style: none; padding: 0; margin: 0; max-height: 250px; overflow-y: auto; border: 2px solid #e2e8f0; border-radius: 12px; background: white;}
-        li { padding: 15px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; font-weight: 700;}
-        .btn-del { background: white; border: 2px solid #fecaca; color: var(--danger-red); padding: 8px 15px; border-radius: 6px; font-size: 12px; font-weight: 800; cursor: pointer;}
+        button { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: var(--kilrr-orange); color: #ffffff; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(234, 88, 12, 0.3);}
+        
+        ul { list-style: none; padding: 0; margin: 0; max-height: 350px; overflow-y: auto; border: 3px solid #e2e8f0; border-radius: 12px; background: white;}
+        li { padding: 15px 20px; border-bottom: 2px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; font-weight: 700;}
+        .btn-del { background: white; border: 2px solid #fecaca; color: var(--danger-red); padding: 10px 15px; border-radius: 8px; font-size: 14px; font-weight: 800; cursor: pointer;}
 
-        /* 🔥 UNIVERSAL MOBILE APP INTERFACE 🔥 */
         @media (max-width: 1024px) { 
             body { padding-bottom: 100px; padding-top: 15px; }
             .nav-top { position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: 75px; padding: 0 10px; border-bottom: none; border-top: 4px solid var(--kilrr-orange); justify-content: center; box-shadow: 0 -10px 20px rgba(0,0,0,0.15); z-index: 9999; background: var(--navy-command); }
             .brand { display: none; }
             .nav-links { width: 100%; justify-content: space-between; overflow-x: auto; padding-bottom: 5px; }
             .nav-btn { font-size: 13px; padding: 10px 12px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; border: none; }
-            .nav-btn.logout { display: none; }
             .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 18px; }
             .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 18px; }
             .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 18px; }
@@ -53,14 +52,14 @@
             .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 18px; }
             .container { padding: 15px; margin-top: 20px; grid-template-columns: 1fr; gap: 20px;}
             .card { padding: 25px; margin: 0; border-radius: 16px; margin-bottom: 20px;}
-            h2 { font-size: 20px; }
+            h2 { font-size: 24px; }
         }
     </style>
 </head>
 <body>
     <div class="bg-orb orb-1"></div><div class="bg-orb orb-2"></div>
     <nav class="nav-top">
-        <a href="index.html" class="brand"><img src="logo.png" alt="Kilrr" onerror="this.style.display='none'"><span>Factory</span> OS</a>
+        <a href="index.html" class="brand">Kilrr <span>OS</span></a>
         <div class="nav-links">
             <a href="index.html" class="nav-btn">Hub</a>
             <a href="inwarding.html" class="nav-btn">Inwarding</a>
@@ -68,18 +67,16 @@
             <a href="scanner.html" class="nav-btn">Scanner</a>
             <a href="audit.html" class="nav-btn">Audit</a>
             <a href="dashboard.html" class="nav-btn">Dashboard</a>
-            <a href="master.html" class="nav-btn active">Master Data</a>
-            <a href="/api/logout" class="nav-btn logout">Exit</a>
+            <a href="master.html" class="nav-btn active">Master</a>
         </div>
     </nav>
 
     <div class="container">
-        <!-- Ingredients & Vendors -->
         <div>
             <div class="card">
                 <h2>Raw Materials</h2>
-                <div style="display:flex; gap:10px;">
-                    <input type="text" id="ing_code" placeholder="CODE (e.g. SALT)" style="flex:1;">
+                <div style="display:flex; gap:15px;">
+                    <input type="text" id="ing_code" placeholder="CODE (e.g. SALT)" style="flex:1; text-transform:uppercase;">
                     <input type="text" id="ing_name" placeholder="Name" style="flex:2;">
                 </div>
                 <button class="btn-primary" onclick="addIngredient()">Save Material</button>
@@ -88,8 +85,8 @@
 
             <div class="card">
                 <h2>Approved Vendors</h2>
-                <div style="display:flex; gap:10px;">
-                    <input type="text" id="ven_code" placeholder="CODE (e.g. V-01)" style="flex:1;">
+                <div style="display:flex; gap:15px;">
+                    <input type="text" id="ven_code" placeholder="CODE (e.g. V-01)" style="flex:1; text-transform:uppercase;">
                     <input type="text" id="ven_name" placeholder="Vendor Name" style="flex:2;">
                 </div>
                 <button class="btn-primary" onclick="addVendor()">Save Vendor</button>
@@ -97,24 +94,24 @@
             </div>
         </div>
 
-        <!-- Recipe Matrix -->
-        <div class="card">
+        <div class="card orange-top">
             <h2>Recipe Validation Matrix</h2>
-            <div style="background:#fff7ed; padding:15px; border-radius:8px; border:2px solid #ffedd5; margin-bottom:20px; font-weight:700; color:var(--kilrr-orange);">
-                Manager PIN required to modify active manufacturing recipes.
+            <div style="background:#fff7ed; padding:15px; border-radius:12px; border:2px solid #ffedd5; margin-bottom:25px; font-weight:800; color:var(--kilrr-orange);">
+                ⚠️ Manager PIN required to modify active manufacturing recipes. ONLY use exact Product Codes.
             </div>
+            
             <label>Master Flavour Profile (FG Code)</label>
-            <input type="text" id="recipe_fg" placeholder="e.g. AWADHI-BIRYANI" style="text-transform:uppercase;">
+            <input type="text" id="recipe_fg" placeholder="e.g. PUDINA" style="text-transform:uppercase;">
             
             <label>Required Ingredient Codes (Comma separated)</label>
-            <input type="text" id="recipe_ings" placeholder="e.g. BP-CLN, COR-CLN, SALT" style="text-transform:uppercase;">
+            <input type="text" id="recipe_ings" placeholder="e.g. GIN, GAR, ONI, CURD, SALT, JE" style="text-transform:uppercase;">
             
             <label>Manager PIN</label>
             <input type="password" id="manager_pin" placeholder="****">
             
-            <button class="btn-primary" onclick="updateRecipe()" style="background:var(--navy-command);">Update Master Recipe</button>
+            <button class="btn-primary" onclick="updateRecipe()" style="background:var(--navy-command); box-shadow: 0 10px 25px rgba(11, 17, 33, 0.3);">Update Master Recipe</button>
             
-            <h3 style="margin-top:40px; font-family:'Space Grotesk';">Active Recipes</h3>
+            <h3 style="margin-top:40px; font-family:'Space Grotesk'; font-size: 22px; text-transform:uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Active Recipes</h3>
             <ul id="recipe_list"></ul>
         </div>
     </div>
@@ -122,26 +119,26 @@
     <script>
         async function loadMasterData() {
             const iRes = await fetch('/get-ingredients'); const ingredients = await iRes.json();
-            document.getElementById('ing_list').innerHTML = ingredients.map(i => `<li><span><strong style="color:var(--kilrr-orange);">${i.product_code}</strong> - ${i.ingredient_name}</span><button class="btn-del" onclick="deleteItem('ingredient', '${i.product_code}')">Delete</button></li>`).join('');
+            document.getElementById('ing_list').innerHTML = ingredients.map(i => `<li><span><strong style="color:var(--kilrr-orange); font-size:18px;">${i.product_code}</strong><br><span style="color:#64748b; font-size:14px;">${i.ingredient_name}</span></span><button class="btn-del" onclick="deleteItem('ingredient', '${i.product_code}')">Delete</button></li>`).join('');
 
             const vRes = await fetch('/get-vendors'); const vendors = await vRes.json();
-            document.getElementById('ven_list').innerHTML = vendors.map(v => `<li><span><strong style="color:var(--kilrr-orange);">${v.vendor_code}</strong> - ${v.vendor_name}</span><button class="btn-del" onclick="deleteItem('vendor', '${v.vendor_code}')">Delete</button></li>`).join('');
+            document.getElementById('ven_list').innerHTML = vendors.map(v => `<li><span><strong style="color:var(--kilrr-orange); font-size:18px;">${v.vendor_code}</strong><br><span style="color:#64748b; font-size:14px;">${v.vendor_name}</span></span><button class="btn-del" onclick="deleteItem('vendor', '${v.vendor_code}')">Delete</button></li>`).join('');
 
             const rRes = await fetch('/get-recipes'); const recipes = await rRes.json();
             const grouped = recipes.reduce((acc, r) => { acc[r.fg_code] = acc[r.fg_code] || []; acc[r.fg_code].push(r.product_code); return acc; }, {});
-            document.getElementById('recipe_list').innerHTML = Object.entries(grouped).map(([fg, ings]) => `<li><div style="width:100%;"><div style="font-family:'Space Grotesk'; font-size:18px; font-weight:900; margin-bottom:5px;">${fg}</div><div style="font-size:13px; color:#64748b; font-weight:600;">Requires: ${ings.join(', ')}</div></div></li>`).join('');
+            document.getElementById('recipe_list').innerHTML = Object.entries(grouped).map(([fg, ings]) => `<li><div style="width:100%;"><div style="font-family:'Space Grotesk'; font-size:20px; font-weight:900; margin-bottom:8px;">${fg}</div><div style="font-size:14px; color:#475569; font-weight:700; line-height:1.5;">Requires: <span style="color:var(--kilrr-orange);">${ings.join(', ')}</span></div></div></li>`).join('');
         }
         window.onload = loadMasterData;
 
         async function addIngredient() {
-            const code = document.getElementById('ing_code').value.trim(); const name = document.getElementById('ing_name').value.trim();
+            const code = document.getElementById('ing_code').value.trim().toUpperCase(); const name = document.getElementById('ing_name').value.trim();
             if(!code || !name) return alert("Fill both fields!");
             await fetch('/add-ingredient', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code, name}) });
             document.getElementById('ing_code').value = ''; document.getElementById('ing_name').value = ''; loadMasterData();
         }
 
         async function addVendor() {
-            const code = document.getElementById('ven_code').value.trim(); const name = document.getElementById('ven_name').value.trim();
+            const code = document.getElementById('ven_code').value.trim().toUpperCase(); const name = document.getElementById('ven_name').value.trim();
             if(!code || !name) return alert("Fill both fields!");
             await fetch('/add-vendor', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code, name}) });
             document.getElementById('ven_code').value = ''; document.getElementById('ven_name').value = ''; loadMasterData();
@@ -149,22 +146,33 @@
 
         async function updateRecipe() {
             const fg_code = document.getElementById('recipe_fg').value.trim().toUpperCase();
-            const ings = document.getElementById('recipe_ings').value.split(',').map(i => i.trim().toUpperCase()).filter(i => i);
+            const raw_ings = document.getElementById('recipe_ings').value;
             const pin = document.getElementById('manager_pin').value;
             
-            if(!fg_code || ings.length === 0 || !pin) return alert("Fill all fields and PIN!");
+            if(!fg_code || !raw_ings || !pin) return alert("Please fill Flavour Profile, Ingredients, and PIN.");
+            
+            // Clean up the comma separated list
+            const ings = raw_ings.split(',').map(i => i.trim().toUpperCase()).filter(i => i);
             
             const res = await fetch('/update-recipe-secure', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({fg_code, ingredients: ings, pin}) });
             const data = await res.json();
-            if(data.error) alert(data.error);
-            else { alert("Recipe Updated!"); document.getElementById('recipe_fg').value = ''; document.getElementById('recipe_ings').value = ''; document.getElementById('manager_pin').value = ''; loadMasterData(); }
+            
+            if(data.error) {
+                alert("❌ Validation Failed: " + data.error);
+            } else { 
+                alert("✅ Recipe Updated Successfully!"); 
+                document.getElementById('recipe_fg').value = ''; 
+                document.getElementById('recipe_ings').value = ''; 
+                document.getElementById('manager_pin').value = ''; 
+                loadMasterData(); 
+            }
         }
 
         async function deleteItem(type, code) {
             const pin = prompt("Manager PIN required (1234):"); if(!pin) return;
             const res = await fetch(`/delete-${type}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code, pin}) });
             const data = await res.json();
-            if(data.error) alert(data.error); else loadMasterData();
+            if(data.error) alert("❌ Error: " + data.error); else loadMasterData();
         }
     </script>
 </body>
