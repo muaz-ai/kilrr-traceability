@@ -42,16 +42,9 @@ const initDB = async () => {
 };
 initDB();
 
-app.post("/api/login", (req, res) => {
-    const { password } = req.body;  
-    if (password === "Kilrrspicesadmin") { res.setHeader('Set-Cookie', 'kilrr_auth=admin; Path=/; HttpOnly'); return res.json({ success: true, role: 'admin' }); }
-    else if (password === "Kilrrspicesop") { res.setHeader('Set-Cookie', 'kilrr_auth=operator; Path=/; HttpOnly'); return res.json({ success: true, role: 'operator' }); }
-    else { return res.status(401).json({ success: false, error: "Invalid" }); }
-});
-
 app.use(express.static("public"));
 
-// --- NEW FIXES FOR PRE-PROCESS & SCANNER ---
+// --- PRE-PROCESS & SCANNER ROUTES ---
 app.get("/api/get-tag-weight", async (req, res) => {
     try {
         const result = await pool.query("SELECT current_weight FROM inventory WHERE rm_tag = $1", [req.query.tag]);
@@ -59,22 +52,12 @@ app.get("/api/get-tag-weight", async (req, res) => {
     } catch(e) { res.json({ weight: 0 }); }
 });
 
-app.get("/api/get-sub-assemblies", async (req, res) => {
-    try {
-        const result = await pool.query(`SELECT s.sub_tag, s.process_type, s.created_at, i.product_code, i.current_weight FROM sub_assemblies s JOIN inventory i ON s.sub_tag = i.rm_tag ORDER BY s.created_at DESC LIMIT 50`);
-        const unique = Array.from(new Set(result.rows.map(a => a.sub_tag))).map(tag => result.rows.find(a => a.sub_tag === tag));
-        res.json(unique);
-    } catch(e) { res.json([]); }
-});
-
 app.post("/undo-scan", async (req, res) => {
-    // 30-second grace period bypasses the PIN requirement
     await pool.query("DELETE FROM scans WHERE batch_code = $1 AND rm_tag = $2", [req.body.batch_code, req.body.rm_tag]);
     pushToSheets("SCAN_VOIDED", "Operator_Undo", { batch: req.body.batch_code, voided_tag: req.body.rm_tag });
     res.json({ success: true });
 });
 
-// --- STANDARD ROUTES ---
 app.post("/log-inwarding", async (req, res) => {
     try {
         await pool.query("BEGIN");
@@ -91,24 +74,32 @@ app.post("/log-inwarding", async (req, res) => {
     } catch(e) { await pool.query("ROLLBACK"); res.status(500).json({error: e.message}); }
 });
 
-app.post("/create-sub-assembly", async (req, res) => {
-    const { parents, product_code, weight, process_type, operator } = req.body;
-    try {
-        await pool.query("BEGIN");
-        const d = new Date(); const ddmm = `${String(d.getDate()).padStart(2, '0')}${String(d.getMonth()+1).padStart(2, '0')}`;
-        const randomId = Math.floor(1000 + Math.random() * 9000); 
-        const subTag = `${ddmm}/${product_code}/SUB/${randomId}`;
-        await pool.query(`INSERT INTO inventory (rm_tag, product_code, original_weight, current_weight, last_audited) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)`, [subTag, product_code, weight, weight]);
-        for(let parentTag of parents) { await pool.query(`INSERT INTO sub_assemblies (sub_tag, parent_tag, process_type, operator) VALUES ($1, $2, $3, $4)`, [subTag, parentTag, process_type, operator]); }
-        await pool.query("COMMIT");
-        pushToSheets("SUB_ASSEMBLY_CREATED", operator, { sub_tag: subTag, process: process_type, material: product_code, output_weight: weight, parent_bags_used: parents.length });
-        res.json({ success: true, sub_tag: subTag });
-    } catch(e) { await pool.query("ROLLBACK"); res.status(500).json({error: e.message}); }
-});
-
+// --- MASTER DATA & RECIPES ---
 app.get("/get-ingredients", async (req, res) => { res.json((await pool.query("SELECT * FROM ingredients ORDER BY ingredient_name ASC")).rows); });
 app.get("/get-recipes", async (req, res) => { res.json((await pool.query("SELECT * FROM recipes")).rows); });
 app.get("/recipe-requirements/:fg", async (req, res) => { res.json((await pool.query("SELECT r.product_code, i.ingredient_name FROM recipes r JOIN ingredients i ON r.product_code = i.product_code WHERE r.fg_code = $1", [req.params.fg])).rows); });
+
+// --- DASHBOARD & BATCH TRACEABILITY ROUTES ---
+app.get("/api/dashboard-traceability", async (req, res) => {
+    try {
+        const batches = await pool.query("SELECT * FROM batches ORDER BY created_at DESC LIMIT 100");
+        const allScans = await pool.query(`
+            SELECT s.batch_code, s.rm_tag, s.product_code, i.ingredient_name, inv.current_weight as weight 
+            FROM scans s 
+            LEFT JOIN ingredients i ON s.product_code = i.product_code 
+            LEFT JOIN inventory inv ON s.rm_tag = inv.rm_tag
+        `);
+        
+        // Bundle scans into their respective batches
+        const responseData = batches.rows.map(batch => {
+            const batchScans = allScans.rows.filter(scan => scan.batch_code === batch.batch_code);
+            const totalWeight = batchScans.reduce((sum, scan) => sum + (parseFloat(scan.weight) || 0), 0);
+            return { ...batch, total_weight: totalWeight, scans: batchScans };
+        });
+        
+        res.json(responseData);
+    } catch(e) { res.status(500).json({error: e.message}); }
+});
 
 app.get("/current-scans/:batch", async (req, res) => {
     res.json((await pool.query(`SELECT s.product_code, s.rm_tag, i.ingredient_name, inv.current_weight as weight FROM scans s LEFT JOIN ingredients i ON s.product_code = i.product_code LEFT JOIN inventory inv ON s.rm_tag = inv.rm_tag WHERE s.batch_code = $1`, [req.params.batch])).rows);
