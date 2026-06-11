@@ -7,8 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; }
+        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; --text-mid:#475569; }
+        * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 100px; }
+
         .nav-top { background: var(--navy-command); border-bottom: 5px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
         .brand { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase;}
         .brand span { color: var(--kilrr-orange); }
@@ -16,39 +18,56 @@
         .nav-btn { color: white; text-decoration: none; font-weight: 700; font-size: 14px; text-transform: uppercase; }
         .nav-btn.active { color: var(--kilrr-orange); }
 
-        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
-        .card { background: var(--card-bg); border-radius: 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 25px; }
-        
-        h2 { margin: 0 0 20px 0; font-family: 'Space Grotesk', sans-serif; font-size: 24px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; color: var(--navy-command);}
-        .marathi { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 14px; display: block; margin-top: 4px; }
-        
-        /* The Touch-First UI */
-        input.setup-input, select { width: 100%; padding: 20px; box-sizing: border-box; border-radius: 12px; border: 3px solid #cbd5e1; font-size: 20px; font-weight: 800; font-family: 'Space Grotesk', sans-serif; margin-bottom: 20px; background: #fff; appearance: none;}
-        input.setup-input:focus, select:focus { border-color: var(--kilrr-orange); outline: none; }
-        
-        button.btn-huge { width: 100%; padding: 25px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 22px; cursor: pointer; text-transform: uppercase; background: var(--kilrr-orange); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);}
-        
-        /* Compact Active Batches Grid */
-        .active-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        .resume-pill { background: #fff7ed; border: 2px solid var(--kilrr-orange); color: var(--kilrr-orange); padding: 15px; border-radius: 10px; font-weight: 800; font-family: 'Space Grotesk'; font-size: 16px; cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center;}
-        
-        .btn-undo { background: #fef08a; color: #854d0e; border: 3px solid #eab308; display: none; margin-bottom: 20px; font-size: 20px; width: 100%; padding: 20px; border-radius: 12px; font-weight: 900;}
+        .container { max-width: 820px; margin: 20px auto; padding: 0 15px; }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 25px; }
+
+        /* TABS */
+        .tab-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+        .tab-btn { padding: 16px; border: 3px solid #e2e8f0; background: #f8fafc; border-radius: 14px; font-family: 'Space Grotesk'; font-weight: 900; font-size: 16px; text-transform: uppercase; cursor: pointer; color: var(--text-mid); transition: 0.15s; }
+        .tab-btn.active { background: var(--navy-command); color: white; border-color: var(--navy-command); }
+
+        .step-label { font-family:'Space Grotesk'; font-weight: 900; font-size: 15px; color: var(--navy-command); text-transform: uppercase; margin: 0 0 10px 0; display:flex; align-items:center; gap:8px;}
+        .step-num { background: var(--kilrr-orange); color: white; width: 26px; height: 26px; border-radius: 8px; display:inline-flex; align-items:center; justify-content:center; font-size: 14px; }
+        .marathi { font-family: 'Inter'; color: var(--kilrr-orange); font-size: 13px; font-weight: 700; }
+        .block { margin-bottom: 28px; }
+
+        input.setup-input { width: 100%; padding: 20px; border-radius: 12px; border: 3px solid var(--navy-command); font-size: 22px; font-weight: 800; font-family: 'Space Grotesk', sans-serif; background: #fff; text-transform: uppercase; }
+        input.setup-input:focus { border-color: var(--kilrr-orange); outline: none; }
+        .hint { font-size: 12px; color: #94a3b8; font-weight: 700; margin-top: 8px; }
+
+        /* TAP CARDS */
+        .pick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+        .pick { padding: 18px 12px; border: 3px solid #e2e8f0; background: #f8fafc; border-radius: 14px; font-family:'Space Grotesk'; font-weight: 900; font-size: 16px; text-transform: uppercase; cursor: pointer; text-align:center; transition: 0.12s; color: var(--navy-command); }
+        .pick:active { transform: scale(0.97); }
+        .pick.selected { background: var(--kilrr-orange); color: white; border-color: var(--kilrr-orange); box-shadow: 0 6px 16px rgba(234,88,12,0.3); }
+
+        .info-strip { background:#fff7ed; border:2px solid #ffedd5; border-radius:12px; padding:12px 15px; font-weight:800; color:var(--kilrr-orange); font-size:14px; margin-bottom:25px; display:none; }
+
+        button.btn-huge { width: 100%; padding: 24px; border: none; border-radius: 14px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 22px; cursor: pointer; text-transform: uppercase; background: var(--kilrr-orange); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3); }
+        button.btn-huge:disabled { background: #cbd5e1; color: #fff; box-shadow:none; cursor: not-allowed; }
+
+        /* RESUME */
+        .resume-list { max-height: 360px; overflow-y: auto; }
+        .resume-pill { background: #fff7ed; border: 2px solid var(--kilrr-orange); color: var(--kilrr-orange); padding: 18px; border-radius: 12px; font-weight: 800; font-family: 'Space Grotesk'; font-size: 17px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .resume-pill small { color: var(--text-mid); font-weight:700; font-size:12px; }
+
+        /* WORK */
+        .btn-undo { background: #fef08a; color: #854d0e; border: 3px solid #eab308; display: none; margin-bottom: 20px; font-size: 20px; width: 100%; padding: 20px; border-radius: 12px; font-weight: 900; cursor:pointer;}
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .summary-box { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px; text-align: center; }
         .val-text { font-size: 32px; font-family: 'Space Grotesk'; font-weight: 900; color: var(--navy-command); }
-        
-        input#rm_tag { width: 100%; padding: 20px; box-sizing: border-box; border-radius: 12px; border: 3px solid var(--navy-command); font-size: 20px; font-weight: 800; margin: 0; }
-        
+        input#rm_tag { width: 100%; padding: 20px; border-radius: 12px; border: 3px solid var(--navy-command); font-size: 20px; font-weight: 800; }
+        h2 { margin: 0; font-family: 'Space Grotesk'; font-size: 24px; text-transform: uppercase; color: var(--navy-command);}
+
         #scan_flash { position: fixed; inset: 0; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 60px; font-weight: 900; color: white; opacity: 0; transition: opacity 0.2s;}
 
-        @media (max-width: 1024px) { 
-            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; border-top: 4px solid var(--kilrr-orange); justify-content: space-around; }
+        @media (max-width: 1024px) {
+            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; border-top: 4px solid var(--kilrr-orange); border-bottom:none; justify-content: space-around; }
             .brand { display: none; }
             .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; }
             .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 20px; }
             .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 20px; }
             .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 20px; }
-            .active-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -65,34 +84,56 @@
     </nav>
 
     <div class="container">
+        <!-- ============ SETUP ============ -->
         <div class="card" id="setup">
-            <h2 style="color: var(--success-green); border-bottom-color: #ecfdf5;">Resume Run <span class="marathi">चालू काम</span></h2>
-            <div class="active-grid" id="active_batches">Loading...</div>
-
-            <h2 style="margin-top: 40px;">Start New Run <span class="marathi">नवीन काम</span></h2>
-            
-            <label style="font-weight: 800; font-size: 14px; color: var(--text-mid); display: block; margin-bottom: 8px;">1. ASSIGN BATCH CODE</label>
-            <div style="display:flex; gap:10px; margin-bottom: 20px;">
-                <input type="text" id="master_lot" class="setup-input" placeholder="Lot (e.g. LK-190)" style="margin-bottom: 0; text-transform: uppercase;">
-                <input type="text" id="sub_batch" class="setup-input" placeholder="Run (e.g. B3)" style="margin-bottom: 0; text-transform: uppercase;">
+            <div class="tab-row">
+                <button class="tab-btn active" id="tab_new" onclick="switchTab('new')">+ New Run<br><span class="marathi">नवीन काम</span></button>
+                <button class="tab-btn" id="tab_resume" onclick="switchTab('resume')">▶ Resume<br><span class="marathi">चालू काम</span></button>
             </div>
 
-            <label style="font-weight: 800; font-size: 14px; color: var(--text-mid); display: block; margin-bottom: 8px;">2. SELECT RECIPE / FLAVOUR</label>
-            <select id="fg_select"><option value="">Loading Recipes...</option></select>
-            
-            <label style="font-weight: 800; font-size: 14px; color: var(--text-mid); display: block; margin-bottom: 8px;">3. SELECT OPERATOR</label>
-            <select id="op_name_setup"><option value="Muaz">Muaz</option><option value="Arbaaz">Arbaaz</option><option value="Rahul">Rahul</option></select>
-            
-            <button class="btn-huge" onclick="startNewBatch()">⚡ START PRODUCTION</button>
+            <!-- NEW RUN PANEL -->
+            <div id="panel_new">
+                <!-- Step 1: Manual Batch Code -->
+                <div class="block">
+                    <p class="step-label"><span class="step-num">1</span> Batch Code <span class="marathi">— बॅच कोड (रेकॉर्ड प्रमाणे)</span></p>
+                    <input type="text" id="master_lot" class="setup-input" placeholder="e.g. ACH-010626-B1" autocomplete="off">
+                    <div class="hint">Type exactly as written on your production checklist. 1 run = 1 batch (e.g. Achaari 4,800 packs).</div>
+                </div>
+
+                <!-- Step 2: Tap Recipe -->
+                <div class="block">
+                    <p class="step-label"><span class="step-num">2</span> Recipe / Flavour <span class="marathi">— रेसिपी निवडा</span></p>
+                    <div class="pick-grid" id="recipe_grid"><div class="hint">Loading recipes...</div></div>
+                </div>
+
+                <!-- Step 3: Tap Operator -->
+                <div class="block">
+                    <p class="step-label"><span class="step-num">3</span> Operator <span class="marathi">— ऑपरेटर निवडा</span></p>
+                    <div class="pick-grid" id="operator_grid">
+                        <div class="pick" onclick="pickOperator(this,'Muaz')">Muaz</div>
+                        <div class="pick" onclick="pickOperator(this,'Arbaaz')">Arbaaz</div>
+                        <div class="pick" onclick="pickOperator(this,'Rahul')">Rahul</div>
+                    </div>
+                </div>
+
+                <button class="btn-huge" id="startBtn" onclick="startNewBatch()" disabled>⚡ START PRODUCTION</button>
+            </div>
+
+            <!-- RESUME PANEL -->
+            <div id="panel_resume" style="display:none;">
+                <h2 style="font-size:18px; color:var(--success-green); margin-bottom:15px;">Open Runs <span class="marathi">चालू बॅच</span></h2>
+                <div class="resume-list" id="active_batches">Loading...</div>
+            </div>
         </div>
-        
+
+        <!-- ============ WORK ============ -->
         <div class="card" id="work" style="display:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #e2e8f0; padding-bottom:15px; margin-bottom:20px;">
                 <div>
-                    <h2 id="title" style="color:var(--kilrr-orange); font-size:28px; border:none; padding:0; margin:0;"></h2>
-                    <span class="marathi">प्रोडक्शन एरिया</span>
+                    <h2 id="title" style="color:var(--kilrr-orange); font-size:28px;"></h2>
+                    <span class="marathi" id="work_recipe">प्रोडक्शन एरिया</span>
                 </div>
-                <button style="width:auto; padding:12px 20px; font-weight:900; background:var(--danger-red); color:white; border:none; border-radius:8px; cursor:pointer;" onclick="location.reload()">EXIT</button>
+                <button style="padding:12px 20px; font-weight:900; background:var(--danger-red); color:white; border:none; border-radius:8px; cursor:pointer;" onclick="location.reload()">EXIT</button>
             </div>
 
             <div class="summary-grid">
@@ -110,16 +151,17 @@
 
             <div style="display:flex; gap:10px; margin-bottom: 20px;">
                 <input type="text" id="rm_tag" placeholder="SCAN BARCODE..." autocomplete="off">
-                <button style="width:auto; padding:0 30px; background:var(--navy-command); color:white; border:none; border-radius:12px; font-weight:900; cursor:pointer;" onclick="manualScan()">ADD</button>
+                <button style="padding:0 30px; background:var(--navy-command); color:white; border:none; border-radius:12px; font-weight:900; cursor:pointer;" onclick="manualScan()">ADD</button>
             </div>
 
             <div id="scanned_items_list" style="max-height: 250px; overflow-y:auto; border:2px solid #e2e8f0; border-radius:12px; padding:10px; background:#f8fafc;"></div>
         </div>
     </div>
-    
+
     <script>
         let curB="", curF="", validRecipeCodes=[], localScannedTags=[];
         let lastScanTag = null, undoTimer = null, undoCountdown = 0;
+        let selectedRecipe = "", selectedOperator = "";
 
         function playVoice(success) {
             try {
@@ -128,66 +170,95 @@
                 if(!success) { navigator.vibrate([200, 100, 200]); }
             } catch(e) {}
         }
-        function flash(success, txt) { 
-            const f = document.getElementById('scan_flash'); 
+        function flash(success, txt) {
+            const f = document.getElementById('scan_flash');
             f.style.background = success ? 'rgba(5,150,105,0.95)' : 'rgba(220,38,38,0.95)';
-            f.innerText = txt; f.style.display='flex'; f.style.opacity='1'; 
-            setTimeout(()=>{f.style.opacity='0'; setTimeout(()=>f.style.display='none',200);}, 600); 
+            f.innerText = txt; f.style.display='flex'; f.style.opacity='1';
+            setTimeout(()=>{f.style.opacity='0'; setTimeout(()=>f.style.display='none',200);}, 600);
         }
 
-        window.onload = async () => { 
+        function switchTab(which) {
+            document.getElementById('tab_new').classList.toggle('active', which==='new');
+            document.getElementById('tab_resume').classList.toggle('active', which==='resume');
+            document.getElementById('panel_new').style.display = which==='new' ? 'block' : 'none';
+            document.getElementById('panel_resume').style.display = which==='resume' ? 'block' : 'none';
+            if(which==='resume') loadOpenBatches();
+        }
+
+        window.onload = async () => {
+            // Load recipes as TAP cards
             const rRes = await fetch('/get-recipes'); const rData = await rRes.json();
             const flavors = [...new Set(rData.map(r=>r.fg_code))].filter(f=>f);
-            document.getElementById('fg_select').innerHTML = `<option value="">Select Recipe...</option>` + flavors.map(f => `<option value="${f}">${f}</option>`).join('');
-            
-            const bRes = await fetch('/open-batches'); const batches = await bRes.json();
-            const container = document.getElementById('active_batches');
-            if(batches.length === 0) container.innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:800; grid-column: 1 / -1;">No active runs.</div>`;
-            else container.innerHTML = batches.map(b => `<button class="resume-pill" onclick="resumeBatch('${b.batch_code}', '${b.fg_code}')"><span>${b.batch_code}</span> <span>▶</span></button>`).join('');
-            
+            const grid = document.getElementById('recipe_grid');
+            if(flavors.length === 0) grid.innerHTML = `<div class="hint">No recipes found. Add them in Master Data.</div>`;
+            else grid.innerHTML = flavors.map(f => `<div class="pick" onclick="pickRecipe(this,'${f}')">${f}</div>`).join('');
+
+            document.getElementById('master_lot').addEventListener('input', validateSetup);
             document.getElementById('rm_tag').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); manualScan(); }});
         };
-        
-        async function resumeBatch(batchCode, fgCode) { curB = batchCode; curF = fgCode; await loadScannerUI(); }
 
-        // --- ASSIGN YOUR OWN BATCH ID ---
-        async function startNewBatch() { 
-            let lot = document.getElementById('master_lot').value.trim().toUpperCase();
-            let run = document.getElementById('sub_batch').value.trim().toUpperCase();
-            curF = document.getElementById('fg_select').value; 
-            let curOp = document.getElementById('op_name_setup').value; 
-            
-            if(!lot || !run) return alert("Please assign a Lot and Run ID!");
-            if(!curF) return alert("Please select a recipe!"); 
-            
-            curB = `${lot}-${run}`;
-            
-            const res = await fetch('/create-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,fg_code:curF,operator_name:curOp})}); 
-            const data = await res.json(); 
-            if(data.error) return alert("❌ "+data.error); 
-            await loadScannerUI(); 
+        async function loadOpenBatches() {
+            const container = document.getElementById('active_batches');
+            container.innerHTML = "Loading...";
+            const bRes = await fetch('/open-batches'); const batches = await bRes.json();
+            if(batches.length === 0) container.innerHTML = `<div class="hint" style="text-align:center; padding:20px;">No active runs.</div>`;
+            else container.innerHTML = batches.map(b => `<div class="resume-pill" onclick="resumeBatch('${b.batch_code}', '${b.fg_code}')"><span>${b.batch_code}<br><small>${b.fg_code} • ${b.operator_name||''}</small></span><span>▶</span></div>`).join('');
         }
 
-        async function loadScannerUI() { 
-            document.getElementById('setup').style.display='none'; 
-            document.getElementById('work').style.display='block'; 
-            document.getElementById('title').innerText = curB; 
+        function pickRecipe(el, fg) {
+            selectedRecipe = fg;
+            document.querySelectorAll('#recipe_grid .pick').forEach(p=>p.classList.remove('selected'));
+            el.classList.add('selected');
+            validateSetup();
+        }
+        function pickOperator(el, name) {
+            selectedOperator = name;
+            document.querySelectorAll('#operator_grid .pick').forEach(p=>p.classList.remove('selected'));
+            el.classList.add('selected');
+            validateSetup();
+        }
+        function validateSetup() {
+            const code = document.getElementById('master_lot').value.trim();
+            document.getElementById('startBtn').disabled = !(code && selectedRecipe && selectedOperator);
+        }
+
+        async function resumeBatch(batchCode, fgCode) { curB = batchCode; curF = fgCode; await loadScannerUI(); }
+
+        async function startNewBatch() {
+            let code = document.getElementById('master_lot').value.trim().toUpperCase();
+            if(!code) return alert("Please type the Batch Code!");
+            if(!selectedRecipe) return alert("Please tap a recipe!");
+            if(!selectedOperator) return alert("Please tap an operator!");
+
+            curB = code; curF = selectedRecipe;
+
+            const res = await fetch('/create-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,fg_code:curF,operator_name:selectedOperator})});
+            const data = await res.json();
+            if(data.error) return alert("❌ "+data.error);
+            await loadScannerUI();
+        }
+
+        async function loadScannerUI() {
+            document.getElementById('setup').style.display='none';
+            document.getElementById('work').style.display='block';
+            document.getElementById('title').innerText = curB;
+            document.getElementById('work_recipe').innerText = curF;
             const req = await fetch(`/recipe-requirements/${curF}`).then(r=>r.json());
             validRecipeCodes = req.map(i => i.product_code);
             update(); setTimeout(() => document.getElementById('rm_tag').focus(), 500);
         }
 
-        async function manualScan() { 
-            let val=document.getElementById('rm_tag').value.trim(); if(!val) return; 
-            let cleanTag=val, parts=val.split('/'); if(parts.length>=4) cleanTag=`${parts[0]}/${parts[1]}/${parts[2]}/${parts[3]}`; 
+        async function manualScan() {
+            let val=document.getElementById('rm_tag').value.trim(); if(!val) return;
+            let cleanTag=val, parts=val.split('/'); if(parts.length>=4) cleanTag=`${parts[0]}/${parts[1]}/${parts[2]}/${parts[3]}`;
             let pCode = parts.length >= 2 ? parts[1] : cleanTag;
-            
+
             if(!validRecipeCodes.includes(pCode)) { playVoice(false); flash(false, "❌ REJECTED"); document.getElementById('rm_tag').value=""; return; }
             if(localScannedTags.includes(cleanTag)) { playVoice(false); flash(false, "❌ DUPLICATE"); document.getElementById('rm_tag').value=""; return; }
 
-            await fetch('/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:cleanTag})}); 
-            playVoice(true); flash(true, "✅ बरोबर"); 
-            
+            await fetch('/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:cleanTag})});
+            playVoice(true); flash(true, "✅ बरोबर");
+
             lastScanTag = cleanTag; startUndoTimer();
             document.getElementById('rm_tag').value=""; update(); document.getElementById('rm_tag').focus();
         }
@@ -207,14 +278,14 @@
             await fetch('/undo-scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ batch_code: curB, rm_tag: lastScanTag }) });
             flash(true, "🗑️ UNDONE"); lastScanTag = null; update(); document.getElementById('rm_tag').focus();
         }
-        
-        async function update() { 
-            const scans = await fetch(`/current-scans/${curB}`).then(r=>r.json()); 
+
+        async function update() {
+            const scans = await fetch(`/current-scans/${curB}`).then(r=>r.json());
             localScannedTags = scans.map(s => s.rm_tag);
             document.getElementById('total_bags').innerText = scans.length;
             document.getElementById('total_weight').innerText = scans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0).toFixed(2) + " KG";
 
-            if(scans.length === 0) { document.getElementById('scanned_items_list').innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-weight:bold;">No tags yet...</div>`; } 
+            if(scans.length === 0) { document.getElementById('scanned_items_list').innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-weight:bold;">No tags yet...</div>`; }
             else { document.getElementById('scanned_items_list').innerHTML = scans.map(s => `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:2px solid #e2e8f0; background:white; border-radius:8px; margin-bottom:8px; font-family:monospace; font-weight:bold; font-size:16px;"><span>${s.rm_tag}</span><span style="color:var(--success-green);">${parseFloat(s.weight||0).toFixed(1)} KG</span></div>`).join(''); }
         }
     </script>
