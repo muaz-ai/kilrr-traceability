@@ -17,21 +17,28 @@
         .nav-btn.active { color: var(--kilrr-orange); }
 
         .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
-        .card { background: var(--card-bg); border-radius: 16px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 2px solid #e2e8f0; margin-bottom: 20px; }
-        h2 { margin: 0 0 20px 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; color: var(--navy-command);}
+        .card { background: var(--card-bg); border-radius: 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 25px; }
+        
+        h2 { margin: 0 0 20px 0; font-family: 'Space Grotesk', sans-serif; font-size: 24px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; color: var(--navy-command);}
         .marathi { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 14px; display: block; margin-top: 4px; }
         
-        input, select { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 10px; border: 3px solid #cbd5e1; font-size: 18px; font-weight: 700; margin-bottom: 15px; background: #f8fafc;}
-        input:focus { border-color: var(--kilrr-orange); outline: none; }
-        button { width: 100%; padding: 20px; border: none; border-radius: 10px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
-        .btn-primary { background: var(--kilrr-orange); color: white; }
-        .btn-resume { background: #fff7ed; color: var(--kilrr-orange); border: 3px solid var(--kilrr-orange); text-align: left; padding: 20px; font-size: 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
-        .btn-undo { background: #fef08a; color: #854d0e; border: 3px solid #eab308; display: none; margin-bottom: 20px; font-size: 20px;}
-
+        /* The Touch-First UI */
+        input.setup-input, select { width: 100%; padding: 20px; box-sizing: border-box; border-radius: 12px; border: 3px solid #cbd5e1; font-size: 20px; font-weight: 800; font-family: 'Space Grotesk', sans-serif; margin-bottom: 20px; background: #fff; appearance: none;}
+        input.setup-input:focus, select:focus { border-color: var(--kilrr-orange); outline: none; }
+        
+        button.btn-huge { width: 100%; padding: 25px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 22px; cursor: pointer; text-transform: uppercase; background: var(--kilrr-orange); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);}
+        
+        /* Compact Active Batches Grid */
+        .active-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .resume-pill { background: #fff7ed; border: 2px solid var(--kilrr-orange); color: var(--kilrr-orange); padding: 15px; border-radius: 10px; font-weight: 800; font-family: 'Space Grotesk'; font-size: 16px; cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center;}
+        
+        .btn-undo { background: #fef08a; color: #854d0e; border: 3px solid #eab308; display: none; margin-bottom: 20px; font-size: 20px; width: 100%; padding: 20px; border-radius: 12px; font-weight: 900;}
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .summary-box { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px; text-align: center; }
-        .val-text { font-size: 30px; font-family: 'Space Grotesk'; font-weight: 900; color: var(--navy-command); }
-
+        .val-text { font-size: 32px; font-family: 'Space Grotesk'; font-weight: 900; color: var(--navy-command); }
+        
+        input#rm_tag { width: 100%; padding: 20px; box-sizing: border-box; border-radius: 12px; border: 3px solid var(--navy-command); font-size: 20px; font-weight: 800; margin: 0; }
+        
         #scan_flash { position: fixed; inset: 0; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 60px; font-weight: 900; color: white; opacity: 0; transition: opacity 0.2s;}
 
         @media (max-width: 1024px) { 
@@ -41,6 +48,7 @@
             .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 20px; }
             .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 20px; }
             .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 20px; }
+            .active-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -59,22 +67,32 @@
     <div class="container">
         <div class="card" id="setup">
             <h2 style="color: var(--success-green); border-bottom-color: #ecfdf5;">Resume Run <span class="marathi">चालू काम</span></h2>
-            <div id="active_batches" style="margin-bottom: 30px;">Loading open batches...</div>
+            <div class="active-grid" id="active_batches">Loading...</div>
 
-            <h2>Start New Run <span class="marathi">नवीन काम</span></h2>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="master_lot" placeholder="Lot (LK-190)" style="text-transform:uppercase;">
-                <input type="text" id="sub_batch" placeholder="Run (B3)" style="text-transform:uppercase;">
+            <h2 style="margin-top: 40px;">Start New Run <span class="marathi">नवीन काम</span></h2>
+            
+            <label style="font-weight: 800; font-size: 14px; color: var(--text-mid); display: block; margin-bottom: 8px;">1. ASSIGN BATCH CODE</label>
+            <div style="display:flex; gap:10px; margin-bottom: 20px;">
+                <input type="text" id="master_lot" class="setup-input" placeholder="Lot (e.g. LK-190)" style="margin-bottom: 0; text-transform: uppercase;">
+                <input type="text" id="sub_batch" class="setup-input" placeholder="Run (e.g. B3)" style="margin-bottom: 0; text-transform: uppercase;">
             </div>
-            <select id="fg_select"><option value="">Select Recipe...</option></select>
+
+            <label style="font-weight: 800; font-size: 14px; color: var(--text-mid); display: block; margin-bottom: 8px;">2. SELECT RECIPE / FLAVOUR</label>
+            <select id="fg_select"><option value="">Loading Recipes...</option></select>
+            
+            <label style="font-weight: 800; font-size: 14px; color: var(--text-mid); display: block; margin-bottom: 8px;">3. SELECT OPERATOR</label>
             <select id="op_name_setup"><option value="Muaz">Muaz</option><option value="Arbaaz">Arbaaz</option><option value="Rahul">Rahul</option></select>
-            <button class="btn-primary" onclick="startNewBatch()">🚀 CREATE & START</button>
+            
+            <button class="btn-huge" onclick="startNewBatch()">⚡ START PRODUCTION</button>
         </div>
         
         <div class="card" id="work" style="display:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #e2e8f0; padding-bottom:15px; margin-bottom:20px;">
-                <h2 id="title" style="color:var(--kilrr-orange); font-size:26px; border:none; padding:0; margin:0;"></h2>
-                <button style="width:auto; padding:10px 15px; font-size:14px; background:var(--danger-red); color:white;" onclick="location.reload()">EXIT</button>
+                <div>
+                    <h2 id="title" style="color:var(--kilrr-orange); font-size:28px; border:none; padding:0; margin:0;"></h2>
+                    <span class="marathi">प्रोडक्शन एरिया</span>
+                </div>
+                <button style="width:auto; padding:12px 20px; font-weight:900; background:var(--danger-red); color:white; border:none; border-radius:8px; cursor:pointer;" onclick="location.reload()">EXIT</button>
             </div>
 
             <div class="summary-grid">
@@ -91,12 +109,11 @@
             <button class="btn-undo" id="undo_btn" onclick="undoLastScan()">⚠️ UNDO LAST SCAN (30s)</button>
 
             <div style="display:flex; gap:10px; margin-bottom: 20px;">
-                <input type="text" id="rm_tag" placeholder="SCAN BARCODE..." autocomplete="off" style="margin:0;">
-                <button style="width:auto; padding:0 25px; margin:0; background:var(--navy-command); color:white;" onclick="manualScan()">ADD</button>
+                <input type="text" id="rm_tag" placeholder="SCAN BARCODE..." autocomplete="off">
+                <button style="width:auto; padding:0 30px; background:var(--navy-command); color:white; border:none; border-radius:12px; font-weight:900; cursor:pointer;" onclick="manualScan()">ADD</button>
             </div>
 
-            <h3 style="font-family:'Space Grotesk'; font-size:18px; margin-top:20px; border-bottom:2px solid #e2e8f0; padding-bottom:10px;">Scanned Tags</h3>
-            <div id="scanned_items_list" style="max-height: 200px; overflow-y:auto; border:2px solid #e2e8f0; border-radius:10px; padding:10px;"></div>
+            <div id="scanned_items_list" style="max-height: 250px; overflow-y:auto; border:2px solid #e2e8f0; border-radius:12px; padding:10px; background:#f8fafc;"></div>
         </div>
     </div>
     
@@ -125,22 +142,26 @@
             
             const bRes = await fetch('/open-batches'); const batches = await bRes.json();
             const container = document.getElementById('active_batches');
-            if(batches.length === 0) container.innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:800; padding:15px; border:2px dashed #cbd5e1; border-radius:12px;">No active runs. Start a new one below.</div>`;
-            else container.innerHTML = batches.map(b => `<button class="btn-resume" onclick="resumeBatch('${b.batch_code}', '${b.fg_code}')"><span>${b.batch_code}</span> <span>▶</span></button>`).join('');
+            if(batches.length === 0) container.innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:800; grid-column: 1 / -1;">No active runs.</div>`;
+            else container.innerHTML = batches.map(b => `<button class="resume-pill" onclick="resumeBatch('${b.batch_code}', '${b.fg_code}')"><span>${b.batch_code}</span> <span>▶</span></button>`).join('');
             
             document.getElementById('rm_tag').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); manualScan(); }});
         };
         
         async function resumeBatch(batchCode, fgCode) { curB = batchCode; curF = fgCode; await loadScannerUI(); }
 
+        // --- ASSIGN YOUR OWN BATCH ID ---
         async function startNewBatch() { 
-            let lot = document.getElementById('master_lot').value.trim().toUpperCase(); 
+            let lot = document.getElementById('master_lot').value.trim().toUpperCase();
             let run = document.getElementById('sub_batch').value.trim().toUpperCase();
             curF = document.getElementById('fg_select').value; 
             let curOp = document.getElementById('op_name_setup').value; 
-            if(!lot||!run||!curF) return alert("Fill all fields!"); 
+            
+            if(!lot || !run) return alert("Please assign a Lot and Run ID!");
+            if(!curF) return alert("Please select a recipe!"); 
             
             curB = `${lot}-${run}`;
+            
             const res = await fetch('/create-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,fg_code:curF,operator_name:curOp})}); 
             const data = await res.json(); 
             if(data.error) return alert("❌ "+data.error); 
@@ -167,22 +188,15 @@
             await fetch('/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:cleanTag})}); 
             playVoice(true); flash(true, "✅ बरोबर"); 
             
-            // Trigger the 30-Second Undo Window
-            lastScanTag = cleanTag;
-            startUndoTimer();
-
+            lastScanTag = cleanTag; startUndoTimer();
             document.getElementById('rm_tag').value=""; update(); document.getElementById('rm_tag').focus();
         }
 
         function startUndoTimer() {
-            clearInterval(undoTimer);
-            undoCountdown = 30;
-            const btn = document.getElementById('undo_btn');
-            btn.style.display = 'block';
-            btn.innerText = `⚠️ UNDO LAST SCAN (${undoCountdown}s)`;
+            clearInterval(undoTimer); undoCountdown = 30;
+            const btn = document.getElementById('undo_btn'); btn.style.display = 'block'; btn.innerText = `⚠️ UNDO LAST SCAN (${undoCountdown}s)`;
             undoTimer = setInterval(() => {
-                undoCountdown--;
-                btn.innerText = `⚠️ UNDO LAST SCAN (${undoCountdown}s)`;
+                undoCountdown--; btn.innerText = `⚠️ UNDO LAST SCAN (${undoCountdown}s)`;
                 if(undoCountdown <= 0) { clearInterval(undoTimer); btn.style.display = 'none'; lastScanTag = null; }
             }, 1000);
         }
@@ -197,12 +211,11 @@
         async function update() { 
             const scans = await fetch(`/current-scans/${curB}`).then(r=>r.json()); 
             localScannedTags = scans.map(s => s.rm_tag);
-
             document.getElementById('total_bags').innerText = scans.length;
             document.getElementById('total_weight').innerText = scans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0).toFixed(2) + " KG";
 
             if(scans.length === 0) { document.getElementById('scanned_items_list').innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-weight:bold;">No tags yet...</div>`; } 
-            else { document.getElementById('scanned_items_list').innerHTML = scans.map(s => `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #e2e8f0; background:white; font-family:monospace; font-weight:bold; font-size:16px;"><span>${s.rm_tag}</span><span style="color:var(--success-green);">${parseFloat(s.weight||0).toFixed(1)} KG</span></div>`).join(''); }
+            else { document.getElementById('scanned_items_list').innerHTML = scans.map(s => `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:2px solid #e2e8f0; background:white; border-radius:8px; margin-bottom:8px; font-family:monospace; font-weight:bold; font-size:16px;"><span>${s.rm_tag}</span><span style="color:var(--success-green);">${parseFloat(s.weight||0).toFixed(1)} KG</span></div>`).join(''); }
         }
     </script>
 </body>
