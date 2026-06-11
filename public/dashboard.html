@@ -2,108 +2,169 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Kilrr Traceability - Dashboard</title>
+    <title>Kilrr Factory OS - Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --card-white: rgba(255, 255, 255, 0.95); --text-dark: #0f172a; --text-mid: #334155; --border-heavy: #cbd5e1; --success-green: #059669; --danger-red: #dc2626; }
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: var(--text-dark); margin: 0; padding-bottom: 80px; position: relative; overflow-x: hidden; min-height: 100vh; }
-        .bg-orb { position: absolute; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.6; pointer-events: none;}
-        .orb-1 { width: 600px; height: 600px; background: rgba(234, 88, 12, 0.35); top: -100px; left: -150px; }
-        .orb-2 { width: 700px; height: 700px; background: rgba(56, 189, 248, 0.25); bottom: -200px; right: -150px; }
-        
-        .nav-top { background: var(--navy-command); border-bottom: 6px solid var(--kilrr-orange); padding: 0 40px; display: flex; justify-content: space-between; align-items: center; height: 90px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.15);}
-        .brand { display: flex; align-items: center; gap: 15px; font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 900; color: #ffffff; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;}
-        .brand img { height: 45px; background: white; padding: 5px; border-radius: 8px;}
+        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 100px; }
+        .nav-top { background: var(--navy-command); border-bottom: 5px solid var(--kilrr-orange); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
+        .brand { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase;}
         .brand span { color: var(--kilrr-orange); }
-        .nav-links { display: flex; gap: 8px; align-items: center; white-space: nowrap;}
-        .nav-btn { text-decoration: none; padding: 14px 22px; color: #94a3b8; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; border-radius: 8px; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px;}
-        .nav-btn:hover { background: rgba(255,255,255,0.1); color: #ffffff; }
-        .nav-btn.active { color: #ffffff; background: var(--kilrr-orange); }
-        .nav-btn.logout { color: #fca5a5; border: 2px solid #ef4444; padding: 12px 20px;} 
-        
-        .container { max-width: 1500px; margin: 40px auto; padding: 0 40px;}
-        .card { background: var(--card-white); backdrop-filter: blur(20px); border: 2px solid var(--border-heavy); border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); margin-bottom: 40px;}
-        
-        h2 { margin: 0 0 20px 0; font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; border-bottom: 3px solid #e2e8f0; padding-bottom: 20px; color: var(--navy-command);}
-        
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; border: 2px solid var(--border-heavy);}
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        th { background: var(--navy-command); color: white; font-family: 'Space Grotesk', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;}
-        tr:nth-child(even) { background-color: #f8fafc; }
-        
-        .badge-open { background: #fff7ed; color: var(--kilrr-orange); padding: 5px 10px; border-radius: 6px; font-weight: 800; font-size: 14px;}
-        .badge-locked { background: #ecfdf5; color: var(--success-green); padding: 5px 10px; border-radius: 6px; font-weight: 800; font-size: 14px;}
+        .nav-links { display: flex; gap: 20px; }
+        .nav-btn { color: white; text-decoration: none; font-weight: 700; font-size: 16px; text-transform: uppercase; }
+        .nav-btn.active { color: var(--kilrr-orange); }
 
-        /* 🔥 UNIVERSAL MOBILE APP INTERFACE 🔥 */
+        .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
+        .header-action { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; border-bottom: 3px solid #e2e8f0; padding-bottom: 15px;}
+        h2 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 32px; color: var(--navy-command); text-transform: uppercase;}
+        
+        .btn-export { background: #10b981; color: white; padding: 15px 30px; border: none; border-radius: 12px; font-family: 'Space Grotesk'; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);}
+        
+        /* Premium Table */
+        .table-container { background: white; border-radius: 20px; border: 1px solid #cbd5e1; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: var(--navy-command); color: white; padding: 20px; font-weight: 800; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; }
+        td { padding: 20px; border-bottom: 1px solid #e2e8f0; font-weight: 600; font-size: 16px; }
+        tr.batch-row { cursor: pointer; transition: 0.2s; }
+        tr.batch-row:hover { background: #fff7ed; }
+        
+        .status-badge { padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 12px; }
+        .status-open { background: #dbeafe; color: #1d4ed8; }
+        .status-locked { background: #dcfce7; color: #15803d; }
+
+        /* Expandable Drawer */
+        .drawer-row { display: none; background: #f8fafc; }
+        .drawer-content { padding: 20px; border-left: 6px solid var(--kilrr-orange); }
+        .scan-tag { display: inline-block; background: white; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; font-family: monospace; font-weight: bold; margin: 4px; font-size: 14px;}
+        .scan-tag span { color: var(--success-green); margin-left: 10px;}
+
         @media (max-width: 1024px) { 
-            body { padding-bottom: 100px; padding-top: 15px; }
-            .nav-top { position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: 75px; padding: 0 10px; border-bottom: none; border-top: 4px solid var(--kilrr-orange); justify-content: center; box-shadow: 0 -10px 20px rgba(0,0,0,0.15); z-index: 9999; background: var(--navy-command); }
+            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; border-top: 4px solid var(--kilrr-orange); justify-content: space-around; }
             .brand { display: none; }
-            .nav-links { width: 100%; justify-content: space-between; overflow-x: auto; padding-bottom: 5px; }
-            .nav-btn { font-size: 13px; padding: 10px 12px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; border: none; }
-            .nav-btn.logout { display: none; }
-            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 18px; }
-            .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 18px; }
-            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 18px; }
-            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 18px; }
-            .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 18px; }
-            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 18px; }
-            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 18px; }
-            .container { padding: 15px; margin-top: 20px;}
-            .card { padding: 25px; margin: 15px 0; border-radius: 16px; }
-            h2 { font-size: 24px; }
-            table { font-size: 14px; display: block; overflow-x: auto; white-space: nowrap; }
+            .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; }
+            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 20px; }
+            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 20px; }
+            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 20px; }
+            
+            .header-action { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .btn-export { width: 100%; }
+            th, td { padding: 15px 10px; font-size: 14px; }
         }
     </style>
 </head>
 <body>
-    <div class="bg-orb orb-1"></div><div class="bg-orb orb-2"></div>
     <nav class="nav-top">
-        <a href="index.html" class="brand"><img src="logo.png" alt="Kilrr" onerror="this.style.display='none'"><span>Factory</span> OS</a>
+        <a href="index.html" class="brand">Kilrr <span>OS</span></a>
         <div class="nav-links">
             <a href="index.html" class="nav-btn">Hub</a>
-            <a href="inwarding.html" class="nav-btn">Inwarding</a>
-            <a href="preprocess.html" class="nav-btn">Pre-Process</a>
-            <a href="scanner.html" class="nav-btn">Scanner</a>
-            <a href="audit.html" class="nav-btn">Audit</a>
             <a href="dashboard.html" class="nav-btn active">Dashboard</a>
             <a href="master.html" class="nav-btn">Master Data</a>
-            <a href="/api/logout" class="nav-btn logout">Exit</a>
         </div>
     </nav>
 
     <div class="container">
-        <div class="card">
-            <h2>Production Runs (Mixer)</h2>
-            <div style="overflow-x: auto;">
-                <table id="batchTable">
-                    <thead><tr><th>Batch Code</th><th>Flavour Profile</th><th>Status</th><th>Operator</th><th>Started</th></tr></thead>
-                    <tbody id="batchBody"><tr><td colspan="5" style="text-align:center;">Loading...</td></tr></tbody>
-                </table>
+        <div class="header-action">
+            <div>
+                <h2>Master Traceability Engine</h2>
+                <span style="color: #64748b; font-weight: bold;">Click on any batch to view ingredient breakdown.</span>
             </div>
+            <button class="btn-export" onclick="exportToExcel()">⬇️ Export to Excel</button>
         </div>
 
-        <div class="card">
-            <h2>Live Inventory Stock</h2>
-            <div style="overflow-x: auto;">
-                <table id="invTable">
-                    <thead><tr><th>Barcode Tag</th><th>Material</th><th>Current Weight</th><th>Last Audit</th></tr></thead>
-                    <tbody id="invBody"><tr><td colspan="4" style="text-align:center;">Loading...</td></tr></tbody>
-                </table>
-            </div>
+        <div class="table-container">
+            <table id="trace_table">
+                <thead>
+                    <tr>
+                        <th>Batch Code</th>
+                        <th>Recipe</th>
+                        <th>Total Weight</th>
+                        <th>Operator</th>
+                        <th>Status</th>
+                        <th>Started</th>
+                    </tr>
+                </thead>
+                <tbody id="trace_body">
+                    <tr><td colspan="6" style="text-align:center; padding:40px; color:#94a3b8;">Fetching global database...</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
-    
-    <script>
-        async function loadDashboard() {
-            const bRes = await fetch('/all-batches'); const batches = await bRes.json();
-            document.getElementById('batchBody').innerHTML = batches.map(b => `<tr><td style="font-weight:800; font-family:'Space Grotesk',sans-serif;">${b.batch_code}</td><td>${b.fg_code}</td><td><span class="${b.status==='OPEN'?'badge-open':'badge-locked'}">${b.status}</span></td><td>${b.operator_name || '-'}</td><td>${new Date(b.created_at).toLocaleString()}</td></tr>`).join('');
 
-            const iRes = await fetch('/get-inventory'); const inv = await iRes.json();
-            document.getElementById('invBody').innerHTML = inv.map(i => `<tr><td style="font-family:'Space Grotesk',sans-serif; font-weight:700;">${i.rm_tag}</td><td>${i.ingredient_name || i.product_code}</td><td style="color:var(--success-green); font-weight:900;">${i.current_weight} KG</td><td>${new Date(i.last_audited).toLocaleString()}</td></tr>`).join('');
+    <script>
+        let globalData = [];
+
+        window.onload = async () => {
+            try {
+                const res = await fetch('/api/dashboard-traceability');
+                globalData = await res.json();
+                renderTable();
+            } catch (e) {
+                document.getElementById('trace_body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Database Connection Failed</td></tr>`;
+            }
+        };
+
+        function renderTable() {
+            const tbody = document.getElementById('trace_body');
+            if(globalData.length === 0) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No batches found.</td></tr>`; return; }
+            
+            tbody.innerHTML = globalData.map((b, index) => {
+                const isLocked = b.status === 'LOCKED';
+                const statusBadge = `<span class="status-badge ${isLocked ? 'status-locked' : 'status-open'}">${b.status}</span>`;
+                const dateStr = new Date(b.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'short', timeStyle: 'short' });
+                
+                let scanHTML = b.scans.length > 0 
+                    ? b.scans.map(s => `<div class="scan-tag">${s.ingredient_name || s.product_code}<br>${s.rm_tag} <span>${parseFloat(s.weight).toFixed(2)} KG</span></div>`).join('')
+                    : `<div style="color:#94a3b8; font-weight:bold;">No materials scanned yet.</div>`;
+
+                return `
+                    <tr class="batch-row" onclick="toggleDrawer(${index})">
+                        <td style="color:var(--kilrr-orange); font-weight:900; font-family:'Space Grotesk'; font-size:18px;">${b.batch_code}</td>
+                        <td style="font-weight:900;">${b.fg_code}</td>
+                        <td style="color:var(--success-green); font-weight:900;">${parseFloat(b.total_weight).toFixed(2)} KG</td>
+                        <td>${b.operator_name}</td>
+                        <td>${statusBadge}</td>
+                        <td>${dateStr}</td>
+                    </tr>
+                    <tr class="drawer-row" id="drawer_${index}">
+                        <td colspan="6"><div class="drawer-content">${scanHTML}</div></td>
+                    </tr>
+                `;
+            }).join('');
         }
-        window.onload = loadDashboard;
+
+        function toggleDrawer(index) {
+            const drawer = document.getElementById(`drawer_${index}`);
+            drawer.style.display = drawer.style.display === 'table-row' ? 'none' : 'table-row';
+        }
+
+        function exportToExcel() {
+            if(globalData.length === 0) return alert("No data to export!");
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            // Headers
+            csvContent += "Batch Code,Recipe,Operator,Status,Date Started,Total Weight (KG),Ingredient Name,RM Tag,Bag Weight (KG)\r\n";
+            
+            // Loop through batches and inner scans
+            globalData.forEach(b => {
+                const dateStr = new Date(b.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+                if(b.scans.length === 0) {
+                    csvContent += `${b.batch_code},${b.fg_code},${b.operator_name},${b.status},${dateStr},${b.total_weight},N/A,N/A,0\r\n`;
+                } else {
+                    b.scans.forEach(s => {
+                        csvContent += `${b.batch_code},${b.fg_code},${b.operator_name},${b.status},${dateStr},${b.total_weight},${s.ingredient_name || s.product_code},${s.rm_tag},${s.weight}\r\n`;
+                    });
+                }
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Kilrr_Traceability_Export_${new Date().getTime()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     </script>
 </body>
 </html>
