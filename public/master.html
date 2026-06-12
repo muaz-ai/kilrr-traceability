@@ -29,8 +29,9 @@
         
         button { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; text-transform: uppercase; cursor: pointer;}
         .btn-primary { background: var(--kilrr-orange); color: #ffffff; margin-bottom: 30px;}
+        .btn-del { background: white; border: 2px solid #fecaca; color: var(--danger-red); padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer;}
         
-        ul { list-style: none; padding: 0; margin: 0; max-height: 350px; overflow-y: auto; border: 3px solid #e2e8f0; border-radius: 12px; background: white;}
+        ul { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; border: 3px solid #e2e8f0; border-radius: 12px; background: white;}
         li { padding: 15px 20px; border-bottom: 2px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; font-weight: 700;}
 
         @media (max-width: 1024px) { 
@@ -52,6 +53,7 @@
         <a href="index.html" class="brand">Kilrr <span>OS</span></a>
         <div class="nav-links">
             <a href="index.html" class="nav-btn">Hub</a>
+            <a href="inwarding.html" class="nav-btn">Inward</a>
             <a href="dashboard.html" class="nav-btn">Dashboard</a>
             <a href="master.html" class="nav-btn active">Master</a>
         </div>
@@ -68,12 +70,22 @@
                 <button class="btn-primary" onclick="addIngredient()">Save Material</button>
                 <ul id="ing_list"></ul>
             </div>
+
+            <div class="card">
+                <h2>Approved Vendors</h2>
+                <div style="display:flex; gap:15px;">
+                    <input type="text" id="ven_code" placeholder="CODE (e.g. V-01)" style="flex:1; text-transform:uppercase;">
+                    <input type="text" id="ven_name" placeholder="Vendor Name" style="flex:2;">
+                </div>
+                <button class="btn-primary" onclick="addVendor()">Save Vendor</button>
+                <ul id="ven_list"></ul>
+            </div>
         </div>
 
         <div class="card orange-top">
             <h2>Recipe Validation Matrix</h2>
             <div style="background:#fff7ed; padding:15px; border-radius:12px; border:2px solid #ffedd5; margin-bottom:25px; font-weight:800; color:var(--kilrr-orange);">
-                ⚠️ Manager PIN required. ONLY use exact Product Codes.
+                ⚠️ Manager PIN required to modify. ONLY use exact Product Codes.
             </div>
             
             <label>Master Flavour Profile (FG Code)</label>
@@ -94,19 +106,22 @@
     
     <script>
         async function loadMasterData() {
+            // Load Ingredients
             const iRes = await fetch('/get-ingredients'); const ingredients = await iRes.json();
-            document.getElementById('ing_list').innerHTML = ingredients.map(i => `<li><span><strong style="color:var(--kilrr-orange); font-size:18px;">${i.product_code}</strong><br><span style="color:#64748b; font-size:14px;">${i.ingredient_name}</span></span></li>`).join('');
+            document.getElementById('ing_list').innerHTML = ingredients.map(i => `<li><span><strong style="color:var(--kilrr-orange); font-size:16px;">${i.product_code}</strong><br><span style="color:#64748b; font-size:14px;">${i.ingredient_name}</span></span><button class="btn-del" onclick="deleteItem('ingredient', '${i.product_code}')">Delete</button></li>`).join('');
 
+            // Load Vendors
+            const vRes = await fetch('/get-vendors'); const vendors = await vRes.json();
+            document.getElementById('ven_list').innerHTML = vendors.map(v => `<li><span><strong style="color:var(--kilrr-orange); font-size:16px;">${v.vendor_code}</strong><br><span style="color:#64748b; font-size:14px;">${v.vendor_name}</span></span><button class="btn-del" onclick="deleteItem('vendor', '${v.vendor_code}')">Delete</button></li>`).join('');
+
+            // Load Recipes
             const rRes = await fetch('/get-recipes'); const recipes = await rRes.json();
             const grouped = recipes.reduce((acc, r) => { 
-                if(r.fg_code) {
-                    acc[r.fg_code] = acc[r.fg_code] || []; 
-                    acc[r.fg_code].push(r.product_code); 
-                }
+                if(r.fg_code) { acc[r.fg_code] = acc[r.fg_code] || []; acc[r.fg_code].push(r.product_code); }
                 return acc; 
             }, {});
             
-            document.getElementById('recipe_list').innerHTML = Object.entries(grouped).map(([fg, ings]) => `<li><div style="width:100%;"><div style="font-family:'Space Grotesk'; font-size:20px; font-weight:900; margin-bottom:8px;">${fg}</div><div style="font-size:14px; color:#475569; font-weight:700;">Requires: <span style="color:var(--kilrr-orange);">${ings.join(', ')}</span></div></div></li>`).join('');
+            document.getElementById('recipe_list').innerHTML = Object.entries(grouped).map(([fg, ings]) => `<li><div style="width:100%;"><div style="font-family:'Space Grotesk'; font-size:18px; font-weight:900; margin-bottom:5px;">${fg}</div><div style="font-size:14px; color:#475569; font-weight:700;">Requires: <span style="color:var(--kilrr-orange);">${ings.join(', ')}</span></div></div></li>`).join('');
         }
         window.onload = loadMasterData;
 
@@ -115,6 +130,22 @@
             if(!code || !name) return alert("Fill both fields!");
             await fetch('/add-ingredient', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code, name}) });
             document.getElementById('ing_code').value = ''; document.getElementById('ing_name').value = ''; loadMasterData();
+        }
+
+        async function addVendor() {
+            const code = document.getElementById('ven_code').value.trim().toUpperCase(); const name = document.getElementById('ven_name').value.trim();
+            if(!code || !name) return alert("Fill both fields!");
+            await fetch('/add-vendor', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code, name}) });
+            document.getElementById('ven_code').value = ''; document.getElementById('ven_name').value = ''; loadMasterData();
+        }
+
+        async function deleteItem(type, code) {
+            let pin = prompt(`Manager PIN required to delete ${code}:`);
+            if(!pin) return;
+            const res = await fetch(`/delete-${type}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code, pin}) });
+            const data = await res.json();
+            if(data.error) alert("❌ Error: " + data.error);
+            else loadMasterData();
         }
 
         async function updateRecipe() {
