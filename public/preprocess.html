@@ -6,7 +6,6 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; }
@@ -48,7 +47,6 @@
 </head>
 <body>
     <div id="scan_flash"></div>
-
     <nav class="nav-top">
         <a href="index.html" class="brand">Kilrr <span>OS</span></a>
         <div class="nav-links">
@@ -67,7 +65,7 @@
             </div>
 
             <div style="display:flex; gap:10px;">
-                <input type="text" id="rm_tag" placeholder="SCAN BARCODE..." autocomplete="off" style="margin-bottom:0;">
+                <input type="text" id="rm_tag" placeholder="SCAN BARCODE..." autocomplete="off" style="margin-bottom:0; border-color:var(--navy-command);">
                 <button style="width:auto; padding:0 25px; margin:0; background:var(--navy-command); color:white;" onclick="manualScan()">ADD</button>
             </div>
             
@@ -91,9 +89,7 @@
             </div>
             <input type="number" id="output_wt" placeholder="0.00" style="font-size: 24px; color:var(--kilrr-orange);" oninput="calcYield()">
             
-            <select id="op_name">
-                <option value="Muaz">Muaz</option><option value="Arbaaz">Arbaaz</option><option value="Rahul">Rahul</option>
-            </select>
+            <select id="op_name"><option value="Muaz">Muaz</option><option value="Arbaaz">Arbaaz</option><option value="Rahul">Rahul</option></select>
             
             <button class="btn-primary" onclick="submitProcess()">🖨️ Log & Print Tag</button>
         </div>
@@ -106,7 +102,7 @@
             try {
                 let msg = new SpeechSynthesisUtterance(success ? "बरोबर" : "चूक");
                 msg.lang = 'mr-IN'; msg.rate = 1.2; window.speechSynthesis.speak(msg);
-                if(!success) { navigator.vibrate([200, 100, 200]); }
+                if(!success && navigator.vibrate) navigator.vibrate([200, 100, 200]); 
             } catch(e) {}
         }
         function flash(success, txt) { 
@@ -131,7 +127,7 @@
             
             inputBags.push({ tag: cleanTag, weight: parseFloat(data.weight) || 0 });
             playVoice(true); flash(true, "✅ बरोबर");
-            document.getElementById('rm_tag').value=""; updateLog(); calcYield();
+            document.getElementById('rm_tag').value=""; updateLog(); calcYield(); document.getElementById('rm_tag').focus();
         }
 
         function removeTag(tag) { inputBags = inputBags.filter(t => t.tag !== tag); updateLog(); calcYield(); }
@@ -161,14 +157,12 @@
             const outCode = document.getElementById('out_code').value.toUpperCase(), outWt = document.getElementById('output_wt').value;
             if(!outCode || !outWt) return alert("Fill Product Code and Output Weight!");
 
-            const res = await fetch('/create-sub-assembly', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ parents: inputBags.map(t=>t.tag), product_code: outCode, weight: outWt, process_type: document.getElementById('process_type').value, operator: document.getElementById('op_name').value }) });
+            const res = await fetch('/create-sub-assembly', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ product_code: outCode, weight: outWt, process_type: document.getElementById('process_type').value, operator: document.getElementById('op_name').value }) });
             const data = await res.json();
             if(data.error) return alert("❌ Error: " + data.error);
 
-            // Print Tag
-            const dObj = new Date(); const dispDate = `${String(dObj.getDate()).padStart(2, '0')}/${String(dObj.getMonth()+1).padStart(2, '0')}/${dObj.getFullYear()}`;
             let pw = window.open('','_blank'); let qr = new QRious({ value: data.sub_tag, size: 250, level: 'M' });
-            pw.document.write(`<html><head><style>@page{size:75mm 75mm; margin:0;} body{margin:0; font-family:Arial; text-align:center;} .page{width:75mm; height:75mm; padding-top:4mm; display:flex; flex-direction:column; align-items:center;} h2{margin:0; font-size:18px;} img{width:34mm; height:34mm; margin:2mm 0;} .dt{font-size:14px; font-weight:bold;}</style></head><body><div class="page"><h2>${outCode}</h2><img src="${qr.toDataURL()}"><div style="font-size:12px; font-weight:900;">${data.sub_tag}</div><div class="dt">Wt: ${outWt} KG</div></div><script>window.onload=()=>{window.print();window.close();};<\/script></body></html>`); pw.document.close();
+            pw.document.write(`<html><head><style>@page{size:75mm 75mm; margin:0;} body{margin:0; font-family:Arial; text-align:center;} .page{width:75mm; height:75mm; padding-top:4mm; display:flex; flex-direction:column; align-items:center;} h2{margin:0 0 1mm; font-size:18px;} img{width:34mm; height:34mm; margin:2mm 0;} .dt{font-size:14px; font-weight:bold;}</style></head><body><div class="page"><h2>${outCode}</h2><div style="background:black; color:white; font-size:12px; font-weight:bold; padding:2px 8px;">${document.getElementById('process_type').value}</div><img src="${qr.toDataURL()}"><div style="font-size:12px; font-weight:900;">${data.sub_tag}</div><div class="dt">Wt: ${outWt} KG</div></div><script>window.onload=()=>{window.print();window.close();};<\/script></body></html>`); pw.document.close();
             
             inputBags = []; updateLog(); document.getElementById('output_wt').value = ""; calcYield();
         }
