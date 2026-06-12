@@ -26,12 +26,12 @@
         h2 { margin: 0 0 25px 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; color: var(--navy-command);}
         
         label { font-weight: 800; font-size: 13px; color: #64748b; display: block; margin-bottom: 8px; letter-spacing: 1px;}
-        input, select { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #fff;}
+        input, select { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #fff; transition: 0.2s;}
         input:focus, select:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 4px rgba(234,88,12,0.1);}
+        input[readonly] { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; border-color: #e2e8f0;}
         
-        button.btn-huge { width: 100%; padding: 22px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; background: var(--kilrr-orange); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3); margin-bottom: 15px;}
+        button.btn-huge { width: 100%; padding: 22px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; background: var(--kilrr-orange); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);}
         button.btn-success { background: var(--success-green); box-shadow: 0 8px 20px rgba(5, 150, 105, 0.3); }
-        button.btn-reprint { background: #fff7ed; color: var(--kilrr-orange); border: 2px solid var(--kilrr-orange); box-shadow: none; padding: 15px;}
 
         .row-inputs { display: flex; gap: 15px; }
         
@@ -70,8 +70,9 @@
             <a href="inwarding.html" class="nav-btn active">Inwarding</a>
             <a href="preprocess.html" class="nav-btn">Pre-Process</a>
             <a href="scanner.html" class="nav-btn">Scanner</a>
+            <a href="audit.html" class="nav-btn">Audit</a>
             <a href="dashboard.html" class="nav-btn">Dashboard</a>
-            <a href="master.html" class="nav-btn">Master Data</a>
+            <a href="master.html" class="nav-btn">Master</a>
         </div>
     </nav>
 
@@ -82,11 +83,11 @@
             <div class="row-inputs">
                 <div style="flex:1;">
                     <label>DATE RECEIVED</label>
-                    <input type="date" id="date" onchange="generateTags()">
+                    <input type="date" id="date" onchange="generatePreview()">
                 </div>
                 <div style="flex:1;">
                     <label>NET WT/BAG (KG)</label>
-                    <input type="number" id="weight" placeholder="e.g. 25" oninput="generateTags()">
+                    <input type="number" id="weight" placeholder="e.g. 25" oninput="generatePreview()">
                 </div>
             </div>
 
@@ -104,21 +105,20 @@
 
             <div class="row-inputs">
                 <div style="flex:1;">
-                    <label>TOTAL BAGS</label>
-                    <input type="number" id="qty" placeholder="Qty" oninput="generateTags()">
-                </div>
-                <div style="flex:1;">
                     <label>START ID</label>
-                    <input type="number" id="start_no" value="1" oninput="generateTags()">
+                    <input type="number" id="start_no" value="1" oninput="generatePreview()">
                 </div>
                 <div style="flex:1;">
                     <label>END ID</label>
-                    <input type="number" id="end_no" disabled style="background:#f1f5f9;">
+                    <input type="number" id="end_no" value="1" oninput="generatePreview()">
+                </div>
+                <div style="flex:1;">
+                    <label>TOTAL BAGS</label>
+                    <input type="number" id="qty" placeholder="0" readonly>
                 </div>
             </div>
 
             <button class="btn-huge" onclick="stageTags()">➕ STAGE FOR PRINTING</button>
-            <button class="btn-huge btn-reprint" onclick="reprintDamagedTag()">⚠️ REPRINT SPECIFIC BAG #</button>
         </div>
 
         <div class="card card-green">
@@ -145,17 +145,22 @@
         window.onload = async () => {
             document.getElementById('date').valueAsDate = new Date();
             try {
-                const iRes = await fetch('/get-ingredients'); const ingredients = await iRes.json();
+                const iRes = await fetch('/get-ingredients'); 
+                const ingredients = await iRes.json();
                 attachCustomDropdown('ing_search', ingredients, 'ingredient_name', 'ingredient_name', 'product_code', 'ing_name', 'ing_code');
                 
-                const vRes = await fetch('/get-vendors'); const vendors = await vRes.json();
+                const vRes = await fetch('/get-vendors'); 
+                const vendors = await vRes.json();
                 attachCustomDropdown('ven_search', vendors, 'vendor_name', 'vendor_name', 'vendor_code', 'ven_name', 'ven_code');
             } catch(e) { console.error("Master data fetch failed."); }
+            generatePreview();
         };
 
         function attachCustomDropdown(inputId, dataArray, searchKey, displayKey, codeKey, nameHiddenId, codeHiddenId) {
-            const inp = document.getElementById(inputId); const list = document.createElement('div'); 
-            list.className = 'custom-dropdown-list'; inp.parentNode.appendChild(list);
+            const inp = document.getElementById(inputId); 
+            const list = document.createElement('div'); 
+            list.className = 'custom-dropdown-list'; 
+            inp.parentNode.appendChild(list);
             
             function renderList(filterTxt = "") {
                 list.innerHTML = ''; 
@@ -170,7 +175,7 @@
                         document.getElementById(nameHiddenId).value = match[displayKey]; 
                         document.getElementById(codeHiddenId).value = match[codeKey]; 
                         list.style.display = 'none'; 
-                        generateTags();
+                        generatePreview();
                     }; 
                     list.appendChild(div); 
                 }); 
@@ -181,34 +186,28 @@
             document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
         }
 
-        function reprintDamagedTag() {
-            let specificBag = prompt("Enter the exact Bag Number you need to reprint (e.g., 14):");
-            if(!specificBag || isNaN(specificBag)) return;
-            
-            document.getElementById('start_no').value = specificBag;
-            document.getElementById('qty').value = 1;
-            generateTags();
-            stageTags();
-        }
-
-        function generateTags() {
+        function generatePreview() {
             const dateVal = document.getElementById('date').value;
             const ingCode = document.getElementById('ing_code').value;
             const ingName = document.getElementById('ing_name').value;
             const venCode = document.getElementById('ven_code').value;
-            const qty = parseInt(document.getElementById('qty').value) || 0;
-            const startNo = parseInt(document.getElementById('start_no').value) || 1;
             const weight = document.getElementById('weight').value;
+            
+            let startNo = parseInt(document.getElementById('start_no').value);
+            let endNo = parseInt(document.getElementById('end_no').value);
 
-            if(!dateVal || !ingCode || !venCode || qty <= 0 || !weight) {
-                document.getElementById('end_no').value = "";
-                document.getElementById('preview_area').innerHTML = `<div style="color:#94a3b8; font-weight:800; padding:40px 0;">Awaiting Data Input...</div>`;
+            // Auto-calculate the locked QTY field
+            if(isNaN(startNo) || isNaN(endNo) || endNo < startNo) {
+                document.getElementById('qty').value = 0;
+            } else {
+                document.getElementById('qty').value = (endNo - startNo) + 1;
+            }
+
+            if(!dateVal || !ingCode || !venCode || isNaN(startNo) || isNaN(endNo) || endNo < startNo || !weight) {
+                document.getElementById('preview_area').innerHTML = `<div style="color:#94a3b8; font-weight:800; padding:40px 0;">Awaiting Valid Data Input...</div>`;
                 generatedTagsForPreview = [];
                 return;
             }
-
-            const endNo = startNo + qty - 1;
-            document.getElementById('end_no').value = endNo;
 
             const [year, month, day] = dateVal.split('-');
             const dateFmt = `${day}${month}${year}`;
@@ -218,12 +217,14 @@
                 generatedTagsForPreview.push(`${dateFmt}/${ingCode}/${venCode}/${i}`);
             }
 
+            // Render highly professional preview
             let qr = new QRious({ value: generatedTagsForPreview[0], size: 150, level: 'M' });
             document.getElementById('preview_area').innerHTML = `
-                <div style="background:white; padding:15px; border-radius:10px; display:inline-block; border:1px solid #cbd5e1; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                    <div style="font-weight:900; font-size:18px; margin-bottom:5px; text-transform:uppercase;">${ingName}</div>
-                    <div style="font-size:12px; font-weight:bold; background:black; color:white; padding:2px 5px; display:inline-block; margin-bottom:10px;">WT: ${weight} KG</div><br>
-                    <img src="${qr.toDataURL()}" style="width:100px; height:100px;"><br>
+                <div style="background:white; padding:15px; border-radius:10px; display:inline-block; border:1px solid #cbd5e1; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 250px;">
+                    <div style="font-size:12px; font-weight:900; letter-spacing:1px; margin-bottom:5px; text-transform:uppercase; border-bottom: 2px solid #0f172a; padding-bottom: 4px;">KILRR SPICES</div>
+                    <div style="font-weight:900; font-size:20px; margin-bottom:5px; text-transform:uppercase; color:var(--kilrr-orange);">${ingName}</div>
+                    <div style="font-size:14px; font-weight:bold; background:black; color:white; padding:4px 8px; display:inline-block; margin-bottom:10px; border-radius: 4px;">WT: ${weight} KG</div><br>
+                    <img src="${qr.toDataURL()}" style="width:120px; height:120px;"><br>
                     <div style="font-family:monospace; font-weight:bold; margin-top:10px; font-size:14px;">${generatedTagsForPreview[0]}</div>
                 </div>
             `;
@@ -251,9 +252,11 @@
             printQueue.push(batchObj);
             updateQueueUI();
             
-            document.getElementById('start_no').value = batchObj.endNo + 1;
-            document.getElementById('qty').value = "";
-            generateTags();
+            // Auto increment for the next batch, keep End ID matching Start ID initially
+            let nextStart = batchObj.endNo + 1;
+            document.getElementById('start_no').value = nextStart;
+            document.getElementById('end_no').value = nextStart;
+            generatePreview();
         }
 
         function updateQueueUI() {
@@ -262,11 +265,17 @@
                 qList.innerHTML = `<div style="color:#94a3b8; text-align:center; padding:20px;">No labels staged.</div>`;
                 return;
             }
-            qList.innerHTML = printQueue.map(item => `
-                <div class="queue-item">
-                    <span style="color:var(--kilrr-orange);">${item.ingCode}</span> | ${item.venCode} | Bags: ${item.startNo} to ${item.endNo} (${item.weight}kg)
+            qList.innerHTML = printQueue.map((item, index) => `
+                <div class="queue-item" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><span style="color:var(--kilrr-orange);">${item.ingCode}</span> | ${item.venCode} | Bags: ${item.startNo} to ${item.endNo}</div>
+                    <button style="background:var(--danger-red); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick="removeFromQueue(${index})">X</button>
                 </div>
             `).join('');
+        }
+
+        function removeFromQueue(index) {
+            printQueue.splice(index, 1);
+            updateQueueUI();
         }
 
         async function executePrint() {
@@ -282,16 +291,18 @@
                 const data = await res.json();
                 if(data.error) return alert("Database Error: " + data.error);
 
+                // RESTORED: Professional FSSAI 75x75mm Print Layout
                 let printWindow = window.open('', '_blank');
                 let html = `<html><head><style>
                     @page { size: 75mm 75mm; margin: 0; }
-                    body { margin: 0; padding: 0; font-family: Arial, sans-serif; text-align: center; color: black; background: white; }
-                    .page { width: 75mm; height: 75mm; box-sizing: border-box; padding-top: 4mm; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow: hidden; }
-                    h2 { margin: 0 0 1mm 0; font-size: 18px; text-transform: uppercase; font-weight: 900; line-height: 1.1; }
-                    .codes { margin: 0 0 2mm 0; font-size: 12px; font-weight: bold; background: black; color: white; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px;}
-                    img { width: 34mm; height: 34mm; margin: 0 0 2mm 0; }
-                    .bc-text { margin: 0 0 2mm 0; font-size: 15px; font-weight: 900; }
-                    .details { margin: 0; font-size: 14px; font-weight: bold; line-height: 1.3; }
+                    body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; text-align: center; color: black; background: white; }
+                    .page { width: 75mm; height: 75mm; box-sizing: border-box; padding: 4mm; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+                    .brand { font-size: 16px; font-weight: 900; letter-spacing: 1px; margin-bottom: 2mm; text-transform: uppercase; border-bottom: 2px solid black; padding-bottom: 2px;}
+                    h2 { margin: 0 0 2mm 0; font-size: 20px; text-transform: uppercase; font-weight: 900; line-height: 1.1; }
+                    .codes { font-size: 12px; font-weight: bold; background: black; color: white; padding: 3px 8px; border-radius: 4px; margin-bottom: 2mm;}
+                    img { width: 34mm; height: 34mm; margin-bottom: 2mm; }
+                    .bc-text { font-size: 13px; font-weight: 900; font-family: monospace; margin-bottom: 2mm;}
+                    .details { font-size: 12px; font-weight: bold; }
                 </style></head><body>`;
 
                 printQueue.forEach(item => {
@@ -302,11 +313,12 @@
                         
                         html += `
                         <div class="page">
+                            <div class="brand">KILRR SPICES</div>
                             <h2>${item.ingName}</h2>
                             <div class="codes">V: ${item.venCode} | WT: ${item.weight} KG</div>
                             <img src="${qrEngine.toDataURL()}">
                             <div class="bc-text">${tagStr}</div>
-                            <div class="details">Date: ${dispDate}</div>
+                            <div class="details">Inward Date: ${dispDate}</div>
                         </div>`;
                     }
                 });
