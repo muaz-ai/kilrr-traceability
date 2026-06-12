@@ -72,7 +72,7 @@
             <a href="scanner.html" class="nav-btn">Scanner</a>
             <a href="audit.html" class="nav-btn">Audit</a>
             <a href="dashboard.html" class="nav-btn">Dashboard</a>
-            <a href="master.html" class="nav-btn">Master</a>
+            <a href="master.html" class="nav-btn">Master Data</a>
         </div>
     </nav>
 
@@ -209,23 +209,25 @@
                 return;
             }
 
+            // Extract Day and Month for DDMM format
             const [year, month, day] = dateVal.split('-');
-            const dateFmt = `${day}${month}${year}`;
+            const dateFmt = `${day}${month}`;
+            const padWeight = String(weight).padStart(2, '0');
             
             generatedTagsForPreview = [];
             for(let i = startNo; i <= endNo; i++) {
                 generatedTagsForPreview.push(`${dateFmt}/${ingCode}/${venCode}/${i}`);
             }
 
-            // Render highly professional preview
+            // Render preview to closely match the physical sticker
             let qr = new QRious({ value: generatedTagsForPreview[0], size: 150, level: 'M' });
             document.getElementById('preview_area').innerHTML = `
-                <div style="background:white; padding:15px; border-radius:10px; display:inline-block; border:1px solid #cbd5e1; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 250px;">
-                    <div style="font-size:12px; font-weight:900; letter-spacing:1px; margin-bottom:5px; text-transform:uppercase; border-bottom: 2px solid #0f172a; padding-bottom: 4px;">KILRR SPICES</div>
-                    <div style="font-weight:900; font-size:20px; margin-bottom:5px; text-transform:uppercase; color:var(--kilrr-orange);">${ingName}</div>
-                    <div style="font-size:14px; font-weight:bold; background:black; color:white; padding:4px 8px; display:inline-block; margin-bottom:10px; border-radius: 4px;">WT: ${weight} KG</div><br>
+                <div style="background:white; padding:15px; border-radius:10px; display:inline-block; border:1px solid #cbd5e1; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 220px; color: black;">
+                    <div style="font-weight:900; font-size:24px; margin-bottom:5px; text-transform:uppercase;">${ingName}</div>
+                    <div style="font-size:14px; font-weight:bold; color:#475569; margin-bottom:10px;">Mat: ${ingCode} | Ven: ${venCode}</div>
                     <img src="${qr.toDataURL()}" style="width:120px; height:120px;"><br>
-                    <div style="font-family:monospace; font-weight:bold; margin-top:10px; font-size:14px;">${generatedTagsForPreview[0]}</div>
+                    <div style="font-family:monospace; font-weight:900; margin-top:10px; font-size:16px;">${generatedTagsForPreview[0]}</div>
+                    <div style="font-size:14px; font-weight:bold; margin-top:5px; line-height:1.4;">Date: ${day}/${month}/${year}<br>Net Wt: ${padWeight} KG</div>
                 </div>
             `;
         }
@@ -238,7 +240,7 @@
             
             const batchObj = {
                 dateRaw: dateVal,
-                dateFmt: `${day}${month}${year}`,
+                dateFmt: `${day}${month}`, // DDMM
                 ingCode: document.getElementById('ing_code').value,
                 ingName: document.getElementById('ing_name').value,
                 venCode: document.getElementById('ven_code').value,
@@ -252,7 +254,7 @@
             printQueue.push(batchObj);
             updateQueueUI();
             
-            // Auto increment for the next batch, keep End ID matching Start ID initially
+            // Auto increment for the next batch
             let nextStart = batchObj.endNo + 1;
             document.getElementById('start_no').value = nextStart;
             document.getElementById('end_no').value = nextStart;
@@ -282,6 +284,7 @@
             if(printQueue.length === 0) return alert("Queue is empty!");
 
             try {
+                // Post all queued items to the database
                 const res = await fetch('/log-inwarding', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -291,18 +294,17 @@
                 const data = await res.json();
                 if(data.error) return alert("Database Error: " + data.error);
 
-                // RESTORED: Professional FSSAI 75x75mm Print Layout
+                // Exact physical sticker layout match (DDMM/Product/Vendor/Bag#)
                 let printWindow = window.open('', '_blank');
                 let html = `<html><head><style>
                     @page { size: 75mm 75mm; margin: 0; }
                     body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; text-align: center; color: black; background: white; }
                     .page { width: 75mm; height: 75mm; box-sizing: border-box; padding: 4mm; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
-                    .brand { font-size: 16px; font-weight: 900; letter-spacing: 1px; margin-bottom: 2mm; text-transform: uppercase; border-bottom: 2px solid black; padding-bottom: 2px;}
-                    h2 { margin: 0 0 2mm 0; font-size: 20px; text-transform: uppercase; font-weight: 900; line-height: 1.1; }
-                    .codes { font-size: 12px; font-weight: bold; background: black; color: white; padding: 3px 8px; border-radius: 4px; margin-bottom: 2mm;}
-                    img { width: 34mm; height: 34mm; margin-bottom: 2mm; }
-                    .bc-text { font-size: 13px; font-weight: 900; font-family: monospace; margin-bottom: 2mm;}
-                    .details { font-size: 12px; font-weight: bold; }
+                    h2 { margin: 0 0 1mm 0; font-size: 22px; text-transform: uppercase; font-weight: 900; line-height: 1.1; }
+                    .codes { font-size: 13px; font-weight: bold; margin-bottom: 2mm; color: #333;}
+                    img { width: 40mm; height: 40mm; margin-bottom: 2mm; }
+                    .bc-text { font-size: 16px; font-weight: 900; font-family: monospace; margin-bottom: 2mm;}
+                    .details { font-size: 13px; font-weight: bold; line-height: 1.4; }
                 </style></head><body>`;
 
                 printQueue.forEach(item => {
@@ -310,15 +312,15 @@
                         let tagStr = `${item.dateFmt}/${item.ingCode}/${item.venCode}/${i}`;
                         let qrEngine = new QRious({ value: tagStr, size: 250, level: 'M' });
                         let dispDate = `${item.dateRaw.split('-')[2]}/${item.dateRaw.split('-')[1]}/${item.dateRaw.split('-')[0]}`;
+                        let padWeight = String(item.weight).padStart(2, '0');
                         
                         html += `
                         <div class="page">
-                            <div class="brand">KILRR SPICES</div>
                             <h2>${item.ingName}</h2>
-                            <div class="codes">V: ${item.venCode} | WT: ${item.weight} KG</div>
+                            <div class="codes">Mat: ${item.ingCode} | Ven: ${item.venCode}</div>
                             <img src="${qrEngine.toDataURL()}">
                             <div class="bc-text">${tagStr}</div>
-                            <div class="details">Inward Date: ${dispDate}</div>
+                            <div class="details">Date: ${dispDate}<br>Net Wt: ${padWeight} KG</div>
                         </div>`;
                     }
                 });
@@ -327,6 +329,7 @@
                 printWindow.document.write(html);
                 printWindow.document.close();
 
+                // Clear the queue after successful print
                 printQueue = [];
                 updateQueueUI();
 
