@@ -29,8 +29,9 @@
         input, select { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #fff;}
         input:focus, select:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 4px rgba(234,88,12,0.1);}
         
-        button.btn-huge { width: 100%; padding: 22px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; background: var(--kilrr-orange); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);}
+        button.btn-huge { width: 100%; padding: 22px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; background: var(--kilrr-orange); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3); margin-bottom: 15px;}
         button.btn-success { background: var(--success-green); box-shadow: 0 8px 20px rgba(5, 150, 105, 0.3); }
+        button.btn-reprint { background: #fff7ed; color: var(--kilrr-orange); border: 2px solid var(--kilrr-orange); box-shadow: none; padding: 15px;}
 
         .row-inputs { display: flex; gap: 15px; }
         
@@ -69,9 +70,8 @@
             <a href="inwarding.html" class="nav-btn active">Inwarding</a>
             <a href="preprocess.html" class="nav-btn">Pre-Process</a>
             <a href="scanner.html" class="nav-btn">Scanner</a>
-            <a href="audit.html" class="nav-btn">Audit</a>
             <a href="dashboard.html" class="nav-btn">Dashboard</a>
-            <a href="master.html" class="nav-btn">Master</a>
+            <a href="master.html" class="nav-btn">Master Data</a>
         </div>
     </nav>
 
@@ -118,6 +118,7 @@
             </div>
 
             <button class="btn-huge" onclick="stageTags()">➕ STAGE FOR PRINTING</button>
+            <button class="btn-huge btn-reprint" onclick="reprintDamagedTag()">⚠️ REPRINT SPECIFIC BAG #</button>
         </div>
 
         <div class="card card-green">
@@ -141,7 +142,6 @@
         let printQueue = [];
         let generatedTagsForPreview = [];
 
-        // Fetch Master Data on Load
         window.onload = async () => {
             document.getElementById('date').valueAsDate = new Date();
             try {
@@ -153,7 +153,6 @@
             } catch(e) { console.error("Master data fetch failed."); }
         };
 
-        // Custom Dropdown Logic
         function attachCustomDropdown(inputId, dataArray, searchKey, displayKey, codeKey, nameHiddenId, codeHiddenId) {
             const inp = document.getElementById(inputId); const list = document.createElement('div'); 
             list.className = 'custom-dropdown-list'; inp.parentNode.appendChild(list);
@@ -180,6 +179,16 @@
             inp.addEventListener('input', function() { renderList(this.value); }); 
             inp.addEventListener('focus', function() { renderList(this.value); });
             document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
+        }
+
+        function reprintDamagedTag() {
+            let specificBag = prompt("Enter the exact Bag Number you need to reprint (e.g., 14):");
+            if(!specificBag || isNaN(specificBag)) return;
+            
+            document.getElementById('start_no').value = specificBag;
+            document.getElementById('qty').value = 1;
+            generateTags();
+            stageTags();
         }
 
         function generateTags() {
@@ -209,7 +218,6 @@
                 generatedTagsForPreview.push(`${dateFmt}/${ingCode}/${venCode}/${i}`);
             }
 
-            // Render Preview of the FIRST tag
             let qr = new QRious({ value: generatedTagsForPreview[0], size: 150, level: 'M' });
             document.getElementById('preview_area').innerHTML = `
                 <div style="background:white; padding:15px; border-radius:10px; display:inline-block; border:1px solid #cbd5e1; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
@@ -243,7 +251,6 @@
             printQueue.push(batchObj);
             updateQueueUI();
             
-            // Reset numerical inputs for next batch
             document.getElementById('start_no').value = batchObj.endNo + 1;
             document.getElementById('qty').value = "";
             generateTags();
@@ -266,7 +273,6 @@
             if(printQueue.length === 0) return alert("Queue is empty!");
 
             try {
-                // Post all queued items to the database
                 const res = await fetch('/log-inwarding', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -276,7 +282,6 @@
                 const data = await res.json();
                 if(data.error) return alert("Database Error: " + data.error);
 
-                // Build HTML for physical sticker printing
                 let printWindow = window.open('', '_blank');
                 let html = `<html><head><style>
                     @page { size: 75mm 75mm; margin: 0; }
@@ -310,7 +315,6 @@
                 printWindow.document.write(html);
                 printWindow.document.close();
 
-                // Clear the queue
                 printQueue = [];
                 updateQueueUI();
 
