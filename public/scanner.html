@@ -19,38 +19,57 @@
         .nav-btn.active { color: var(--kilrr-orange); }
 
         .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
-        .card { background: var(--card-bg); border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 25px; }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; margin-bottom: 25px; }
         
         h2 { margin: 0 0 15px 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; color: var(--navy-command);}
         .marathi { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 14px; display: block; margin-top: 2px; }
         
-        /* TOUCH GRIDS */
+        /* TOUCH GRIDS & SETUP */
         .touch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px;}
-        .touch-btn { background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 12px 10px; font-weight: 800; font-size: 14px; color: var(--navy-command); cursor: pointer; text-align: center; transition: 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 60px;}
+        .touch-btn { background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 12px 10px; font-weight: 800; font-size: 14px; color: var(--navy-command); cursor: pointer; text-align: center; transition: 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 60px; position: relative;}
         .touch-btn.selected { background: #fff7ed; border-color: var(--kilrr-orange); color: var(--kilrr-orange); box-shadow: 0 4px 10px rgba(234,88,12,0.15);}
         .touch-btn.add-btn { border: 2px dashed #94a3b8; color: #64748b; }
         
+        .delete-op { position: absolute; top: -5px; right: -5px; background: var(--danger-red); color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: flex; justify-content: center; align-items: center; border: 2px solid white; display: none; }
+        .touch-btn:hover .delete-op { display: flex; }
+
         input.setup-input, select.setup-input { width: 100%; padding: 16px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 15px; background: #fff;}
-        input.setup-input:focus, select.setup-input:focus { border-color: var(--kilrr-orange); outline: none; }
+        input.setup-input:focus, select.setup-input:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 4px rgba(234,88,12,0.1);}
         
-        button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 20px; cursor: pointer; text-transform: uppercase; background: var(--kilrr-orange); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);}
-        button.btn-cam { width: 100%; padding: 15px; border: 3px solid var(--kilrr-orange); border-radius: 12px; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase; background: #fff7ed; color: var(--kilrr-orange); margin-bottom: 15px;}
+        button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 20px; cursor: pointer; text-transform: uppercase; background: linear-gradient(135deg, #ea580c, #c2410c); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);}
+        button.btn-cam { width: 100%; padding: 15px; border: 3px solid var(--kilrr-orange); border-radius: 12px; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase; background: #fff7ed; color: var(--kilrr-orange); margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 10px;}
         
-        /* RECIPE CHECKLIST FEED */
-        .recipe-feed { border: 2px solid #e2e8f0; border-radius: 12px; padding: 10px; background: #f8fafc; margin-bottom: 20px;}
-        .feed-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px;}
+        /* RESUME SECTION */
+        .search-bar { width: 100%; padding: 12px 15px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 14px; margin-bottom: 15px; font-weight: 600; font-family: 'Inter'; background: #f8fafc;}
+        .resume-feed { max-height: 250px; overflow-y: auto; padding-right: 5px; }
+        .resume-pill { background: #fff; border: 2px solid #cbd5e1; padding: 15px; border-radius: 10px; font-weight: 800; font-family: 'Space Grotesk'; font-size: 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;}
+        .resume-pill:hover { border-color: var(--kilrr-orange); background: #fff7ed; }
+        .btn-del-batch { background: var(--danger-red); color: white; border: none; border-radius: 6px; padding: 8px 12px; font-weight: bold; cursor: pointer; font-family: 'Inter';}
+        .btn-play-batch { background: var(--success-green); color: white; border: none; border-radius: 6px; padding: 8px 20px; font-weight: bold; cursor: pointer; font-family: 'Inter';}
+
+        /* PREMIUM WORK SCREEN UI */
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .summary-box { background: linear-gradient(145deg, #f8fafc, #f1f5f9); border: 2px solid #e2e8f0; border-radius: 16px; padding: 20px; text-align: center; box-shadow: inset 0 2px 4px rgba(255,255,255,0.8); }
+        .summary-box.active-box { background: linear-gradient(145deg, #ecfdf5, #d1fae5); border-color: var(--success-green); }
+        .val-text { font-size: 36px; font-family: 'Space Grotesk'; font-weight: 900; color: var(--navy-command); line-height: 1; margin-top: 5px;}
+        
+        .recipe-feed { border: 2px solid #e2e8f0; border-radius: 16px; padding: 15px; background: #f8fafc; margin-bottom: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);}
+        .feed-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border: 1px solid #cbd5e1; border-radius: 10px; margin-bottom: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
         .feed-item.done { border-color: var(--success-green); background: #ecfdf5; }
         .feed-name { font-weight: 800; font-size: 16px; color: var(--navy-command); }
-        .feed-status { font-weight: 900; font-size: 14px; color: #94a3b8; }
-        .feed-item.done .feed-status { color: var(--success-green); }
+        .feed-status { font-weight: 900; font-size: 15px; color: #94a3b8; background: #f1f5f9; padding: 4px 10px; border-radius: 6px;}
+        .feed-item.done .feed-status { color: var(--success-green); background: #d1fae5;}
 
-        #reader { width: 100%; border-radius: 12px; overflow: hidden; border: 3px solid #cbd5e1; margin-bottom: 15px; display: none; }
+        .btn-undo { background: #fef08a; color: #854d0e; border: 3px solid #eab308; display: none; margin-bottom: 20px; font-size: 18px; width: 100%; padding: 20px; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 10px rgba(234, 179, 8, 0.2);}
+
+        #reader { width: 100%; border-radius: 16px; overflow: hidden; border: 3px solid #cbd5e1; margin-bottom: 15px; display: none; background: black;}
         #scan_flash { position: fixed; inset: 0; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 60px; font-weight: 900; color: white; opacity: 0; transition: opacity 0.2s;}
 
         @media (max-width: 1024px) { 
-            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; border-top: 4px solid var(--kilrr-orange); justify-content: space-around; overflow-x: auto; white-space: nowrap;}
+            body { padding-bottom: 90px; }
+            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 8px 0; border-top: 4px solid var(--kilrr-orange); justify-content: space-around; overflow-x: auto; white-space: nowrap;}
             .brand { display: none; }
-            .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 5px 10px;}
+            .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 10px; padding: 5px 8px;}
             .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 18px; }
             .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 18px; }
             .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 18px; }
@@ -58,6 +77,9 @@
             .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 18px; }
             .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 18px; }
             .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 18px; }
+            .card { padding: 20px; border-radius: 16px;}
+            .summary-box { padding: 15px; }
+            .val-text { font-size: 28px; }
         }
     </style>
 </head>
@@ -72,21 +94,17 @@
             <a href="preprocess.html" class="nav-btn">Pre-Process</a>
             <a href="scanner.html" class="nav-btn active">Scanner</a>
             <a href="dashboard.html" class="nav-btn">Dashboard</a>
-            <a href="master.html" class="nav-btn">Master Data</a>
+            <a href="master.html" class="nav-btn">Master</a>
         </div>
     </nav>
 
     <div class="container">
         <div class="card" id="setup">
-            <details style="margin-bottom: 25px; background: #fff7ed; padding: 15px; border-radius: 12px; border: 2px solid #ffedd5;">
-                <summary style="font-weight: 900; color: var(--kilrr-orange); cursor: pointer; outline: none; font-size: 16px;">▶ RESUME ACTIVE RUN (चालू काम)</summary>
-                <select id="resume_select" class="setup-input" style="margin-top: 15px; margin-bottom: 10px;">
-                    <option value="">Select a run to resume...</option>
-                </select>
-                <button style="width: 100%; padding: 15px; background: var(--kilrr-orange); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="resumeSelectedBatch()">RESUME</button>
-            </details>
+            <h2 style="color: var(--success-green); border-bottom-color: #ecfdf5;">Resume Run <span class="marathi">चालू काम</span></h2>
+            <input type="text" id="resume_search" class="search-bar" placeholder="🔍 Search open batches..." oninput="filterResume()">
+            <div class="resume-feed" id="active_batches">Loading...</div>
 
-            <h2>Start New Run <span class="marathi">नवीन काम</span></h2>
+            <h2 style="margin-top: 40px;">Start New Run <span class="marathi">नवीन काम</span></h2>
             
             <label style="font-weight: 800; font-size: 12px; color: #64748b; display: block; margin-bottom: 8px;">1. WHO IS SCANNING?</label>
             <div class="touch-grid" id="operator_grid"></div>
@@ -95,9 +113,8 @@
             <div class="touch-grid" id="recipe_grid"></div>
 
             <label style="font-weight: 800; font-size: 12px; color: #64748b; display: block; margin-bottom: 8px;">3. LOT & RUN NUMBER</label>
-            <div style="display:flex; gap:10px; margin-bottom: 20px;">
+            <div style="display:flex; gap:10px; margin-bottom: 25px;">
                 <input type="text" id="lot_input" class="setup-input" placeholder="Lot (e.g. 190)" style="margin-bottom: 0;">
-                
                 <input type="number" id="run_input" class="setup-input" placeholder="Run # (e.g. 3)" pattern="[0-9]*" inputmode="numeric" style="margin-bottom: 0;">
             </div>
             
@@ -105,29 +122,42 @@
         </div>
         
         <div class="card" id="work" style="display:none;">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #e2e8f0; padding-bottom:15px; margin-bottom:15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #e2e8f0; padding-bottom:15px; margin-bottom:20px;">
                 <div>
-                    <h2 id="title" style="color:var(--kilrr-orange); font-size:24px; border:none; padding:0; margin:0;"></h2>
+                    <h2 id="title" style="color:var(--kilrr-orange); font-size:26px; border:none; padding:0; margin:0;"></h2>
                     <span class="marathi" id="active_meta">प्रोडक्शन एरिया</span>
                 </div>
                 <button style="width:auto; padding:10px 15px; font-weight:900; background:var(--danger-red); color:white; border:none; border-radius:8px; cursor:pointer;" onclick="location.reload()">EXIT</button>
             </div>
 
-            <h3 style="font-family:'Space Grotesk'; font-size:16px; margin-bottom:10px; color:var(--navy-command);">Ingredient Breakdown</h3>
-            <div class="recipe-feed" id="recipe_checklist">
-                <div style="text-align:center; color:#94a3b8; font-weight:bold;">Loading...</div>
+            <div class="summary-grid">
+                <div class="summary-box">
+                    <div style="font-size:12px; font-weight:800; color:#64748b; letter-spacing:1px;">BAGS SCANNED</div>
+                    <div class="val-text" id="total_bags">0</div>
+                </div>
+                <div class="summary-box active-box">
+                    <div style="font-size:12px; font-weight:800; color:var(--success-green); letter-spacing:1px;">KG ISSUED</div>
+                    <div class="val-text" id="total_weight" style="color:var(--success-green);">0.00</div>
+                </div>
             </div>
 
-            <div style="display:flex; gap:10px; margin-bottom: 10px;">
-                <input type="text" id="rm_tag" class="setup-input" style="margin:0; border-color:var(--navy-command);" placeholder="SCAN BARCODE..." autocomplete="off">
+            <button class="btn-undo" id="undo_btn" onclick="undoLastScan()">⚠️ UNDO LAST SCAN (30s)</button>
+
+            <div style="display:flex; gap:10px; margin-bottom: 15px;">
+                <input type="text" id="rm_tag" class="setup-input" style="margin:0; border-color:var(--navy-command); font-size:16px;" placeholder="SCAN BARCODE..." autocomplete="off">
                 <button style="width:auto; padding:0 25px; background:var(--navy-command); color:white; border:none; border-radius:12px; font-weight:900; cursor:pointer;" onclick="manualScan()">ADD</button>
             </div>
             
             <div id="reader"></div>
             <button class="btn-cam" id="camToggleBtn" onclick="toggleCamera()">📷 Activate Mobile Camera</button>
 
-            <h3 style="font-family:'Space Grotesk'; font-size:14px; margin-top:15px; border-bottom:2px solid #e2e8f0; padding-bottom:5px;">Recent Scans</h3>
-            <div id="scanned_items_list" style="max-height: 120px; overflow-y:auto; padding:5px;"></div>
+            <h3 style="font-family:'Space Grotesk'; font-size:18px; margin-top:25px; margin-bottom:10px; color:var(--navy-command);">Ingredient Breakdown</h3>
+            <div class="recipe-feed" id="recipe_checklist">
+                <div style="text-align:center; color:#94a3b8; font-weight:bold;">Loading...</div>
+            </div>
+
+            <h3 style="font-family:'Space Grotesk'; font-size:14px; margin-top:20px; border-bottom:2px solid #e2e8f0; padding-bottom:5px;">Recent Scans Log</h3>
+            <div id="scanned_items_list" style="max-height: 150px; overflow-y:auto; padding:5px;"></div>
         </div>
     </div>
     
@@ -140,8 +170,8 @@
         };
 
         let operators = JSON.parse(localStorage.getItem('kilrr_ops')) || ["Muaz", "Arbaaz", "Rahul", "Ramesh"];
-        let curB="", curF="", curPrefix="", curOp="", validRecipeCodes=[], recipeRequirements=[], localScannedTags=[];
-        let html5QrcodeScanner = null;
+        let curB="", curF="", curPrefix="", curOp="", validRecipeCodes=[], recipeRequirements=[], localScannedTags=[], allOpenBatches=[];
+        let lastScanTag = null, undoTimer = null, undoCountdown = 0, html5QrcodeScanner = null;
 
         function playVoice(success) {
             try {
@@ -160,29 +190,27 @@
         window.onload = async () => { 
             renderOperators();
             renderRecipes();
-            
-            // Load Active Batches for Resume Dropdown
-            try {
-                const bRes = await fetch('/open-batches'); 
-                const batches = await bRes.json();
-                const sel = document.getElementById('resume_select');
-                if(batches.length > 0) {
-                    batches.forEach(b => {
-                        let opt = document.createElement('option');
-                        opt.value = JSON.stringify({batch: b.batch_code, recipe: b.fg_code, op: b.operator_name});
-                        opt.text = `${b.batch_code} (${b.fg_code})`;
-                        sel.appendChild(opt);
-                    });
-                }
-            } catch(e) {}
-
+            loadOpenBatches();
             document.getElementById('rm_tag').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); manualScan(); }});
         };
 
         function renderOperators() {
             const grid = document.getElementById('operator_grid');
-            grid.innerHTML = operators.map(op => `<div class="touch-btn" onclick="selectOp(this, '${op}')">${op}</div>`).join('') 
+            grid.innerHTML = operators.map(op => `
+                <div class="touch-btn" onclick="selectOp(this, '${op}')">
+                    <span>${op}</span>
+                    <div class="delete-op" onclick="deleteOp('${op}', event)">✕</div>
+                </div>`).join('') 
                 + `<div class="touch-btn add-btn" onclick="addNewOperator()">➕ Add</div>`;
+        }
+
+        function deleteOp(name, event) {
+            event.stopPropagation();
+            if(confirm(`Remove ${name} from operators?`)) {
+                operators = operators.filter(o => o !== name);
+                localStorage.setItem('kilrr_ops', JSON.stringify(operators));
+                renderOperators();
+            }
         }
 
         function renderRecipes() {
@@ -208,12 +236,50 @@
             el.classList.add('selected'); curF = name; curPrefix = prefix;
         }
 
-        async function resumeSelectedBatch() {
-            let val = document.getElementById('resume_select').value;
-            if(!val) return alert("Select a batch to resume.");
-            let data = JSON.parse(val);
-            curB = data.batch; curF = data.recipe; curOp = data.op;
-            await loadScannerUI();
+        async function loadOpenBatches() {
+            try {
+                const bRes = await fetch('/open-batches'); 
+                allOpenBatches = await bRes.json();
+                renderResumeFeed(allOpenBatches);
+            } catch(e) {}
+        }
+
+        function renderResumeFeed(batches) {
+            const container = document.getElementById('active_batches');
+            if(batches.length === 0) {
+                container.innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:800; padding: 20px; border: 2px dashed #e2e8f0; border-radius: 12px;">No active runs found.</div>`;
+                return;
+            }
+            container.innerHTML = batches.map(b => `
+                <div class="resume-pill">
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <span style="color:var(--navy-command);">${b.batch_code}</span>
+                        <span style="font-size:12px; color:#64748b; font-weight:600;">${b.fg_code} | ${b.operator_name || 'System'}</span>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-del-batch" onclick="deleteBatch('${b.batch_code}')">🗑️</button>
+                        <button class="btn-play-batch" onclick="resumeBatch('${b.batch_code}', '${b.fg_code}', '${b.operator_name}')">▶</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterResume() {
+            const term = document.getElementById('resume_search').value.toLowerCase();
+            const filtered = allOpenBatches.filter(b => b.batch_code.toLowerCase().includes(term) || b.fg_code.toLowerCase().includes(term));
+            renderResumeFeed(filtered);
+        }
+
+        async function deleteBatch(batchCode) {
+            let pin = prompt("Enter Manager PIN (1234) to delete this batch:");
+            if(pin !== "1234") return alert("Unauthorized.");
+            await fetch('/delete-batch', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ pin: pin, batch_code: batchCode }) });
+            loadOpenBatches();
+        }
+
+        async function resumeBatch(batchCode, fgCode, operatorName) { 
+            curB = batchCode; curF = fgCode; curOp = operatorName || "Muaz";
+            await loadScannerUI(); 
         }
 
         async function startNewBatch() { 
@@ -224,7 +290,6 @@
             if(!curF) return alert("Please tap a recipe!"); 
             if(!lot || !runNum) return alert("Please enter Lot number and Run Number!");
             
-            // Automatically appends "B" to the typed number
             curB = `${curPrefix}${lot}-B${runNum}`;
             
             const res = await fetch('/create-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,fg_code:curF,operator_name:curOp})}); 
@@ -239,7 +304,6 @@
             document.getElementById('title').innerText = curB; 
             document.getElementById('active_meta').innerText = `${curF} | Operator: ${curOp}`;
             
-            // Fetch Master Data Requirements
             const reqRes = await fetch(`/recipe-requirements/${encodeURIComponent(curF)}`);
             recipeRequirements = await reqRes.json();
             validRecipeCodes = recipeRequirements.map(i => i.product_code);
@@ -250,12 +314,12 @@
         function toggleCamera() { 
             const rd = document.getElementById('reader'); 
             if(rd.style.display === 'none' || rd.style.display === '') { 
-                rd.style.display = 'block'; document.getElementById('camToggleBtn').innerText = "🚫 Close Camera"; 
+                rd.style.display = 'block'; document.getElementById('camToggleBtn').innerHTML = "🚫 Close Camera"; 
                 if(!html5QrcodeScanner) { 
                     html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250}, videoConstraints: { facingMode: "environment" } }); 
                     html5QrcodeScanner.render(txt => { document.getElementById('rm_tag').value = txt; manualScan(); }); 
                 } 
-            } else { rd.style.display = 'none'; document.getElementById('camToggleBtn').innerText = "📷 Activate Mobile Camera"; } 
+            } else { rd.style.display = 'none'; document.getElementById('camToggleBtn').innerHTML = "📷 Activate Mobile Camera"; } 
         }
 
         async function manualScan() { 
@@ -273,20 +337,38 @@
             await fetch('/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:cleanTag, operator: curOp})}); 
             playVoice(true); flash(true, "✅ बरोबर"); 
             
+            lastScanTag = cleanTag; startUndoTimer();
             document.getElementById('rm_tag').value=""; update(); document.getElementById('rm_tag').focus();
+        }
+
+        function startUndoTimer() {
+            clearInterval(undoTimer); undoCountdown = 30;
+            const btn = document.getElementById('undo_btn'); btn.style.display = 'block'; btn.innerText = `⚠️ UNDO LAST SCAN (${undoCountdown}s)`;
+            undoTimer = setInterval(() => {
+                undoCountdown--; btn.innerText = `⚠️ UNDO LAST SCAN (${undoCountdown}s)`;
+                if(undoCountdown <= 0) { clearInterval(undoTimer); btn.style.display = 'none'; lastScanTag = null; }
+            }, 1000);
+        }
+
+        async function undoLastScan() {
+            if(!lastScanTag) return;
+            clearInterval(undoTimer); document.getElementById('undo_btn').style.display = 'none';
+            await fetch('/undo-scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ batch_code: curB, rm_tag: lastScanTag }) });
+            flash(true, "🗑️ UNDONE"); lastScanTag = null; update(); document.getElementById('rm_tag').focus();
         }
         
         async function update() { 
             const scans = await fetch(`/current-scans/${encodeURIComponent(curB)}`).then(r=>r.json()); 
             localScannedTags = scans.map(s => s.rm_tag);
             
-            // Update Checklist Feed
+            document.getElementById('total_bags').innerText = scans.length;
+            document.getElementById('total_weight').innerText = scans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0).toFixed(2);
+
             if(recipeRequirements.length > 0) {
                 const checklistHTML = recipeRequirements.map(req => {
                     const matchedScans = scans.filter(s => s.product_code === req.product_code);
                     const totalKg = matchedScans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
                     const isDone = matchedScans.length > 0;
-                    
                     return `
                         <div class="feed-item ${isDone ? 'done' : ''}">
                             <div class="feed-name">${req.ingredient_name || req.product_code} <span style="font-size:12px; color:#94a3b8;">(${req.product_code})</span></div>
@@ -296,14 +378,13 @@
                 }).join('');
                 document.getElementById('recipe_checklist').innerHTML = checklistHTML;
             } else {
-                document.getElementById('recipe_checklist').innerHTML = `<div style="text-align:center; color:var(--danger-red); font-weight:bold;">No ingredients mapped for ${curF}. Check Master Data.</div>`;
+                document.getElementById('recipe_checklist').innerHTML = `<div style="text-align:center; color:var(--danger-red); font-weight:bold;">No ingredients mapped. Check Master Data.</div>`;
             }
 
-            // Update Recent Tags Log
             if(scans.length === 0) { document.getElementById('scanned_items_list').innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:bold; font-size:12px;">No tags yet...</div>`; } 
             else { 
-                document.getElementById('scanned_items_list').innerHTML = [...scans].reverse().slice(0, 15).map(s => `
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-family:monospace; font-weight:bold; font-size:13px; color:#475569;">
+                document.getElementById('scanned_items_list').innerHTML = [...scans].reverse().slice(0, 10).map(s => `
+                <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #e2e8f0; font-family:monospace; font-weight:bold; font-size:13px; color:#475569;">
                     <span>${s.rm_tag}</span><span style="color:var(--success-green);">${parseFloat(s.weight||0).toFixed(2)} KG</span>
                 </div>`).join(''); 
             }
