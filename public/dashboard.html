@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Kilrr Factory OS - Dashboard</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
@@ -21,7 +22,6 @@
         
         .btn-export { background: #10b981; color: white; padding: 15px 30px; border: none; border-radius: 12px; font-family: 'Space Grotesk'; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);}
         
-        /* Premium Table */
         .table-container { background: white; border-radius: 20px; border: 1px solid #cbd5e1; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: var(--navy-command); color: white; padding: 20px; font-weight: 800; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; }
@@ -33,7 +33,6 @@
         .status-open { background: #dbeafe; color: #1d4ed8; }
         .status-locked { background: #dcfce7; color: #15803d; }
 
-        /* Expandable Drawer */
         .drawer-row { display: none; background: #f8fafc; }
         .drawer-content { padding: 20px; border-left: 6px solid var(--kilrr-orange); }
         .scan-tag { display: inline-block; background: white; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; font-family: monospace; font-weight: bold; margin: 4px; font-size: 14px;}
@@ -142,10 +141,8 @@
             if(globalData.length === 0) return alert("No data to export!");
             
             let csvContent = "data:text/csv;charset=utf-8,";
-            // Headers
             csvContent += "Batch Code,Recipe,Operator,Status,Date Started,Total Weight (KG),Ingredient Name,RM Tag,Bag Weight (KG)\r\n";
             
-            // Loop through batches and inner scans
             globalData.forEach(b => {
                 const dateStr = new Date(b.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
                 if(b.scans.length === 0) {
