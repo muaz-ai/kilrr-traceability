@@ -5,51 +5,59 @@
     <title>Kilrr Factory OS - Scanner</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; }
         body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 100px; }
+        
         .nav-top { background: var(--navy-command); border-bottom: 5px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
         .brand { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase;}
         .brand span { color: var(--kilrr-orange); }
         .nav-links { display: flex; gap: 15px; }
-        .nav-btn { color: white; text-decoration: none; font-weight: 700; font-size: 14px; text-transform: uppercase; }
+        .nav-btn { color: white; text-decoration: none; font-weight: 700; font-size: 14px; text-transform: uppercase; transition: 0.2s; }
         .nav-btn.active { color: var(--kilrr-orange); }
 
         .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
-        .card { background: var(--card-bg); border-radius: 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 25px; }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 25px; }
         
-        h2 { margin: 0 0 20px 0; font-family: 'Space Grotesk', sans-serif; font-size: 24px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; color: var(--navy-command);}
-        .marathi { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 14px; display: block; margin-top: 4px; }
+        h2 { margin: 0 0 15px 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; color: var(--navy-command);}
+        .marathi { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 14px; display: block; margin-top: 2px; }
         
-        /* TOUCH GRID UI */
-        .touch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 25px;}
-        .touch-btn { background: #f8fafc; border: 3px solid #cbd5e1; border-radius: 12px; padding: 15px; font-weight: 800; font-size: 16px; color: var(--navy-command); cursor: pointer; text-align: center; transition: 0.2s;}
-        .touch-btn.selected { background: #fff7ed; border-color: var(--kilrr-orange); color: var(--kilrr-orange); }
+        /* TOUCH GRIDS */
+        .touch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px;}
+        .touch-btn { background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 12px 10px; font-weight: 800; font-size: 14px; color: var(--navy-command); cursor: pointer; text-align: center; transition: 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 60px;}
+        .touch-btn.selected { background: #fff7ed; border-color: var(--kilrr-orange); color: var(--kilrr-orange); box-shadow: 0 4px 10px rgba(234,88,12,0.15);}
+        .touch-btn.add-btn { border: 2px dashed #94a3b8; color: #64748b; }
         
-        input.setup-input { width: 100%; padding: 20px; box-sizing: border-box; border-radius: 12px; border: 3px solid #cbd5e1; font-size: 20px; font-weight: 800; font-family: 'Space Grotesk', sans-serif; margin-bottom: 25px; text-transform: uppercase;}
-        input.setup-input:focus { border-color: var(--kilrr-orange); outline: none; }
+        input.setup-input, select.setup-input { width: 100%; padding: 16px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 15px; background: #fff;}
+        input.setup-input:focus, select.setup-input:focus { border-color: var(--kilrr-orange); outline: none; }
         
-        button.btn-huge { width: 100%; padding: 25px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 22px; cursor: pointer; text-transform: uppercase; background: var(--kilrr-orange); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);}
+        button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 20px; cursor: pointer; text-transform: uppercase; background: var(--kilrr-orange); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);}
+        button.btn-cam { width: 100%; padding: 15px; border: 3px solid var(--kilrr-orange); border-radius: 12px; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase; background: #fff7ed; color: var(--kilrr-orange); margin-bottom: 15px;}
         
-        .active-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        .resume-pill { background: #fff7ed; border: 2px solid var(--kilrr-orange); color: var(--kilrr-orange); padding: 15px; border-radius: 10px; font-weight: 800; font-family: 'Space Grotesk'; font-size: 16px; cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center;}
-        
-        .btn-undo { background: #fef08a; color: #854d0e; border: 3px solid #eab308; display: none; margin-bottom: 20px; font-size: 20px; width: 100%; padding: 20px; border-radius: 12px; font-weight: 900; cursor: pointer;}
-        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .summary-box { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px; text-align: center; }
-        .val-text { font-size: 32px; font-family: 'Space Grotesk'; font-weight: 900; color: var(--navy-command); }
-        
+        /* RECIPE CHECKLIST FEED */
+        .recipe-feed { border: 2px solid #e2e8f0; border-radius: 12px; padding: 10px; background: #f8fafc; margin-bottom: 20px;}
+        .feed-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px;}
+        .feed-item.done { border-color: var(--success-green); background: #ecfdf5; }
+        .feed-name { font-weight: 800; font-size: 16px; color: var(--navy-command); }
+        .feed-status { font-weight: 900; font-size: 14px; color: #94a3b8; }
+        .feed-item.done .feed-status { color: var(--success-green); }
+
+        #reader { width: 100%; border-radius: 12px; overflow: hidden; border: 3px solid #cbd5e1; margin-bottom: 15px; display: none; }
         #scan_flash { position: fixed; inset: 0; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 60px; font-weight: 900; color: white; opacity: 0; transition: opacity 0.2s;}
 
         @media (max-width: 1024px) { 
-            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; border-top: 4px solid var(--kilrr-orange); justify-content: space-around; }
+            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; border-top: 4px solid var(--kilrr-orange); justify-content: space-around; overflow-x: auto; white-space: nowrap;}
             .brand { display: none; }
-            .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; }
-            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 20px; }
-            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 20px; }
-            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 20px; }
-            .touch-grid { grid-template-columns: 1fr 1fr; }
+            .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 5px 10px;}
+            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 18px; }
+            .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 18px; }
+            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 18px; }
+            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 18px; }
+            .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 18px; }
+            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 18px; }
+            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 18px; }
         }
     </style>
 </head>
@@ -60,71 +68,80 @@
         <a href="index.html" class="brand">Kilrr <span>OS</span></a>
         <div class="nav-links">
             <a href="index.html" class="nav-btn">Hub</a>
+            <a href="inwarding.html" class="nav-btn">Inward</a>
             <a href="preprocess.html" class="nav-btn">Pre-Process</a>
             <a href="scanner.html" class="nav-btn active">Scanner</a>
+            <a href="dashboard.html" class="nav-btn">Dashboard</a>
+            <a href="master.html" class="nav-btn">Master Data</a>
         </div>
     </nav>
 
     <div class="container">
         <div class="card" id="setup">
-            <h2 style="color: var(--success-green); border-bottom-color: #ecfdf5;">Resume Run <span class="marathi">चालू काम</span></h2>
-            <div class="active-grid" id="active_batches">Loading...</div>
+            <details style="margin-bottom: 25px; background: #fff7ed; padding: 15px; border-radius: 12px; border: 2px solid #ffedd5;">
+                <summary style="font-weight: 900; color: var(--kilrr-orange); cursor: pointer; outline: none; font-size: 16px;">▶ RESUME ACTIVE RUN (चालू काम)</summary>
+                <select id="resume_select" class="setup-input" style="margin-top: 15px; margin-bottom: 10px;">
+                    <option value="">Select a run to resume...</option>
+                </select>
+                <button style="width: 100%; padding: 15px; background: var(--kilrr-orange); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="resumeSelectedBatch()">RESUME</button>
+            </details>
 
-            <h2 style="margin-top: 40px;">Start New Run <span class="marathi">नवीन काम</span></h2>
+            <h2>Start New Run <span class="marathi">नवीन काम</span></h2>
             
-            <label style="font-weight: 800; font-size: 14px; color: var(--text-mid); display: block; margin-bottom: 8px;">1. ASSIGN BATCH CODE</label>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="master_lot" class="setup-input" placeholder="Lot (e.g. LK-190)">
-                <input type="text" id="sub_batch" class="setup-input" placeholder="Run (e.g. B3)">
-            </div>
+            <label style="font-weight: 800; font-size: 12px; color: #64748b; display: block; margin-bottom: 8px;">1. WHO IS SCANNING?</label>
+            <div class="touch-grid" id="operator_grid"></div>
+            
+            <label style="font-weight: 800; font-size: 12px; color: #64748b; display: block; margin-bottom: 8px;">2. WHAT ARE WE MAKING?</label>
+            <div class="touch-grid" id="recipe_grid"></div>
 
-            <label style="font-weight: 800; font-size: 14px; color: var(--text-mid); display: block; margin-bottom: 8px;">2. SELECT RECIPE (TAP)</label>
-            <div class="touch-grid" id="recipe_grid">Loading...</div>
-            
-            <label style="font-weight: 800; font-size: 14px; color: var(--text-mid); display: block; margin-bottom: 8px;">3. SELECT OPERATOR (TAP)</label>
-            <div class="touch-grid">
-                <div class="touch-btn" onclick="selectOp(this, 'Muaz')">Muaz</div>
-                <div class="touch-btn" onclick="selectOp(this, 'Arbaaz')">Arbaaz</div>
-                <div class="touch-btn" onclick="selectOp(this, 'Rahul')">Rahul</div>
+            <label style="font-weight: 800; font-size: 12px; color: #64748b; display: block; margin-bottom: 8px;">3. LOT & RUN NUMBER</label>
+            <div style="display:flex; gap:10px; margin-bottom: 20px;">
+                <input type="text" id="lot_input" class="setup-input" placeholder="Lot (e.g. 190)" style="margin-bottom: 0;">
+                
+                <input type="number" id="run_input" class="setup-input" placeholder="Run # (e.g. 3)" pattern="[0-9]*" inputmode="numeric" style="margin-bottom: 0;">
             </div>
             
-            <button class="btn-huge" onclick="startNewBatch()">⚡ START PRODUCTION</button>
+            <button class="btn-huge" onclick="startNewBatch()">⚡ GENERATE & START</button>
         </div>
         
         <div class="card" id="work" style="display:none;">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #e2e8f0; padding-bottom:15px; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #e2e8f0; padding-bottom:15px; margin-bottom:15px;">
                 <div>
-                    <h2 id="title" style="color:var(--kilrr-orange); font-size:28px; border:none; padding:0; margin:0;"></h2>
-                    <span class="marathi">प्रोडक्शन एरिया</span>
+                    <h2 id="title" style="color:var(--kilrr-orange); font-size:24px; border:none; padding:0; margin:0;"></h2>
+                    <span class="marathi" id="active_meta">प्रोडक्शन एरिया</span>
                 </div>
-                <button style="width:auto; padding:12px 20px; font-weight:900; background:var(--danger-red); color:white; border:none; border-radius:8px; cursor:pointer;" onclick="location.reload()">EXIT</button>
+                <button style="width:auto; padding:10px 15px; font-weight:900; background:var(--danger-red); color:white; border:none; border-radius:8px; cursor:pointer;" onclick="location.reload()">EXIT</button>
             </div>
 
-            <div class="summary-grid">
-                <div class="summary-box">
-                    <div style="font-size:12px; font-weight:bold; color:var(--text-mid);">TOTAL BAGS</div>
-                    <div class="val-text" id="total_bags">0</div>
-                </div>
-                <div class="summary-box">
-                    <div style="font-size:12px; font-weight:bold; color:var(--text-mid);">TOTAL WEIGHT</div>
-                    <div class="val-text" id="total_weight" style="color:var(--success-green);">0.00 KG</div>
-                </div>
+            <h3 style="font-family:'Space Grotesk'; font-size:16px; margin-bottom:10px; color:var(--navy-command);">Ingredient Breakdown</h3>
+            <div class="recipe-feed" id="recipe_checklist">
+                <div style="text-align:center; color:#94a3b8; font-weight:bold;">Loading...</div>
             </div>
 
-            <button class="btn-undo" id="undo_btn" onclick="undoLastScan()">⚠️ UNDO LAST SCAN (30s)</button>
-
-            <div style="display:flex; gap:10px; margin-bottom: 20px;">
+            <div style="display:flex; gap:10px; margin-bottom: 10px;">
                 <input type="text" id="rm_tag" class="setup-input" style="margin:0; border-color:var(--navy-command);" placeholder="SCAN BARCODE..." autocomplete="off">
-                <button style="width:auto; padding:0 30px; background:var(--navy-command); color:white; border:none; border-radius:12px; font-weight:900; cursor:pointer;" onclick="manualScan()">ADD</button>
+                <button style="width:auto; padding:0 25px; background:var(--navy-command); color:white; border:none; border-radius:12px; font-weight:900; cursor:pointer;" onclick="manualScan()">ADD</button>
             </div>
+            
+            <div id="reader"></div>
+            <button class="btn-cam" id="camToggleBtn" onclick="toggleCamera()">📷 Activate Mobile Camera</button>
 
-            <div id="scanned_items_list" style="max-height: 250px; overflow-y:auto; border:2px solid #e2e8f0; border-radius:12px; padding:10px; background:#f8fafc;"></div>
+            <h3 style="font-family:'Space Grotesk'; font-size:14px; margin-top:15px; border-bottom:2px solid #e2e8f0; padding-bottom:5px;">Recent Scans</h3>
+            <div id="scanned_items_list" style="max-height: 120px; overflow-y:auto; padding:5px;"></div>
         </div>
     </div>
     
     <script>
-        let curB="", curF="", curOp="", validRecipeCodes=[], localScannedTags=[];
-        let lastScanTag = null, undoTimer = null, undoCountdown = 0;
+        const RECIPE_PREFIXES = {
+            "Tandoori": "TAN", "Achaari": "ACH", "Pesto": "BP", "Shawarma": "SH",
+            "Dhaniya": "DH", "Pudina": "PUD", "Afghan": "AFG", "Lucknow": "LK",
+            "Peri": "PER", "Saza-E-KaaliMirch": "KM", "Gangs of Awadh": "GOA",
+            "Curry 9211": "CUR", "Kaalimirch Hathkadi": "KAL", "Palak ka Panchnama": "PAL"
+        };
+
+        let operators = JSON.parse(localStorage.getItem('kilrr_ops')) || ["Muaz", "Arbaaz", "Rahul", "Ramesh"];
+        let curB="", curF="", curPrefix="", curOp="", validRecipeCodes=[], recipeRequirements=[], localScannedTags=[];
+        let html5QrcodeScanner = null;
 
         function playVoice(success) {
             try {
@@ -141,38 +158,75 @@
         }
 
         window.onload = async () => { 
-            const rRes = await fetch('/get-recipes'); const rData = await rRes.json();
-            const flavors = [...new Set(rData.map(r=>r.fg_code))].filter(f=>f);
-            document.getElementById('recipe_grid').innerHTML = flavors.map(f => `<div class="touch-btn" onclick="selectRecipe(this, '${f}')">${f}</div>`).join('');
+            renderOperators();
+            renderRecipes();
             
-            const bRes = await fetch('/open-batches'); const batches = await bRes.json();
-            const container = document.getElementById('active_batches');
-            if(batches.length === 0) container.innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:800; grid-column: 1 / -1;">No active runs.</div>`;
-            else container.innerHTML = batches.map(b => `<button class="resume-pill" onclick="resumeBatch('${b.batch_code}', '${b.fg_code}')"><span>${b.batch_code}</span> <span>▶</span></button>`).join('');
-            
+            // Load Active Batches for Resume Dropdown
+            try {
+                const bRes = await fetch('/open-batches'); 
+                const batches = await bRes.json();
+                const sel = document.getElementById('resume_select');
+                if(batches.length > 0) {
+                    batches.forEach(b => {
+                        let opt = document.createElement('option');
+                        opt.value = JSON.stringify({batch: b.batch_code, recipe: b.fg_code, op: b.operator_name});
+                        opt.text = `${b.batch_code} (${b.fg_code})`;
+                        sel.appendChild(opt);
+                    });
+                }
+            } catch(e) {}
+
             document.getElementById('rm_tag').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); manualScan(); }});
         };
-        
-        function selectRecipe(el, fg) { 
-            document.getElementById('recipe_grid').querySelectorAll('.touch-btn').forEach(btn => btn.classList.remove('selected'));
-            el.classList.add('selected'); curF = fg; 
+
+        function renderOperators() {
+            const grid = document.getElementById('operator_grid');
+            grid.innerHTML = operators.map(op => `<div class="touch-btn" onclick="selectOp(this, '${op}')">${op}</div>`).join('') 
+                + `<div class="touch-btn add-btn" onclick="addNewOperator()">➕ Add</div>`;
         }
+
+        function renderRecipes() {
+            const grid = document.getElementById('recipe_grid');
+            grid.innerHTML = Object.keys(RECIPE_PREFIXES).map(name => `<div class="touch-btn" onclick="selectRecipe(this, '${name}', '${RECIPE_PREFIXES[name]}')"><span>${name}</span></div>`).join('');
+        }
+
+        function addNewOperator() {
+            let name = prompt("Enter new operator name:");
+            if(name && name.trim() !== "") {
+                operators.push(name.trim());
+                localStorage.setItem('kilrr_ops', JSON.stringify(operators));
+                renderOperators();
+            }
+        }
+
         function selectOp(el, op) { 
-            el.parentElement.querySelectorAll('.touch-btn').forEach(btn => btn.classList.remove('selected'));
+            document.getElementById('operator_grid').querySelectorAll('.touch-btn').forEach(btn => btn.classList.remove('selected'));
             el.classList.add('selected'); curOp = op; 
         }
+        function selectRecipe(el, name, prefix) { 
+            document.getElementById('recipe_grid').querySelectorAll('.touch-btn').forEach(btn => btn.classList.remove('selected'));
+            el.classList.add('selected'); curF = name; curPrefix = prefix;
+        }
 
-        async function resumeBatch(batchCode, fgCode) { curB = batchCode; curF = fgCode; await loadScannerUI(); }
+        async function resumeSelectedBatch() {
+            let val = document.getElementById('resume_select').value;
+            if(!val) return alert("Select a batch to resume.");
+            let data = JSON.parse(val);
+            curB = data.batch; curF = data.recipe; curOp = data.op;
+            await loadScannerUI();
+        }
 
         async function startNewBatch() { 
-            let lot = document.getElementById('master_lot').value.trim().toUpperCase();
-            let run = document.getElementById('sub_batch').value.trim().toUpperCase();
+            let lot = document.getElementById('lot_input').value.trim().toUpperCase();
+            let runNum = document.getElementById('run_input').value.trim();
             
-            if(!lot || !run) return alert("Please assign a Lot and Run ID!");
-            if(!curF) return alert("Please tap a recipe!"); 
             if(!curOp) return alert("Please tap an operator!"); 
+            if(!curF) return alert("Please tap a recipe!"); 
+            if(!lot || !runNum) return alert("Please enter Lot number and Run Number!");
             
-            curB = `${lot}-${run}`;
+            // Automatically appends "B" to the typed number
+            curB = `${curPrefix}${lot}-B${runNum}`;
+            
             const res = await fetch('/create-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,fg_code:curF,operator_name:curOp})}); 
             const data = await res.json(); 
             if(data.error) return alert("❌ "+data.error); 
@@ -183,9 +237,25 @@
             document.getElementById('setup').style.display='none'; 
             document.getElementById('work').style.display='block'; 
             document.getElementById('title').innerText = curB; 
-            const req = await fetch(`/recipe-requirements/${curF}`).then(r=>r.json());
-            validRecipeCodes = req.map(i => i.product_code);
+            document.getElementById('active_meta').innerText = `${curF} | Operator: ${curOp}`;
+            
+            // Fetch Master Data Requirements
+            const reqRes = await fetch(`/recipe-requirements/${encodeURIComponent(curF)}`);
+            recipeRequirements = await reqRes.json();
+            validRecipeCodes = recipeRequirements.map(i => i.product_code);
+            
             update(); setTimeout(() => document.getElementById('rm_tag').focus(), 500);
+        }
+
+        function toggleCamera() { 
+            const rd = document.getElementById('reader'); 
+            if(rd.style.display === 'none' || rd.style.display === '') { 
+                rd.style.display = 'block'; document.getElementById('camToggleBtn').innerText = "🚫 Close Camera"; 
+                if(!html5QrcodeScanner) { 
+                    html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250}, videoConstraints: { facingMode: "environment" } }); 
+                    html5QrcodeScanner.render(txt => { document.getElementById('rm_tag').value = txt; manualScan(); }); 
+                } 
+            } else { rd.style.display = 'none'; document.getElementById('camToggleBtn').innerText = "📷 Activate Mobile Camera"; } 
         }
 
         async function manualScan() { 
@@ -193,40 +263,50 @@
             let cleanTag=val, parts=val.split('/'); if(parts.length>=4) cleanTag=`${parts[0]}/${parts[1]}/${parts[2]}/${parts[3]}`; 
             let pCode = parts.length >= 2 ? parts[1] : cleanTag;
             
-            if(!validRecipeCodes.includes(pCode)) { playVoice(false); flash(false, "❌ REJECTED"); document.getElementById('rm_tag').value=""; return; }
-            if(localScannedTags.includes(cleanTag)) { playVoice(false); flash(false, "❌ DUPLICATE"); document.getElementById('rm_tag').value=""; return; }
+            if(validRecipeCodes.length > 0 && !validRecipeCodes.includes(pCode)) { 
+                playVoice(false); flash(false, "❌ REJECTED"); document.getElementById('rm_tag').value=""; return; 
+            }
+            if(localScannedTags.includes(cleanTag)) { 
+                playVoice(false); flash(false, "❌ DUPLICATE"); document.getElementById('rm_tag').value=""; return; 
+            }
 
-            await fetch('/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:cleanTag})}); 
+            await fetch('/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:cleanTag, operator: curOp})}); 
             playVoice(true); flash(true, "✅ बरोबर"); 
             
-            lastScanTag = cleanTag; startUndoTimer();
             document.getElementById('rm_tag').value=""; update(); document.getElementById('rm_tag').focus();
-        }
-
-        function startUndoTimer() {
-            clearInterval(undoTimer); undoCountdown = 30;
-            const btn = document.getElementById('undo_btn'); btn.style.display = 'block'; btn.innerText = `⚠️ UNDO LAST SCAN (${undoCountdown}s)`;
-            undoTimer = setInterval(() => {
-                undoCountdown--; btn.innerText = `⚠️ UNDO LAST SCAN (${undoCountdown}s)`;
-                if(undoCountdown <= 0) { clearInterval(undoTimer); btn.style.display = 'none'; lastScanTag = null; }
-            }, 1000);
-        }
-
-        async function undoLastScan() {
-            if(!lastScanTag) return;
-            clearInterval(undoTimer); document.getElementById('undo_btn').style.display = 'none';
-            await fetch('/undo-scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ batch_code: curB, rm_tag: lastScanTag }) });
-            flash(true, "🗑️ UNDONE"); lastScanTag = null; update(); document.getElementById('rm_tag').focus();
         }
         
         async function update() { 
-            const scans = await fetch(`/current-scans/${curB}`).then(r=>r.json()); 
+            const scans = await fetch(`/current-scans/${encodeURIComponent(curB)}`).then(r=>r.json()); 
             localScannedTags = scans.map(s => s.rm_tag);
-            document.getElementById('total_bags').innerText = scans.length;
-            document.getElementById('total_weight').innerText = scans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0).toFixed(2) + " KG";
+            
+            // Update Checklist Feed
+            if(recipeRequirements.length > 0) {
+                const checklistHTML = recipeRequirements.map(req => {
+                    const matchedScans = scans.filter(s => s.product_code === req.product_code);
+                    const totalKg = matchedScans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
+                    const isDone = matchedScans.length > 0;
+                    
+                    return `
+                        <div class="feed-item ${isDone ? 'done' : ''}">
+                            <div class="feed-name">${req.ingredient_name || req.product_code} <span style="font-size:12px; color:#94a3b8;">(${req.product_code})</span></div>
+                            <div class="feed-status">${isDone ? `✅ ${totalKg.toFixed(2)} KG` : '⏳ Pending'}</div>
+                        </div>
+                    `;
+                }).join('');
+                document.getElementById('recipe_checklist').innerHTML = checklistHTML;
+            } else {
+                document.getElementById('recipe_checklist').innerHTML = `<div style="text-align:center; color:var(--danger-red); font-weight:bold;">No ingredients mapped for ${curF}. Check Master Data.</div>`;
+            }
 
-            if(scans.length === 0) { document.getElementById('scanned_items_list').innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-weight:bold;">No tags yet...</div>`; } 
-            else { document.getElementById('scanned_items_list').innerHTML = scans.map(s => `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:2px solid #e2e8f0; background:white; border-radius:8px; margin-bottom:8px; font-family:monospace; font-weight:bold; font-size:16px;"><span>${s.rm_tag}</span><span style="color:var(--success-green);">${parseFloat(s.weight||0).toFixed(1)} KG</span></div>`).join(''); }
+            // Update Recent Tags Log
+            if(scans.length === 0) { document.getElementById('scanned_items_list').innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:bold; font-size:12px;">No tags yet...</div>`; } 
+            else { 
+                document.getElementById('scanned_items_list').innerHTML = [...scans].reverse().slice(0, 15).map(s => `
+                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-family:monospace; font-weight:bold; font-size:13px; color:#475569;">
+                    <span>${s.rm_tag}</span><span style="color:var(--success-green);">${parseFloat(s.weight||0).toFixed(2)} KG</span>
+                </div>`).join(''); 
+            }
         }
     </script>
 </body>
