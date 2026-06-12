@@ -1,293 +1,460 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Kilrr Factory OS - Scanner</title>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
-    <style>
-        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; --text-mid:#475569; }
-        * { box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 100px; }
-
-        .nav-top { background: var(--navy-command); border-bottom: 5px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
-        .brand { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase;}
-        .brand span { color: var(--kilrr-orange); }
-        .nav-links { display: flex; gap: 15px; }
-        .nav-btn { color: white; text-decoration: none; font-weight: 700; font-size: 14px; text-transform: uppercase; }
-        .nav-btn.active { color: var(--kilrr-orange); }
-
-        .container { max-width: 820px; margin: 20px auto; padding: 0 15px; }
-        .card { background: var(--card-bg); border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 25px; }
-
-        /* TABS */
-        .tab-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
-        .tab-btn { padding: 16px; border: 3px solid #e2e8f0; background: #f8fafc; border-radius: 14px; font-family: 'Space Grotesk'; font-weight: 900; font-size: 16px; text-transform: uppercase; cursor: pointer; color: var(--text-mid); transition: 0.15s; }
-        .tab-btn.active { background: var(--navy-command); color: white; border-color: var(--navy-command); }
-
-        .step-label { font-family:'Space Grotesk'; font-weight: 900; font-size: 15px; color: var(--navy-command); text-transform: uppercase; margin: 0 0 10px 0; display:flex; align-items:center; gap:8px;}
-        .step-num { background: var(--kilrr-orange); color: white; width: 26px; height: 26px; border-radius: 8px; display:inline-flex; align-items:center; justify-content:center; font-size: 14px; }
-        .marathi { font-family: 'Inter'; color: var(--kilrr-orange); font-size: 13px; font-weight: 700; }
-        .block { margin-bottom: 28px; }
-
-        input.setup-input { width: 100%; padding: 20px; border-radius: 12px; border: 3px solid var(--navy-command); font-size: 22px; font-weight: 800; font-family: 'Space Grotesk', sans-serif; background: #fff; text-transform: uppercase; }
-        input.setup-input:focus { border-color: var(--kilrr-orange); outline: none; }
-        .hint { font-size: 12px; color: #94a3b8; font-weight: 700; margin-top: 8px; }
-
-        /* TAP CARDS */
-        .pick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
-        .pick { padding: 18px 12px; border: 3px solid #e2e8f0; background: #f8fafc; border-radius: 14px; font-family:'Space Grotesk'; font-weight: 900; font-size: 16px; text-transform: uppercase; cursor: pointer; text-align:center; transition: 0.12s; color: var(--navy-command); }
-        .pick:active { transform: scale(0.97); }
-        .pick.selected { background: var(--kilrr-orange); color: white; border-color: var(--kilrr-orange); box-shadow: 0 6px 16px rgba(234,88,12,0.3); }
-
-        .info-strip { background:#fff7ed; border:2px solid #ffedd5; border-radius:12px; padding:12px 15px; font-weight:800; color:var(--kilrr-orange); font-size:14px; margin-bottom:25px; display:none; }
-
-        button.btn-huge { width: 100%; padding: 24px; border: none; border-radius: 14px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 22px; cursor: pointer; text-transform: uppercase; background: var(--kilrr-orange); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3); }
-        button.btn-huge:disabled { background: #cbd5e1; color: #fff; box-shadow:none; cursor: not-allowed; }
-
-        /* RESUME */
-        .resume-list { max-height: 360px; overflow-y: auto; }
-        .resume-pill { background: #fff7ed; border: 2px solid var(--kilrr-orange); color: var(--kilrr-orange); padding: 18px; border-radius: 12px; font-weight: 800; font-family: 'Space Grotesk'; font-size: 17px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .resume-pill small { color: var(--text-mid); font-weight:700; font-size:12px; }
-
-        /* WORK */
-        .btn-undo { background: #fef08a; color: #854d0e; border: 3px solid #eab308; display: none; margin-bottom: 20px; font-size: 20px; width: 100%; padding: 20px; border-radius: 12px; font-weight: 900; cursor:pointer;}
-        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .summary-box { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px; text-align: center; }
-        .val-text { font-size: 32px; font-family: 'Space Grotesk'; font-weight: 900; color: var(--navy-command); }
-        input#rm_tag { width: 100%; padding: 20px; border-radius: 12px; border: 3px solid var(--navy-command); font-size: 20px; font-weight: 800; }
-        h2 { margin: 0; font-family: 'Space Grotesk'; font-size: 24px; text-transform: uppercase; color: var(--navy-command);}
-
-        #scan_flash { position: fixed; inset: 0; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 60px; font-weight: 900; color: white; opacity: 0; transition: opacity 0.2s;}
-
-        @media (max-width: 1024px) {
-            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; border-top: 4px solid var(--kilrr-orange); border-bottom:none; justify-content: space-around; }
-            .brand { display: none; }
-            .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; }
-            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 20px; }
-            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 20px; }
-            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 20px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>KILRR — Batch Scanner</title>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+  :root{
+    --bg:#0f1724; --panel:#16202e; --panel2:#1d2a3a; --line:#2a3a4f;
+    --orange:#ff6a00; --green:#1db954; --red:#e63946; --txt:#e9eef5; --mut:#8aa0b8;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+    font-family:'DM Sans',system-ui,Arial,sans-serif;overflow-x:hidden;}
+  /* ---------- TOP NAV (all pages) ---------- */
+  .nav{position:sticky;top:0;z-index:50;background:var(--panel);
+    border-bottom:3px solid var(--orange);display:flex;align-items:center;
+    gap:4px;padding:10px 12px;overflow-x:auto;white-space:nowrap;}
+  .nav .brand{font-weight:800;letter-spacing:1px;margin-right:8px;font-size:18px;}
+  .nav .brand b{color:var(--orange);}
+  .nav a{color:var(--mut);text-decoration:none;font-size:13px;font-weight:700;
+    padding:8px 12px;border-radius:8px;}
+  .nav a.active{color:#fff;background:var(--orange);}
+  .nav a:active{background:var(--panel2);}
+  .wrap{max-width:560px;margin:0 auto;padding:14px;}
+  /* ---------- TABS ---------- */
+  .tabs{display:flex;gap:8px;margin-bottom:14px;}
+  .tabs button{flex:1;padding:14px;border:0;border-radius:12px;font-weight:800;
+    font-size:15px;background:var(--panel);color:var(--mut);}
+  .tabs button.on{background:var(--orange);color:#fff;}
+  .tabs button small{display:block;font-weight:600;opacity:.8;font-size:11px;}
+  /* ---------- SETUP CARDS ---------- */
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:16px;margin-bottom:14px;}
+  .lbl{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:1px;
+    margin-bottom:8px;font-weight:700;}
+  .lbl small{color:var(--orange);font-weight:700;}
+  input.code{width:100%;padding:16px;font-size:22px;font-weight:800;text-align:center;
+    text-transform:uppercase;background:var(--bg);border:2px solid var(--line);
+    color:#fff;border-radius:12px;letter-spacing:2px;}
+  input.code:focus{outline:none;border-color:var(--orange);}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .pick{padding:16px 10px;border-radius:12px;background:var(--bg);
+    border:2px solid var(--line);font-weight:800;font-size:15px;text-align:center;cursor:pointer;}
+  .pick small{display:block;font-weight:600;color:var(--mut);font-size:12px;margin-top:3px;}
+  .pick.sel{border-color:var(--orange);background:#2a1b0d;color:var(--orange);}
+  .chip{padding:14px 10px;border-radius:30px;background:var(--bg);
+    border:2px solid var(--line);font-weight:800;text-align:center;cursor:pointer;}
+  .chip.sel{border-color:var(--green);background:#0e2c1a;color:var(--green);}
+  .startbtn{width:100%;padding:20px;border:0;border-radius:16px;font-size:20px;
+    font-weight:900;background:var(--green);color:#fff;letter-spacing:1px;}
+  .startbtn:disabled{background:#33414f;color:#6b7b8c;}
+  .startbtn small{display:block;font-weight:600;font-size:13px;opacity:.85;}
+  /* ---------- RUN SCREEN ---------- */
+  .runhead{display:flex;justify-content:space-between;align-items:center;
+    background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:14px 16px;margin-bottom:12px;}
+  .runhead h2{margin:0;color:var(--orange);font-size:24px;}
+  .runhead p{margin:2px 0 0;color:var(--mut);font-size:13px;}
+  .exit{background:var(--red);color:#fff;border:0;padding:12px 16px;border-radius:10px;
+    font-weight:800;}
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:14px;text-align:center;}
+  .kpi small{color:var(--mut);font-size:11px;letter-spacing:1px;}
+  .kpi b{display:block;font-size:30px;margin-top:4px;}
+  .kpi.w b{color:var(--green);}
+  /* ---------- RECIPE CHECKLIST ---------- */
+  .recipebox{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:14px;margin-bottom:12px;}
+  .recipebox .hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .recipebox .hd b{font-size:15px;}
+  .recipebox .hd span{font-size:12px;color:var(--mut);}
+  .ing{display:flex;align-items:center;gap:10px;padding:11px 10px;border-radius:10px;
+    background:var(--bg);margin-bottom:7px;border-left:4px solid var(--line);}
+  .ing.done{border-left-color:var(--green);background:#0e2218;}
+  .ing .tick{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;
+    flex-shrink:0;color:var(--mut);}
+  .ing.done .tick{background:var(--green);border-color:var(--green);color:#fff;}
+  .ing .nm{flex:1;}
+  .ing .nm b{display:block;font-size:14px;}
+  .ing .nm small{color:var(--mut);font-size:11px;}
+  .ing .ct{font-weight:800;font-size:13px;color:var(--green);}
+  /* ---------- SCAN INPUT + CAMERA ---------- */
+  .scanrow{display:flex;gap:8px;margin-bottom:10px;}
+  .scanrow input{flex:1;padding:16px;font-size:16px;background:var(--bg);
+    border:2px solid var(--orange);color:#fff;border-radius:12px;font-weight:700;}
+  .scanrow input:focus{outline:none;}
+  .cambtn{background:var(--panel2);color:#fff;border:1px solid var(--line);
+    border-radius:12px;padding:0 16px;font-weight:800;font-size:13px;}
+  .cambtn.on{background:var(--orange);}
+  #reader{border-radius:14px;overflow:hidden;margin-bottom:10px;display:none;}
+  #reader.show{display:block;}
+  /* ---------- SCANNED LIST ---------- */
+  .tag{display:flex;justify-content:space-between;align-items:center;
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:12px 14px;margin-bottom:7px;}
+  .tag b{font-size:14px;}
+  .tag small{color:var(--mut);display:block;font-size:11px;}
+  .tag .wt{color:var(--green);font-weight:800;}
+  .empty{text-align:center;color:var(--mut);padding:24px;font-size:13px;}
+  /* ---------- UNDO ---------- */
+  .undo{position:fixed;left:0;right:0;bottom:0;background:var(--red);color:#fff;
+    padding:16px;font-weight:900;font-size:17px;text-align:center;
+    transform:translateY(100%);transition:.25s;z-index:60;border:0;}
+  .undo.show{transform:translateY(0);}
+  .undo small{display:block;font-weight:600;font-size:12px;}
+  /* ---------- FLASH ---------- */
+  .flash{position:fixed;inset:0;z-index:90;pointer-events:none;opacity:0;}
+  .flash.green{background:var(--green);}
+  .flash.red{background:var(--red);}
+  .flash.go{animation:fl .5s;}
+  @keyframes fl{0%{opacity:.85}100%{opacity:0}}
+  .hide{display:none!important;}
+</style>
 </head>
 <body>
-    <div id="scan_flash"></div>
 
-    <nav class="nav-top">
-        <a href="index.html" class="brand">Kilrr <span>OS</span></a>
-        <div class="nav-links">
-            <a href="index.html" class="nav-btn">Hub</a>
-            <a href="preprocess.html" class="nav-btn">Pre-Process</a>
-            <a href="scanner.html" class="nav-btn active">Scanner</a>
-        </div>
-    </nav>
+<!-- ===== FULL NAV (rename hrefs to your real files) ===== -->
+<div class="nav">
+  <div class="brand">KILRR <b>OS</b></div>
+  <a href="index.html">HUB</a>
+  <a href="inward.html">INWARD</a>
+  <a href="preprocess.html">PRE-PROCESS</a>
+  <a href="scanner.html" class="active">SCANNER</a>
+  <a href="dashboard.html">DASHBOARD</a>
+</div>
 
-    <div class="container">
-        <!-- ============ SETUP ============ -->
-        <div class="card" id="setup">
-            <div class="tab-row">
-                <button class="tab-btn active" id="tab_new" onclick="switchTab('new')">+ New Run<br><span class="marathi">नवीन काम</span></button>
-                <button class="tab-btn" id="tab_resume" onclick="switchTab('resume')">▶ Resume<br><span class="marathi">चालू काम</span></button>
-            </div>
+<div class="wrap">
 
-            <!-- NEW RUN PANEL -->
-            <div id="panel_new">
-                <!-- Step 1: Manual Batch Code -->
-                <div class="block">
-                    <p class="step-label"><span class="step-num">1</span> Batch Code <span class="marathi">— बॅच कोड (रेकॉर्ड प्रमाणे)</span></p>
-                    <input type="text" id="master_lot" class="setup-input" placeholder="e.g. ACH-010626-B1" autocomplete="off">
-                    <div class="hint">Type exactly as written on your production checklist. 1 run = 1 batch (e.g. Achaari 4,800 packs).</div>
-                </div>
-
-                <!-- Step 2: Tap Recipe -->
-                <div class="block">
-                    <p class="step-label"><span class="step-num">2</span> Recipe / Flavour <span class="marathi">— रेसिपी निवडा</span></p>
-                    <div class="pick-grid" id="recipe_grid"><div class="hint">Loading recipes...</div></div>
-                </div>
-
-                <!-- Step 3: Tap Operator -->
-                <div class="block">
-                    <p class="step-label"><span class="step-num">3</span> Operator <span class="marathi">— ऑपरेटर निवडा</span></p>
-                    <div class="pick-grid" id="operator_grid">
-                        <div class="pick" onclick="pickOperator(this,'Muaz')">Muaz</div>
-                        <div class="pick" onclick="pickOperator(this,'Arbaaz')">Arbaaz</div>
-                        <div class="pick" onclick="pickOperator(this,'Rahul')">Rahul</div>
-                    </div>
-                </div>
-
-                <button class="btn-huge" id="startBtn" onclick="startNewBatch()" disabled>⚡ START PRODUCTION</button>
-            </div>
-
-            <!-- RESUME PANEL -->
-            <div id="panel_resume" style="display:none;">
-                <h2 style="font-size:18px; color:var(--success-green); margin-bottom:15px;">Open Runs <span class="marathi">चालू बॅच</span></h2>
-                <div class="resume-list" id="active_batches">Loading...</div>
-            </div>
-        </div>
-
-        <!-- ============ WORK ============ -->
-        <div class="card" id="work" style="display:none;">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #e2e8f0; padding-bottom:15px; margin-bottom:20px;">
-                <div>
-                    <h2 id="title" style="color:var(--kilrr-orange); font-size:28px;"></h2>
-                    <span class="marathi" id="work_recipe">प्रोडक्शन एरिया</span>
-                </div>
-                <button style="padding:12px 20px; font-weight:900; background:var(--danger-red); color:white; border:none; border-radius:8px; cursor:pointer;" onclick="location.reload()">EXIT</button>
-            </div>
-
-            <div class="summary-grid">
-                <div class="summary-box">
-                    <div style="font-size:12px; font-weight:bold; color:var(--text-mid);">TOTAL BAGS</div>
-                    <div class="val-text" id="total_bags">0</div>
-                </div>
-                <div class="summary-box">
-                    <div style="font-size:12px; font-weight:bold; color:var(--text-mid);">TOTAL WEIGHT</div>
-                    <div class="val-text" id="total_weight" style="color:var(--success-green);">0.00 KG</div>
-                </div>
-            </div>
-
-            <button class="btn-undo" id="undo_btn" onclick="undoLastScan()">⚠️ UNDO LAST SCAN (30s)</button>
-
-            <div style="display:flex; gap:10px; margin-bottom: 20px;">
-                <input type="text" id="rm_tag" placeholder="SCAN BARCODE..." autocomplete="off">
-                <button style="padding:0 30px; background:var(--navy-command); color:white; border:none; border-radius:12px; font-weight:900; cursor:pointer;" onclick="manualScan()">ADD</button>
-            </div>
-
-            <div id="scanned_items_list" style="max-height: 250px; overflow-y:auto; border:2px solid #e2e8f0; border-radius:12px; padding:10px; background:#f8fafc;"></div>
-        </div>
+  <!-- ================= SETUP ================= -->
+  <div id="setup">
+    <div class="tabs">
+      <button id="tabNew" class="on" onclick="showTab('new')">नवीन काम<small>New Run</small></button>
+      <button id="tabResume" onclick="showTab('resume')">चालू काम<small>Resume Run</small></button>
     </div>
 
-    <script>
-        let curB="", curF="", validRecipeCodes=[], localScannedTags=[];
-        let lastScanTag = null, undoTimer = null, undoCountdown = 0;
-        let selectedRecipe = "", selectedOperator = "";
+    <!-- NEW -->
+    <div id="paneNew">
+      <div class="card">
+        <div class="lbl">Batch Code <small>(record वरून टाका)</small></div>
+        <input id="batchCode" class="code" placeholder="LK-190 / B3" oninput="checkReady()" autocomplete="off">
+      </div>
+      <div class="card">
+        <div class="lbl">Recipe / Flavour <small>(टॅप करा)</small></div>
+        <div id="recipeGrid" class="grid"><div class="empty">Loading recipes…</div></div>
+      </div>
+      <div class="card">
+        <div class="lbl">Operator <small>(टॅप करा)</small></div>
+        <div id="opGrid" class="grid"><div class="empty">Loading…</div></div>
+      </div>
+      <button id="startBtn" class="startbtn" disabled onclick="startRun()">
+        START RUN<small>काम सुरू करा</small>
+      </button>
+    </div>
 
-        function playVoice(success) {
-            try {
-                let msg = new SpeechSynthesisUtterance(success ? "बरोबर" : "चूक");
-                msg.lang = 'mr-IN'; msg.rate = 1.2; window.speechSynthesis.speak(msg);
-                if(!success) { navigator.vibrate([200, 100, 200]); }
-            } catch(e) {}
-        }
-        function flash(success, txt) {
-            const f = document.getElementById('scan_flash');
-            f.style.background = success ? 'rgba(5,150,105,0.95)' : 'rgba(220,38,38,0.95)';
-            f.innerText = txt; f.style.display='flex'; f.style.opacity='1';
-            setTimeout(()=>{f.style.opacity='0'; setTimeout(()=>f.style.display='none',200);}, 600);
-        }
+    <!-- RESUME -->
+    <div id="paneResume" class="hide">
+      <div class="card">
+        <div class="lbl">Open Runs <small>(चालू बॅच)</small></div>
+        <div id="openList"><div class="empty">Loading…</div></div>
+      </div>
+    </div>
+  </div>
 
-        function switchTab(which) {
-            document.getElementById('tab_new').classList.toggle('active', which==='new');
-            document.getElementById('tab_resume').classList.toggle('active', which==='resume');
-            document.getElementById('panel_new').style.display = which==='new' ? 'block' : 'none';
-            document.getElementById('panel_resume').style.display = which==='resume' ? 'block' : 'none';
-            if(which==='resume') loadOpenBatches();
-        }
+  <!-- ================= RUN ================= -->
+  <div id="run" class="hide">
+    <div class="runhead">
+      <div><h2 id="rCode">—</h2><p id="rMeta">—</p></div>
+      <button class="exit" onclick="exitRun()">EXIT<br><small>बंद</small></button>
+    </div>
 
-        window.onload = async () => {
-            // Load recipes as TAP cards
-            const rRes = await fetch('/get-recipes'); const rData = await rRes.json();
-            const flavors = [...new Set(rData.map(r=>r.fg_code))].filter(f=>f);
-            const grid = document.getElementById('recipe_grid');
-            if(flavors.length === 0) grid.innerHTML = `<div class="hint">No recipes found. Add them in Master Data.</div>`;
-            else grid.innerHTML = flavors.map(f => `<div class="pick" onclick="pickRecipe(this,'${f}')">${f}</div>`).join('');
+    <div class="kpis">
+      <div class="kpi"><small>TOTAL BAGS</small><b id="kBags">0</b></div>
+      <div class="kpi w"><small>TOTAL WEIGHT</small><b id="kWt">0.00 KG</b></div>
+    </div>
 
-            document.getElementById('master_lot').addEventListener('input', validateSetup);
-            document.getElementById('rm_tag').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); manualScan(); }});
-        };
+    <!-- RECIPE CHECKLIST -->
+    <div class="recipebox">
+      <div class="hd"><b>Recipe Checklist <span style="color:var(--mut)">(रेसिपी)</span></b>
+        <span id="ingProgress">0 / 0</span></div>
+      <div id="ingList"><div class="empty">No recipe loaded.</div></div>
+    </div>
 
-        async function loadOpenBatches() {
-            const container = document.getElementById('active_batches');
-            container.innerHTML = "Loading...";
-            const bRes = await fetch('/open-batches'); const batches = await bRes.json();
-            if(batches.length === 0) container.innerHTML = `<div class="hint" style="text-align:center; padding:20px;">No active runs.</div>`;
-            else container.innerHTML = batches.map(b => `<div class="resume-pill" onclick="resumeBatch('${b.batch_code}', '${b.fg_code}')"><span>${b.batch_code}<br><small>${b.fg_code} • ${b.operator_name||''}</small></span><span>▶</span></div>`).join('');
-        }
+    <!-- SCAN -->
+    <div class="scanrow">
+      <input id="scanInput" placeholder="SCAN BARCODE… (gun/keyboard)" autocomplete="off">
+      <button id="camToggle" class="cambtn" onclick="toggleCam()">📷 CAM</button>
+    </div>
+    <div id="reader"></div>
 
-        function pickRecipe(el, fg) {
-            selectedRecipe = fg;
-            document.querySelectorAll('#recipe_grid .pick').forEach(p=>p.classList.remove('selected'));
-            el.classList.add('selected');
-            validateSetup();
-        }
-        function pickOperator(el, name) {
-            selectedOperator = name;
-            document.querySelectorAll('#operator_grid .pick').forEach(p=>p.classList.remove('selected'));
-            el.classList.add('selected');
-            validateSetup();
-        }
-        function validateSetup() {
-            const code = document.getElementById('master_lot').value.trim();
-            document.getElementById('startBtn').disabled = !(code && selectedRecipe && selectedOperator);
-        }
+    <div id="tagList"><div class="empty">No tags yet · अजून स्कॅन नाही</div></div>
+  </div>
+</div>
 
-        async function resumeBatch(batchCode, fgCode) { curB = batchCode; curF = fgCode; await loadScannerUI(); }
+<!-- UNDO + FLASH -->
+<button id="undoBtn" class="undo" onclick="undoLast()">
+  ↩ UNDO LAST SCAN<small id="undoTimer">शेवटचा स्कॅन रद्द · 30s</small>
+</button>
+<div id="flash" class="flash"></div>
 
-        async function startNewBatch() {
-            let code = document.getElementById('master_lot').value.trim().toUpperCase();
-            if(!code) return alert("Please type the Batch Code!");
-            if(!selectedRecipe) return alert("Please tap a recipe!");
-            if(!selectedOperator) return alert("Please tap an operator!");
+<script>
+/* ====================================================================
+   STATE
+==================================================================== */
+let RECIPES=[], OPERATORS=["Ramesh","Suresh","Anita","Vijay","Sunil","Pooja"];
+let sel={code:"",recipe:null,op:null};
+let active=null;                 // {code,recipe,operator}
+let scanned=[];                  // [{tag,product_code,name,weight}]
+let recipeIngredients=[];        // [{code,name}]
+let undoTimer=null, camScanner=null, camOn=false, lastScanAt=0;
 
-            curB = code; curF = selectedRecipe;
+/* ====================================================================
+   FEEDBACK: voice / buzzer / vibrate / flash
+==================================================================== */
+function speak(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='mr-IN';u.rate=.95;
+  const v=speechSynthesis.getVoices().find(x=>/mr|hi/i.test(x.lang));if(v)u.voice=v;
+  speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
+let AC;
+function buzzer(){try{AC=AC||new(window.AudioContext||webkitAudioContext)();
+  const o=AC.createOscillator(),g=AC.createGain();o.type='square';o.frequency.value=140;
+  o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.3,AC.currentTime);
+  o.start();o.stop(AC.currentTime+.45);}catch(e){}}
+function flash(ok){const f=document.getElementById('flash');
+  f.className='flash '+(ok?'green':'red');void f.offsetWidth;f.classList.add('go');}
+function ok(msg){flash(true);speak('बरोबर');navigator.vibrate&&navigator.vibrate(80);}
+function bad(msg){flash(false);speak('चूक');buzzer();navigator.vibrate&&navigator.vibrate([120,60,120]);
+  if(msg)alert('❌ '+msg);}
 
-            const res = await fetch('/create-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,fg_code:curF,operator_name:selectedOperator})});
-            const data = await res.json();
-            if(data.error) return alert("❌ "+data.error);
-            await loadScannerUI();
-        }
+/* ====================================================================
+   LOAD MASTER DATA
+==================================================================== */
+async function init(){
+  // Recipes
+  try{
+    const r=await fetch('/get-recipes');const d=await r.json();
+    RECIPES=(Array.isArray(d)?d:d.recipes||[]).map(x=>
+      typeof x==='string'?{name:x,code:x}:{name:x.name||x.recipe||x.flavour||x.code,
+        code:x.code||x.product_code||x.name});
+  }catch(e){RECIPES=[];}
+  if(!RECIPES.length)RECIPES=[{name:'No recipes found',code:''}];
+  document.getElementById('recipeGrid').innerHTML=RECIPES.map((r,i)=>
+    `<div class="pick" onclick="pickRecipe(${i})" id="rc${i}">${r.name}
+       <small>${r.code||''}</small></div>`).join('');
+  // Operators
+  document.getElementById('opGrid').innerHTML=OPERATORS.map((o,i)=>
+    `<div class="chip" onclick="pickOp(${i})" id="op${i}">${o}</div>`).join('');
+  loadOpen();
+}
+function pickRecipe(i){sel.recipe=RECIPES[i];
+  document.querySelectorAll('.pick').forEach(e=>e.classList.remove('sel'));
+  document.getElementById('rc'+i).classList.add('sel');checkReady();}
+function pickOp(i){sel.op=OPERATORS[i];
+  document.querySelectorAll('.chip').forEach(e=>e.classList.remove('sel'));
+  document.getElementById('op'+i).classList.add('sel');checkReady();}
+function checkReady(){sel.code=document.getElementById('batchCode').value.trim().toUpperCase();
+  document.getElementById('batchCode').value=sel.code;
+  document.getElementById('startBtn').disabled=!(sel.code&&sel.recipe&&sel.op);}
 
-        async function loadScannerUI() {
-            document.getElementById('setup').style.display='none';
-            document.getElementById('work').style.display='block';
-            document.getElementById('title').innerText = curB;
-            document.getElementById('work_recipe').innerText = curF;
-            const req = await fetch(`/recipe-requirements/${curF}`).then(r=>r.json());
-            validRecipeCodes = req.map(i => i.product_code);
-            update(); setTimeout(() => document.getElementById('rm_tag').focus(), 500);
-        }
+/* ====================================================================
+   TABS
+==================================================================== */
+function showTab(t){const n=t==='new';
+  document.getElementById('tabNew').classList.toggle('on',n);
+  document.getElementById('tabResume').classList.toggle('on',!n);
+  document.getElementById('paneNew').classList.toggle('hide',!n);
+  document.getElementById('paneResume').classList.toggle('hide',n);
+  if(!n)loadOpen();}
 
-        async function manualScan() {
-            let val=document.getElementById('rm_tag').value.trim(); if(!val) return;
-            let cleanTag=val, parts=val.split('/'); if(parts.length>=4) cleanTag=`${parts[0]}/${parts[1]}/${parts[2]}/${parts[3]}`;
-            let pCode = parts.length >= 2 ? parts[1] : cleanTag;
+async function loadOpen(){
+  try{const r=await fetch('/open-batches');const d=await r.json();
+    const list=Array.isArray(d)?d:d.batches||[];
+    document.getElementById('openList').innerHTML=list.length?list.map(b=>
+      `<div class="pick sel" style="text-align:left;margin-bottom:8px"
+        onclick='resume(${JSON.stringify(b).replace(/'/g,"&#39;")})'>
+        ${b.batch_code||b.code} <small>${b.recipe||b.flavour||''} · ${b.operator||''}</small>
+      </div>`).join(''):'<div class="empty">No open runs · चालू बॅच नाही</div>';
+  }catch(e){document.getElementById('openList').innerHTML='<div class="empty">Could not load.</div>';}
+}
 
-            if(!validRecipeCodes.includes(pCode)) { playVoice(false); flash(false, "❌ REJECTED"); document.getElementById('rm_tag').value=""; return; }
-            if(localScannedTags.includes(cleanTag)) { playVoice(false); flash(false, "❌ DUPLICATE"); document.getElementById('rm_tag').value=""; return; }
+/* ====================================================================
+   START / RESUME RUN
+==================================================================== */
+async function startRun(){
+  try{
+    await fetch('/create-batch',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({batch_code:sel.code,recipe:sel.recipe.name,
+        recipe_code:sel.recipe.code,operator:sel.op})});
+  }catch(e){}
+  active={code:sel.code,recipe:sel.recipe.name,recipe_code:sel.recipe.code,operator:sel.op};
+  enterRun();
+}
+function resume(b){active={code:b.batch_code||b.code,recipe:b.recipe||b.flavour,
+  recipe_code:b.recipe_code||b.product_code,operator:b.operator};enterRun();}
 
-            await fetch('/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:cleanTag})});
-            playVoice(true); flash(true, "✅ बरोबर");
+async function enterRun(){
+  document.getElementById('setup').classList.add('hide');
+  document.getElementById('run').classList.remove('hide');
+  document.getElementById('rCode').textContent=active.code;
+  document.getElementById('rMeta').textContent=active.recipe+' · '+active.operator;
+  scanned=[];
+  await loadRecipeIngredients();
+  await loadCurrentScans();
+  renderAll();
+  setTimeout(()=>document.getElementById('scanInput').focus(),200);
+}
 
-            lastScanTag = cleanTag; startUndoTimer();
-            document.getElementById('rm_tag').value=""; update(); document.getElementById('rm_tag').focus();
-        }
+/* ====== Fetch recipe ingredients from Master Data ====== */
+async function loadRecipeIngredients(){
+  recipeIngredients=[];
+  try{
+    const r=await fetch('/recipe-requirements?recipe='+encodeURIComponent(active.recipe_code||active.recipe));
+    const d=await r.json();
+    const arr=Array.isArray(d)?d:(d.requirements||d.ingredients||d.items||[]);
+    recipeIngredients=arr.map(x=> typeof x==='string'
+      ? {code:x,name:x}
+      : {code:x.product_code||x.code||x.ingredient_code,
+         name:x.ingredient_name||x.name||x.ingredient||x.product_code||x.code});
+  }catch(e){recipeIngredients=[];}
+}
 
-        function startUndoTimer() {
-            clearInterval(undoTimer); undoCountdown = 30;
-            const btn = document.getElementById('undo_btn'); btn.style.display = 'block'; btn.innerText = `⚠️ UNDO LAST SCAN (${undoCountdown}s)`;
-            undoTimer = setInterval(() => {
-                undoCountdown--; btn.innerText = `⚠️ UNDO LAST SCAN (${undoCountdown}s)`;
-                if(undoCountdown <= 0) { clearInterval(undoTimer); btn.style.display = 'none'; lastScanTag = null; }
-            }, 1000);
-        }
+async function loadCurrentScans(){
+  try{const r=await fetch('/current-scans?batch='+encodeURIComponent(active.code));
+    const d=await r.json();const arr=Array.isArray(d)?d:d.scans||[];
+    scanned=arr.map(x=>({tag:x.tag||x.material_tag,product_code:x.product_code||x.code,
+      name:x.name||x.ingredient_name||x.product_code,weight:+(x.weight||x.weight_kg||0)}));
+  }catch(e){}
+}
 
-        async function undoLastScan() {
-            if(!lastScanTag) return;
-            clearInterval(undoTimer); document.getElementById('undo_btn').style.display = 'none';
-            await fetch('/undo-scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ batch_code: curB, rm_tag: lastScanTag }) });
-            flash(true, "🗑️ UNDONE"); lastScanTag = null; update(); document.getElementById('rm_tag').focus();
-        }
+/* ====================================================================
+   RENDER
+==================================================================== */
+function renderAll(){renderKpis();renderIngredients();renderTags();}
+function renderKpis(){
+  document.getElementById('kBags').textContent=scanned.length;
+  const w=scanned.reduce((s,x)=>s+(+x.weight||0),0);
+  document.getElementById('kWt').textContent=w.toFixed(2)+' KG';
+}
+function renderIngredients(){
+  const box=document.getElementById('ingList');
+  if(!recipeIngredients.length){box.innerHTML=
+    '<div class="empty">No ingredients in Master Data for this recipe.</div>';
+    document.getElementById('ingProgress').textContent='0 / 0';return;}
+  let done=0;
+  box.innerHTML=recipeIngredients.map(ing=>{
+    const hits=scanned.filter(s=>(s.product_code||'').toUpperCase()===(ing.code||'').toUpperCase());
+    const isDone=hits.length>0; if(isDone)done++;
+    const kg=hits.reduce((a,b)=>a+(+b.weight||0),0);
+    return `<div class="ing ${isDone?'done':''}">
+       <div class="tick">${isDone?'✓':''}</div>
+       <div class="nm"><b>${ing.name}</b><small>${ing.code||''}</small></div>
+       <div class="ct">${isDone?hits.length+' bag · '+kg.toFixed(2)+'kg':''}</div>
+     </div>`;}).join('');
+  document.getElementById('ingProgress').textContent=done+' / '+recipeIngredients.length;
+}
+function renderTags(){
+  const box=document.getElementById('tagList');
+  if(!scanned.length){box.innerHTML='<div class="empty">No tags yet · अजून स्कॅन नाही</div>';return;}
+  box.innerHTML=[...scanned].reverse().map(s=>
+    `<div class="tag"><div><b>${s.name||s.product_code}</b>
+       <small>${s.tag}</small></div><div class="wt">${(+s.weight).toFixed(2)} KG</div></div>`).join('');
+}
 
-        async function update() {
-            const scans = await fetch(`/current-scans/${curB}`).then(r=>r.json());
-            localScannedTags = scans.map(s => s.rm_tag);
-            document.getElementById('total_bags').innerText = scans.length;
-            document.getElementById('total_weight').innerText = scans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0).toFixed(2) + " KG";
+/* ====================================================================
+   SCAN HANDLING (gun + manual + camera) with LOCKS
+==================================================================== */
+async function handleScan(tag){
+  tag=(tag||'').trim();if(!tag)return;
+  if(Date.now()-lastScanAt<600)return; lastScanAt=Date.now();   // debounce
 
-            if(scans.length === 0) { document.getElementById('scanned_items_list').innerHTML = `<div style="text-align:center; padding:20px; color:#94a3b8; font-weight:bold;">No tags yet...</div>`; }
-            else { document.getElementById('scanned_items_list').innerHTML = scans.map(s => `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:2px solid #e2e8f0; background:white; border-radius:8px; margin-bottom:8px; font-family:monospace; font-weight:bold; font-size:16px;"><span>${s.rm_tag}</span><span style="color:var(--success-green);">${parseFloat(s.weight||0).toFixed(1)} KG</span></div>`).join(''); }
-        }
-    </script>
+  // DUPLICATE LOCK
+  if(scanned.some(s=>s.tag===tag)){bad('Duplicate · आधीच स्कॅन केले');return;}
+
+  let res;
+  try{
+    const r=await fetch('/scan',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({batch_code:active.code,tag,recipe:active.recipe,
+        recipe_code:active.recipe_code,operator:active.operator})});
+    res=await r.json();
+    if(!r.ok||res.error||res.valid===false){bad(res.message||res.error||'Invalid tag');return;}
+  }catch(e){bad('Network error');return;}
+
+  // RECIPE LOCK (client guard if server returns code)
+  const pc=res.product_code||res.code;
+  if(recipeIngredients.length && pc &&
+     !recipeIngredients.some(i=>(i.code||'').toUpperCase()===pc.toUpperCase())){
+    bad('Not in recipe · रेसिपीमध्ये नाही');
+    try{await fetch('/undo-scan',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({batch_code:active.code,tag})});}catch(e){}
+    return;
+  }
+
+  scanned.push({tag,product_code:pc,
+    name:res.name||res.ingredient_name||pc,weight:+(res.weight||res.weight_kg||0)});
+  ok();renderAll();startUndo();
+}
+
+/* manual / gun input: Enter triggers scan */
+document.getElementById('scanInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){e.preventDefault();const v=e.target.value;e.target.value='';handleScan(v);}});
+
+/* ====================================================================
+   CAMERA (html5-qrcode)
+==================================================================== */
+function toggleCam(){camOn?stopCam():startCam();}
+function startCam(){
+  camOn=true;document.getElementById('camToggle').classList.add('on');
+  document.getElementById('reader').classList.add('show');
+  camScanner=new Html5Qrcode("reader");
+  camScanner.start({facingMode:"environment"},{fps:10,qrbox:{width:230,height:230}},
+    txt=>{handleScan(txt);},()=>{}).catch(e=>{bad('Camera blocked. Allow camera.');stopCam();});
+}
+function stopCam(){
+  camOn=false;document.getElementById('camToggle').classList.remove('on');
+  document.getElementById('reader').classList.remove('show');
+  if(camScanner){camScanner.stop().then(()=>camScanner.clear()).catch(()=>{});camScanner=null;}
+}
+
+/* ====================================================================
+   30-SECOND UNDO
+==================================================================== */
+function startUndo(){
+  const btn=document.getElementById('undoBtn');btn.classList.add('show');
+  let t=30;document.getElementById('undoTimer').textContent='शेवटचा स्कॅन रद्द · '+t+'s';
+  clearInterval(undoTimer);
+  undoTimer=setInterval(()=>{t--;
+    document.getElementById('undoTimer').textContent='शेवटचा स्कॅन रद्द · '+t+'s';
+    if(t<=0){clearInterval(undoTimer);btn.classList.remove('show');}},1000);
+}
+async function undoLast(){
+  if(!scanned.length)return;
+  const last=scanned.pop();
+  try{await fetch('/undo-scan',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({batch_code:active.code,tag:last.tag})});}catch(e){}
+  clearInterval(undoTimer);document.getElementById('undoBtn').classList.remove('show');
+  speak('रद्द');navigator.vibrate&&navigator.vibrate(60);renderAll();
+}
+
+/* ====================================================================
+   EXIT
+==================================================================== */
+function exitRun(){
+  stopCam();clearInterval(undoTimer);
+  document.getElementById('undoBtn').classList.remove('show');
+  document.getElementById('run').classList.add('hide');
+  document.getElementById('setup').classList.remove('hide');
+  active=null;scanned=[];sel={code:"",recipe:null,op:null};
+  document.getElementById('batchCode').value='';
+  document.querySelectorAll('.pick,.chip').forEach(e=>e.classList.remove('sel'));
+  checkReady();loadOpen();
+}
+
+/* boot */
+speechSynthesis&&speechSynthesis.getVoices();
+init();
+</script>
 </body>
 </html>
