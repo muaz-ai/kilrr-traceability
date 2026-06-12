@@ -8,12 +8,10 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// --- THE NEON CLOUD VAULT CONNECTION ---
 const pool = new Pool({
     connectionString: "postgresql://neondb_owner:npg_VgjU3LqG5Xou@ep-cold-cherry-a1yzxv4e-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 });
 
-// --- GOOGLE SHEETS LIVE SYNC ENGINE ---
 const SHEET_WEBHOOK = "https://script.google.com/macros/s/AKfycby5sagXzRtTwD_RFZ5dncTa6vy8vIFjpXYjexbmX76Tov1QTkhIxsbeT5SVopSXYHsU3Q/exec";
 
 async function pushToSheets(eventType, operator, payload) {
@@ -23,10 +21,9 @@ async function pushToSheets(eventType, operator, payload) {
             body: JSON.stringify({ event_type: eventType, operator: operator || "System", payload: payload }),
             redirect: "follow" 
         });
-    } catch (e) { console.log("⚠️ Google Sheet Sync Failed"); }
+    } catch (e) {}
 }
 
-// --- DATABASE INITIALIZATION ---
 const initDB = async () => {
     try {
         await pool.query(`CREATE TABLE IF NOT EXISTS batches (batch_code TEXT PRIMARY KEY, fg_code TEXT, status TEXT DEFAULT 'OPEN', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, operator_name TEXT)`);
@@ -37,23 +34,66 @@ const initDB = async () => {
         await pool.query(`CREATE TABLE IF NOT EXISTS inventory (rm_tag TEXT PRIMARY KEY, product_code TEXT, original_weight REAL, current_weight REAL, last_audited TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
         await pool.query(`CREATE TABLE IF NOT EXISTS inwarding_logs (id SERIAL PRIMARY KEY, date_received TEXT, ingredient_name TEXT, ingredient_code TEXT, vendor_name TEXT, vendor_code TEXT, weight REAL, packs INTEGER, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
         await pool.query(`CREATE TABLE IF NOT EXISTS sub_assemblies (sub_tag TEXT PRIMARY KEY, process_type TEXT, product_code TEXT, operator TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
-        console.log("✅ Kilrr Factory Engine Online");
-    } catch(e) { console.error("Database Init Error:", e); }
+        console.log("✅ Kilrr Database Initialized");
+    } catch(e) { console.error("DB Init Error:", e); }
 };
 initDB();
 
 app.use(express.static("public"));
 
 // ==========================================
-// 1. INWARDING (The Zero-Weight Fix)
+// MASTER DATA ROUTES (Vendors & Deletes Restored)
+// ==========================================
+app.get("/get-ingredients", async (req, res) => { res.json((await pool.query("SELECT * FROM ingredients ORDER BY ingredient_name ASC")).rows); });
+app.get("/get-vendors", async (req, res) => { res.json((await pool.query("SELECT * FROM vendors ORDER BY vendor_name ASC")).rows); });
+app.get("/get-recipes", async (req, res) => { 
+    res.json((await pool.query("SELECT r.fg_code, r.product_code, i.ingredient_name FROM recipes r LEFT JOIN ingredients i ON r.product_code = i.product_code")).rows); 
+});
+
+app.post("/add-ingredient", async (req, res) => {
+    await pool.query("INSERT INTO ingredients (product_code, ingredient_name) VALUES ($1, $2) ON CONFLICT (product_code) DO UPDATE SET ingredient_name = $2", [req.body.code, req.body.name]);
+    res.json({ success: true });
+});
+
+app.post("/add-vendor", async (req, res) => {
+    await pool.query("INSERT INTO vendors (vendor_code, vendor_name) VALUES ($1, $2) ON CONFLICT (vendor_code) DO UPDATE SET vendor_name = $2", [req.body.code, req.body.name]);
+    res.json({ success: true });
+});
+
+app.post("/delete-ingredient", async (req, res) => {
+    if (req.body.pin !== "1234") return res.status(403).json({ error: "Unauthorized PIN" });
+    await pool.query("DELETE FROM ingredients WHERE product_code = $1", [req.body.code]);
+    res.json({ success: true });
+});
+
+app.post("/delete-vendor", async (req, res) => {
+    if (req.body.pin !== "1234") return res.status(403).json({ error: "Unauthorized PIN" });
+    await pool.query("DELETE FROM vendors WHERE vendor_code = $1", [req.body.code]);
+    res.json({ success: true });
+});
+
+app.post("/update-recipe-secure", async (req, res) => {
+    if (req.body.pin !== "1234") return res.status(403).json({ error: "Unauthorized PIN" });
+    try {
+        await pool.query("BEGIN");
+        await pool.query("DELETE FROM recipes WHERE fg_code = $1", [req.body.fg_code]);
+        for(let code of req.body.ingredients) {
+            await pool.query("INSERT INTO recipes (fg_code, product_code) VALUES ($1, $2)", [req.body.fg_code, code]);
+        }
+        await pool.query("COMMIT");
+        pushToSheets("RECIPE_UPDATED", "Manager", { batch: req.body.fg_code, count: req.body.ingredients.length });
+        res.json({ success: true });
+    } catch(e) { await pool.query("ROLLBACK"); res.status(500).json({error: e.message}); }
+});
+
+// ==========================================
+// INWARDING & PRE-PROCESS ROUTES
 // ==========================================
 app.post("/log-inwarding", async (req, res) => {
     try {
         await pool.query("BEGIN");
         for(let item of req.body.queue) {
             await pool.query("INSERT INTO inwarding_logs (date_received, ingredient_name, ingredient_code, vendor_name, vendor_code, weight, packs) VALUES ($1, $2, $3, $4, $5, $6, $7)", [item.dateRaw, item.ingName, item.ingCode, item.venName, item.venCode, item.weight, item.packs]);
-            
-            // Inject directly into inventory so scanners can read live weights
             for(let i = item.startNo; i <= item.endNo; i++) {
                 let generatedTag = `${item.dateFmt}/${item.ingCode}/${item.venCode}/${i}`;
                 await pool.query("INSERT INTO inventory (rm_tag, product_code, original_weight, current_weight) VALUES ($1, $2, $3, $4) ON CONFLICT (rm_tag) DO NOTHING", [generatedTag, item.ingCode, item.weight, item.weight]);
@@ -65,21 +105,11 @@ app.post("/log-inwarding", async (req, res) => {
     } catch(e) { await pool.query("ROLLBACK"); res.status(500).json({error: e.message}); }
 });
 
-// ==========================================
-// 2. PRE-PROCESS & YIELD
-// ==========================================
 app.get("/api/get-tag-weight", async (req, res) => {
     try {
         const result = await pool.query("SELECT current_weight FROM inventory WHERE rm_tag = $1", [req.query.tag]);
         res.json({ weight: result.rows.length > 0 ? result.rows[0].current_weight : 0 });
     } catch(e) { res.json({ weight: 0 }); }
-});
-
-app.get("/api/get-sub-assemblies", async (req, res) => {
-    try {
-        const result = await pool.query(`SELECT s.sub_tag, s.process_type, s.created_at, i.product_code, i.current_weight FROM sub_assemblies s JOIN inventory i ON s.sub_tag = i.rm_tag ORDER BY s.created_at DESC LIMIT 50`);
-        res.json(result.rows);
-    } catch(e) { res.json([]); }
 });
 
 app.post("/create-sub-assembly", async (req, res) => {
@@ -99,7 +129,7 @@ app.post("/create-sub-assembly", async (req, res) => {
 });
 
 // ==========================================
-// 3. BATCH SCANNER
+// SCANNER & DASHBOARD ROUTES
 // ==========================================
 app.get("/open-batches", async (req, res) => { res.json((await pool.query("SELECT * FROM batches WHERE status = 'OPEN' ORDER BY created_at DESC")).rows); });
 app.get("/recipe-requirements/:fg", async (req, res) => { 
@@ -133,9 +163,6 @@ app.post("/undo-scan", async (req, res) => {
     res.json({ success: true });
 });
 
-// ==========================================
-// 4. DASHBOARD TRACEABILITY
-// ==========================================
 app.get("/api/dashboard-traceability", async (req, res) => {
     try {
         const batches = await pool.query("SELECT * FROM batches ORDER BY created_at DESC LIMIT 100");
@@ -150,33 +177,5 @@ app.get("/api/dashboard-traceability", async (req, res) => {
     } catch(e) { res.status(500).json({error: e.message}); }
 });
 
-// ==========================================
-// 5. MASTER DATA
-// ==========================================
-app.get("/get-ingredients", async (req, res) => { res.json((await pool.query("SELECT * FROM ingredients ORDER BY ingredient_name ASC")).rows); });
-app.get("/get-recipes", async (req, res) => { 
-    res.json((await pool.query("SELECT r.fg_code, r.product_code, i.ingredient_name FROM recipes r LEFT JOIN ingredients i ON r.product_code = i.product_code")).rows); 
-});
-
-app.post("/add-ingredient", async (req, res) => {
-    await pool.query("INSERT INTO ingredients (product_code, ingredient_name) VALUES ($1, $2) ON CONFLICT (product_code) DO UPDATE SET ingredient_name = $2", [req.body.code, req.body.name]);
-    res.json({ success: true });
-});
-
-app.post("/update-recipe-secure", async (req, res) => {
-    if (req.body.pin !== "1234") return res.status(403).json({ error: "Unauthorized PIN" });
-    if (!req.body.ingredients || req.body.ingredients.length === 0) return res.status(400).json({ error: "No ingredients provided" });
-    try {
-        await pool.query("BEGIN");
-        await pool.query("DELETE FROM recipes WHERE fg_code = $1", [req.body.fg_code]);
-        for(let code of req.body.ingredients) {
-            await pool.query("INSERT INTO recipes (fg_code, product_code) VALUES ($1, $2)", [req.body.fg_code, code]);
-        }
-        await pool.query("COMMIT");
-        pushToSheets("RECIPE_UPDATED", "Manager", { batch: req.body.fg_code, count: req.body.ingredients.length });
-        res.json({ success: true });
-    } catch(e) { await pool.query("ROLLBACK"); res.status(500).json({error: e.message}); }
-});
-
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`✅ Kilrr Factory Engine Online on Port ${PORT}`));
+app.listen(PORT, () => console.log(`✅ Kilrr Engine Online on Port ${PORT}`));
