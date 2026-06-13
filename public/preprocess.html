@@ -75,7 +75,7 @@
             <a href="scanner.html" class="nav-btn">Scanner</a>
             <a href="audit.html" class="nav-btn">Audit</a>
             <a href="dashboard.html" class="nav-btn">Dashboard</a>
-            <a href="master.html" class="nav-btn">Master</a>
+            <a href="master.html" class="nav-btn">Master Data</a>
         </div>
     </nav>
 
@@ -92,6 +92,7 @@
             <label style="font-weight: 800; font-size: 14px; color: #64748b;">1. PROCESS EXECUTED</label>
             <select id="process_type" class="setup-input">
                 <option value="Cleaning / Sorting">Cleaning / Sorting</option>
+                <option value="Cutting / Chopping">Cutting / Chopping</option>
                 <option value="Roasting">Roasting</option>
                 <option value="Grinding / Pulverizing">Grinding / Pulverizing</option>
                 <option value="Blending">Blending</option>
@@ -104,12 +105,13 @@
                 <input type="hidden" id="target_code"><input type="hidden" id="target_name">
             </div>
 
-            <label style="font-weight: 800; font-size: 14px; color: #64748b;">3. RUN NUMBER & OPERATOR</label>
+            <label style="font-weight: 800; font-size: 14px; color: #64748b;">3. DAILY SEQUENCE # (1, 2, 3...) & OPERATOR</label>
             <div style="display:flex; gap:10px; margin-bottom: 20px;">
-                <input type="number" id="run_id" class="setup-input" placeholder="Run # (e.g. 1)" style="margin-bottom: 0;">
+                <input type="number" id="run_id" class="setup-input" placeholder="e.g. 1" style="margin-bottom: 0;">
                 <select id="op_name" class="setup-input" style="margin-bottom: 0;">
                     <option value="Muaz">Muaz</option><option value="Arbaaz">Arbaaz</option><option value="Rahul">Rahul</option>
                 </select>
+                <button style="width:auto; padding:0 20px; border-radius:12px; background:#e2e8f0; color:var(--navy-command); font-weight:bold; border:2px solid #cbd5e1; cursor:pointer;" onclick="addNewOperator()">➕</button>
             </div>
             
             <button class="btn-huge" onclick="startNewJob()">⚡ CREATE & START RUN</button>
@@ -168,8 +170,10 @@
     <script>
         let curJob="", curTarget="", curTargetName="", curProcess="", html5QrcodeScanner=null;
         let lastScanTag = null, undoTimer = null, undoCountdown = 0;
+        let operators = JSON.parse(localStorage.getItem('kilrr_ops')) || ["Muaz", "Arbaaz", "Rahul", "Ramesh"];
 
         window.onload = async () => { 
+            renderOperators();
             loadOpenJobs();
             try {
                 const iRes = await fetch('/get-ingredients'); 
@@ -178,6 +182,21 @@
             } catch(e) {}
             document.getElementById('rm_tag').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); manualScan(); }});
         };
+
+        function renderOperators() {
+            const sel = document.getElementById('op_name');
+            sel.innerHTML = operators.map(o => `<option value="${o}">${o}</option>`).join('');
+        }
+
+        function addNewOperator() {
+            let name = prompt("Enter new operator name:");
+            if(name && name.trim() !== "") {
+                operators.push(name.trim());
+                localStorage.setItem('kilrr_ops', JSON.stringify(operators));
+                renderOperators();
+                document.getElementById('op_name').value = name.trim();
+            }
+        }
 
         function attachCustomDropdown(inputId, dataArray, searchKey, displayKey, codeKey, nameHiddenId, codeHiddenId) {
             const inp = document.getElementById(inputId); 
@@ -218,7 +237,7 @@
                 const res = await fetch('/open-preprocess-jobs'); const jobs = await res.json();
                 const sel = document.getElementById('resume_select');
                 if(jobs.length === 0) { sel.innerHTML = `<option value="">No active runs found.</option>`; return; }
-                sel.innerHTML = `<option value="">Select a run...</option>` + jobs.map(j => `<option value='${JSON.stringify(j)}'>${j.job_code} (${j.target_code})</option>`).join('');
+                sel.innerHTML = `<option value="">Select a run...</option>` + jobs.map(j => `<option value='${JSON.stringify(j)}'>${j.job_code} (${j.target_name})</option>`).join('');
             } catch(e) {}
         }
 
@@ -229,11 +248,20 @@
             let runNum = document.getElementById('run_id').value.trim();
             let op = document.getElementById('op_name').value;
 
-            if(!tCode || !runNum) return alert("Select a Target Product and enter a Run #!");
+            if(!tCode || !runNum) return alert("Select a Target Product and enter a Daily Sequence #!");
 
-            curJob = `PP-${runNum}`;
-            const res = await fetch('/create-preprocess-job', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ job_code: curJob, target_code: tCode, target_name: tName, process_type: pType, operator: op }) });
+            // Automatically adds the DDMM date to make the Run unique every day
+            const d = new Date(); 
+            const dateStr = `${String(d.getDate()).padStart(2, '0')}${String(d.getMonth()+1).padStart(2, '0')}`;
+            curJob = `PP-${dateStr}-${runNum}`;
+
+            const res = await fetch('/create-preprocess-job', { 
+                method: 'POST', 
+                headers: {'Content-Type':'application/json'}, 
+                body: JSON.stringify({ job_code: curJob, target_code: tCode, target_name: tName, process_type: pType, operator: op }) 
+            });
             const data = await res.json();
+            
             if(data.error) return alert("❌ Error: " + data.error);
             await loadWorkUI();
         }
@@ -328,7 +356,7 @@
             const data = await res.json();
             if(data.error) return alert("Error: " + data.error);
 
-            // ULTIMATE PRINT ENGINE - FIXED LAYOUT
+            // ULTIMATE PRINT ENGINE - FIXED LAYOUT (No top bar, tightened to prevent clipping)
             let printWindow = window.open('', '_blank');
             let html = `<html><head><style>
                 @page { size: 75mm 75mm; margin: 0; }
@@ -336,18 +364,17 @@
                 .label { width: 73mm; height: 72mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow: hidden; }
                 
                 /* Massive Product Name */
-                .title { text-align: center; font-size: 26px; font-weight: 900; text-transform: uppercase; margin: 1mm 0 0 0; line-height: 1; width: 100%; }
-                .subtitle { font-size: 12px; font-weight: 900; color: #333; margin-bottom: 2mm; border-bottom: 3px solid black; padding-bottom: 1mm; width: 100%; }
+                .title { text-align: center; font-size: 24px; font-weight: 900; text-transform: uppercase; margin: 1mm 0 0 0; line-height: 1; width: 100%; border-bottom: 3px solid black; padding-bottom: 1mm;}
+                .subtitle { font-size: 14px; font-weight: 900; color: #333; margin-bottom: 2mm; width: 100%; }
                 
                 .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; margin: 1mm 0;}
-                .qr-container img { width: 33mm; height: 33mm; margin-bottom: 1mm;}
+                .qr-container img { width: 32mm; height: 32mm; margin-bottom: 1mm;}
                 
-                /* Fixed Process Name display */
                 .process-text { font-size: 11px; font-weight: 900; text-transform: uppercase; background: black; color: white; padding: 2px 8px; border-radius: 4px; margin-bottom: 1mm;}
                 
                 .bottom-section { width: 100%; margin-bottom: 1mm;}
-                .tag-string { text-align: center; font-size: 13px; font-weight: 900; font-family: monospace; margin-bottom: 1mm; }
-                .weight-bar { text-align: center; font-size: 22px; font-weight: 900; padding: 1mm 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; }
+                .tag-string { text-align: center; font-size: 14px; font-weight: 900; font-family: monospace; margin-bottom: 1mm; }
+                .weight-bar { text-align: center; font-size: 20px; font-weight: 900; padding: 1mm 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; }
             </style></head><body>`;
 
             data.tags.forEach(tagObj => {
