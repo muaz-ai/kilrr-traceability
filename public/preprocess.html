@@ -19,28 +19,25 @@
         .nav-btn { color: white; text-decoration: none; font-weight: 700; font-size: 14px; text-transform: uppercase; transition: 0.2s; }
         .nav-btn.active { color: var(--kilrr-orange); }
 
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .card { background: var(--card-bg); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; position: relative; overflow: visible; }
-        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: var(--kilrr-orange); }
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 25px; }
         
-        h2 { margin: 0 0 20px 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; color: var(--navy-command);}
+        h2 { margin: 0 0 20px 0; font-family: 'Space Grotesk', sans-serif; font-size: 24px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; color: var(--navy-command);}
         .marathi { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 14px; display: block; margin-top: 4px; }
         
-        label { font-weight: 800; font-size: 13px; color: #64748b; display: block; margin-bottom: 8px; letter-spacing: 1px;}
-        input, select { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #fff;}
-        input:focus, select:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 4px rgba(234,88,12,0.1);}
+        input.setup-input, select.setup-input { width: 100%; padding: 20px; box-sizing: border-box; border-radius: 12px; border: 3px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #fff;}
+        input.setup-input:focus, select.setup-input:focus { border-color: var(--kilrr-orange); outline: none; }
         
-        button { width: 100%; padding: 22px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
-        .btn-primary { background: var(--kilrr-orange); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);}
-        .btn-cam { background: #fff7ed; color: var(--kilrr-orange); border: 3px solid var(--kilrr-orange); margin-bottom: 20px;}
-
-        .dashboard-box { display: flex; justify-content: space-between; background: #ecfdf5; border: 2px solid var(--success-green); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
-        .val-text { font-size: 28px; font-family: 'Space Grotesk'; font-weight: 900; color: var(--success-green); line-height: 1.2;}
-
-        .scan-item { display: flex; justify-content: space-between; background: #f8fafc; padding: 15px; border: 2px solid #e2e8f0; border-radius: 10px; margin-bottom: 8px; align-items: center;}
+        button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 20px; cursor: pointer; text-transform: uppercase; background: var(--kilrr-orange); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);}
+        button.btn-cam { width: 100%; padding: 20px; border: 3px solid var(--kilrr-orange); border-radius: 12px; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase; background: #fff7ed; color: var(--kilrr-orange); margin-bottom: 20px;}
         
-        #scan_flash { position: fixed; inset: 0; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 60px; font-weight: 900; color: white; opacity: 0; transition: opacity 0.2s;}
-        #reader { width: 100%; border-radius: 12px; overflow: hidden; display: none; margin-bottom: 15px; border: 3px solid #cbd5e1; }
+        .resume-select { width: 100%; padding: 15px; font-size: 16px; font-weight: 800; border-radius: 8px; border: 2px solid var(--kilrr-orange); background: #fff7ed; color: var(--kilrr-orange); margin-bottom: 10px; cursor: pointer; }
+
+        /* WORK SCREEN UI */
+        .work-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .hopper-box { border: 2px solid var(--success-green); border-radius: 12px; padding: 20px; background: #ecfdf5; margin-bottom: 15px;}
+        .val-text { font-size: 32px; font-family: 'Space Grotesk'; font-weight: 900; color: var(--success-green); }
+        .scan-item { display: flex; justify-content: space-between; background: white; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; align-items: center;}
 
         /* CUSTOM DROPDOWN UI */
         .custom-dropdown-container { position: relative; width: 100%; margin-bottom: 20px;}
@@ -49,19 +46,21 @@
         .custom-dropdown-item { padding: 15px 20px; font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.1s; margin-bottom: 4px; border-bottom: 1px solid #f1f5f9; }
         .custom-dropdown-item:hover { background: #fff7ed; color: var(--kilrr-orange); }
 
+        #reader { width: 100%; border-radius: 12px; overflow: hidden; border: 3px solid #cbd5e1; margin-bottom: 15px; display: none; background: black; }
+        #scan_flash { position: fixed; inset: 0; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 60px; font-weight: 900; color: white; opacity: 0; transition: opacity 0.2s;}
+
         @media (max-width: 1024px) { 
-            .container { grid-template-columns: 1fr; }
             .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; border-top: 4px solid var(--kilrr-orange); justify-content: space-around; overflow-x: auto; white-space: nowrap;}
             .brand { display: none; }
-            .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 5px 10px; }
-            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 20px; }
-            .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 20px; }
-            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 20px; }
-            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 20px; }
-            .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 20px; }
-            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 20px; }
-            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 20px; }
-            .card { padding: 20px; }
+            .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 5px 10px;}
+            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 18px; }
+            .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 18px; }
+            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 18px; }
+            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 18px; }
+            .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 18px; }
+            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 18px; }
+            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 18px; }
+            .work-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -81,115 +80,119 @@
     </nav>
 
     <div class="container">
-        <div class="card">
-            <h2>1. Parent Input <span class="marathi">प्रोडक्शन एरिया - इनपुट</span></h2>
-            
-            <div class="dashboard-box">
-                <div><div style="font-size:12px; font-weight:bold; color:var(--success-green);">INPUT BAGS</div><div class="val-text" id="in_bags">0</div></div>
-                <div style="text-align:right;"><div style="font-size:12px; font-weight:bold; color:var(--success-green);">INPUT WEIGHT</div><div class="val-text" id="in_wt">0.00 KG</div></div>
-            </div>
+        <div class="card" id="setup">
+            <details style="margin-bottom: 30px; background: #fff7ed; padding: 15px; border-radius: 12px; border: 2px solid #ffedd5;">
+                <summary style="font-weight: 900; color: var(--kilrr-orange); cursor: pointer; outline: none; font-size: 18px;">▶ RESUME ACTIVE PRE-PROCESS RUN</summary>
+                <select id="resume_select" class="resume-select" style="margin-top: 15px;"></select>
+                <button style="width: 100%; padding: 15px; background: var(--kilrr-orange); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="resumeJob()">RESUME JOB</button>
+            </details>
 
-            <label>SCAN RAW MATERIAL BARCODE</label>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="rm_tag" placeholder="Scan Tag..." autocomplete="off" style="margin-bottom:0; border-color:var(--navy-command);">
-                <button style="width:auto; padding:0 30px; margin:0; background:var(--navy-command); color:white; border-radius:12px;" onclick="manualScan()">ADD</button>
-            </div>
+            <h2>Start New Run <span class="marathi">नवीन काम</span></h2>
             
-            <div id="reader"></div>
-            <button class="btn-cam" id="camToggleBtn" onclick="togglePreProcessCamera()" style="margin-top: 15px;">📷 Activate Mobile Camera</button>
-
-            <label>SCANNED MATERIALS LOG</label>
-            <div id="scan_log" style="max-height: 250px; overflow-y: auto; border: 2px solid #e2e8f0; border-radius: 12px; padding: 10px; background: #f8fafc;">
-                <div style="text-align:center; padding:20px; color:#94a3b8; font-weight:800;">Scan parent bags to begin...</div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>2. Processing Output <span class="marathi">तयार माल</span></h2>
-            
-            <label>PROCESS EXECUTED</label>
-            <select id="process_type">
+            <label style="font-weight: 800; font-size: 14px; color: #64748b;">1. PROCESS EXECUTED</label>
+            <select id="process_type" class="setup-input">
                 <option value="Cleaning / Sorting">Cleaning / Sorting</option>
                 <option value="Roasting">Roasting</option>
                 <option value="Grinding / Pulverizing">Grinding / Pulverizing</option>
-                <option value="Re-Packaging">Re-Packaging (Bulk to Small)</option>
+                <option value="Blending">Blending</option>
+                <option value="Re-Packaging">Re-Packaging</option>
             </select>
-            
-            <label>TARGET PRODUCT CODE</label>
+
+            <label style="font-weight: 800; font-size: 14px; color: #64748b;">2. TARGET PRODUCT (FINISHED PRE-PROCESS ITEM)</label>
             <div class="custom-dropdown-container">
-                <input type="text" id="out_code_search" placeholder="Search Master Data (e.g. BP-CLN)..." autocomplete="off">
-                <input type="hidden" id="out_code">
+                <input type="text" id="target_search" class="setup-input" placeholder="Search Product (e.g. KM-GRD)..." autocomplete="off">
+                <input type="hidden" id="target_code"><input type="hidden" id="target_name">
+            </div>
+
+            <label style="font-weight: 800; font-size: 14px; color: #64748b;">3. RUN NUMBER & OPERATOR</label>
+            <div style="display:flex; gap:10px; margin-bottom: 20px;">
+                <input type="number" id="run_id" class="setup-input" placeholder="Run # (e.g. 1)" style="margin-bottom: 0;">
+                <select id="op_name" class="setup-input" style="margin-bottom: 0;">
+                    <option value="Muaz">Muaz</option><option value="Arbaaz">Arbaaz</option><option value="Rahul">Rahul</option>
+                </select>
             </div>
             
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-                <label style="margin:0;">TOTAL ACTUAL YIELD (KG)</label>
-                <span id="yield_display" style="font-weight:900; font-size:14px;">Loss: 0.0%</span>
-            </div>
-            <input type="number" id="output_wt" placeholder="e.g. 48" style="font-size: 24px; color:var(--kilrr-orange);" oninput="calcYield()">
-            
-            <div style="display:flex; gap: 15px; margin-bottom: 20px;">
-                <div style="flex: 1;">
-                    <label>HOW MANY BINS/PACKS?</label>
-                    <input type="number" id="out_packs" value="1" placeholder="e.g. 12" style="margin-bottom:0;">
+            <button class="btn-huge" onclick="startNewJob()">⚡ CREATE & START RUN</button>
+        </div>
+
+        <div class="card" id="work" style="display:none; padding: 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #e2e8f0; padding-bottom:15px; margin-bottom:20px;">
+                <div>
+                    <h2 id="job_title" style="color:var(--kilrr-orange); font-size:26px; border:none; padding:0; margin:0;"></h2>
+                    <span class="marathi" id="job_meta"></span>
                 </div>
-                <div style="flex: 1;">
-                    <label>OPERATOR</label>
-                    <div style="display:flex; gap: 10px;">
-                        <select id="op_name" style="margin-bottom:0;"></select>
-                        <button style="width:auto; padding:0 15px; border-radius:12px; background:#e2e8f0; color:var(--navy-command); font-weight:bold; border:2px solid #cbd5e1;" onclick="addNewOperator()">➕</button>
+                <button style="width:auto; padding:10px 15px; font-weight:900; background:var(--danger-red); color:white; border:none; border-radius:8px; cursor:pointer;" onclick="location.reload()">EXIT</button>
+            </div>
+
+            <div class="work-grid">
+                <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 16px; padding: 20px;">
+                    <h3 style="margin-top:0; font-family:'Space Grotesk'; font-size:18px;">1. INPUT HOPPER</h3>
+                    
+                    <div class="hopper-box">
+                        <div><div style="font-size:12px; font-weight:bold; color:var(--success-green);">BAGS IN HOPPER</div><div class="val-text" id="hopper_bags">0</div></div>
+                        <div style="text-align:right;"><div style="font-size:12px; font-weight:bold; color:var(--success-green);">WEIGHT</div><div class="val-text" id="hopper_wt">0.00 KG</div></div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-bottom: 10px;">
+                        <input type="text" id="rm_tag" class="setup-input" style="margin:0; border-color:var(--navy-command); font-size:16px;" placeholder="SCAN BARCODE..." autocomplete="off">
+                        <button style="width:auto; padding:0 20px; background:var(--navy-command); color:white; border:none; border-radius:12px; font-weight:900; cursor:pointer;" onclick="manualScan()">ADD</button>
+                    </div>
+                    
+                    <div id="reader"></div>
+                    <button class="btn-cam" id="camToggleBtn" onclick="toggleCamera()" style="padding: 10px; font-size: 14px;">📷 Mobile Camera</button>
+                    <button id="undo_btn" style="display:none; background:#fef08a; color:#854d0e; border:3px solid #eab308; padding:10px; font-weight:bold; border-radius:12px; margin-bottom:10px; cursor:pointer;" onclick="undoLastScan()">⚠️ UNDO LAST SCAN (30s)</button>
+
+                    <div id="scanned_items_list" style="max-height: 150px; overflow-y:auto; padding:5px; border: 2px solid #cbd5e1; border-radius: 8px; background: white;"></div>
+                </div>
+
+                <div style="background: #fff7ed; border: 2px solid #fed7aa; border-radius: 16px; padding: 20px;">
+                    <h3 style="margin-top:0; font-family:'Space Grotesk'; font-size:18px; color:var(--kilrr-orange);">2. CONTINUOUS OUTPUT</h3>
+                    <p style="font-size:14px; font-weight:600; color:#9a3412;">Enter details as processed material comes out of the machine. The hopper will remain active until you close the job.</p>
+                    
+                    <label>PULLED YIELD WEIGHT (KG)</label>
+                    <input type="number" id="output_wt" class="setup-input" placeholder="e.g. 10" style="font-size: 24px; color:var(--kilrr-orange);">
+                    
+                    <label>DIVIDE INTO HOW MANY BINS/PACKS?</label>
+                    <input type="number" id="out_packs" class="setup-input" value="1" placeholder="e.g. 4">
+                    
+                    <button class="btn-huge" onclick="submitOutput()">🖨️ PRINT TAGS</button>
+
+                    <div style="margin-top: 30px; border-top: 2px dashed #fed7aa; padding-top: 20px; text-align: center;">
+                        <button style="background: white; border: 3px solid var(--success-green); color: var(--success-green); font-family: 'Space Grotesk'; font-weight: 900; font-size: 16px; padding: 15px 30px; border-radius: 12px; cursor: pointer;" onclick="closeJob()">✅ CLOSE PRE-PROCESS RUN</button>
                     </div>
                 </div>
             </div>
-            
-            <button class="btn-primary" onclick="submitProcess()">🖨️ LOG & PRINT SUB-ASSEMBLY TAGS</button>
         </div>
     </div>
     
     <script>
-        let inputBags = [];
-        let html5QrcodeScanner = null;
-        let operators = JSON.parse(localStorage.getItem('kilrr_ops')) || ["Muaz", "Arbaaz", "Rahul", "Ramesh"];
-        
-        window.onload = async () => {
-            renderOperators();
+        let curJob="", curTarget="", curTargetName="", curProcess="", html5QrcodeScanner=null;
+        let lastScanTag = null, undoTimer = null, undoCountdown = 0;
+
+        window.onload = async () => { 
+            loadOpenJobs();
             try {
                 const iRes = await fetch('/get-ingredients'); 
                 const ingredients = await iRes.json();
-                attachCustomDropdown('out_code_search', ingredients, 'product_code', 'product_code', 'product_code', 'out_code', 'out_code');
-            } catch(e) { console.error("Master data fetch failed."); }
+                attachCustomDropdown('target_search', ingredients, 'product_code', 'ingredient_name', 'product_code', 'target_name', 'target_code');
+            } catch(e) {}
+            document.getElementById('rm_tag').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); manualScan(); }});
         };
-
-        function renderOperators() {
-            const sel = document.getElementById('op_name');
-            sel.innerHTML = operators.map(o => `<option value="${o}">${o}</option>`).join('');
-        }
-
-        function addNewOperator() {
-            let name = prompt("Enter new operator name:");
-            if(name && name.trim() !== "") {
-                operators.push(name.trim());
-                localStorage.setItem('kilrr_ops', JSON.stringify(operators));
-                renderOperators();
-                document.getElementById('op_name').value = name.trim();
-            }
-        }
 
         function attachCustomDropdown(inputId, dataArray, searchKey, displayKey, codeKey, nameHiddenId, codeHiddenId) {
             const inp = document.getElementById(inputId); 
-            const list = document.createElement('div'); 
-            list.className = 'custom-dropdown-list'; 
-            inp.parentNode.appendChild(list);
+            const list = document.createElement('div'); list.className = 'custom-dropdown-list'; inp.parentNode.appendChild(list);
             
             function renderList(filterTxt = "") {
                 list.innerHTML = ''; 
-                const matches = dataArray.filter(item => item[searchKey].toLowerCase().includes(filterTxt.toLowerCase()) || item.ingredient_name.toLowerCase().includes(filterTxt.toLowerCase()));
+                const matches = dataArray.filter(item => item[searchKey].toLowerCase().includes(filterTxt.toLowerCase()) || item[displayKey].toLowerCase().includes(filterTxt.toLowerCase()));
                 if(matches.length === 0) { list.style.display = 'none'; return; }
-                
                 matches.forEach(match => { 
                     let div = document.createElement('div'); div.className = 'custom-dropdown-item'; 
-                    div.innerHTML = `<strong style="color:var(--kilrr-orange);">${match[codeKey]}</strong> - ${match.ingredient_name}`; 
+                    div.innerHTML = `<strong style="color:var(--kilrr-orange);">${match[codeKey]}</strong> - ${match[displayKey]}`; 
                     div.onclick = () => { 
-                        inp.value = match[codeKey]; 
+                        inp.value = `${match[codeKey]} - ${match[displayKey]}`; 
+                        document.getElementById(nameHiddenId).value = match[displayKey]; 
                         document.getElementById(codeHiddenId).value = match[codeKey]; 
                         list.style.display = 'none'; 
                     }; 
@@ -203,23 +206,61 @@
         }
 
         function playVoice(success) {
+            try { let msg = new SpeechSynthesisUtterance(success ? "बरोबर" : "चूक"); msg.lang = 'mr-IN'; msg.rate = 1.2; window.speechSynthesis.speak(msg); } catch(e) {}
+        }
+        function flash(success, txt) { 
+            const f = document.getElementById('scan_flash'); f.style.background = success ? 'rgba(5,150,105,0.95)' : 'rgba(220,38,38,0.95)';
+            f.innerText = txt; f.style.display='flex'; f.style.opacity='1'; setTimeout(()=>{f.style.opacity='0'; setTimeout(()=>f.style.display='none',200);}, 600); 
+        }
+
+        async function loadOpenJobs() {
             try {
-                let msg = new SpeechSynthesisUtterance(success ? "बरोबर" : "चूक");
-                msg.lang = 'mr-IN'; msg.rate = 1.2; window.speechSynthesis.speak(msg);
-                if(!success && navigator.vibrate) navigator.vibrate([200, 100, 200]); 
+                const res = await fetch('/open-preprocess-jobs'); const jobs = await res.json();
+                const sel = document.getElementById('resume_select');
+                if(jobs.length === 0) { sel.innerHTML = `<option value="">No active runs found.</option>`; return; }
+                sel.innerHTML = `<option value="">Select a run...</option>` + jobs.map(j => `<option value='${JSON.stringify(j)}'>${j.job_code} (${j.target_code})</option>`).join('');
             } catch(e) {}
         }
-        
-        function flash(success, txt) { 
-            const f = document.getElementById('scan_flash'); 
-            f.style.background = success ? 'rgba(5,150,105,0.95)' : 'rgba(220,38,38,0.95)';
-            f.innerText = txt; f.style.display='flex'; f.style.opacity='1'; 
-            setTimeout(()=>{f.style.opacity='0'; setTimeout(()=>f.style.display='none',200);}, 600); 
+
+        async function startNewJob() {
+            let pType = document.getElementById('process_type').value;
+            let tCode = document.getElementById('target_code').value;
+            let tName = document.getElementById('target_name').value;
+            let runNum = document.getElementById('run_id').value.trim();
+            let op = document.getElementById('op_name').value;
+
+            if(!tCode || !runNum) return alert("Select a Target Product and enter a Run #!");
+
+            curJob = `PP-${runNum}`;
+            const res = await fetch('/create-preprocess-job', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ job_code: curJob, target_code: tCode, target_name: tName, process_type: pType, operator: op }) });
+            const data = await res.json();
+            if(data.error) return alert("❌ Error: " + data.error);
+            await loadWorkUI();
         }
 
-        document.getElementById('rm_tag').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); manualScan(); }});
+        async function resumeJob() {
+            let val = document.getElementById('resume_select').value;
+            if(!val) return alert("Select a job.");
+            let j = JSON.parse(val);
+            curJob = j.job_code;
+            await loadWorkUI();
+        }
 
-        function togglePreProcessCamera() { 
+        async function loadWorkUI() {
+            document.getElementById('setup').style.display = 'none';
+            document.getElementById('work').style.display = 'block';
+            
+            const res = await fetch('/open-preprocess-jobs'); const jobs = await res.json();
+            const job = jobs.find(j => j.job_code === curJob);
+            if(job) {
+                curTarget = job.target_code; curTargetName = job.target_name; curProcess = job.process_type;
+                document.getElementById('job_title').innerText = job.job_code;
+                document.getElementById('job_meta').innerText = `${job.target_name} | ${job.process_type}`;
+            }
+            updateHopper();
+        }
+
+        function toggleCamera() { 
             const rd = document.getElementById('reader'); 
             if(rd.style.display === 'none' || rd.style.display === '') { 
                 rd.style.display = 'block'; document.getElementById('camToggleBtn').innerText = "🚫 Close Camera"; 
@@ -227,97 +268,97 @@
                     html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250}, videoConstraints: { facingMode: "environment" } }); 
                     html5QrcodeScanner.render(txt => { document.getElementById('rm_tag').value = txt; manualScan(); }); 
                 } 
-            } else { rd.style.display = 'none'; document.getElementById('camToggleBtn').innerText = "📷 Activate Mobile Camera"; } 
+            } else { rd.style.display = 'none'; document.getElementById('camToggleBtn').innerText = "📷 Mobile Camera"; } 
         }
 
         async function manualScan() { 
-            let val = document.getElementById('rm_tag').value.trim(); if(!val) return; 
+            let val=document.getElementById('rm_tag').value.trim(); if(!val) return; 
             let cleanTag=val, parts=val.split('/'); if(parts.length>=4) cleanTag=`${parts[0]}/${parts[1]}/${parts[2]}/${parts[3]}`; 
             
-            if(inputBags.some(t => t.tag === cleanTag)){ 
-                playVoice(false); flash(false, "❌ DUPLICATE"); document.getElementById('rm_tag').value=""; return;
-            } 
-            
-            const res = await fetch(`/api/get-tag-weight?tag=${encodeURIComponent(cleanTag)}`);
+            const res = await fetch('/scan-preprocess',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job_code: curJob, rm_tag: cleanTag})}); 
             const data = await res.json();
+            if(data.error) { playVoice(false); flash(false, "❌ REJECTED"); document.getElementById('rm_tag').value=""; return; }
             
-            inputBags.push({ tag: cleanTag, weight: parseFloat(data.weight) || 0 });
-            playVoice(true); flash(true, "✅ बरोबर");
-            document.getElementById('rm_tag').value=""; updateLog(); calcYield(); document.getElementById('rm_tag').focus();
+            playVoice(true); flash(true, "✅ बरोबर"); 
+            lastScanTag = cleanTag; startUndoTimer();
+            document.getElementById('rm_tag').value=""; updateHopper(); document.getElementById('rm_tag').focus();
         }
 
-        function removeTag(tag) { inputBags = inputBags.filter(t => t.tag !== tag); updateLog(); calcYield(); }
-
-        function updateLog() {
-            let totalWt = inputBags.reduce((sum, item) => sum + item.weight, 0);
-            document.getElementById('in_bags').innerText = inputBags.length;
-            document.getElementById('in_wt').innerText = totalWt.toFixed(2) + " KG";
-            const logBox = document.getElementById('scan_log');
-            if(inputBags.length === 0) logBox.innerHTML = "<div style='text-align:center;color:#94a3b8;font-weight:800;padding:20px;'>Scan parent bags to begin...</div>"; 
-            else logBox.innerHTML = inputBags.map(t => `<div class="scan-item"><span style="font-family:monospace;font-weight:900;">${t.tag} <br><span style="color:var(--success-green); font-size:14px;">${t.weight} KG</span></span><button style="background:none; border:none; color:var(--danger-red); font-weight:bold; font-size:20px; cursor:pointer;" onclick="removeTag('${t.tag}')">✕</button></div>`).join('');
+        function startUndoTimer() {
+            clearInterval(undoTimer); undoCountdown = 30;
+            const btn = document.getElementById('undo_btn'); btn.style.display = 'block'; btn.innerText = `⚠️ UNDO LAST SCAN (${undoCountdown}s)`;
+            undoTimer = setInterval(() => {
+                undoCountdown--; btn.innerText = `⚠️ UNDO LAST SCAN (${undoCountdown}s)`;
+                if(undoCountdown <= 0) { clearInterval(undoTimer); btn.style.display = 'none'; lastScanTag = null; }
+            }, 1000);
         }
 
-        function calcYield() {
-            let inWt = inputBags.reduce((sum, item) => sum + item.weight, 0);
-            let outWt = parseFloat(document.getElementById('output_wt').value) || 0;
-            let yieldDiv = document.getElementById('yield_display');
-            if(inWt > 0 && outWt > 0) {
-                let diff = inWt - outWt; let perc = (diff / inWt) * 100;
-                yieldDiv.innerText = `Loss: ${perc.toFixed(1)}%`;
-                yieldDiv.style.color = perc > 5 ? 'var(--danger-red)' : 'var(--success-green)';
-            } else { yieldDiv.innerText = "Loss: 0.0%"; yieldDiv.style.color = "#0f172a"; }
+        async function undoLastScan() {
+            if(!lastScanTag) return;
+            clearInterval(undoTimer); document.getElementById('undo_btn').style.display = 'none';
+            await fetch('/undo-preprocess-scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ job_code: curJob, rm_tag: lastScanTag }) });
+            flash(true, "🗑️ UNDONE"); lastScanTag = null; updateHopper(); document.getElementById('rm_tag').focus();
         }
 
-        async function submitProcess() {
-            if(inputBags.length === 0) return alert("Scan parent bags first!");
-            const outCode = document.getElementById('out_code').value.toUpperCase() || document.getElementById('out_code_search').value.toUpperCase();
-            const outWt = document.getElementById('output_wt').value;
-            const processType = document.getElementById('process_type').value;
-            const opName = document.getElementById('op_name').value;
-            const packs = parseInt(document.getElementById('out_packs').value) || 1;
+        async function updateHopper() {
+            const res = await fetch(`/preprocess-scans/${curJob}`);
+            const scans = await res.json();
+            
+            document.getElementById('hopper_bags').innerText = scans.length;
+            document.getElementById('hopper_wt').innerText = scans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0).toFixed(2) + " KG";
 
-            if(!outCode || !outWt) return alert("Fill Output Code and Output Weight!");
+            const list = document.getElementById('scanned_items_list');
+            if(scans.length === 0) { list.innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:800; padding:10px;">Hopper is empty.</div>`; }
+            else {
+                list.innerHTML = scans.map(s => `
+                    <div class="scan-item">
+                        <span style="font-family:monospace; font-weight:900;">${s.rm_tag}</span>
+                        <span style="color:var(--success-green); font-weight:900;">${parseFloat(s.weight).toFixed(2)} KG</span>
+                    </div>
+                `).join('');
+            }
+        }
 
-            const parentTags = inputBags.map(bag => bag.tag);
+        async function submitOutput() {
+            const wt = document.getElementById('output_wt').value;
+            const packs = document.getElementById('out_packs').value;
+            if(!wt || wt <= 0) return alert("Enter valid output weight!");
 
-            const res = await fetch('/create-sub-assembly', { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({ 
-                    parents: parentTags, 
-                    product_code: outCode, 
-                    weight: outWt, 
-                    process_type: processType, 
-                    operator: opName, 
-                    packs: packs 
-                }) 
-            });
+            const res = await fetch('/create-sub-assembly-job', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ job_code: curJob, weight: wt, packs: packs }) });
             const data = await res.json();
-            if(data.error) return alert("❌ Error: " + data.error);
+            if(data.error) return alert("Error: " + data.error);
 
-            // Execute Industrial Multi-Print
+            // ULTIMATE PRINT ENGINE - FIXED LAYOUT
             let printWindow = window.open('', '_blank');
             let html = `<html><head><style>
                 @page { size: 75mm 75mm; margin: 0; }
                 body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; }
                 .label { width: 73mm; height: 72mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow: hidden; }
-                .title { text-align: center; font-size: 22px; font-weight: 900; text-transform: uppercase; margin: 1mm 0; line-height: 1; border-bottom: 3px solid black; padding-bottom: 1mm; width: 100%; }
+                
+                /* Massive Product Name */
+                .title { text-align: center; font-size: 26px; font-weight: 900; text-transform: uppercase; margin: 1mm 0 0 0; line-height: 1; width: 100%; }
+                .subtitle { font-size: 12px; font-weight: 900; color: #333; margin-bottom: 2mm; border-bottom: 3px solid black; padding-bottom: 1mm; width: 100%; }
+                
                 .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; margin: 1mm 0;}
-                .qr-container img { width: 32mm; height: 32mm; margin-bottom: 1mm;}
-                .process-text { font-size: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 1mm; background: black; color: white; padding: 2px 6px; border-radius: 4px;}
+                .qr-container img { width: 33mm; height: 33mm; margin-bottom: 1mm;}
+                
+                /* Fixed Process Name display */
+                .process-text { font-size: 11px; font-weight: 900; text-transform: uppercase; background: black; color: white; padding: 2px 8px; border-radius: 4px; margin-bottom: 1mm;}
+                
                 .bottom-section { width: 100%; margin-bottom: 1mm;}
-                .tag-string { text-align: center; font-size: 14px; font-weight: 900; font-family: monospace; margin-bottom: 1mm; }
-                .weight-bar { text-align: center; font-size: 20px; font-weight: 900; padding: 1mm 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; }
+                .tag-string { text-align: center; font-size: 13px; font-weight: 900; font-family: monospace; margin-bottom: 1mm; }
+                .weight-bar { text-align: center; font-size: 22px; font-weight: 900; padding: 1mm 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; }
             </style></head><body>`;
 
             data.tags.forEach(tagObj => {
                 let qr = new QRious({ value: tagObj.tag, size: 250, level: 'M' });
                 html += `
                 <div class="label">
-                    <div class="title">${outCode}</div>
+                    <div class="title">${data.target_name}</div>
+                    <div class="subtitle">CODE: ${data.target_code}</div>
                     <div class="qr-container">
                         <img src="${qr.toDataURL()}">
-                        <div class="process-text">${processType}</div>
+                        <div class="process-text">${data.process_type}</div>
                     </div>
                     <div class="bottom-section">
                         <div class="tag-string">${tagObj.tag}</div>
@@ -329,12 +370,16 @@
             html += `</body><script>window.onload = () => { window.print(); window.close(); };<\/script></html>`;
             printWindow.document.write(html);
             printWindow.document.close();
-            
-            inputBags = []; updateLog(); 
-            document.getElementById('output_wt').value = ""; 
+
+            document.getElementById('output_wt').value = "";
             document.getElementById('out_packs').value = 1;
-            document.getElementById('out_code_search').value = "";
-            calcYield();
+        }
+
+        async function closeJob() {
+            if(confirm("Are you sure you want to close this job? You will no longer be able to print tags for this hopper.")) {
+                await fetch('/close-preprocess-job', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ job_code: curJob }) });
+                location.reload();
+            }
         }
     </script>
 </body>
