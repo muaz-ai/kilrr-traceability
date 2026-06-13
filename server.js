@@ -12,7 +12,7 @@ const pool = new Pool({
     connectionString: "postgresql://neondb_owner:npg_VgjU3LqG5Xou@ep-cold-cherry-a1yzxv4e-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 });
 
-const SHEET_WEBHOOK = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+const SHEET_WEBHOOK = "https://script.google.com/macros/s/AKfycby5sagXzRtTwD_RFZ5dncTa6vy8vIFjpXYjexbmX76Tov1QTkhIxsbeT5SVopSXYHsU3Q/exec";
 
 async function pushToSheets(eventType, operator, payload) {
     try {
@@ -33,9 +33,18 @@ const initDB = async () => {
         await pool.query(`CREATE TABLE IF NOT EXISTS recipes (fg_code TEXT, product_code TEXT, PRIMARY KEY(fg_code, product_code))`);
         await pool.query(`CREATE TABLE IF NOT EXISTS inventory (rm_tag TEXT PRIMARY KEY, product_code TEXT, original_weight REAL, current_weight REAL, last_audited TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
         await pool.query(`CREATE TABLE IF NOT EXISTS inwarding_logs (id SERIAL PRIMARY KEY, date_received TEXT, ingredient_name TEXT, ingredient_code TEXT, vendor_name TEXT, vendor_code TEXT, weight REAL, packs INTEGER, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
-        // FIXED SCHEMA: Removed PRIMARY KEY from sub_tag so multiple parents can exist for one sub_tag
+        
+        // Base Table Creation
         await pool.query(`CREATE TABLE IF NOT EXISTS sub_assemblies (id SERIAL PRIMARY KEY, sub_tag TEXT, parent_tag TEXT, process_type TEXT, product_code TEXT, operator TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
-        console.log("✅ Kilrr Factory Engine Online");
+        
+        // --- THE DATABASE PATCH FOR YOUR EXISTING TABLE ---
+        // This forces Neon to add the missing columns to your older table without wiping data
+        await pool.query(`ALTER TABLE sub_assemblies ADD COLUMN IF NOT EXISTS product_code TEXT`);
+        await pool.query(`ALTER TABLE sub_assemblies ADD COLUMN IF NOT EXISTS parent_tag TEXT`);
+        // If an older version made sub_tag the primary key, we drop that restriction here so multiple parents can exist
+        try { await pool.query(`ALTER TABLE sub_assemblies DROP CONSTRAINT sub_assemblies_pkey`); } catch(e) {}
+        
+        console.log("✅ Kilrr Factory Engine Online & Database Patched");
     } catch(e) { console.error("DB Init Error:", e); }
 };
 initDB();
@@ -123,7 +132,6 @@ app.post("/create-sub-assembly", async (req, res) => {
             
             await pool.query(`INSERT INTO inventory (rm_tag, product_code, original_weight, current_weight) VALUES ($1, $2, $3, $4)`, [subTag, product_code, weightPerPack, weightPerPack]);
             
-            // TRACEABILITY LINK: Map new packet to EVERY parent bag scanned
             if(parents && parents.length > 0) {
                 for(let parentTag of parents) {
                     await pool.query(`INSERT INTO sub_assemblies (sub_tag, parent_tag, process_type, product_code, operator) VALUES ($1, $2, $3, $4, $5)`, [subTag, parentTag, process_type, product_code, operator]);
@@ -183,7 +191,6 @@ app.get("/api/dashboard-traceability", async (req, res) => {
     try {
         const batches = await pool.query("SELECT * FROM batches ORDER BY created_at DESC LIMIT 100");
         
-        // This is the magic SQL query that grabs the scans, the weights, AND stitches the parent tags together
         const allScans = await pool.query(`
             SELECT 
                 s.batch_code, s.rm_tag, s.product_code, i.ingredient_name, inv.current_weight as weight,
