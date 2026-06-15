@@ -34,6 +34,7 @@
 
         input.setup-input, select.setup-input { width: 100%; padding: 16px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 15px; background: #fff;}
         input.setup-input:focus, select.setup-input:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 4px rgba(234,88,12,0.1);}
+        input.setup-input:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
         
         button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 20px; cursor: pointer; text-transform: uppercase; background: linear-gradient(135deg, #ea580c, #c2410c); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);}
         button.btn-cam { width: 100%; padding: 15px; border: 3px solid var(--kilrr-orange); border-radius: 12px; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase; background: #fff7ed; color: var(--kilrr-orange); margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 10px;}
@@ -163,7 +164,6 @@
     </div>
     
     <script>
-        // FIXED RECIPE PREFIX MAPPING TO EXACTLY MATCH MASTER DATA
         const RECIPE_PREFIXES = {
             "Tandoori": "TAN", 
             "Achaari": "ACH", 
@@ -334,23 +334,55 @@
             } else { rd.style.display = 'none'; document.getElementById('camToggleBtn').innerHTML = "📷 मोबाईल कॅमेरा चालू करा"; } 
         }
 
+        // ==========================================
+        // DOUBLE-FIRE PROOF SCAN LOGIC
+        // ==========================================
         async function manualScan() { 
-            let val=document.getElementById('rm_tag').value.trim(); if(!val) return; 
+            let inp = document.getElementById('rm_tag');
+            let val = inp.value.trim(); 
+            if(!val) return; 
+            
+            // LOCK INPUT IMMEDIATELY (Ignores 2nd "Enter" from scanner gun)
+            inp.disabled = true; 
+
             let cleanTag=val, parts=val.split('/'); if(parts.length>=4) cleanTag=`${parts[0]}/${parts[1]}/${parts[2]}/${parts[3]}`; 
             let pCode = parts.length >= 2 ? parts[1] : cleanTag;
             
             if(validRecipeCodes.length > 0 && !validRecipeCodes.includes(pCode)) { 
-                playVoice(false); flash(false, "❌ चूक (REJECTED)"); document.getElementById('rm_tag').value=""; return; 
+                playVoice(false); flash(false, "❌ चूक (REJECTED)"); 
+                inp.value=""; inp.disabled=false; inp.focus(); return; 
             }
             if(localScannedTags.includes(cleanTag)) { 
-                playVoice(false); flash(false, "❌ आधीच स्कॅन केले (DUPLICATE)"); document.getElementById('rm_tag').value=""; return; 
+                playVoice(false); flash(false, "❌ आधीच स्कॅन केले (DUPLICATE)"); 
+                inp.value=""; inp.disabled=false; inp.focus(); return; 
             }
 
-            await fetch('/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:cleanTag, operator: curOp})}); 
-            playVoice(true); flash(true, "✅ बरोबर"); 
+            // Temporarily add to local array to block any rapid duplicates
+            localScannedTags.push(cleanTag);
+
+            try {
+                const res = await fetch('/scan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,rm_tag:cleanTag, operator: curOp})}); 
+                const data = await res.json();
+                
+                // Read Server Response Properly
+                if(data.error) {
+                    localScannedTags = localScannedTags.filter(t => t !== cleanTag); // Revert
+                    playVoice(false); flash(false, "❌ आधीच स्कॅन केले (DUPLICATE)"); 
+                    inp.value=""; inp.disabled=false; inp.focus(); return;
+                }
+
+                playVoice(true); flash(true, "✅ बरोबर"); 
+                lastScanTag = cleanTag; startUndoTimer();
+                inp.value=""; 
+                await update(); 
+            } catch(e) {
+                localScannedTags = localScannedTags.filter(t => t !== cleanTag); // Revert on Network error
+                playVoice(false); flash(false, "❌ NETWORK ERROR");
+            }
             
-            lastScanTag = cleanTag; startUndoTimer();
-            document.getElementById('rm_tag').value=""; update(); document.getElementById('rm_tag').focus();
+            // UNLOCK INPUT
+            inp.disabled=false; 
+            inp.focus();
         }
 
         function startUndoTimer() {
@@ -395,7 +427,6 @@
 
             if(scans.length === 0) { document.getElementById('scanned_items_list').innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:bold; font-size:12px;">No tags yet...</div>`; } 
             else { 
-                // Removed the limit of 10. It will now show the entire history of the batch.
                 document.getElementById('scanned_items_list').innerHTML = [...scans].map(s => `
                 <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #e2e8f0; font-family:monospace; font-weight:bold; font-size:13px; color:#475569;">
                     <span>${s.rm_tag}</span><span style="color:var(--success-green);">${parseFloat(s.weight||0).toFixed(2)} KG</span>
