@@ -24,9 +24,12 @@
         .card.card-green::before { background: var(--success-green); }
         .card.card-full { grid-column: 1 / -1; }
         
-        h2 { margin: 0 0 25px 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; color: var(--navy-command);}
+        h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; text-transform: uppercase; color: var(--navy-command);}
+        .marathi-title { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 15px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;}
         
-        label { font-weight: 800; font-size: 13px; color: #64748b; display: block; margin-bottom: 8px; letter-spacing: 1px;}
+        label { font-weight: 800; font-size: 15px; color: var(--navy-command); display: block; margin-bottom: 8px; letter-spacing: 0.5px;}
+        label span.sub { color: #64748b; font-size: 11px; font-weight: 700; letter-spacing: 1px; display: block; margin-top: 2px;}
+
         input, select { width: 100%; padding: 18px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #fff; transition: 0.2s;}
         input:focus, select:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 4px rgba(234,88,12,0.1);}
         input[readonly] { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; border-color: #e2e8f0;}
@@ -79,25 +82,26 @@
     <div class="container">
         <div class="card">
             <h2>Material Intake Setup</h2>
+            <span class="marathi-title">नवीन माल भरणे</span>
             
             <div class="row-inputs">
                 <div style="flex:1;">
-                    <label>DATE RECEIVED</label>
+                    <label>आलेला दिनांक <span class="sub">DATE RECEIVED</span></label>
                     <input type="date" id="date" onchange="generatePreview()">
                 </div>
                 <div style="flex:1;">
-                    <label>NET WT/BAG (KG)</label>
-                    <input type="number" id="weight" placeholder="e.g. 25" oninput="generatePreview()">
+                    <label>वजन प्रति गोणी <span class="sub">NET WT/BAG (KG)</span></label>
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" id="weight" placeholder="e.g. 25" oninput="generatePreview()">
                 </div>
             </div>
 
-            <label>RAW MATERIAL DATABASE</label>
+            <label>कच्चा माल <span class="sub">RAW MATERIAL DATABASE</span></label>
             <div class="custom-dropdown-container">
                 <input type="text" id="ing_search" placeholder="Search Material..." autocomplete="off">
                 <input type="hidden" id="ing_code"><input type="hidden" id="ing_name">
             </div>
 
-            <label>APPROVED VENDOR</label>
+            <label>व्हेंडर / व्यापारी <span class="sub">APPROVED VENDOR</span></label>
             <div class="custom-dropdown-container">
                 <input type="text" id="ven_search" placeholder="Search Vendor..." autocomplete="off">
                 <input type="hidden" id="ven_code"><input type="hidden" id="ven_name">
@@ -105,40 +109,42 @@
 
             <div class="row-inputs">
                 <div style="flex:1;">
-                    <label>START ID</label>
-                    <input type="number" id="start_no" value="1" oninput="generatePreview()">
+                    <label>पहिली गोणी <span class="sub">START ID</span></label>
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" id="start_no" value="1" oninput="generatePreview()">
                 </div>
                 <div style="flex:1;">
-                    <label>END ID</label>
-                    <input type="number" id="end_no" value="1" oninput="generatePreview()">
+                    <label>शेवटची गोणी <span class="sub">END ID</span></label>
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" id="end_no" value="1" oninput="generatePreview()">
                 </div>
                 <div style="flex:1;">
-                    <label>TOTAL BAGS</label>
-                    <input type="number" id="qty" placeholder="0" readonly>
+                    <label>एकूण गोण्या <span class="sub">TOTAL BAGS</span></label>
+                    <input type="text" id="qty" placeholder="0" readonly>
                 </div>
             </div>
 
-            <button class="btn-huge" onclick="stageTags()">➕ STAGE FOR PRINTING</button>
+            <button class="btn-huge" onclick="stageTags()">➕ प्रिंटिंगसाठी रेडी करा (STAGE FOR PRINTING)</button>
         </div>
 
         <div class="card card-green">
             <h2 style="color:var(--success-green);">Print Execution Engine</h2>
+            <span class="marathi-title" style="color:var(--success-green);">प्रिंटर मशीन</span>
             
-            <label>LIVE LABEL PREVIEW</label>
+            <label>लेबल कसे दिसेल? <span class="sub">LIVE LABEL PREVIEW</span></label>
             <div class="preview-box" id="preview_area">
-                <div style="color:#94a3b8; font-weight:800; padding:40px 0;">Awaiting Data Input...</div>
+                <div style="color:#94a3b8; font-weight:800; padding:40px 0;">Awaiting Valid Data Input...</div>
             </div>
 
-            <label>ACTIVE PRINT QUEUE</label>
+            <label>प्रिंटिंग लाइन <span class="sub">ACTIVE PRINT QUEUE</span></label>
             <div class="queue-list" id="queue_list">
                 <div style="color:#94a3b8; text-align:center; padding:20px;">No labels staged.</div>
             </div>
 
-            <button class="btn-huge btn-success" onclick="executePrint()">🖨️ EXECUTE PRINT SEQUENCE</button>
+            <button class="btn-huge btn-success" onclick="executePrint()">🖨️ प्रिंट करा (EXECUTE PRINT SEQUENCE)</button>
         </div>
 
         <div class="card card-full">
             <h2>Recently Generated Labels (This Session)</h2>
+            <span class="marathi-title">आत्ताच प्रिंट केलेले</span>
             <div id="history_list">
                 <div style="color:#94a3b8; font-weight:800; text-align:center; padding:20px;">No tags printed in this session yet.</div>
             </div>
@@ -148,7 +154,7 @@
     <script>
         let printQueue = [];
         let generatedTagsForPreview = [];
-        let sessionHistory = []; // Stores printed items locally to allow easy reprints without double-logging
+        let sessionHistory = []; 
 
         window.onload = async () => {
             document.getElementById('date').valueAsDate = new Date();
@@ -199,10 +205,14 @@
             const ingCode = document.getElementById('ing_code').value;
             const ingName = document.getElementById('ing_name').value;
             const venCode = document.getElementById('ven_code').value;
-            const weight = document.getElementById('weight').value;
+            const weightVal = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
             
-            let startNo = parseInt(document.getElementById('start_no').value);
-            let endNo = parseInt(document.getElementById('end_no').value);
+            // Clean inputs to prevent NaN errors when deleting
+            let startVal = document.getElementById('start_no').value.replace(/[^0-9]/g, '');
+            let endVal = document.getElementById('end_no').value.replace(/[^0-9]/g, '');
+            
+            let startNo = parseInt(startVal);
+            let endNo = parseInt(endVal);
 
             if(isNaN(startNo) || isNaN(endNo) || endNo < startNo) {
                 document.getElementById('qty').value = 0;
@@ -210,7 +220,7 @@
                 document.getElementById('qty').value = (endNo - startNo) + 1;
             }
 
-            if(!dateVal || !ingCode || !venCode || isNaN(startNo) || isNaN(endNo) || endNo < startNo || !weight) {
+            if(!dateVal || !ingCode || !venCode || isNaN(startNo) || isNaN(endNo) || endNo < startNo || !weightVal) {
                 document.getElementById('preview_area').innerHTML = `<div style="color:#94a3b8; font-weight:800; padding:40px 0;">Awaiting Valid Data Input...</div>`;
                 generatedTagsForPreview = [];
                 return;
@@ -218,7 +228,7 @@
 
             const [year, month, day] = dateVal.split('-');
             const dateFmt = `${day}${month}`;
-            const padWeight = String(weight).padStart(2, '0');
+            const padWeight = String(weightVal).padStart(2, '0');
             const dispDate = `${day}/${month}/${year}`;
             
             generatedTagsForPreview = [];
@@ -244,6 +254,9 @@
             const dateVal = document.getElementById('date').value;
             const [year, month, day] = dateVal.split('-');
             
+            let startVal = document.getElementById('start_no').value.replace(/[^0-9]/g, '');
+            let endVal = document.getElementById('end_no').value.replace(/[^0-9]/g, '');
+            
             const batchObj = {
                 dateRaw: dateVal,
                 dateFmt: `${day}${month}`,
@@ -251,9 +264,9 @@
                 ingName: document.getElementById('ing_name').value,
                 venCode: document.getElementById('ven_code').value,
                 venName: document.getElementById('ven_name').value,
-                weight: document.getElementById('weight').value,
-                startNo: parseInt(document.getElementById('start_no').value),
-                endNo: parseInt(document.getElementById('end_no').value),
+                weight: document.getElementById('weight').value.replace(/[^0-9.]/g, ''),
+                startNo: parseInt(startVal),
+                endNo: parseInt(endVal),
                 packs: parseInt(document.getElementById('qty').value)
             };
 
@@ -307,13 +320,8 @@
                 </div>`;
             }).join('');
         }
-
-        // ==========================================
-        // THE PRINT ENGINE (Hardware Tightened & DB Safe)
-        // ==========================================
         
         function getPrintHTML(queueArray) {
-            // FIXED MARGINS: Sized slightly under 75x75 to stop physical cutting
             let html = `<html><head><style>
                 @page { size: 75mm 75mm; margin: 0; }
                 body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; }
@@ -368,7 +376,6 @@
         async function executePrint() {
             if(printQueue.length === 0) return alert("Queue is empty!");
 
-            // Open window BEFORE fetch to bypass browser popup blockers
             let printWindow = window.open('', '_blank');
             if(!printWindow) return alert("⚠️ Popup Blocked! Please allow popups for Kilrr OS to print labels.");
 
@@ -387,13 +394,11 @@
                     return alert("Database Error: " + data.error);
                 }
 
-                // Database logged successfully. Push to printer.
                 let html = getPrintHTML(printQueue);
-                printWindow.document.open(); // Clears the "Logging" message
+                printWindow.document.open(); 
                 printWindow.document.write(html);
                 printWindow.document.close();
 
-                // Shift printed items to local history before clearing the queue
                 printQueue.forEach(item => sessionHistory.unshift(item));
                 printQueue = [];
                 updateQueueUI();
