@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Kilrr Factory OS - RM Inwarding</title>
+    <title>Kilrr OS - Raw Material Inwarding</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
@@ -22,6 +22,7 @@
         .card { background: var(--card-bg); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; position: relative; overflow: visible;}
         .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: var(--kilrr-orange); border-radius: 20px 20px 0 0;}
         .card.card-green::before { background: var(--success-green); }
+        .card.card-full { grid-column: 1 / -1; }
         
         h2 { margin: 0 0 25px 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; color: var(--navy-command);}
         
@@ -70,7 +71,6 @@
             <a href="inwarding.html" class="nav-btn active">Inwarding</a>
             <a href="preprocess.html" class="nav-btn">Pre-Process</a>
             <a href="scanner.html" class="nav-btn">Scanner</a>
-            <a href="audit.html" class="nav-btn">Audit</a>
             <a href="dashboard.html" class="nav-btn">Dashboard</a>
             <a href="master.html" class="nav-btn">Master Data</a>
         </div>
@@ -136,11 +136,19 @@
 
             <button class="btn-huge btn-success" onclick="executePrint()">🖨️ EXECUTE PRINT SEQUENCE</button>
         </div>
+
+        <div class="card card-full">
+            <h2>Recently Generated Labels (This Session)</h2>
+            <div id="history_list">
+                <div style="color:#94a3b8; font-weight:800; text-align:center; padding:20px;">No tags printed in this session yet.</div>
+            </div>
+        </div>
     </div>
 
     <script>
         let printQueue = [];
         let generatedTagsForPreview = [];
+        let sessionHistory = []; // Stores printed items locally to allow easy reprints without double-logging
 
         window.onload = async () => {
             document.getElementById('date').valueAsDate = new Date();
@@ -218,15 +226,14 @@
                 generatedTagsForPreview.push(`${dateFmt}/${ingCode}/${venCode}/${i}`);
             }
 
-            // Tighter preview spacing
             let qr = new QRious({ value: generatedTagsForPreview[0], size: 150, level: 'M' });
             document.getElementById('preview_area').innerHTML = `
-                <div style="background:white; padding:10px; border:2px solid black; width: 230px; color: black; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; height: auto; text-align: center; box-sizing: border-box;">
-                    <div style="font-weight:900; font-size:24px; text-transform:uppercase; line-height:1; border-bottom:3px solid black; padding-bottom:5px; margin-bottom:8px; width: 100%; color: black;">${ingName}</div>
-                    <img src="${qr.toDataURL()}" style="width:110px; height:110px; margin-bottom: 5px;">
+                <div style="background:white; padding:10px; border:2px solid black; width: 230px; color: black; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; box-sizing: border-box;">
+                    <div style="font-weight:900; font-size:24px; text-transform:uppercase; line-height:1; border-bottom:3px solid black; padding-bottom:6px; margin-bottom:8px; width: 100%; color: black;">${ingName}</div>
+                    <img src="${qr.toDataURL()}" style="width:115px; height:115px; margin-bottom: 5px;">
                     <div style="font-weight:900; font-size:14px; margin-bottom: 8px;">DATE: ${dispDate}</div>
-                    <div style="font-family:monospace; font-weight:900; font-size:15px; margin-bottom:5px; width: 100%;">${generatedTagsForPreview[0]}</div>
-                    <div style="font-size:20px; font-weight:900; padding:4px 0; border-top: 2px solid black; border-bottom: 2px solid black; width: 100%;">NET WT: ${padWeight} KG</div>
+                    <div style="font-family:monospace; font-weight:900; font-size:15px; margin-bottom:6px;">${generatedTagsForPreview[0]}</div>
+                    <div style="font-size:20px; font-weight:900; padding:5px 0; border-top: 2px solid black; border-bottom: 2px solid black; width: 100%;">NET WT: ${padWeight} KG</div>
                 </div>
             `;
         }
@@ -278,10 +285,96 @@
             updateQueueUI();
         }
 
+        function updateHistoryUI() {
+            const histDiv = document.getElementById('history_list');
+            if(sessionHistory.length === 0) return;
+
+            histDiv.innerHTML = sessionHistory.map((item, idx) => {
+                let tagStart = `${item.dateFmt}/${item.ingCode}/${item.venCode}/${item.startNo}`;
+                let tagEnd = `${item.dateFmt}/${item.ingCode}/${item.venCode}/${item.endNo}`;
+                let tagDisplay = item.startNo === item.endNo ? tagStart : `${tagStart} to ${tagEnd}`;
+
+                return `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:15px; border:2px solid #e2e8f0; border-radius:12px; margin-bottom:12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+                    <div>
+                        <div style="font-weight:900; color:var(--navy-command); font-size:16px;">${item.ingName} <span style="font-size:12px; color:#64748b;">(${item.venName})</span></div>
+                        <div style="font-family:monospace; color:var(--kilrr-orange); font-weight:bold; font-size:15px; margin-top:6px;">Tags: ${tagDisplay}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-weight:900; font-size:16px; color:var(--success-green);">${item.packs} Bags @ ${item.weight} KG</div>
+                        <button style="margin-top:8px; background:#e2e8f0; color:var(--navy-command); border:2px solid #cbd5e1; padding:6px 12px; border-radius:6px; font-weight:900; cursor:pointer;" onclick="reprintHistory(${idx})">🖨️ REPRINT</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ==========================================
+        // THE PRINT ENGINE (Hardware Tightened & DB Safe)
+        // ==========================================
+        
+        function getPrintHTML(queueArray) {
+            // FIXED MARGINS: Sized slightly under 75x75 to stop physical cutting
+            let html = `<html><head><style>
+                @page { size: 75mm 75mm; margin: 0; }
+                body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; }
+                .label { width: 73mm; height: 72mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow: hidden; }
+                .title { text-align: center; font-size: 24px; font-weight: 900; text-transform: uppercase; margin: 1mm 0; line-height: 1; border-bottom: 3px solid black; padding-bottom: 1mm; width: 100%;}
+                .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; margin: 1mm 0;}
+                .qr-container img { width: 33mm; height: 33mm; margin-bottom: 1mm;}
+                .date-text { font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: 1mm;}
+                .bottom-section { width: 100%; margin-bottom: 1mm;}
+                .tag-string { text-align: center; font-size: 14px; font-weight: 900; font-family: monospace; margin-bottom: 1mm; }
+                .weight-bar { text-align: center; font-size: 20px; font-weight: 900; padding: 1mm 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%;}
+            </style></head><body>`;
+
+            queueArray.forEach(item => {
+                for(let i = item.startNo; i <= item.endNo; i++) {
+                    let tagStr = `${item.dateFmt}/${item.ingCode}/${item.venCode}/${i}`;
+                    let qrEngine = new QRious({ value: tagStr, size: 250, level: 'M' });
+                    let dispDate = `${item.dateRaw.split('-')[2]}/${item.dateRaw.split('-')[1]}/${item.dateRaw.split('-')[0]}`;
+                    let padWeight = String(item.weight).padStart(2, '0');
+                    
+                    html += `
+                    <div class="label">
+                        <div class="title">${item.ingName}</div>
+                        <div class="qr-container">
+                            <img src="${qrEngine.toDataURL()}">
+                            <div class="date-text">DATE: ${dispDate}</div>
+                        </div>
+                        <div class="bottom-section">
+                            <div class="tag-string">${tagStr}</div>
+                            <div class="weight-bar">NET WT: ${padWeight} KG</div>
+                        </div>
+                    </div>`;
+                }
+            });
+
+            html += `</body><script>window.onload = () => { window.print(); window.close(); };<\/script></html>`;
+            return html;
+        }
+
+        // Safe Reprint: Does NOT trigger the database logger
+        function reprintHistory(idx) {
+            const itemToReprint = sessionHistory[idx];
+            let printWindow = window.open('', '_blank');
+            if(!printWindow) return alert("⚠️ Popup Blocked! Please allow popups for Kilrr OS to print labels.");
+            
+            let html = getPrintHTML([itemToReprint]);
+            printWindow.document.write(html);
+            printWindow.document.close();
+        }
+
+        // Live Execute: Logs to database FIRST, then prints
         async function executePrint() {
             if(printQueue.length === 0) return alert("Queue is empty!");
 
+            // Open window BEFORE fetch to bypass browser popup blockers
+            let printWindow = window.open('', '_blank');
+            if(!printWindow) return alert("⚠️ Popup Blocked! Please allow popups for Kilrr OS to print labels.");
+
             try {
+                printWindow.document.write('<html><body><h2 style="font-family:sans-serif; text-align:center; margin-top:50px; color:#ea580c;">Logging to Kilrr Database... Please wait.</h2></body></html>');
+
                 const res = await fetch('/log-inwarding', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -289,59 +382,27 @@
                 });
                 
                 const data = await res.json();
-                if(data.error) return alert("Database Error: " + data.error);
+                if(data.error) {
+                    printWindow.close();
+                    return alert("Database Error: " + data.error);
+                }
 
-                // FIXED: Tightly packed layout to prevent clipping on TSC TA220
-                let printWindow = window.open('', '_blank');
-                let html = `<html><head><style>
-                    @page { size: 75mm 75mm; margin: 0; }
-                    body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; }
-                    
-                    /* Shrink target height slightly to account for printer hardware margins */
-                    .label { width: 73mm; height: 72mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow: hidden; }
-                    
-                    .title { text-align: center; font-size: 22px; font-weight: 900; text-transform: uppercase; margin: 1mm 0; line-height: 1; border-bottom: 3px solid black; padding-bottom: 1mm; width: 100%; }
-                    
-                    .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; margin: 1mm 0;}
-                    /* QR Code shrunk slightly to save vertical space */
-                    .qr-container img { width: 32mm; height: 32mm; margin-bottom: 1mm;}
-                    .date-text { font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: 1mm;}
-
-                    .bottom-section { width: 100%; margin-bottom: 1mm;}
-                    .tag-string { text-align: center; font-size: 14px; font-weight: 900; font-family: monospace; margin-bottom: 1mm; }
-                    .weight-bar { text-align: center; font-size: 20px; font-weight: 900; padding: 1mm 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; }
-                </style></head><body>`;
-
-                printQueue.forEach(item => {
-                    for(let i = item.startNo; i <= item.endNo; i++) {
-                        let tagStr = `${item.dateFmt}/${item.ingCode}/${item.venCode}/${i}`;
-                        let qrEngine = new QRious({ value: tagStr, size: 250, level: 'M' });
-                        let dispDate = `${item.dateRaw.split('-')[2]}/${item.dateRaw.split('-')[1]}/${item.dateRaw.split('-')[0]}`;
-                        let padWeight = String(item.weight).padStart(2, '0');
-                        
-                        html += `
-                        <div class="label">
-                            <div class="title">${item.ingName}</div>
-                            <div class="qr-container">
-                                <img src="${qrEngine.toDataURL()}">
-                                <div class="date-text">DATE: ${dispDate}</div>
-                            </div>
-                            <div class="bottom-section">
-                                <div class="tag-string">${tagStr}</div>
-                                <div class="weight-bar">NET WT: ${padWeight} KG</div>
-                            </div>
-                        </div>`;
-                    }
-                });
-
-                html += `</body><script>window.onload = () => { window.print(); window.close(); };<\/script></html>`;
+                // Database logged successfully. Push to printer.
+                let html = getPrintHTML(printQueue);
+                printWindow.document.open(); // Clears the "Logging" message
                 printWindow.document.write(html);
                 printWindow.document.close();
 
+                // Shift printed items to local history before clearing the queue
+                printQueue.forEach(item => sessionHistory.unshift(item));
                 printQueue = [];
                 updateQueueUI();
+                updateHistoryUI();
 
-            } catch(e) { alert("Execution Failed. Check server connection."); }
+            } catch(e) { 
+                printWindow.close();
+                alert("Execution Failed. Check server connection."); 
+            }
         }
     </script>
 </body>
