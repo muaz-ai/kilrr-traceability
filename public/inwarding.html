@@ -3,52 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Kilrr OS - Raw Material Inwarding</title>
+    <!-- Anti-Caching Meta Tags -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; }
         
-        /* UI REVAMP: Modern Gradient Background */
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); color: #0f172a; margin: 0; padding-bottom: 100px; min-height: 100vh;}
+        /* NEW PREMIUM UI: Dark Slate Background to easily verify cache is cleared */
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #0f172a; margin: 0; padding-bottom: 100px; min-height: 100vh;}
         
-        .nav-top { background: var(--navy-command); border-bottom: 5px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.1);}
-        .brand { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;}
+        .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
+        .brand { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;}
         .brand span { color: var(--kilrr-orange); }
-        .nav-links { display: flex; gap: 15px; }
-        .nav-btn { color: white; text-decoration: none; font-weight: 700; font-size: 14px; text-transform: uppercase; transition: 0.2s; padding: 5px 10px; border-radius: 6px;}
-        .nav-btn:hover { background: rgba(255,255,255,0.1); }
-        .nav-btn.active { color: var(--kilrr-orange); background: rgba(234, 88, 12, 0.1);}
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn { color: #cbd5e1; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; transition: 0.2s; padding: 8px 12px; border-radius: 8px;}
+        .nav-btn:hover { background: rgba(255,255,255,0.05); color: white;}
+        .nav-btn.active { color: white; background: var(--kilrr-orange);}
 
         .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;}
         
-        /* UI REVAMP: Deep Shadows & Floating Cards */
-        .card { background: var(--card-bg); border-radius: 20px; padding: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.06); border: 1px solid rgba(255,255,255,0.5); position: relative; overflow: visible;}
-        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #ea580c, #f97316); border-radius: 20px 20px 0 0;}
+        /* NEW PREMIUM UI: Floating Stark White Cards */
+        .card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); position: relative; overflow: visible;}
+        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #ea580c, #f97316); border-radius: 16px 16px 0 0;}
         .card.card-green::before { background: linear-gradient(90deg, #059669, #10b981); }
         .card.card-full { grid-column: 1 / -1; }
         
-        h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 24px; text-transform: uppercase; color: var(--navy-command); letter-spacing: 0.5px;}
-        .marathi-title { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 15px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
+        h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; text-transform: uppercase; color: var(--navy-command); letter-spacing: 0.5px;}
+        .marathi-title { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 14px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
         
-        label { font-weight: 800; font-size: 14px; color: var(--navy-command); display: block; margin-bottom: 8px; text-transform: uppercase;}
-        label span.sub { color: #64748b; font-size: 11px; font-weight: 700; letter-spacing: 1px; display: block; margin-top: 2px;}
+        label { font-weight: 800; font-size: 13px; color: var(--navy-command); display: block; margin-bottom: 8px; text-transform: uppercase;}
+        label span.sub { color: #64748b; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; display: block; margin-top: 2px;}
 
-        /* UI REVAMP: Premium Inputs */
-        input, select { width: 100%; padding: 18px 20px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #f8fafc; color: #0f172a; transition: all 0.2s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);}
-        input:focus, select:focus { border-color: var(--kilrr-orange); outline: none; background: #ffffff; box-shadow: 0 0 0 4px rgba(234,88,12,0.1), inset 0 2px 4px rgba(0,0,0,0.02);}
+        input, select { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #f8fafc; color: #0f172a; transition: all 0.2s ease;}
+        input:focus, select:focus { border-color: var(--kilrr-orange); outline: none; background: #ffffff; box-shadow: 0 0 0 4px rgba(234,88,12,0.15);}
         input[readonly] { background: #e2e8f0; color: #64748b; cursor: not-allowed; border-color: #cbd5e1;}
         
-        /* KEYBOARD FIX: Hide arrows for clean number inputs */
-        input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type="number"] { -moz-appearance: textfield; }
-        
-        /* UI REVAMP: Gradient Buttons */
-        button.btn-huge { width: 100%; padding: 22px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.25); transition: transform 0.1s, box-shadow 0.1s;}
-        button.btn-huge:active { transform: translateY(2px); box-shadow: 0 4px 10px rgba(234, 88, 12, 0.2); }
-        button.btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); box-shadow: 0 8px 20px rgba(5, 150, 105, 0.25); }
-        button.btn-success:active { box-shadow: 0 4px 10px rgba(5, 150, 105, 0.2); }
+        button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); color: white; box-shadow: 0 8px 15px rgba(234, 88, 12, 0.3); transition: transform 0.1s;}
+        button.btn-huge:active { transform: translateY(2px); box-shadow: 0 4px 8px rgba(234, 88, 12, 0.3); }
+        button.btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); box-shadow: 0 8px 15px rgba(5, 150, 105, 0.3); }
 
         .row-inputs { display: flex; gap: 15px; }
         
@@ -60,23 +56,23 @@
         .custom-dropdown-item:hover { background: #fff7ed; color: var(--kilrr-orange); }
 
         /* PREVIEW UI */
-        .preview-box { border: 2px dashed #cbd5e1; border-radius: 16px; padding: 25px; display: flex; justify-content: center; align-items: center; background: #f8fafc; margin-bottom: 25px;}
+        .preview-box { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 25px; display: flex; justify-content: center; align-items: center; background: #f8fafc; margin-bottom: 25px;}
         .queue-list { max-height: 160px; overflow-y: auto; padding: 10px; border: 2px solid #e2e8f0; border-radius: 12px; background: #f1f5f9; margin-bottom: 25px;}
-        .queue-item { background: white; padding: 12px 15px; border-radius: 8px; margin-bottom: 8px; font-family: monospace; font-weight: bold; border: 1px solid #cbd5e1; font-size: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+        .queue-item { background: white; padding: 12px 15px; border-radius: 8px; margin-bottom: 8px; font-family: monospace; font-weight: bold; border: 1px solid #cbd5e1; font-size: 15px;}
 
         @media (max-width: 1024px) { 
             .container { grid-template-columns: 1fr; margin-top: 15px; gap: 20px;}
-            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; border-top: 4px solid var(--kilrr-orange); justify-content: space-around; overflow-x: auto; white-space: nowrap;}
+            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap;}
             .brand { display: none; }
-            .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 5px 10px;}
-            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 18px; }
-            .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 18px; }
-            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 18px; }
-            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 18px; }
-            .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 18px; }
-            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 18px; }
-            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 18px; }
-            .card { padding: 25px; }
+            .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 8px 12px; border-radius: 8px;}
+            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 20px; margin-bottom: 4px;}
+            .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 20px; margin-bottom: 4px;}
+            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 20px; margin-bottom: 4px;}
+            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 20px; margin-bottom: 4px;}
+            .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 20px; margin-bottom: 4px;}
+            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 20px; margin-bottom: 4px;}
+            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 20px; margin-bottom: 4px;}
+            .card { padding: 20px; }
         }
     </style>
 </head>
@@ -94,6 +90,7 @@
     </nav>
 
     <div class="container">
+        <!-- INWARDING SETUP -->
         <div class="card">
             <h2>Material Intake Setup</h2>
             <span class="marathi-title">नवीन माल भरणे</span>
@@ -105,7 +102,7 @@
                 </div>
                 <div style="flex:1;">
                     <label>वजन प्रति गोणी <span class="sub">NET WT/BAG (KG)</span></label>
-                    <input type="number" id="weight" placeholder="e.g. 25" oninput="generatePreview()">
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" id="weight" placeholder="e.g. 25" oninput="generatePreview()">
                 </div>
             </div>
 
@@ -121,24 +118,26 @@
                 <input type="hidden" id="ven_code"><input type="hidden" id="ven_name">
             </div>
 
+            <!-- START & END LOGIC -->
             <div class="row-inputs">
                 <div style="flex:1;">
                     <label>पहिली गोणी <span class="sub">START ID</span></label>
-                    <input type="number" id="start_no" value="1" oninput="generatePreview()">
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" id="start_no" value="1" oninput="generatePreview()">
                 </div>
                 <div style="flex:1;">
                     <label>शेवटची गोणी <span class="sub">END ID</span></label>
-                    <input type="number" id="end_no" value="1" oninput="generatePreview()">
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" id="end_no" value="1" oninput="generatePreview()">
                 </div>
                 <div style="flex:1;">
                     <label>एकूण गोण्या <span class="sub">TOTAL BAGS</span></label>
-                    <input type="number" id="qty" placeholder="0" readonly>
+                    <input type="text" id="qty" placeholder="0" readonly>
                 </div>
             </div>
 
             <button class="btn-huge" onclick="stageTags()">➕ प्रिंटिंगसाठी रेडी करा (STAGE FOR PRINTING)</button>
         </div>
 
+        <!-- PRINT ENGINE -->
         <div class="card card-green">
             <h2 style="color:var(--success-green);">Print Execution Engine</h2>
             <span class="marathi-title" style="color:var(--success-green);">प्रिंटर मशीन</span>
@@ -156,11 +155,12 @@
             <button class="btn-huge btn-success" onclick="executePrint()">🖨️ प्रिंट करा (EXECUTE PRINT SEQUENCE)</button>
         </div>
 
+        <!-- RECENT HISTORY LOG -->
         <div class="card card-full">
             <h2>Recently Generated Labels</h2>
             <span class="marathi-title">आत्ताच प्रिंट केलेले (This Session)</span>
             <div id="history_list">
-                <div style="color:#94a3b8; font-weight:800; text-align:center; padding:20px; border: 2px dashed #cbd5e1; border-radius: 12px;">No tags printed in this session yet.</div>
+                <div style="color:#94a3b8; font-weight:800; text-align:center; padding:20px; border: 2px dashed #cbd5e1; border-radius: 12px; background: #f8fafc;">No tags printed in this session yet.</div>
             </div>
         </div>
     </div>
@@ -219,10 +219,13 @@
             const ingCode = document.getElementById('ing_code').value;
             const ingName = document.getElementById('ing_name').value;
             const venCode = document.getElementById('ven_code').value;
-            const weightVal = document.getElementById('weight').value;
+            const weightVal = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
             
-            let startNo = parseInt(document.getElementById('start_no').value);
-            let endNo = parseInt(document.getElementById('end_no').value);
+            let startVal = document.getElementById('start_no').value.replace(/[^0-9]/g, '');
+            let endVal = document.getElementById('end_no').value.replace(/[^0-9]/g, '');
+            
+            let startNo = parseInt(startVal);
+            let endNo = parseInt(endVal);
 
             if(isNaN(startNo) || isNaN(endNo) || endNo < startNo) {
                 document.getElementById('qty').value = 0;
@@ -246,14 +249,19 @@
                 generatedTagsForPreview.push(`${dateFmt}/${ingCode}/${venCode}/${i}`);
             }
 
+            // Web preview box mirrors the exact layout logic of the print layout
             let qr = new QRious({ value: generatedTagsForPreview[0], size: 250, level: 'M' });
             document.getElementById('preview_area').innerHTML = `
-                <div style="background:white; padding:12px; border:3px solid black; width: 250px; color: black; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; box-sizing: border-box;">
-                    <div style="font-weight:900; font-size:24px; text-transform:uppercase; line-height:1; border-bottom:3px solid black; padding-bottom:6px; margin-bottom:10px; width: 100%; color: black;">${ingName}</div>
-                    <img src="${qr.toDataURL()}" style="width:145px; height:145px; margin-bottom: 8px;">
-                    <div style="font-weight:900; font-size:14px; margin-bottom: 8px;">DATE: ${dispDate}</div>
-                    <div style="font-family:monospace; font-weight:900; font-size:18px; margin-bottom:8px;">${generatedTagsForPreview[0]}</div>
-                    <div style="font-size:22px; font-weight:900; padding:6px 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%;">NET WT: ${padWeight} KG</div>
+                <div style="background:white; padding:10px; border:2px solid black; width: 250px; color: black; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box;">
+                    <div style="font-weight:900; font-size:22px; text-transform:uppercase; margin: 0; padding-bottom: 5px; border-bottom: 3px solid black; width: 100%; line-height: 1; text-align: center;">${ingName}</div>
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin: 10px 0;">
+                        <img src="${qr.toDataURL()}" style="width:130px; height:130px; margin-bottom: 5px;">
+                        <div style="font-weight:900; font-size:13px; text-transform:uppercase; margin: 0; line-height: 1;">DATE: ${dispDate}</div>
+                    </div>
+                    <div style="width: 100%; margin-bottom: 5px;">
+                        <div style="font-size:16px; font-weight:900; font-family:monospace; margin: 0 0 5px 0; line-height: 1; text-align: center;">${generatedTagsForPreview[0]}</div>
+                        <div style="font-size:21px; font-weight:900; padding: 5px 0; margin: 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; line-height: 1; text-align: center;">NET WT: ${padWeight} KG</div>
+                    </div>
                 </div>
             `;
         }
@@ -264,6 +272,9 @@
             const dateVal = document.getElementById('date').value;
             const [year, month, day] = dateVal.split('-');
             
+            let startVal = document.getElementById('start_no').value.replace(/[^0-9]/g, '');
+            let endVal = document.getElementById('end_no').value.replace(/[^0-9]/g, '');
+            
             const batchObj = {
                 dateRaw: dateVal,
                 dateFmt: `${day}${month}`,
@@ -271,9 +282,9 @@
                 ingName: document.getElementById('ing_name').value,
                 venCode: document.getElementById('ven_code').value,
                 venName: document.getElementById('ven_name').value,
-                weight: document.getElementById('weight').value,
-                startNo: parseInt(document.getElementById('start_no').value),
-                endNo: parseInt(document.getElementById('end_no').value),
+                weight: document.getElementById('weight').value.replace(/[^0-9.]/g, ''),
+                startNo: parseInt(startVal),
+                endNo: parseInt(endVal),
                 packs: parseInt(document.getElementById('qty').value)
             };
 
@@ -329,22 +340,18 @@
         }
         
         function getPrintHTML(queueArray) {
+            // FIXED 75x75 CSS. QR is 36mm. Total height math is strictly 74.9mm to prevent cutoff.
             let html = `<html><head><style>
                 @page { size: 75mm 75mm; margin: 0; }
                 body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; }
-                .label { width: 73mm; height: 72mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow: hidden; }
-                .title { text-align: center; font-size: 22px; font-weight: 900; text-transform: uppercase; margin: 1mm 0; line-height: 1; border-bottom: 2px solid black; padding-bottom: 1mm; width: 100%;}
-                
-                /* Increased QR Code Size for Better Mobile Scanning */
-                .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; margin: 1mm 0;}
-                .qr-container img { width: 40mm; height: 40mm; margin-top: 1mm; margin-bottom: 1mm;}
-                
-                .date-text { font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: 1mm;}
-                .bottom-section { width: 100%; margin-bottom: 1mm;}
-                
-                /* Bolded Tag String to match Net Weight */
-                .tag-string { text-align: center; font-size: 18px; font-weight: 900; font-family: monospace; margin-bottom: 1mm; }
-                .weight-bar { text-align: center; font-size: 22px; font-weight: 900; padding: 1mm 0; border-top: 2px solid black; border-bottom: 2px solid black; width: 100%;}
+                .label { width: 73mm; height: 73mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden; }
+                .title { font-size: 22px; font-weight: 900; text-transform: uppercase; margin: 0; padding-bottom: 1.5mm; border-bottom: 3px solid black; width: 100%; line-height: 1; }
+                .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin: auto 0; }
+                .qr-container img { width: 36mm; height: 36mm; margin-bottom: 1mm; }
+                .date-text { font-size: 13px; font-weight: 900; text-transform: uppercase; margin: 0; line-height: 1; }
+                .bottom-section { width: 100%; margin-bottom: 1mm; }
+                .tag-string { font-size: 16px; font-weight: 900; font-family: monospace; margin: 0 0 1.5mm 0; line-height: 1; }
+                .weight-bar { font-size: 21px; font-weight: 900; padding: 1.5mm 0; margin: 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; line-height: 1; }
             </style></head><body>`;
 
             queueArray.forEach(item => {
