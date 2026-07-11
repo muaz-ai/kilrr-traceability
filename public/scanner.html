@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Kilrr Factory OS - Scanner</title>
-    <!-- Anti-Caching Meta Tags to force mobile phones to update -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -104,9 +103,7 @@
     </nav>
 
     <div class="container">
-        <!-- SETUP SCREEN -->
         <div class="card" id="setup">
-            <!-- Hidden Resume Dropdown -->
             <details style="margin-bottom: 25px; background: #fff7ed; padding: 15px; border-radius: 12px; border: 2px solid #ffedd5;">
                 <summary style="font-weight: 900; color: var(--kilrr-orange); cursor: pointer; outline: none; font-size: 16px;">▶ चालू काम परत उघडा (Resume Active Run)</summary>
                 <input type="text" id="resume_search" class="search-bar" style="margin-top:15px;" placeholder="🔍 Search open batches..." oninput="filterResume()">
@@ -131,7 +128,6 @@
             <button class="btn-huge" onclick="startNewBatch()">⚡ सुरु करा (GENERATE & START)</button>
         </div>
         
-        <!-- WORK SCREEN -->
         <div class="card" id="work" style="display:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #e2e8f0; padding-bottom:15px; margin-bottom:20px;">
                 <div>
@@ -141,7 +137,6 @@
                 <button style="width:auto; padding:10px 15px; font-weight:900; background:var(--danger-red); color:white; border:none; border-radius:8px; cursor:pointer;" onclick="location.reload()">बंद करा (EXIT)</button>
             </div>
 
-            <!-- BAG & WEIGHT KPIs -->
             <div class="summary-grid">
                 <div class="summary-box">
                     <div class="marathi-label">किती गोण्या स्कॅन केल्या<br><span style="font-size:10px; letter-spacing:1px;">BAGS SCANNED</span></div>
@@ -155,7 +150,6 @@
 
             <button class="btn-undo" id="undo_btn" onclick="undoLastScan()">⚠️ मागे घ्या (UNDO LAST SCAN - 30s)</button>
 
-            <!-- SCAN INPUT & CAMERA -->
             <div style="display:flex; gap:10px; margin-bottom: 15px;">
                 <input type="text" id="rm_tag" class="setup-input" style="margin:0; border-color:var(--navy-command); font-size:16px;" placeholder="बारकोड स्कॅन करा..." autocomplete="off">
                 <button style="width:auto; padding:0 25px; background:var(--navy-command); color:white; border:none; border-radius:12px; font-weight:900; cursor:pointer;" onclick="manualScan()">ऍड करा</button>
@@ -164,7 +158,6 @@
             <div id="reader"></div>
             <button class="btn-cam" id="camToggleBtn" onclick="toggleCamera()">📷 मोबाईल कॅमेरा चालू करा</button>
 
-            <!-- RECIPE VALIDATION FEED (CHECKLIST) -->
             <h3 style="font-family:'Space Grotesk'; font-size:16px; margin-top:25px; margin-bottom:5px; color:var(--navy-command);">काय काय लागणार? (Ingredients)</h3>
             <div class="recipe-feed" id="recipe_checklist">
                 <div style="text-align:center; color:#94a3b8; font-weight:bold;">Loading...</div>
@@ -176,7 +169,6 @@
     </div>
     
     <script>
-        // Updated RECIPE_PREFIXES to include the exact all-caps spelling from your Master Data
         const RECIPE_PREFIXES = {
             "Tandoori": "TAN", 
             "Achaari": "ACH", 
@@ -416,7 +408,7 @@
                     const totalKg = matchedScans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
                     const isDone = matchedScans.length > 0;
                     return `
-                        <div class="feed-item ${is,Done ? 'done' : ''}">
+                        <div class="feed-item ${isDone ? 'done' : ''}">
                             <div class="feed-name">${req.ingredient_name || req.product_code} <span style="font-size:12px; color:#94a3b8;">(${req.product_code})</span></div>
                             <div class="feed-status">${isDone ? `✅ ${totalKg.toFixed(2)} KG` : '⏳ बाकी आहे'}</div>
                         </div>
