@@ -85,6 +85,7 @@
     </nav>
 
     <div class="container">
+        <!-- INWARDING SETUP -->
         <div class="card">
             <h2>Material Intake Setup</h2>
             <span class="marathi-title">नवीन माल भरणे</span>
@@ -106,12 +107,13 @@
                 <input type="hidden" id="ing_code"><input type="hidden" id="ing_name">
             </div>
 
-            <label>व्हेंडर / व्यापारी <span class="sub">APPROVED VENDOR</span></label>
+            <label>व्हेंडर / व्यापारी <span class="sub">APPROVED VENDOR CODE</span></label>
             <div class="custom-dropdown-container">
-                <input type="text" id="ven_search" placeholder="Search Vendor..." autocomplete="off">
+                <input type="text" id="ven_search" placeholder="Enter Vendor Code (e.g. 3S)..." autocomplete="off" style="text-transform: uppercase;">
                 <input type="hidden" id="ven_code"><input type="hidden" id="ven_name">
             </div>
 
+            <!-- START & END LOGIC -->
             <div class="row-inputs">
                 <div style="flex:1;">
                     <label>पहिली गोणी <span class="sub">START ID</span></label>
@@ -130,6 +132,7 @@
             <button class="btn-huge" onclick="stageTags()">➕ प्रिंटिंगसाठी रेडी करा (STAGE FOR PRINTING)</button>
         </div>
 
+        <!-- PRINT ENGINE -->
         <div class="card card-green">
             <h2 style="color:var(--success-green);">Print Execution Engine</h2>
             <span class="marathi-title" style="color:var(--success-green);">प्रिंटर मशीन</span>
@@ -147,6 +150,7 @@
             <button class="btn-huge btn-success" onclick="executePrint()">🖨️ प्रिंट करा (EXECUTE PRINT SEQUENCE)</button>
         </div>
 
+        <!-- RECENT HISTORY LOG -->
         <div class="card card-full">
             <h2>Recently Generated Labels</h2>
             <span class="marathi-title">आत्ताच प्रिंट केलेले (This Session)</span>
@@ -166,16 +170,18 @@
             try {
                 const iRes = await fetch('/get-ingredients'); 
                 const ingredients = await iRes.json();
-                attachCustomDropdown('ing_search', ingredients, 'ingredient_name', 'ingredient_name', 'product_code', 'ing_name', 'ing_code');
+                attachCustomDropdown('ing_search', ingredients, 'ingredient_name', 'ingredient_name', 'product_code', 'ing_name', 'ing_code', false);
                 
                 const vRes = await fetch('/get-vendors'); 
                 const vendors = await vRes.json();
-                attachCustomDropdown('ven_search', vendors, 'vendor_name', 'vendor_name', 'vendor_code', 'ven_name', 'ven_code');
+                // Flag 'true' activates strict Vendor Anonymity mode
+                attachCustomDropdown('ven_search', vendors, 'vendor_code', 'vendor_name', 'vendor_code', 'ven_name', 'ven_code', true);
             } catch(e) { console.error("Master data fetch failed."); }
             generatePreview();
         };
 
-        function attachCustomDropdown(inputId, dataArray, searchKey, displayKey, codeKey, nameHiddenId, codeHiddenId) {
+        // Added 'isVendor' flag. If true, it completely masks the real name from the UI and search.
+        function attachCustomDropdown(inputId, dataArray, searchKey, displayKey, codeKey, nameHiddenId, codeHiddenId, isVendor = false) {
             const inp = document.getElementById(inputId); 
             const list = document.createElement('div'); 
             list.className = 'custom-dropdown-list'; 
@@ -183,14 +189,28 @@
             
             function renderList(filterTxt = "") {
                 list.innerHTML = ''; 
-                const matches = dataArray.filter(item => item[searchKey].toLowerCase().includes(filterTxt.toLowerCase()) || item[codeKey].toLowerCase().includes(filterTxt.toLowerCase()));
+                const matches = dataArray.filter(item => {
+                    if (isVendor) {
+                        // Vendors can only be searched by their strict secret code
+                        return item[codeKey].toLowerCase().includes(filterTxt.toLowerCase());
+                    } else {
+                        return item[searchKey].toLowerCase().includes(filterTxt.toLowerCase()) || item[codeKey].toLowerCase().includes(filterTxt.toLowerCase());
+                    }
+                });
+
                 if(matches.length === 0) { list.style.display = 'none'; return; }
                 
                 matches.forEach(match => { 
                     let div = document.createElement('div'); div.className = 'custom-dropdown-item'; 
-                    div.innerHTML = `<strong style="color:var(--kilrr-orange);">${match[codeKey]}</strong> - ${match[displayKey]}`; 
+                    
+                    if (isVendor) {
+                        div.innerHTML = `<strong style="color:var(--kilrr-orange); font-size:18px;">${match[codeKey]}</strong>`; 
+                    } else {
+                        div.innerHTML = `<strong style="color:var(--kilrr-orange);">${match[codeKey]}</strong> - ${match[displayKey]}`; 
+                    }
+                    
                     div.onclick = () => { 
-                        inp.value = match[displayKey]; 
+                        inp.value = isVendor ? match[codeKey] : match[displayKey]; 
                         document.getElementById(nameHiddenId).value = match[displayKey]; 
                         document.getElementById(codeHiddenId).value = match[codeKey]; 
                         list.style.display = 'none'; 
@@ -201,7 +221,6 @@
                 list.style.display = 'block';
             }
             
-            // SECURITY FIX: Clear the hidden code if they try to type without clicking the dropdown
             inp.addEventListener('input', function() { 
                 document.getElementById(codeHiddenId).value = "";
                 document.getElementById(nameHiddenId).value = "";
@@ -266,9 +285,8 @@
             const ingCode = document.getElementById('ing_code').value;
             const venCode = document.getElementById('ven_code').value;
 
-            // SECURITY FIX: Prevent blank submissions
             if(!ingCode || !venCode) {
-                return alert("⚠️ ERROR: You MUST tap the Material and Vendor from the dropdown list to lock in their secret codes!");
+                return alert("⚠️ ERROR: You MUST tap the Material and Vendor code from the dropdown list to lock them in!");
             }
 
             if(generatedTagsForPreview.length === 0) return alert("Fill all fields correctly first!");
@@ -285,7 +303,7 @@
                 ingCode: ingCode,
                 ingName: document.getElementById('ing_name').value,
                 venCode: venCode,
-                venName: document.getElementById('ven_name').value, // Used for background logging only
+                venName: document.getElementById('ven_name').value,
                 weight: document.getElementById('weight').value.replace(/[^0-9.]/g, ''),
                 startNo: parseInt(startVal),
                 endNo: parseInt(endVal),
@@ -307,10 +325,9 @@
                 qList.innerHTML = `<div style="color:#94a3b8; text-align:center; padding:20px;">No labels staged.</div>`;
                 return;
             }
-            // VENDOR ANONYMITY FIX: Only showing venCode on the UI, not venName
             qList.innerHTML = printQueue.map((item, index) => `
                 <div class="queue-item" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><span style="color:var(--kilrr-orange); font-size:16px;">${item.ingCode}</span> | Vendor: ${item.venCode} | Bags: ${item.startNo} to ${item.endNo}</div>
+                    <div><span style="color:var(--kilrr-orange); font-size:16px;">${item.ingCode}</span> | Vendor: <span style="font-family:monospace; font-weight:900;">${item.venCode}</span> | Bags: ${item.startNo} to ${item.endNo}</div>
                     <button style="background:var(--danger-red); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold; font-size: 16px;" onclick="removeFromQueue(${index})">X</button>
                 </div>
             `).join('');
@@ -330,11 +347,10 @@
                 let tagEnd = `${item.dateFmt}/${item.ingCode}/${item.venCode}/${item.endNo}`;
                 let tagDisplay = item.startNo === item.endNo ? tagStart : `${tagStart} to ${tagEnd}`;
 
-                // VENDOR ANONYMITY FIX: Only showing venCode on the UI, not venName
                 return `
                 <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:20px; border:1px solid #cbd5e1; border-radius:12px; margin-bottom:12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
                     <div>
-                        <div style="font-weight:900; color:var(--navy-command); font-size:18px;">${item.ingName} <span style="font-size:14px; color:#64748b;">(Vendor: ${item.venCode})</span></div>
+                        <div style="font-weight:900; color:var(--navy-command); font-size:18px;">${item.ingName} <span style="font-size:14px; color:var(--danger-red); font-family:monospace;">(Vendor: ${item.venCode})</span></div>
                         <div style="font-family:monospace; color:var(--kilrr-orange); font-weight:bold; font-size:16px; margin-top:8px;">${tagDisplay}</div>
                     </div>
                     <div style="text-align:right;">
