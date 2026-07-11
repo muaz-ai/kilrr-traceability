@@ -13,7 +13,6 @@
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; }
         
-        /* Dark Slate Background to match Inwarding and visually prove the cache has cleared */
         body { font-family: 'Inter', sans-serif; background: #0f172a; color: #0f172a; margin: 0; padding-bottom: 100px; min-height: 100vh;}
         
         .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
@@ -177,7 +176,7 @@
     </div>
     
     <script>
-        // ADDED "Pudin" and "Pudina" to cover all bases for the Master Data update
+        // Updated RECIPE_PREFIXES to include the exact all-caps spelling from your Master Data
         const RECIPE_PREFIXES = {
             "Tandoori": "TAN", 
             "Achaari": "ACH", 
@@ -185,6 +184,7 @@
             "Shawarma": "SH",
             "Dhaniya": "DH", 
             "Pudina": "PUD", 
+            "PUDINA": "PUD", 
             "Pudin": "PUD", 
             "Afghan-Ka-Shaitaan": "AFG", 
             "Lucknowi Tamancha": "LK",
@@ -416,7 +416,7 @@
                     const totalKg = matchedScans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
                     const isDone = matchedScans.length > 0;
                     return `
-                        <div class="feed-item ${isDone ? 'done' : ''}">
+                        <div class="feed-item ${is,Done ? 'done' : ''}">
                             <div class="feed-name">${req.ingredient_name || req.product_code} <span style="font-size:12px; color:#94a3b8;">(${req.product_code})</span></div>
                             <div class="feed-status">${isDone ? `✅ ${totalKg.toFixed(2)} KG` : '⏳ बाकी आहे'}</div>
                         </div>
