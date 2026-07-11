@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Kilrr OS - Raw Material Inwarding</title>
-    <!-- Anti-Caching Meta Tags -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -13,7 +12,6 @@
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; }
         
-        /* NEW PREMIUM UI: Dark Slate Background to easily verify cache is cleared */
         body { font-family: 'Inter', sans-serif; background: #0f172a; color: #0f172a; margin: 0; padding-bottom: 100px; min-height: 100vh;}
         
         .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
@@ -26,7 +24,6 @@
 
         .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;}
         
-        /* NEW PREMIUM UI: Floating Stark White Cards */
         .card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); position: relative; overflow: visible;}
         .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #ea580c, #f97316); border-radius: 16px 16px 0 0;}
         .card.card-green::before { background: linear-gradient(90deg, #059669, #10b981); }
@@ -48,14 +45,12 @@
 
         .row-inputs { display: flex; gap: 15px; }
         
-        /* CUSTOM DROPDOWN UI */
         .custom-dropdown-container { position: relative; width: 100%; margin-bottom: 20px;}
         .custom-dropdown-container input { margin-bottom: 0; }
         .custom-dropdown-list { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: #ffffff; border: 2px solid var(--kilrr-orange); border-radius: 12px; max-height: 250px; overflow-y: auto; z-index: 9999; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15); display: none; padding: 10px; }
         .custom-dropdown-item { padding: 15px 20px; font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.1s; margin-bottom: 4px; border-bottom: 1px solid #f1f5f9; }
         .custom-dropdown-item:hover { background: #fff7ed; color: var(--kilrr-orange); }
 
-        /* PREVIEW UI */
         .preview-box { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 25px; display: flex; justify-content: center; align-items: center; background: #f8fafc; margin-bottom: 25px;}
         .queue-list { max-height: 160px; overflow-y: auto; padding: 10px; border: 2px solid #e2e8f0; border-radius: 12px; background: #f1f5f9; margin-bottom: 25px;}
         .queue-item { background: white; padding: 12px 15px; border-radius: 8px; margin-bottom: 8px; font-family: monospace; font-weight: bold; border: 1px solid #cbd5e1; font-size: 15px;}
@@ -72,7 +67,7 @@
             .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 20px; margin-bottom: 4px;}
-            .card { padding: 20px; }
+            .card { padding: 20px; border-radius: 16px;}
         }
     </style>
 </head>
@@ -90,7 +85,6 @@
     </nav>
 
     <div class="container">
-        <!-- INWARDING SETUP -->
         <div class="card">
             <h2>Material Intake Setup</h2>
             <span class="marathi-title">नवीन माल भरणे</span>
@@ -118,7 +112,6 @@
                 <input type="hidden" id="ven_code"><input type="hidden" id="ven_name">
             </div>
 
-            <!-- START & END LOGIC -->
             <div class="row-inputs">
                 <div style="flex:1;">
                     <label>पहिली गोणी <span class="sub">START ID</span></label>
@@ -137,7 +130,6 @@
             <button class="btn-huge" onclick="stageTags()">➕ प्रिंटिंगसाठी रेडी करा (STAGE FOR PRINTING)</button>
         </div>
 
-        <!-- PRINT ENGINE -->
         <div class="card card-green">
             <h2 style="color:var(--success-green);">Print Execution Engine</h2>
             <span class="marathi-title" style="color:var(--success-green);">प्रिंटर मशीन</span>
@@ -155,7 +147,6 @@
             <button class="btn-huge btn-success" onclick="executePrint()">🖨️ प्रिंट करा (EXECUTE PRINT SEQUENCE)</button>
         </div>
 
-        <!-- RECENT HISTORY LOG -->
         <div class="card card-full">
             <h2>Recently Generated Labels</h2>
             <span class="marathi-title">आत्ताच प्रिंट केलेले (This Session)</span>
@@ -209,7 +200,13 @@
                 }); 
                 list.style.display = 'block';
             }
-            inp.addEventListener('input', function() { renderList(this.value); }); 
+            
+            // SECURITY FIX: Clear the hidden code if they try to type without clicking the dropdown
+            inp.addEventListener('input', function() { 
+                document.getElementById(codeHiddenId).value = "";
+                document.getElementById(nameHiddenId).value = "";
+                renderList(this.value); 
+            }); 
             inp.addEventListener('focus', function() { renderList(this.value); });
             document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
         }
@@ -249,7 +246,6 @@
                 generatedTagsForPreview.push(`${dateFmt}/${ingCode}/${venCode}/${i}`);
             }
 
-            // Web preview box mirrors the exact layout logic of the print layout
             let qr = new QRious({ value: generatedTagsForPreview[0], size: 250, level: 'M' });
             document.getElementById('preview_area').innerHTML = `
                 <div style="background:white; padding:10px; border:2px solid black; width: 250px; color: black; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box;">
@@ -267,6 +263,14 @@
         }
 
         function stageTags() {
+            const ingCode = document.getElementById('ing_code').value;
+            const venCode = document.getElementById('ven_code').value;
+
+            // SECURITY FIX: Prevent blank submissions
+            if(!ingCode || !venCode) {
+                return alert("⚠️ ERROR: You MUST tap the Material and Vendor from the dropdown list to lock in their secret codes!");
+            }
+
             if(generatedTagsForPreview.length === 0) return alert("Fill all fields correctly first!");
             
             const dateVal = document.getElementById('date').value;
@@ -278,10 +282,10 @@
             const batchObj = {
                 dateRaw: dateVal,
                 dateFmt: `${day}${month}`,
-                ingCode: document.getElementById('ing_code').value,
+                ingCode: ingCode,
                 ingName: document.getElementById('ing_name').value,
-                venCode: document.getElementById('ven_code').value,
-                venName: document.getElementById('ven_name').value,
+                venCode: venCode,
+                venName: document.getElementById('ven_name').value, // Used for background logging only
                 weight: document.getElementById('weight').value.replace(/[^0-9.]/g, ''),
                 startNo: parseInt(startVal),
                 endNo: parseInt(endVal),
@@ -303,9 +307,10 @@
                 qList.innerHTML = `<div style="color:#94a3b8; text-align:center; padding:20px;">No labels staged.</div>`;
                 return;
             }
+            // VENDOR ANONYMITY FIX: Only showing venCode on the UI, not venName
             qList.innerHTML = printQueue.map((item, index) => `
                 <div class="queue-item" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><span style="color:var(--kilrr-orange); font-size:16px;">${item.ingCode}</span> | ${item.venCode} | Bags: ${item.startNo} to ${item.endNo}</div>
+                    <div><span style="color:var(--kilrr-orange); font-size:16px;">${item.ingCode}</span> | Vendor: ${item.venCode} | Bags: ${item.startNo} to ${item.endNo}</div>
                     <button style="background:var(--danger-red); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold; font-size: 16px;" onclick="removeFromQueue(${index})">X</button>
                 </div>
             `).join('');
@@ -325,10 +330,11 @@
                 let tagEnd = `${item.dateFmt}/${item.ingCode}/${item.venCode}/${item.endNo}`;
                 let tagDisplay = item.startNo === item.endNo ? tagStart : `${tagStart} to ${tagEnd}`;
 
+                // VENDOR ANONYMITY FIX: Only showing venCode on the UI, not venName
                 return `
                 <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:20px; border:1px solid #cbd5e1; border-radius:12px; margin-bottom:12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
                     <div>
-                        <div style="font-weight:900; color:var(--navy-command); font-size:18px;">${item.ingName} <span style="font-size:14px; color:#64748b;">(${item.venName})</span></div>
+                        <div style="font-weight:900; color:var(--navy-command); font-size:18px;">${item.ingName} <span style="font-size:14px; color:#64748b;">(Vendor: ${item.venCode})</span></div>
                         <div style="font-family:monospace; color:var(--kilrr-orange); font-weight:bold; font-size:16px; margin-top:8px;">${tagDisplay}</div>
                     </div>
                     <div style="text-align:right;">
@@ -340,7 +346,6 @@
         }
         
         function getPrintHTML(queueArray) {
-            // FIXED 75x75 CSS. QR is 36mm. Total height math is strictly 74.9mm to prevent cutoff.
             let html = `<html><head><style>
                 @page { size: 75mm 75mm; margin: 0; }
                 body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; }
