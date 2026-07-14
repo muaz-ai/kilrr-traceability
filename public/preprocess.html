@@ -11,7 +11,6 @@
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        /* SCADA INDUSTRIAL DARK MODE */
         :root { --kilrr-orange: #f97316; --navy-command: #0b1121; --panel-bg: #1e293b; --input-bg: #0f172a; --text-main: #f8fafc; --text-muted: #94a3b8; --success-neon: #10b981; --danger-neon: #ef4444; --accent-blue: #3b82f6; }
         
         body { font-family: 'Inter', sans-serif; background: var(--navy-command); color: var(--text-main); margin: 0; padding-bottom: 100px; min-height: 100vh;}
@@ -113,7 +112,7 @@
                 <div style="flex:2;">
                     <label style="color:var(--accent-blue);">काय बनवत आहात? <span class="sub">2. SEARCH TARGET PRODUCT</span></label>
                     <div class="custom-dropdown-container">
-                        <input type="text" id="recipe_search" placeholder="Search Master Database..." autocomplete="off">
+                        <input type="text" id="recipe_search" placeholder="Connecting to Master Data..." autocomplete="off">
                     </div>
                 </div>
             </div>
@@ -203,6 +202,7 @@
             document.getElementById('date').valueAsDate = new Date();
             document.getElementById('scan_input').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); addTag(); }});
             
+            // SMART AUTO-FILL: Safely checks for typed values
             document.getElementById('recipe_search').addEventListener('blur', function() {
                 setTimeout(() => { 
                     let typedVal = this.value.trim();
@@ -216,27 +216,40 @@
                 }, 200);
             });
 
+            // ARMORED DATABASE FETCH
             try {
                 let combinedList = [];
                 
                 let ingRes = await fetch('/get-ingredients').then(r=>r.json());
-                ingRes.forEach(i => combinedList.push({ display: i.ingredient_name, code: i.product_code }));
+                if(Array.isArray(ingRes)) {
+                    ingRes.forEach(i => {
+                        if(i.ingredient_name && i.product_code) {
+                            combinedList.push({ display: i.ingredient_name, code: i.product_code });
+                        }
+                    });
+                }
                 
                 let recRes = await fetch('/get-recipes').then(r=>r.json());
-                let uniqueRec = [...new Set(recRes.map(r => r.fg_code))];
-                uniqueRec.forEach(r => {
-                    if(!combinedList.find(c => c.display.toLowerCase() === r.toLowerCase())) {
-                        combinedList.push({ display: r, code: r.substring(0,3).toUpperCase() });
-                    }
-                });
+                if(Array.isArray(recRes)) {
+                    let uniqueRec = [...new Set(recRes.map(r => r.fg_code))];
+                    uniqueRec.forEach(r => {
+                        if(r && !combinedList.find(c => c.display.toLowerCase() === r.toLowerCase())) {
+                            combinedList.push({ display: r, code: r.substring(0,3).toUpperCase() });
+                        }
+                    });
+                }
 
                 globalCombinedList = combinedList; 
+                document.getElementById('recipe_search').placeholder = "Search Master Database...";
 
                 attachCustomDropdown('recipe_search', combinedList, 'display', 'code', (selectedCode, selectedName) => {
                     document.getElementById('product_code').value = selectedCode;
                     loadChecklist(selectedName);
                 });
-            } catch(e) { console.error("Master data fetch failed."); }
+            } catch(e) { 
+                console.error("Master data fetch failed.", e); 
+                document.getElementById('recipe_search').placeholder = "⚠️ ERROR: Database Disconnected!";
+            }
         };
 
         function flash(success, txt) { 
@@ -263,6 +276,7 @@
             } else { rd.style.display = 'none'; document.getElementById('camToggleBtn').innerHTML = "📷 मोबाईल कॅमेरा चालू करा (Mobile Scanner)"; } 
         }
 
+        // Armored Dropdown filter to prevent null crashes
         function attachCustomDropdown(inputId, dataArray, displayKey, codeKey, onSelectCallback) {
             const inp = document.getElementById(inputId); 
             const list = document.createElement('div'); 
@@ -271,7 +285,11 @@
             
             function renderList(filterTxt = "") {
                 list.innerHTML = ''; 
-                const matches = dataArray.filter(item => item[displayKey].toLowerCase().includes(filterTxt.toLowerCase()) || item[codeKey].toLowerCase().includes(filterTxt.toLowerCase()));
+                const matches = dataArray.filter(item => 
+                    (item[displayKey] || "").toLowerCase().includes(filterTxt.toLowerCase()) || 
+                    (item[codeKey] || "").toLowerCase().includes(filterTxt.toLowerCase())
+                );
+
                 if(matches.length === 0) { list.style.display = 'none'; return; }
                 
                 matches.forEach(match => { 
@@ -297,7 +315,7 @@
                 const reqRes = await fetch(`/recipe-requirements/${encodeURIComponent(productName)}`);
                 recipeRequirements = await reqRes.json();
                 
-                if (recipeRequirements.length === 0) {
+                if (!Array.isArray(recipeRequirements) || recipeRequirements.length === 0) {
                     isSingleItemProcess = true;
                     validRecipeCodes = [];
                 } else {
@@ -451,7 +469,6 @@
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
 
-                // DYNAMIC BATCH CODE INJECTION: Only renders if user typed a Batch Code
                 let batchCodeHTML = batchCode ? `<div class="batch-box">BATCH: ${batchCode}</div>` : '';
 
                 let html = `<html><head><style>
