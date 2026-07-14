@@ -13,6 +13,7 @@
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; --accent-blue: #2563eb; }
         body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 100px; min-height: 100vh;}
+        
         .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
         .brand { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;}
         .brand span { color: var(--kilrr-orange); }
@@ -20,6 +21,7 @@
         .nav-btn { color: #cbd5e1; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; transition: 0.2s; padding: 8px 12px; border-radius: 8px;}
         .nav-btn:hover { background: rgba(255,255,255,0.1); color: white;}
         .nav-btn.active { color: white; background: var(--kilrr-orange);}
+        
         .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;}
         
         .card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; position: relative;}
@@ -97,9 +99,8 @@
     </nav>
 
     <div class="container">
-        <!-- OUTPUT CONFIGURATION -->
         <div class="card">
-            <h2>Execution Terminal</h2>
+            <h2>Factory Execution Setup</h2>
             <span class="marathi-title">अंतर्गत माल बनवणे (Base Masalas / Repacking)</span>
             
             <div class="row-inputs">
@@ -133,7 +134,6 @@
                 </div>
             </div>
 
-            <!-- BATCH TOTALS AND LOT CODES -->
             <div class="row-inputs">
                 <div style="flex:1;">
                     <label>एकूण वजन <span class="sub">TOTAL BATCH YIELD (KG)</span></label>
@@ -161,7 +161,6 @@
             </div>
         </div>
 
-        <!-- INPUT SCANNING & EXECUTION -->
         <div class="card card-green">
             <h2 style="color:var(--success-green);">Traceability Engine</h2>
             <span class="marathi-title green-title">कोणते बारकोड वापरले? (Scan Input Tags)</span>
@@ -202,6 +201,7 @@
             document.getElementById('date').valueAsDate = new Date();
             document.getElementById('scan_input').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); addTag(); }});
             
+            // SMART AUTO-FILL: Safely checks for typed values
             document.getElementById('recipe_search').addEventListener('blur', function() {
                 setTimeout(() => { 
                     let typedVal = this.value.trim();
@@ -215,6 +215,7 @@
                 }, 200);
             });
 
+            // ARMORED DATABASE FETCH
             try {
                 let combinedList = [];
                 
@@ -257,6 +258,7 @@
             setTimeout(()=>{f.style.opacity='0'; setTimeout(()=>f.style.display='none',200);}, 600); 
         }
 
+        // MOBILE KEYBOARD SUPPRESSION ADDED HERE
         function toggleCamera() { 
             const rd = document.getElementById('reader'); 
             if(rd.style.display === 'none' || rd.style.display === '') { 
@@ -267,8 +269,9 @@
                         if(isCameraProcessing) return; 
                         isCameraProcessing = true;
                         document.getElementById('scan_input').value = txt; 
+                        document.getElementById('scan_input').blur(); // Suppress mobile keyboard
                         addTag();
-                        setTimeout(() => { isCameraProcessing = false; }, 2500);
+                        setTimeout(() => { isCameraProcessing = false; }, 2000);
                     }); 
                 } 
             } else { rd.style.display = 'none'; document.getElementById('camToggleBtn').innerHTML = "📷 मोबाईल कॅमेरा चालू करा (Mobile Scanner)"; } 
@@ -344,8 +347,8 @@
                 const isDone = scannedIngCodes.includes(req.product_code);
                 return `
                     <div class="feed-item ${isDone ? 'done' : ''}">
-                        <div class="feed-name">${req.ingredient_name || req.product_code} <span style="font-size:12px; color:#94a3b8;">(${req.product_code})</span></div>
-                        <div class="feed-status">${isDone ? `✅ SCANNED` : '⏳ बाकी आहे'}</div>
+                        <div class="feed-name">${req.ingredient_name || req.product_code} <span style="font-size:12px; color:#64748b;">(${req.product_code})</span></div>
+                        <div class="feed-status">${isDone ? `✅ SCANNED` : '⏳ PENDING'}</div>
                     </div>
                 `;
             }).join('');
@@ -362,13 +365,15 @@
 
             if (!isSingleItemProcess && validRecipeCodes.length > 0 && !validRecipeCodes.includes(pCode)) {
                 flash(false, "❌ WRONG INGREDIENT");
-                inp.value = ""; inp.focus();
+                inp.value = ""; 
+                if(!isCameraProcessing) inp.focus(); else inp.blur();
                 return;
             }
 
             if(parentTags.includes(val)) {
                 flash(false, "❌ DUPLICATE");
-                inp.value = ""; inp.focus();
+                inp.value = ""; 
+                if(!isCameraProcessing) inp.focus(); else inp.blur();
                 return;
             }
 
@@ -380,7 +385,7 @@
             renderChecklist();
             
             inp.value = "";
-            inp.focus();
+            if(!isCameraProcessing) inp.focus(); else inp.blur();
         }
 
         function renderTags() {
