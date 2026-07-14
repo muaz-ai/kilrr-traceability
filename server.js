@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const { Pool } = require('pg');
+const https = require('https'); // 100% Native Node.js - Prevents older server crashes
 
 const app = express();
 app.use(express.json());
@@ -20,17 +21,20 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// The Indestructible Cloud Backup Trigger
-async function backupToSheets(eventType, operator, payload) {
-    if(!SHEET_WEBHOOK) return;
+// The Indestructible Cloud Backup Trigger (Rewritten to be 100% Crash-Proof)
+function backupToSheets(eventType, operator, payload) {
+    if(!SHEET_WEBHOOK || !SHEET_WEBHOOK.startsWith('https')) return;
     try {
-        await fetch(SHEET_WEBHOOK, {
+        const data = JSON.stringify({ event_type: eventType, operator: operator, payload: payload });
+        const req = https.request(SHEET_WEBHOOK, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ event_type: eventType, operator: operator, payload: payload })
+            headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(data) }
         });
-    } catch (e) {
-        console.error("⚠️ Sheets Backup Failed (But DB is safe):", e.message);
+        req.on('error', (e) => console.error("Sheets Backup Error:", e.message));
+        req.write(data);
+        req.end();
+    } catch(e) {
+        console.error("Backup execution failed, but DB is safe.");
     }
 }
 
@@ -93,6 +97,12 @@ async function initDB() {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
+        // Auto-add new FSSAI columns if they don't exist yet
+        await pool.query(`
+            ALTER TABLE sub_assemblies 
+            ADD COLUMN IF NOT EXISTS total_yield VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS batch_code VARCHAR(100)
+        `);
         console.log("✅ Kilrr OS Database Architecture Verified & Locked.");
     } catch (e) {
         console.error("❌ Database Initialization Error:", e);
@@ -129,8 +139,6 @@ app.post("/log-inwarding", async (req, res) => {
                 "INSERT INTO inwarding_logs (date_received, ingredient_code, ingredient_name, vendor_code, vendor_name, weight, start_no, end_no, packs) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
                 [item.dateRaw, item.ingCode, item.ingName, item.venCode, item.venName, item.weight, item.startNo, item.endNo, item.packs]
             );
-            
-            // Indestructible Backup Trigger
             backupToSheets("INWARD_LOGGED", "System", item);
         }
         res.json({status: "success"});
@@ -152,10 +160,7 @@ app.post("/log-preprocess", async (req, res) => {
                 [tag, product_code, process_type, parent_tags, total_yield, batch_code]
             );
         }
-
-        // Indestructible Backup Trigger
         backupToSheets("PREPROCESS_LOGGED", "System", req.body);
-
         res.json({status: "success"});
     } catch(e) {
         res.status(500).json({error: e.message});
@@ -163,7 +168,7 @@ app.post("/log-preprocess", async (req, res) => {
 });
 
 // ==========================================
-// 5. SCANNER & BATCH ROUTES (The Factory Floor)
+// 5. SCANNER & BATCH ROUTES
 // ==========================================
 app.get("/open-batches", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM batches WHERE status = 'OPEN' ORDER BY created_at DESC")).rows); }
@@ -220,9 +225,7 @@ app.post("/scan", async (req, res) => {
         );
 
         await pool.query("UPDATE batches SET total_weight = total_weight + $1 WHERE batch_code = $2", [weight, batch_code]);
-
         backupToSheets("SCAN_ADDED", operator, { batch_code, rm_tag, product_code, weight, parent_tags });
-
         res.json({status: "success"});
     } catch(e) {
         if(e.code === '23505') return res.status(400).json({error: "Duplicate tag!"});
@@ -252,24 +255,19 @@ app.post("/delete-batch", async (req, res) => {
     try {
         const { pin, batch_code } = req.body;
         if(pin !== "1234") return res.status(403).json({error: "Unauthorized"});
-        
         await pool.query("DELETE FROM batches WHERE batch_code = $1", [batch_code]);
         res.json({status: "success"});
     } catch(e) { res.status(500).json({error: e.message}); }
 });
 
 // ==========================================
-// 6. DASHBOARD & FSSAI TRACEABILITY ROUTES
+// 6. DASHBOARD & FSSAI ROUTES
 // ==========================================
 app.get("/api/dashboard-traceability", async (req, res) => {
     try {
         const batches = await pool.query("SELECT * FROM batches ORDER BY created_at DESC LIMIT 50");
         const scans = await pool.query("SELECT s.*, i.ingredient_name FROM scans s LEFT JOIN ingredients i ON s.product_code = i.product_code");
-        
-        let result = batches.rows.map(b => {
-            b.scans = scans.rows.filter(s => s.batch_code === b.batch_code);
-            return b;
-        });
+        let result = batches.rows.map(b => { b.scans = scans.rows.filter(s => s.batch_code === b.batch_code); return b; });
         res.json(result);
     } catch(e) { res.status(500).json({error: e.message}); }
 });
@@ -284,10 +282,5 @@ app.get("/api/dashboard-preprocess", async (req, res) => {
     catch(e) { res.status(500).json({error: e.message}); }
 });
 
-// ==========================================
-// START THE FACTORY ENGINE
-// ==========================================
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🏭 Kilrr OS Engine running globally on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`🏭 Kilrr OS Engine running globally on port ${PORT}`));
