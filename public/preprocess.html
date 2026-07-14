@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Kilrr OS - Pre-Process & Sub-Assembly</title>
-    <!-- Anti-Caching Meta Tags -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -24,7 +23,7 @@
 
         .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;}
         
-        .card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); position: relative; overflow: visible;}
+        .card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); position: relative;}
         .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 16px 16px 0 0;}
         .card.card-green::before { background: linear-gradient(90deg, #059669, #10b981); }
         
@@ -32,7 +31,7 @@
         .marathi-title { font-family: 'Inter', sans-serif; color: #3b82f6; font-size: 14px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
         
         label { font-weight: 800; font-size: 13px; color: var(--navy-command); display: block; margin-bottom: 8px; text-transform: uppercase;}
-        label span.sub { color: #64748b; font-size: 11px; font-weight: 700; display: block; margin-top: 2px; letter-spacing: 0.5px;}
+        label span.sub { color: #64748b; font-size: 11px; font-weight: 700; display: block; margin-top: 2px;}
 
         input, select { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #f8fafc; transition: 0.2s ease;}
         input:focus, select:focus { border-color: #3b82f6; outline: none; background: #ffffff; box-shadow: 0 0 0 4px rgba(59,130,246,0.15);}
@@ -43,14 +42,12 @@
 
         .row-inputs { display: flex; gap: 15px; }
         
-        /* CUSTOM DROPDOWN */
         .custom-dropdown-container { position: relative; width: 100%; margin-bottom: 20px;}
         .custom-dropdown-container input { margin-bottom: 0; }
         .custom-dropdown-list { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: #ffffff; border: 2px solid #3b82f6; border-radius: 12px; max-height: 250px; overflow-y: auto; z-index: 9999; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15); display: none; padding: 10px; }
         .custom-dropdown-item { padding: 15px 20px; font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.1s; margin-bottom: 4px; border-bottom: 1px solid #f1f5f9; }
         .custom-dropdown-item:hover { background: #eff6ff; color: #2563eb; }
 
-        /* CHECKLIST & SCANS */
         .recipe-feed { border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px; background: #f8fafc; margin-bottom: 20px;}
         .feed-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
         .feed-item.done { border-color: var(--success-green); background: #ecfdf5; }
@@ -95,14 +92,13 @@
     </nav>
 
     <div class="container">
-        <!-- OUTPUT CONFIGURATION -->
         <div class="card">
-            <h2>Sub-Assembly Setup</h2>
-            <span class="marathi-title">अंतर्गत माल बनवणे (Base Masalas)</span>
+            <h2>Factory Execution Setup</h2>
+            <span class="marathi-title">अंतर्गत माल बनवणे (Base Masalas / Repacking)</span>
             
-            <label>काय बनवत आहात? <span class="sub">1. SELECT RECIPE (e.g. Garam Masala)</span></label>
+            <label>काय बनवत आहात? किंवा काय पॅक करत आहात? <span class="sub">1. SEARCH TARGET PRODUCT (e.g. Garam Masala OR Jeera)</span></label>
             <div class="custom-dropdown-container">
-                <input type="text" id="recipe_search" placeholder="Search Master Recipe..." autocomplete="off">
+                <input type="text" id="recipe_search" placeholder="Search Master Database..." autocomplete="off">
                 <input type="hidden" id="product_name">
             </div>
 
@@ -114,9 +110,12 @@
                 <div style="flex:1;">
                     <label>प्रक्रिया <span class="sub">3. PROCESS TYPE</span></label>
                     <select id="process_type">
-                        <option value="BLENDING">Blending</option>
+                        <option value="CLEANING">Cleaning / Sorting</option>
+                        <option value="REPACKING">Re-Packaging (LDPE)</option>
                         <option value="ROASTING">Roasting</option>
-                        <option value="GRINDING">Grinding</option>
+                        <option value="GRINDING">Grinding / Pulverizing</option>
+                        <option value="CRUSHING">Crushing</option>
+                        <option value="BLENDING">Blending (Base Masala)</option>
                     </select>
                 </div>
             </div>
@@ -131,8 +130,8 @@
                     <input type="text" inputmode="numeric" id="end_no" value="1" oninput="calcQty()">
                 </div>
                 <div style="flex:1;">
-                    <label>वजन (KG) <span class="sub">WT/BAG</span></label>
-                    <input type="text" inputmode="numeric" id="weight" placeholder="e.g. 10">
+                    <label>वजन (KG) <span class="sub">WT/BAG (OPTIONAL)</span></label>
+                    <input type="text" inputmode="numeric" id="weight" placeholder="Leave blank to write manually">
                 </div>
             </div>
             
@@ -140,19 +139,18 @@
             <input type="hidden" id="date">
         </div>
 
-        <!-- INPUT SCANNING & EXECUTION -->
         <div class="card card-green">
             <h2 style="color:var(--success-green);">Input Traceability</h2>
-            <span class="marathi-title" style="color:var(--success-green);">कोणते बारकोड वापरले? (Scan Raw Materials)</span>
+            <span class="marathi-title" style="color:var(--success-green);">कोणते बारकोड वापरले? (Scan Input Tags)</span>
             
             <div style="display:flex; gap:10px; margin-bottom: 20px;">
                 <input type="text" id="scan_input" placeholder="Scan barcode here..." autocomplete="off" style="margin:0; border-color:var(--navy-command);">
                 <button style="padding:0 25px; background:var(--navy-command); color:white; border-radius:10px; font-weight:900; cursor:pointer;" onclick="addTag()">ADD</button>
             </div>
 
-            <h3 style="font-family:'Space Grotesk'; font-size:15px; margin-bottom:5px; color:var(--navy-command);">काय काय लागणार? (Recipe Checklist)</h3>
+            <h3 style="font-family:'Space Grotesk'; font-size:16px; margin-bottom:5px; color:var(--navy-command);">काय काय लागणार? (Recipe Checklist)</h3>
             <div class="recipe-feed" id="recipe_checklist">
-                <div style="text-align:center; color:#94a3b8; font-weight:bold; font-size:14px;">Select a recipe first to see requirements.</div>
+                <div style="text-align:center; color:#94a3b8; font-weight:bold; font-size:14px;">Select a target product first.</div>
             </div>
 
             <h3 style="font-family:'Space Grotesk'; font-size:14px; margin-bottom:5px; color:var(--navy-command);">आत्ताच स्कॅन केलेले (Active Inputs)</h3>
@@ -168,19 +166,19 @@
         let parentTags = [];
         let validRecipeCodes = [];
         let recipeRequirements = [];
-        let scannedIngCodes = []; // Keeps track of what ingredient codes have been scanned
+        let scannedIngCodes = []; 
+        let isSingleItemProcess = false;
 
         window.onload = async () => {
             document.getElementById('date').valueAsDate = new Date();
             document.getElementById('scan_input').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); addTag(); }});
             
-            // Fetch Recipes from DB to populate dropdown
             try {
-                const res = await fetch('/get-recipes');
+                const res = await fetch('/get-ingredients');
                 const data = await res.json();
-                const uniqueRecipes = [...new Set(data.map(r => r.fg_code))].map(name => ({ recipe_name: name }));
-                attachCustomDropdown('recipe_search', uniqueRecipes, 'recipe_name', 'recipe_name', 'recipe_name', 'product_name', async (selectedRecipe) => {
-                    await loadChecklist(selectedRecipe);
+                attachCustomDropdown('recipe_search', data, 'ingredient_name', 'ingredient_name', 'product_code', 'product_name', async (selectedProductCode, selectedProductName) => {
+                    document.getElementById('product_code').value = selectedProductCode;
+                    await loadChecklist(selectedProductName);
                 });
             } catch(e) { console.error("Master data fetch failed."); }
         };
@@ -200,17 +198,17 @@
             
             function renderList(filterTxt = "") {
                 list.innerHTML = ''; 
-                const matches = dataArray.filter(item => item[searchKey].toLowerCase().includes(filterTxt.toLowerCase()));
+                const matches = dataArray.filter(item => item[searchKey].toLowerCase().includes(filterTxt.toLowerCase()) || item[codeKey].toLowerCase().includes(filterTxt.toLowerCase()));
                 if(matches.length === 0) { list.style.display = 'none'; return; }
                 
                 matches.forEach(match => { 
                     let div = document.createElement('div'); div.className = 'custom-dropdown-item'; 
-                    div.innerHTML = `<strong style="color:#3b82f6;">${match[displayKey]}</strong>`; 
+                    div.innerHTML = `<strong style="color:#3b82f6;">${match[codeKey]}</strong> - ${match[displayKey]}`; 
                     div.onclick = () => { 
                         inp.value = match[displayKey]; 
-                        document.getElementById(hiddenId).value = match[codeKey]; 
+                        document.getElementById(hiddenId).value = match[displayKey]; 
                         list.style.display = 'none'; 
-                        if(onSelectCallback) onSelectCallback(match[codeKey]);
+                        if(onSelectCallback) onSelectCallback(match[codeKey], match[displayKey]);
                     }; 
                     list.appendChild(div); 
                 }); 
@@ -225,12 +223,20 @@
             document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
         }
 
-        async function loadChecklist(recipeName) {
+        async function loadChecklist(productName) {
             try {
-                const reqRes = await fetch(`/recipe-requirements/${encodeURIComponent(recipeName)}`);
+                const reqRes = await fetch(`/recipe-requirements/${encodeURIComponent(productName)}`);
                 recipeRequirements = await reqRes.json();
-                validRecipeCodes = recipeRequirements.map(i => i.product_code);
-                parentTags = []; // Reset scans when changing recipe
+                
+                if (recipeRequirements.length === 0) {
+                    isSingleItemProcess = true;
+                    validRecipeCodes = [];
+                } else {
+                    isSingleItemProcess = false;
+                    validRecipeCodes = recipeRequirements.map(i => i.product_code);
+                }
+
+                parentTags = []; 
                 scannedIngCodes = [];
                 renderChecklist();
                 renderTags();
@@ -239,8 +245,14 @@
 
         function renderChecklist() {
             const list = document.getElementById('recipe_checklist');
+            
+            if(isSingleItemProcess) {
+                list.innerHTML = `<div style="text-align:center; color:var(--kilrr-orange); font-weight:bold; font-size:15px; padding:10px;">🔄 Single Item Process (No Checklist Required). Scan input tags below.</div>`;
+                return;
+            }
+
             if(recipeRequirements.length === 0) {
-                list.innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:bold; font-size:14px;">Select a recipe first to see requirements.</div>`;
+                list.innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:bold; font-size:14px;">Select a target product first.</div>`;
                 return;
             }
 
@@ -249,7 +261,7 @@
                 return `
                     <div class="feed-item ${isDone ? 'done' : ''}">
                         <div class="feed-name">${req.ingredient_name || req.product_code} <span style="font-size:12px; color:#94a3b8;">(${req.product_code})</span></div>
-                        <div class="feed-status">${isDone ? `✅ Scanned` : '⏳ Pending'}</div>
+                        <div class="feed-status">${isDone ? `✅ Scanned` : '⏳ बाकी आहे'}</div>
                     </div>
                 `;
             }).join('');
@@ -267,11 +279,10 @@
             const val = inp.value.trim();
             if(!val) return;
 
-            // SMART VALIDATION LOGIC
             let parts = val.split('/'); 
             let pCode = parts.length >= 2 ? parts[1] : val;
 
-            if (validRecipeCodes.length > 0 && !validRecipeCodes.includes(pCode)) {
+            if (!isSingleItemProcess && validRecipeCodes.length > 0 && !validRecipeCodes.includes(pCode)) {
                 flash(false, "❌ WRONG INGREDIENT");
                 inp.value = ""; inp.focus();
                 return;
@@ -315,7 +326,6 @@
             
             parentTags.splice(index, 1);
             
-            // Remove the code from scannedIngCodes to uncheck the checklist
             let codeIndex = scannedIngCodes.indexOf(codeToRemove);
             if(codeIndex > -1) scannedIngCodes.splice(codeIndex, 1);
             
@@ -328,13 +338,14 @@
             const pName = document.getElementById('product_name').value.trim().toUpperCase();
             const pCode = document.getElementById('product_code').value.trim().toUpperCase();
             const processType = document.getElementById('process_type').value;
-            const weight = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
+            const weightRaw = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
             
             let startNo = parseInt(document.getElementById('start_no').value.replace(/[^0-9]/g, ''));
             let endNo = parseInt(document.getElementById('end_no').value.replace(/[^0-9]/g, ''));
 
-            if(!pName || !pCode || !weight || isNaN(startNo) || isNaN(endNo)) {
-                return alert("⚠️ Please fill out Output Short Code and Bag details correctly.");
+            // Weight is no longer required for validation
+            if(!pName || !pCode || isNaN(startNo) || isNaN(endNo)) {
+                return alert("⚠️ Please fill out Target Product and Bag details correctly.");
             }
 
             if(parentTags.length === 0) {
@@ -343,10 +354,11 @@
 
             const [year, month, day] = dateVal.split('-');
             const dateFmt = `${day}${month}`;
-            const padWeight = String(weight).padStart(2, '0');
             const dispDate = `${day}/${month}/${year}`;
             
-            // THE KILRR HACK: Setting Vendor Code as "KILRR" so it acts as an internal Raw Material
+            // Format weight string based on if they entered a number or left it blank
+            const weightText = weightRaw ? `NET WT: ${String(weightRaw).padStart(2, '0')} KG` : `NET WT: ____ KG`;
+            
             let outputTags = [];
             for(let i = startNo; i <= endNo; i++) {
                 outputTags.push(`${dateFmt}/${pCode}/KILRR/${i}`);
@@ -372,7 +384,6 @@
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
 
-                // Print the Internal RM Labels (Exact same size as Inwarding layout)
                 let html = `<html><head><style>
                     @page { size: 75mm 75mm; margin: 0; }
                     body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; }
@@ -397,7 +408,7 @@
                         </div>
                         <div class="bottom-section">
                             <div class="tag-string">${tagStr}</div>
-                            <div class="weight-bar">NET WT: ${padWeight} KG</div>
+                            <div class="weight-bar">${weightText}</div>
                         </div>
                     </div>`;
                 });
@@ -408,7 +419,6 @@
                 printWindow.document.write(html);
                 printWindow.document.close();
 
-                // Clear setup
                 document.getElementById('start_no').value = endNo + 1;
                 document.getElementById('end_no').value = endNo + 1;
                 parentTags = [];
