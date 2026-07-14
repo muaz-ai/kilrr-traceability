@@ -2,67 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Kilrr OS - Pre-Process & Sub-Assembly</title>
+    <title>Kilrr OS - Execution Terminal</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; }
-        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #0f172a; margin: 0; padding-bottom: 100px; min-height: 100vh;}
+        /* SCADA INDUSTRIAL DARK MODE */
+        :root { --kilrr-orange: #f97316; --navy-command: #0b1121; --panel-bg: #1e293b; --input-bg: #0f172a; --text-main: #f8fafc; --text-muted: #94a3b8; --success-neon: #10b981; --danger-neon: #ef4444; --accent-blue: #3b82f6; }
         
-        .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
+        body { font-family: 'Inter', sans-serif; background: var(--navy-command); color: var(--text-main); margin: 0; padding-bottom: 100px; min-height: 100vh;}
+        
+        .nav-top { background: #020617; border-bottom: 3px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
         .brand { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;}
         .brand span { color: var(--kilrr-orange); }
         .nav-links { display: flex; gap: 10px; }
-        .nav-btn { color: #cbd5e1; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; transition: 0.2s; padding: 8px 12px; border-radius: 8px;}
+        .nav-btn { color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; transition: 0.2s; padding: 8px 12px; border-radius: 8px;}
         .nav-btn:hover { background: rgba(255,255,255,0.05); color: white;}
-        .nav-btn.active { color: white; background: var(--kilrr-orange);}
+        .nav-btn.active { color: #020617; background: var(--kilrr-orange);}
 
         .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;}
         
-        .card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); position: relative;}
-        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 16px 16px 0 0;}
-        .card.card-green::before { background: linear-gradient(90deg, #059669, #10b981); }
+        /* Glass/Neon Panels */
+        .card { background: var(--panel-bg); border-radius: 16px; padding: 35px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); border: 1px solid #334155; position: relative;}
+        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent-blue), #60a5fa); border-radius: 16px 16px 0 0;}
+        .card.card-green::before { background: linear-gradient(90deg, var(--success-neon), #34d399); }
         
-        h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; text-transform: uppercase; color: var(--navy-command);}
-        .marathi-title { font-family: 'Inter', sans-serif; color: #3b82f6; font-size: 14px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
+        h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 24px; text-transform: uppercase; color: white; letter-spacing: 1px;}
+        .marathi-title { font-family: 'Inter', sans-serif; color: var(--accent-blue); font-size: 14px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 1px solid #334155; padding-bottom: 12px;}
         
-        label { font-weight: 800; font-size: 13px; color: var(--navy-command); display: block; margin-bottom: 8px; text-transform: uppercase;}
+        label { font-weight: 800; font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 8px; text-transform: uppercase;}
         label span.sub { color: #64748b; font-size: 11px; font-weight: 700; display: block; margin-top: 2px;}
 
-        input, select { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #f8fafc; transition: 0.2s ease;}
-        input:focus, select:focus { border-color: #3b82f6; outline: none; background: #ffffff; box-shadow: 0 0 0 4px rgba(59,130,246,0.15);}
-        input[readonly] { background: #e2e8f0; color: #64748b; cursor: not-allowed;}
+        /* Deep Inputs */
+        input, select { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 1px solid #475569; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: var(--input-bg); color: var(--text-main); transition: 0.2s ease;}
+        input:focus, select:focus { border-color: var(--accent-blue); outline: none; box-shadow: 0 0 0 4px rgba(59,130,246,0.2);}
+        input[readonly] { background: #0f172a; color: #475569; cursor: not-allowed; border-color: #1e293b;}
         
-        button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; box-shadow: 0 8px 15px rgba(59, 130, 246, 0.3);}
-        button.btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); box-shadow: 0 8px 15px rgba(5, 150, 105, 0.3); }
+        button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; background: var(--accent-blue); color: white; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4); transition: transform 0.1s;}
+        button.btn-huge:active { transform: translateY(2px); }
+        button.btn-success { background: var(--success-neon); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); color: #020617; }
+        
+        button.btn-cam { width: 100%; padding: 15px; border: 2px solid var(--accent-blue); border-radius: 12px; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase; background: rgba(59,130,246,0.1); color: var(--accent-blue); margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s;}
+        button.btn-cam:hover { background: rgba(59,130,246,0.2); }
 
         .row-inputs { display: flex; gap: 15px; }
         
+        /* Dark Custom Dropdown */
         .custom-dropdown-container { position: relative; width: 100%; margin-bottom: 20px;}
         .custom-dropdown-container input { margin-bottom: 0; }
-        .custom-dropdown-list { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: #ffffff; border: 2px solid #3b82f6; border-radius: 12px; max-height: 250px; overflow-y: auto; z-index: 9999; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15); display: none; padding: 10px; }
-        .custom-dropdown-item { padding: 15px 20px; font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.1s; margin-bottom: 4px; border-bottom: 1px solid #f1f5f9; }
-        .custom-dropdown-item:hover { background: #eff6ff; color: #2563eb; }
+        .custom-dropdown-list { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: var(--panel-bg); border: 2px solid var(--accent-blue); border-radius: 12px; max-height: 250px; overflow-y: auto; z-index: 9999; box-shadow: 0 15px 30px rgba(0,0,0,0.8); display: none; padding: 10px; }
+        .custom-dropdown-item { padding: 15px 20px; font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.1s; margin-bottom: 4px; border-bottom: 1px solid #334155; color: white;}
+        .custom-dropdown-item:hover { background: rgba(59,130,246,0.2); color: var(--accent-blue); }
 
-        .recipe-feed { border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px; background: #f8fafc; margin-bottom: 20px;}
-        .feed-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
-        .feed-item.done { border-color: var(--success-green); background: #ecfdf5; }
-        .feed-name { font-weight: 800; font-size: 15px; color: var(--navy-command); }
-        .feed-status { font-weight: 900; font-size: 14px; color: #94a3b8; background: #f1f5f9; padding: 4px 10px; border-radius: 6px;}
-        .feed-item.done .feed-status { color: var(--success-green); background: #d1fae5;}
+        .recipe-feed { border: 1px solid #334155; border-radius: 12px; padding: 15px; background: var(--input-bg); margin-bottom: 20px;}
+        .feed-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: var(--panel-bg); border: 1px solid #475569; border-radius: 8px; margin-bottom: 8px;}
+        .feed-item.done { border-color: var(--success-neon); background: rgba(16,185,129,0.1); }
+        .feed-name { font-weight: 800; font-size: 15px; color: white; }
+        .feed-status { font-weight: 900; font-size: 14px; color: var(--text-muted); background: var(--input-bg); padding: 4px 10px; border-radius: 6px;}
+        .feed-item.done .feed-status { color: var(--success-neon); background: rgba(16,185,129,0.2);}
 
-        .scanned-parents { max-height: 150px; overflow-y: auto; padding: 10px; border: 2px solid #cbd5e1; border-radius: 10px; background: #f1f5f9; margin-bottom: 20px;}
-        .parent-tag { background: white; padding: 12px 15px; border-radius: 8px; font-family: monospace; font-weight: bold; border: 1px solid #cbd5e1; margin-bottom: 8px; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+        .scanned-parents { max-height: 150px; overflow-y: auto; padding: 10px; border: 1px solid #334155; border-radius: 10px; background: var(--input-bg); margin-bottom: 20px;}
+        .parent-tag { background: var(--panel-bg); padding: 12px 15px; border-radius: 8px; font-family: monospace; font-weight: bold; border: 1px solid #475569; margin-bottom: 8px; font-size: 14px; color: var(--accent-blue);}
 
+        #reader { width: 100%; border-radius: 16px; overflow: hidden; border: 2px solid #475569; margin-bottom: 15px; display: none; background: black;}
         #scan_flash { position: fixed; inset: 0; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 60px; font-weight: 900; color: white; opacity: 0; transition: opacity 0.2s;}
 
         @media (max-width: 1024px) { 
             .container { grid-template-columns: 1fr; margin-top: 15px; gap: 20px;}
-            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap;}
+            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap; border-bottom: none; border-top: 3px solid var(--kilrr-orange);}
             .brand { display: none; }
             .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 8px 12px;}
             .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 20px; margin-bottom: 4px;}
@@ -93,18 +104,17 @@
 
     <div class="container">
         <div class="card">
-            <h2>Factory Execution Setup</h2>
+            <h2>Execution Terminal</h2>
             <span class="marathi-title">अंतर्गत माल बनवणे (Base Masalas / Repacking)</span>
             
-            <label>काय बनवत आहात? किंवा काय पॅक करत आहात? <span class="sub">1. SEARCH TARGET PRODUCT (e.g. Garam Masala OR Jeera)</span></label>
+            <label style="color:var(--accent-blue);">काय बनवत आहात? किंवा काय पॅक करत आहात? <span class="sub">1. SEARCH TARGET PRODUCT (e.g. Garam Masala OR Jeera)</span></label>
             <div class="custom-dropdown-container">
                 <input type="text" id="recipe_search" placeholder="Search Master Database..." autocomplete="off">
-                <input type="hidden" id="product_name">
             </div>
 
             <div class="row-inputs">
                 <div style="flex:1;">
-                    <label>प्रॉडक्ट कोड <span class="sub">2. OUTPUT SHORT CODE (e.g. GM)</span></label>
+                    <label>प्रॉडक्ट कोड <span class="sub">2. OUTPUT CODE (e.g. GM)</span></label>
                     <input type="text" id="product_code" placeholder="Code..." style="text-transform: uppercase;">
                 </div>
                 <div style="flex:1;">
@@ -131,7 +141,7 @@
                 </div>
                 <div style="flex:1;">
                     <label>वजन (KG) <span class="sub">WT/BAG (OPTIONAL)</span></label>
-                    <input type="text" inputmode="numeric" id="weight" placeholder="Leave blank to write manually">
+                    <input type="text" inputmode="numeric" id="weight" placeholder="Blank to write">
                 </div>
             </div>
             
@@ -140,22 +150,25 @@
         </div>
 
         <div class="card card-green">
-            <h2 style="color:var(--success-green);">Input Traceability</h2>
-            <span class="marathi-title" style="color:var(--success-green);">कोणते बारकोड वापरले? (Scan Input Tags)</span>
+            <h2 style="color:var(--success-neon);">Traceability Engine</h2>
+            <span class="marathi-title" style="color:var(--success-neon); border-color:#334155;">कोणते बारकोड वापरले? (Scan Input Tags)</span>
             
-            <div style="display:flex; gap:10px; margin-bottom: 20px;">
-                <input type="text" id="scan_input" placeholder="Scan barcode here..." autocomplete="off" style="margin:0; border-color:var(--navy-command);">
-                <button style="padding:0 25px; background:var(--navy-command); color:white; border-radius:10px; font-weight:900; cursor:pointer;" onclick="addTag()">ADD</button>
+            <div style="display:flex; gap:10px; margin-bottom: 15px;">
+                <input type="text" id="scan_input" placeholder="Scan barcode here..." autocomplete="off" style="margin:0;">
+                <button style="padding:0 25px; background:var(--accent-blue); color:white; border:none; border-radius:10px; font-weight:900; cursor:pointer;" onclick="addTag()">ADD</button>
             </div>
+            
+            <div id="reader"></div>
+            <button class="btn-cam" id="camToggleBtn" onclick="toggleCamera()">📷 मोबाईल कॅमेरा चालू करा (Mobile Scanner)</button>
 
-            <h3 style="font-family:'Space Grotesk'; font-size:16px; margin-bottom:5px; color:var(--navy-command);">काय काय लागणार? (Recipe Checklist)</h3>
+            <h3 style="font-family:'Space Grotesk'; font-size:16px; margin-bottom:5px; color:white; margin-top:20px;">काय काय लागणार? (Recipe Checklist)</h3>
             <div class="recipe-feed" id="recipe_checklist">
-                <div style="text-align:center; color:#94a3b8; font-weight:bold; font-size:14px;">Select a target product first.</div>
+                <div style="text-align:center; color:#64748b; font-weight:bold; font-size:14px;">Select a target product first.</div>
             </div>
 
-            <h3 style="font-family:'Space Grotesk'; font-size:14px; margin-bottom:5px; color:var(--navy-command);">आत्ताच स्कॅन केलेले (Active Inputs)</h3>
+            <h3 style="font-family:'Space Grotesk'; font-size:14px; margin-bottom:5px; color:white;">आत्ताच स्कॅन केलेले (Active Inputs)</h3>
             <div class="scanned-parents" id="parent_list">
-                <div style="color:#94a3b8; text-align:center; padding:10px; font-size:12px;">No parent barcodes scanned yet.</div>
+                <div style="color:#64748b; text-align:center; padding:10px; font-size:12px;">No input barcodes scanned yet.</div>
             </div>
 
             <button class="btn-huge btn-success" onclick="generateAndPrint()">🖨️ जनरेट आणि प्रिंट करा (GENERATE WIP TAGS)</button>
@@ -168,29 +181,66 @@
         let recipeRequirements = [];
         let scannedIngCodes = []; 
         let isSingleItemProcess = false;
+        let html5QrcodeScanner = null;
+        let isCameraProcessing = false;
 
         window.onload = async () => {
             document.getElementById('date').valueAsDate = new Date();
             document.getElementById('scan_input').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); addTag(); }});
             
+            // SECURITY FIX: User typed manually but didn't click. Auto-fetch on blur.
+            document.getElementById('recipe_search').addEventListener('blur', function() {
+                setTimeout(() => { if(this.value.trim() !== "") loadChecklist(this.value.trim()); }, 200);
+            });
+
+            // THE UNIVERSAL SEARCH: Pulling BOTH Ingredients and Recipes
             try {
-                const res = await fetch('/get-ingredients');
-                const data = await res.json();
-                attachCustomDropdown('recipe_search', data, 'ingredient_name', 'ingredient_name', 'product_code', 'product_name', async (selectedProductCode, selectedProductName) => {
-                    document.getElementById('product_code').value = selectedProductCode;
-                    await loadChecklist(selectedProductName);
+                let combinedList = [];
+                
+                let ingRes = await fetch('/get-ingredients').then(r=>r.json());
+                ingRes.forEach(i => combinedList.push({ display: i.ingredient_name, code: i.product_code }));
+                
+                let recRes = await fetch('/get-recipes').then(r=>r.json());
+                let uniqueRec = [...new Set(recRes.map(r => r.fg_code))];
+                uniqueRec.forEach(r => {
+                    if(!combinedList.find(c => c.display.toLowerCase() === r.toLowerCase())) {
+                        combinedList.push({ display: r, code: r.substring(0,3).toUpperCase() });
+                    }
+                });
+
+                attachCustomDropdown('recipe_search', combinedList, 'display', 'code', (selectedCode, selectedName) => {
+                    document.getElementById('product_code').value = selectedCode;
+                    loadChecklist(selectedName);
                 });
             } catch(e) { console.error("Master data fetch failed."); }
         };
 
         function flash(success, txt) { 
             const f = document.getElementById('scan_flash'); 
-            f.style.background = success ? 'rgba(5,150,105,0.95)' : 'rgba(220,38,38,0.95)';
+            f.style.background = success ? 'rgba(16,185,129,0.95)' : 'rgba(239,68,68,0.95)';
             f.innerText = txt; f.style.display='flex'; f.style.opacity='1'; 
             setTimeout(()=>{f.style.opacity='0'; setTimeout(()=>f.style.display='none',200);}, 600); 
         }
 
-        function attachCustomDropdown(inputId, dataArray, searchKey, displayKey, codeKey, hiddenId, onSelectCallback) {
+        // Added Mobile Camera to Pre-Process
+        function toggleCamera() { 
+            const rd = document.getElementById('reader'); 
+            if(rd.style.display === 'none' || rd.style.display === '') { 
+                rd.style.display = 'block'; document.getElementById('camToggleBtn').innerHTML = "🚫 मोबाईल कॅमेरा बंद करा"; 
+                if(!html5QrcodeScanner) { 
+                    html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 5, qrbox: {width: 250, height: 250}, videoConstraints: { facingMode: "environment" } }); 
+                    html5QrcodeScanner.render(txt => { 
+                        if(isCameraProcessing) return; 
+                        isCameraProcessing = true;
+                        document.getElementById('scan_input').value = txt; 
+                        addTag();
+                        setTimeout(() => { isCameraProcessing = false; }, 2500);
+                    }); 
+                } 
+            } else { rd.style.display = 'none'; document.getElementById('camToggleBtn').innerHTML = "📷 मोबाईल कॅमेरा चालू करा (Mobile Scanner)"; } 
+        }
+
+        function attachCustomDropdown(inputId, dataArray, displayKey, codeKey, onSelectCallback) {
             const inp = document.getElementById(inputId); 
             const list = document.createElement('div'); 
             list.className = 'custom-dropdown-list'; 
@@ -198,15 +248,14 @@
             
             function renderList(filterTxt = "") {
                 list.innerHTML = ''; 
-                const matches = dataArray.filter(item => item[searchKey].toLowerCase().includes(filterTxt.toLowerCase()) || item[codeKey].toLowerCase().includes(filterTxt.toLowerCase()));
+                const matches = dataArray.filter(item => item[displayKey].toLowerCase().includes(filterTxt.toLowerCase()) || item[codeKey].toLowerCase().includes(filterTxt.toLowerCase()));
                 if(matches.length === 0) { list.style.display = 'none'; return; }
                 
                 matches.forEach(match => { 
                     let div = document.createElement('div'); div.className = 'custom-dropdown-item'; 
-                    div.innerHTML = `<strong style="color:#3b82f6;">${match[codeKey]}</strong> - ${match[displayKey]}`; 
+                    div.innerHTML = `<strong style="color:var(--accent-blue);">${match[codeKey]}</strong> - ${match[displayKey]}`; 
                     div.onclick = () => { 
                         inp.value = match[displayKey]; 
-                        document.getElementById(hiddenId).value = match[displayKey]; 
                         list.style.display = 'none'; 
                         if(onSelectCallback) onSelectCallback(match[codeKey], match[displayKey]);
                     }; 
@@ -215,10 +264,7 @@
                 list.style.display = 'block';
             }
             
-            inp.addEventListener('input', function() { 
-                document.getElementById(hiddenId).value = "";
-                renderList(this.value); 
-            }); 
+            inp.addEventListener('input', function() { renderList(this.value); }); 
             inp.addEventListener('focus', function() { renderList(this.value); });
             document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
         }
@@ -247,12 +293,12 @@
             const list = document.getElementById('recipe_checklist');
             
             if(isSingleItemProcess) {
-                list.innerHTML = `<div style="text-align:center; color:var(--kilrr-orange); font-weight:bold; font-size:15px; padding:10px;">🔄 Single Item Process (No Checklist Required). Scan input tags below.</div>`;
+                list.innerHTML = `<div style="text-align:center; color:var(--accent-blue); font-weight:bold; font-size:15px; padding:10px;">🔄 Single Item Process (No Checklist Required). Scan input tags below.</div>`;
                 return;
             }
 
             if(recipeRequirements.length === 0) {
-                list.innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:bold; font-size:14px;">Select a target product first.</div>`;
+                list.innerHTML = `<div style="text-align:center; color:#64748b; font-weight:bold; font-size:14px;">Select a target product first.</div>`;
                 return;
             }
 
@@ -260,8 +306,8 @@
                 const isDone = scannedIngCodes.includes(req.product_code);
                 return `
                     <div class="feed-item ${isDone ? 'done' : ''}">
-                        <div class="feed-name">${req.ingredient_name || req.product_code} <span style="font-size:12px; color:#94a3b8;">(${req.product_code})</span></div>
-                        <div class="feed-status">${isDone ? `✅ Scanned` : '⏳ बाकी आहे'}</div>
+                        <div class="feed-name">${req.ingredient_name || req.product_code} <span style="font-size:12px; color:#64748b;">(${req.product_code})</span></div>
+                        <div class="feed-status">${isDone ? `✅ SCANNED` : '⏳ PENDING'}</div>
                     </div>
                 `;
             }).join('');
@@ -308,13 +354,13 @@
         function renderTags() {
             const list = document.getElementById('parent_list');
             if(parentTags.length === 0) {
-                list.innerHTML = `<div style="color:#94a3b8; text-align:center; padding:10px; font-size:12px;">No parent barcodes scanned yet.</div>`;
+                list.innerHTML = `<div style="color:#64748b; text-align:center; padding:10px; font-size:12px;">No input barcodes scanned yet.</div>`;
                 return;
             }
             list.innerHTML = parentTags.map((t, i) => `
                 <div class="parent-tag" style="display:flex; justify-content:space-between; align-items:center;">
                     <span>${t}</span>
-                    <button style="background:var(--danger-red); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-weight:bold;" onclick="removeTag(${i})">X</button>
+                    <button style="background:var(--danger-neon); color:#020617; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-weight:bold;" onclick="removeTag(${i})">X</button>
                 </div>
             `).join('');
         }
@@ -335,7 +381,7 @@
 
         async function generateAndPrint() {
             const dateVal = document.getElementById('date').value;
-            const pName = document.getElementById('product_name').value.trim().toUpperCase();
+            const pName = document.getElementById('recipe_search').value.trim().toUpperCase();
             const pCode = document.getElementById('product_code').value.trim().toUpperCase();
             const processType = document.getElementById('process_type').value;
             const weightRaw = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
@@ -343,7 +389,6 @@
             let startNo = parseInt(document.getElementById('start_no').value.replace(/[^0-9]/g, ''));
             let endNo = parseInt(document.getElementById('end_no').value.replace(/[^0-9]/g, ''));
 
-            // Weight is no longer required for validation
             if(!pName || !pCode || isNaN(startNo) || isNaN(endNo)) {
                 return alert("⚠️ Please fill out Target Product and Bag details correctly.");
             }
@@ -356,7 +401,6 @@
             const dateFmt = `${day}${month}`;
             const dispDate = `${day}/${month}/${year}`;
             
-            // Format weight string based on if they entered a number or left it blank
             const weightText = weightRaw ? `NET WT: ${String(weightRaw).padStart(2, '0')} KG` : `NET WT: ____ KG`;
             
             let outputTags = [];
@@ -368,7 +412,7 @@
             if(!printWindow) return alert("⚠️ Popup Blocked! Allow popups to print.");
 
             try {
-                printWindow.document.write('<html><body style="background:#f8fafc;"><h2 style="font-family:sans-serif; text-align:center; margin-top:50px; color:#3b82f6;">Logging to Traceability Engine...</h2></body></html>');
+                printWindow.document.write('<html><body style="background:#0f172a;"><h2 style="font-family:sans-serif; text-align:center; margin-top:50px; color:#3b82f6;">Logging to Traceability Engine...</h2></body></html>');
 
                 const res = await fetch('/log-preprocess', {
                     method: 'POST',
