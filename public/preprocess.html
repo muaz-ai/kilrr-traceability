@@ -2,70 +2,64 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Kilrr Factory OS - Pre-Process</title>
+    <title>Kilrr OS - Pre-Process & Sub-Assembly</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; }
-        body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 100px; }
+        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #0f172a; margin: 0; padding-bottom: 100px; min-height: 100vh;}
         
-        .nav-top { background: var(--navy-command); border-bottom: 5px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
-        .brand { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase;}
+        .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
+        .brand { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;}
         .brand span { color: var(--kilrr-orange); }
-        .nav-links { display: flex; gap: 15px; }
-        .nav-btn { color: white; text-decoration: none; font-weight: 700; font-size: 14px; text-transform: uppercase; transition: 0.2s; }
-        .nav-btn.active { color: var(--kilrr-orange); }
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn { color: #cbd5e1; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; transition: 0.2s; padding: 8px 12px; border-radius: 8px;}
+        .nav-btn:hover { background: rgba(255,255,255,0.05); color: white;}
+        .nav-btn.active { color: white; background: var(--kilrr-orange);}
 
-        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
-        .card { background: var(--card-bg); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 25px; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;}
         
-        h2 { margin: 0 0 20px 0; font-family: 'Space Grotesk', sans-serif; font-size: 24px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; color: var(--navy-command);}
-        .marathi { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 14px; display: block; margin-top: 4px; }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); position: relative;}
+        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 16px 16px 0 0;}
+        .card.card-green::before { background: linear-gradient(90deg, #059669, #10b981); }
         
-        input.setup-input, select.setup-input { width: 100%; padding: 20px; box-sizing: border-box; border-radius: 12px; border: 3px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #fff;}
-        input.setup-input:focus, select.setup-input:focus { border-color: var(--kilrr-orange); outline: none; }
+        h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; text-transform: uppercase; color: var(--navy-command);}
+        .marathi-title { font-family: 'Inter', sans-serif; color: #3b82f6; font-size: 14px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
         
-        button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 20px; cursor: pointer; text-transform: uppercase; background: var(--kilrr-orange); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);}
-        button.btn-cam { width: 100%; padding: 20px; border: 3px solid var(--kilrr-orange); border-radius: 12px; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase; background: #fff7ed; color: var(--kilrr-orange); margin-bottom: 20px;}
-        
-        .resume-select { width: 100%; padding: 15px; font-size: 16px; font-weight: 800; border-radius: 8px; border: 2px solid var(--kilrr-orange); background: #fff7ed; color: var(--kilrr-orange); margin-bottom: 10px; cursor: pointer; }
+        label { font-weight: 800; font-size: 13px; color: var(--navy-command); display: block; margin-bottom: 8px; text-transform: uppercase;}
+        label span.sub { color: #64748b; font-size: 11px; font-weight: 700; display: block; margin-top: 2px;}
 
-        /* WORK SCREEN UI */
-        .work-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .hopper-box { border: 2px solid var(--success-green); border-radius: 12px; padding: 20px; background: #ecfdf5; margin-bottom: 15px;}
-        .val-text { font-size: 32px; font-family: 'Space Grotesk'; font-weight: 900; color: var(--success-green); }
-        .scan-item { display: flex; justify-content: space-between; background: white; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; align-items: center;}
+        input, select { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #f8fafc; transition: 0.2s ease;}
+        input:focus, select:focus { border-color: #3b82f6; outline: none; background: #ffffff; box-shadow: 0 0 0 4px rgba(59,130,246,0.15);}
+        input[readonly] { background: #e2e8f0; color: #64748b; cursor: not-allowed;}
+        
+        button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; box-shadow: 0 8px 15px rgba(59, 130, 246, 0.3);}
+        button.btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); box-shadow: 0 8px 15px rgba(5, 150, 105, 0.3); }
 
-        /* CUSTOM DROPDOWN UI */
-        .custom-dropdown-container { position: relative; width: 100%; margin-bottom: 20px;}
-        .custom-dropdown-container input { margin-bottom: 0; }
-        .custom-dropdown-list { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: #ffffff; border: 2px solid var(--kilrr-orange); border-radius: 12px; max-height: 250px; overflow-y: auto; z-index: 9999; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15); display: none; padding: 10px; }
-        .custom-dropdown-item { padding: 15px 20px; font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.1s; margin-bottom: 4px; border-bottom: 1px solid #f1f5f9; }
-        .custom-dropdown-item:hover { background: #fff7ed; color: var(--kilrr-orange); }
-
-        #reader { width: 100%; border-radius: 12px; overflow: hidden; border: 3px solid #cbd5e1; margin-bottom: 15px; display: none; background: black; }
-        #scan_flash { position: fixed; inset: 0; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 60px; font-weight: 900; color: white; opacity: 0; transition: opacity 0.2s;}
+        .row-inputs { display: flex; gap: 15px; }
+        
+        .scanned-parents { max-height: 150px; overflow-y: auto; padding: 10px; border: 2px solid #cbd5e1; border-radius: 10px; background: #f1f5f9; margin-bottom: 20px;}
+        .parent-tag { background: white; padding: 10px; border-radius: 6px; font-family: monospace; font-weight: bold; border: 1px solid #cbd5e1; margin-bottom: 5px; font-size: 14px;}
 
         @media (max-width: 1024px) { 
-            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; border-top: 4px solid var(--kilrr-orange); justify-content: space-around; overflow-x: auto; white-space: nowrap;}
+            .container { grid-template-columns: 1fr; margin-top: 15px; gap: 20px;}
+            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap;}
             .brand { display: none; }
-            .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 5px 10px;}
-            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 18px; }
-            .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 18px; }
-            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 18px; }
-            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 18px; }
-            .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 18px; }
-            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 18px; }
-            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 18px; }
-            .work-grid { grid-template-columns: 1fr; }
+            .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 8px 12px;}
+            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 20px; margin-bottom: 4px;}
+            .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 20px; margin-bottom: 4px;}
+            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 20px; margin-bottom: 4px;}
+            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 20px; margin-bottom: 4px;}
+            .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 20px; margin-bottom: 4px;}
+            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 20px; margin-bottom: 4px;}
+            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 20px; margin-bottom: 4px;}
+            .card { padding: 20px;}
         }
     </style>
 </head>
 <body>
-    <div id="scan_flash"></div>
     <nav class="nav-top">
         <a href="index.html" class="brand">Kilrr <span>OS</span></a>
         <div class="nav-links">
@@ -73,339 +67,210 @@
             <a href="inwarding.html" class="nav-btn">Inward</a>
             <a href="preprocess.html" class="nav-btn active">Pre-Process</a>
             <a href="scanner.html" class="nav-btn">Scanner</a>
-            <a href="audit.html" class="nav-btn">Audit</a>
             <a href="dashboard.html" class="nav-btn">Dashboard</a>
-            <a href="master.html" class="nav-btn">Master Data</a>
+            <a href="master.html" class="nav-btn">Master</a>
         </div>
     </nav>
 
     <div class="container">
-        <div class="card" id="setup">
-            <details style="margin-bottom: 30px; background: #fff7ed; padding: 15px; border-radius: 12px; border: 2px solid #ffedd5;">
-                <summary style="font-weight: 900; color: var(--kilrr-orange); cursor: pointer; outline: none; font-size: 18px;">▶ RESUME ACTIVE PRE-PROCESS RUN</summary>
-                <select id="resume_select" class="resume-select" style="margin-top: 15px;"></select>
-                <button style="width: 100%; padding: 15px; background: var(--kilrr-orange); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="resumeJob()">RESUME JOB</button>
-            </details>
-
-            <h2>Start New Run <span class="marathi">नवीन काम</span></h2>
+        <!-- OUTPUT CONFIGURATION -->
+        <div class="card">
+            <h2>Sub-Assembly Setup</h2>
+            <span class="marathi-title">अंतर्गत माल बनवणे (Base Masalas)</span>
             
-            <label style="font-weight: 800; font-size: 14px; color: #64748b;">1. PROCESS EXECUTED</label>
-            <select id="process_type" class="setup-input">
-                <option value="Cleaning / Sorting">Cleaning / Sorting</option>
-                <option value="Cutting / Chopping">Cutting / Chopping</option>
-                <option value="Roasting">Roasting</option>
-                <option value="Grinding / Pulverizing">Grinding / Pulverizing</option>
-                <option value="Blending">Blending</option>
-                <option value="Re-Packaging">Re-Packaging</option>
-            </select>
-
-            <label style="font-weight: 800; font-size: 14px; color: #64748b;">2. TARGET PRODUCT (FINISHED PRE-PROCESS ITEM)</label>
-            <div class="custom-dropdown-container">
-                <input type="text" id="target_search" class="setup-input" placeholder="Search Product (e.g. KM-GRD)..." autocomplete="off">
-                <input type="hidden" id="target_code"><input type="hidden" id="target_name">
+            <div class="row-inputs">
+                <div style="flex:1;">
+                    <label>तारीख <span class="sub">DATE</span></label>
+                    <input type="date" id="date">
+                </div>
+                <div style="flex:1;">
+                    <label>प्रक्रिया <span class="sub">PROCESS TYPE</span></label>
+                    <select id="process_type">
+                        <option value="BLENDING">Blending (Mixing Base)</option>
+                        <option value="ROASTING">Roasting</option>
+                        <option value="GRINDING">Grinding</option>
+                    </select>
+                </div>
             </div>
 
-            <label style="font-weight: 800; font-size: 14px; color: #64748b;">3. DAILY SEQUENCE # (1, 2, 3...) & OPERATOR</label>
-            <div style="display:flex; gap:10px; margin-bottom: 20px;">
-                <input type="number" id="run_id" class="setup-input" placeholder="e.g. 1" style="margin-bottom: 0;">
-                <select id="op_name" class="setup-input" style="margin-bottom: 0;">
-                    <option value="Muaz">Muaz</option><option value="Arbaaz">Arbaaz</option><option value="Rahul">Rahul</option>
-                </select>
-                <button style="width:auto; padding:0 20px; border-radius:12px; background:#e2e8f0; color:var(--navy-command); font-weight:bold; border:2px solid #cbd5e1; cursor:pointer;" onclick="addNewOperator()">➕</button>
+            <label>काय बनवत आहात? <span class="sub">OUTPUT PRODUCT NAME (e.g. Garam Masala)</span></label>
+            <input type="text" id="product_name" placeholder="Name of Masala..." style="text-transform: uppercase;">
+
+            <label>प्रॉडक्ट कोड <span class="sub">OUTPUT PRODUCT CODE (e.g. GM)</span></label>
+            <input type="text" id="product_code" placeholder="Short Code..." style="text-transform: uppercase;">
+
+            <div class="row-inputs">
+                <div style="flex:1;">
+                    <label>पहिली गोणी <span class="sub">START BAG</span></label>
+                    <input type="text" inputmode="numeric" id="start_no" value="1" oninput="calcQty()">
+                </div>
+                <div style="flex:1;">
+                    <label>शेवटची गोणी <span class="sub">END BAG</span></label>
+                    <input type="text" inputmode="numeric" id="end_no" value="1" oninput="calcQty()">
+                </div>
+                <div style="flex:1;">
+                    <label>वजन (KG) <span class="sub">WT/BAG</span></label>
+                    <input type="text" inputmode="numeric" id="weight" placeholder="e.g. 10">
+                </div>
             </div>
             
-            <button class="btn-huge" onclick="startNewJob()">⚡ CREATE & START RUN</button>
+            <input type="hidden" id="qty">
         </div>
 
-        <div class="card" id="work" style="display:none; padding: 20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #e2e8f0; padding-bottom:15px; margin-bottom:20px;">
-                <div>
-                    <h2 id="job_title" style="color:var(--kilrr-orange); font-size:26px; border:none; padding:0; margin:0;"></h2>
-                    <span class="marathi" id="job_meta"></span>
-                </div>
-                <button style="width:auto; padding:10px 15px; font-weight:900; background:var(--danger-red); color:white; border:none; border-radius:8px; cursor:pointer;" onclick="location.reload()">EXIT</button>
+        <!-- INPUT SCANNING & EXECUTION -->
+        <div class="card card-green">
+            <h2 style="color:var(--success-green);">Input Traceability</h2>
+            <span class="marathi-title" style="color:var(--success-green);">कोणते बारकोड वापरले? (Parent Tags)</span>
+            
+            <label>स्कॅन करा <span class="sub">SCAN RM TAGS GOING INTO MACHINE</span></label>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="scan_input" placeholder="Scan barcode here..." autocomplete="off">
+                <button style="padding:0 20px; background:var(--navy-command); color:white; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="addTag()">ADD</button>
             </div>
 
-            <div class="work-grid">
-                <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 16px; padding: 20px;">
-                    <h3 style="margin-top:0; font-family:'Space Grotesk'; font-size:18px;">1. INPUT HOPPER</h3>
-                    
-                    <div class="hopper-box">
-                        <div><div style="font-size:12px; font-weight:bold; color:var(--success-green);">BAGS IN HOPPER</div><div class="val-text" id="hopper_bags">0</div></div>
-                        <div style="text-align:right;"><div style="font-size:12px; font-weight:bold; color:var(--success-green);">WEIGHT</div><div class="val-text" id="hopper_wt">0.00 KG</div></div>
-                    </div>
-
-                    <div style="display:flex; gap:10px; margin-bottom: 10px;">
-                        <input type="text" id="rm_tag" class="setup-input" style="margin:0; border-color:var(--navy-command); font-size:16px;" placeholder="SCAN BARCODE..." autocomplete="off">
-                        <button style="width:auto; padding:0 20px; background:var(--navy-command); color:white; border:none; border-radius:12px; font-weight:900; cursor:pointer;" onclick="manualScan()">ADD</button>
-                    </div>
-                    
-                    <div id="reader"></div>
-                    <button class="btn-cam" id="camToggleBtn" onclick="toggleCamera()" style="padding: 10px; font-size: 14px;">📷 Mobile Camera</button>
-                    <button id="undo_btn" style="display:none; background:#fef08a; color:#854d0e; border:3px solid #eab308; padding:10px; font-weight:bold; border-radius:12px; margin-bottom:10px; cursor:pointer;" onclick="undoLastScan()">⚠️ UNDO LAST SCAN (30s)</button>
-
-                    <div id="scanned_items_list" style="max-height: 150px; overflow-y:auto; padding:5px; border: 2px solid #cbd5e1; border-radius: 8px; background: white;"></div>
-                </div>
-
-                <div style="background: #fff7ed; border: 2px solid #fed7aa; border-radius: 16px; padding: 20px;">
-                    <h3 style="margin-top:0; font-family:'Space Grotesk'; font-size:18px; color:var(--kilrr-orange);">2. CONTINUOUS OUTPUT</h3>
-                    <p style="font-size:14px; font-weight:600; color:#9a3412;">Enter details as processed material comes out of the machine. The hopper will remain active until you close the job.</p>
-                    
-                    <label>PULLED YIELD WEIGHT (KG)</label>
-                    <input type="number" id="output_wt" class="setup-input" placeholder="e.g. 10" style="font-size: 24px; color:var(--kilrr-orange);">
-                    
-                    <label>DIVIDE INTO HOW MANY BINS/PACKS?</label>
-                    <input type="number" id="out_packs" class="setup-input" value="1" placeholder="e.g. 4">
-                    
-                    <button class="btn-huge" onclick="submitOutput()">🖨️ PRINT TAGS</button>
-
-                    <div style="margin-top: 30px; border-top: 2px dashed #fed7aa; padding-top: 20px; text-align: center;">
-                        <button style="background: white; border: 3px solid var(--success-green); color: var(--success-green); font-family: 'Space Grotesk'; font-weight: 900; font-size: 16px; padding: 15px 30px; border-radius: 12px; cursor: pointer;" onclick="closeJob()">✅ CLOSE PRE-PROCESS RUN</button>
-                    </div>
-                </div>
+            <div class="scanned-parents" id="parent_list">
+                <div style="color:#94a3b8; text-align:center; padding:10px; font-size:12px;">No parent barcodes scanned yet.</div>
             </div>
+
+            <button class="btn-huge btn-success" onclick="generateAndPrint()">🖨️ जनरेट आणि प्रिंट करा (GENERATE WIP TAGS)</button>
         </div>
     </div>
-    
-    <script>
-        let curJob="", curTarget="", curTargetName="", curProcess="", html5QrcodeScanner=null;
-        let lastScanTag = null, undoTimer = null, undoCountdown = 0;
-        let operators = JSON.parse(localStorage.getItem('kilrr_ops')) || ["Muaz", "Arbaaz", "Rahul", "Ramesh"];
 
-        window.onload = async () => { 
-            renderOperators();
-            loadOpenJobs();
-            try {
-                const iRes = await fetch('/get-ingredients'); 
-                const ingredients = await iRes.json();
-                attachCustomDropdown('target_search', ingredients, 'product_code', 'ingredient_name', 'product_code', 'target_name', 'target_code');
-            } catch(e) {}
-            document.getElementById('rm_tag').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); manualScan(); }});
+    <script>
+        let parentTags = [];
+
+        window.onload = () => {
+            document.getElementById('date').valueAsDate = new Date();
+            document.getElementById('scan_input').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); addTag(); }});
         };
 
-        function renderOperators() {
-            const sel = document.getElementById('op_name');
-            sel.innerHTML = operators.map(o => `<option value="${o}">${o}</option>`).join('');
+        function calcQty() {
+            let s = parseInt(document.getElementById('start_no').value.replace(/[^0-9]/g, ''));
+            let e = parseInt(document.getElementById('end_no').value.replace(/[^0-9]/g, ''));
+            document.getElementById('qty').value = (isNaN(s) || isNaN(e) || e < s) ? 0 : (e - s) + 1;
         }
 
-        function addNewOperator() {
-            let name = prompt("Enter new operator name:");
-            if(name && name.trim() !== "") {
-                operators.push(name.trim());
-                localStorage.setItem('kilrr_ops', JSON.stringify(operators));
-                renderOperators();
-                document.getElementById('op_name').value = name.trim();
+        function addTag() {
+            const inp = document.getElementById('scan_input');
+            const val = inp.value.trim();
+            if(!val) return;
+            if(!parentTags.includes(val)) {
+                parentTags.push(val);
+                renderTags();
             }
+            inp.value = "";
+            inp.focus();
         }
 
-        function attachCustomDropdown(inputId, dataArray, searchKey, displayKey, codeKey, nameHiddenId, codeHiddenId) {
-            const inp = document.getElementById(inputId); 
-            const list = document.createElement('div'); list.className = 'custom-dropdown-list'; inp.parentNode.appendChild(list);
-            
-            function renderList(filterTxt = "") {
-                list.innerHTML = ''; 
-                const matches = dataArray.filter(item => item[searchKey].toLowerCase().includes(filterTxt.toLowerCase()) || item[displayKey].toLowerCase().includes(filterTxt.toLowerCase()));
-                if(matches.length === 0) { list.style.display = 'none'; return; }
-                matches.forEach(match => { 
-                    let div = document.createElement('div'); div.className = 'custom-dropdown-item'; 
-                    div.innerHTML = `<strong style="color:var(--kilrr-orange);">${match[codeKey]}</strong> - ${match[displayKey]}`; 
-                    div.onclick = () => { 
-                        inp.value = `${match[codeKey]} - ${match[displayKey]}`; 
-                        document.getElementById(nameHiddenId).value = match[displayKey]; 
-                        document.getElementById(codeHiddenId).value = match[codeKey]; 
-                        list.style.display = 'none'; 
-                    }; 
-                    list.appendChild(div); 
-                }); 
-                list.style.display = 'block';
+        function renderTags() {
+            const list = document.getElementById('parent_list');
+            if(parentTags.length === 0) {
+                list.innerHTML = `<div style="color:#94a3b8; text-align:center; padding:10px; font-size:12px;">No parent barcodes scanned yet.</div>`;
+                return;
             }
-            inp.addEventListener('input', function() { renderList(this.value); }); 
-            inp.addEventListener('focus', function() { renderList(this.value); });
-            document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
+            list.innerHTML = parentTags.map((t, i) => `
+                <div class="parent-tag" style="display:flex; justify-content:space-between;">
+                    <span>${t}</span>
+                    <span style="color:red; cursor:pointer;" onclick="parentTags.splice(${i},1); renderTags();">✕</span>
+                </div>
+            `).join('');
         }
 
-        function playVoice(success) {
-            try { let msg = new SpeechSynthesisUtterance(success ? "बरोबर" : "चूक"); msg.lang = 'mr-IN'; msg.rate = 1.2; window.speechSynthesis.speak(msg); } catch(e) {}
-        }
-        function flash(success, txt) { 
-            const f = document.getElementById('scan_flash'); f.style.background = success ? 'rgba(5,150,105,0.95)' : 'rgba(220,38,38,0.95)';
-            f.innerText = txt; f.style.display='flex'; f.style.opacity='1'; setTimeout(()=>{f.style.opacity='0'; setTimeout(()=>f.style.display='none',200);}, 600); 
-        }
-
-        async function loadOpenJobs() {
-            try {
-                const res = await fetch('/open-preprocess-jobs'); const jobs = await res.json();
-                const sel = document.getElementById('resume_select');
-                if(jobs.length === 0) { sel.innerHTML = `<option value="">No active runs found.</option>`; return; }
-                sel.innerHTML = `<option value="">Select a run...</option>` + jobs.map(j => `<option value='${JSON.stringify(j)}'>${j.job_code} (${j.target_name})</option>`).join('');
-            } catch(e) {}
-        }
-
-        async function startNewJob() {
-            let pType = document.getElementById('process_type').value;
-            let tCode = document.getElementById('target_code').value;
-            let tName = document.getElementById('target_name').value;
-            let runNum = document.getElementById('run_id').value.trim();
-            let op = document.getElementById('op_name').value;
-
-            if(!tCode || !runNum) return alert("Select a Target Product and enter a Daily Sequence #!");
-
-            // Automatically adds the DDMM date to make the Run unique every day
-            const d = new Date(); 
-            const dateStr = `${String(d.getDate()).padStart(2, '0')}${String(d.getMonth()+1).padStart(2, '0')}`;
-            curJob = `PP-${dateStr}-${runNum}`;
-
-            const res = await fetch('/create-preprocess-job', { 
-                method: 'POST', 
-                headers: {'Content-Type':'application/json'}, 
-                body: JSON.stringify({ job_code: curJob, target_code: tCode, target_name: tName, process_type: pType, operator: op }) 
-            });
-            const data = await res.json();
+        async function generateAndPrint() {
+            const dateVal = document.getElementById('date').value;
+            const pName = document.getElementById('product_name').value.trim().toUpperCase();
+            const pCode = document.getElementById('product_code').value.trim().toUpperCase();
+            const processType = document.getElementById('process_type').value;
+            const weight = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
             
-            if(data.error) return alert("❌ Error: " + data.error);
-            await loadWorkUI();
-        }
+            let startNo = parseInt(document.getElementById('start_no').value.replace(/[^0-9]/g, ''));
+            let endNo = parseInt(document.getElementById('end_no').value.replace(/[^0-9]/g, ''));
 
-        async function resumeJob() {
-            let val = document.getElementById('resume_select').value;
-            if(!val) return alert("Select a job.");
-            let j = JSON.parse(val);
-            curJob = j.job_code;
-            await loadWorkUI();
-        }
-
-        async function loadWorkUI() {
-            document.getElementById('setup').style.display = 'none';
-            document.getElementById('work').style.display = 'block';
-            
-            const res = await fetch('/open-preprocess-jobs'); const jobs = await res.json();
-            const job = jobs.find(j => j.job_code === curJob);
-            if(job) {
-                curTarget = job.target_code; curTargetName = job.target_name; curProcess = job.process_type;
-                document.getElementById('job_title').innerText = job.job_code;
-                document.getElementById('job_meta').innerText = `${job.target_name} | ${job.process_type}`;
+            if(!pName || !pCode || !weight || isNaN(startNo) || isNaN(endNo)) {
+                return alert("⚠️ Please fill out all Sub-Assembly details correctly.");
             }
-            updateHopper();
-        }
 
-        function toggleCamera() { 
-            const rd = document.getElementById('reader'); 
-            if(rd.style.display === 'none' || rd.style.display === '') { 
-                rd.style.display = 'block'; document.getElementById('camToggleBtn').innerText = "🚫 Close Camera"; 
-                if(!html5QrcodeScanner) { 
-                    html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250}, videoConstraints: { facingMode: "environment" } }); 
-                    html5QrcodeScanner.render(txt => { document.getElementById('rm_tag').value = txt; manualScan(); }); 
-                } 
-            } else { rd.style.display = 'none'; document.getElementById('camToggleBtn').innerText = "📷 Mobile Camera"; } 
-        }
-
-        async function manualScan() { 
-            let val=document.getElementById('rm_tag').value.trim(); if(!val) return; 
-            let cleanTag=val, parts=val.split('/'); if(parts.length>=4) cleanTag=`${parts[0]}/${parts[1]}/${parts[2]}/${parts[3]}`; 
-            
-            const res = await fetch('/scan-preprocess',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job_code: curJob, rm_tag: cleanTag})}); 
-            const data = await res.json();
-            if(data.error) { playVoice(false); flash(false, "❌ REJECTED"); document.getElementById('rm_tag').value=""; return; }
-            
-            playVoice(true); flash(true, "✅ बरोबर"); 
-            lastScanTag = cleanTag; startUndoTimer();
-            document.getElementById('rm_tag').value=""; updateHopper(); document.getElementById('rm_tag').focus();
-        }
-
-        function startUndoTimer() {
-            clearInterval(undoTimer); undoCountdown = 30;
-            const btn = document.getElementById('undo_btn'); btn.style.display = 'block'; btn.innerText = `⚠️ UNDO LAST SCAN (${undoCountdown}s)`;
-            undoTimer = setInterval(() => {
-                undoCountdown--; btn.innerText = `⚠️ UNDO LAST SCAN (${undoCountdown}s)`;
-                if(undoCountdown <= 0) { clearInterval(undoTimer); btn.style.display = 'none'; lastScanTag = null; }
-            }, 1000);
-        }
-
-        async function undoLastScan() {
-            if(!lastScanTag) return;
-            clearInterval(undoTimer); document.getElementById('undo_btn').style.display = 'none';
-            await fetch('/undo-preprocess-scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ job_code: curJob, rm_tag: lastScanTag }) });
-            flash(true, "🗑️ UNDONE"); lastScanTag = null; updateHopper(); document.getElementById('rm_tag').focus();
-        }
-
-        async function updateHopper() {
-            const res = await fetch(`/preprocess-scans/${curJob}`);
-            const scans = await res.json();
-            
-            document.getElementById('hopper_bags').innerText = scans.length;
-            document.getElementById('hopper_wt').innerText = scans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0).toFixed(2) + " KG";
-
-            const list = document.getElementById('scanned_items_list');
-            if(scans.length === 0) { list.innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:800; padding:10px;">Hopper is empty.</div>`; }
-            else {
-                list.innerHTML = scans.map(s => `
-                    <div class="scan-item">
-                        <span style="font-family:monospace; font-weight:900;">${s.rm_tag}</span>
-                        <span style="color:var(--success-green); font-weight:900;">${parseFloat(s.weight).toFixed(2)} KG</span>
-                    </div>
-                `).join('');
+            if(parentTags.length === 0) {
+                if(!confirm("⚠️ You haven't scanned any Parent Tags. FSSAI requires origin tracing. Proceed anyway?")) return;
             }
-        }
 
-        async function submitOutput() {
-            const wt = document.getElementById('output_wt').value;
-            const packs = document.getElementById('out_packs').value;
-            if(!wt || wt <= 0) return alert("Enter valid output weight!");
+            const [year, month, day] = dateVal.split('-');
+            const dateFmt = `${day}${month}`;
+            const padWeight = String(weight).padStart(2, '0');
+            const dispDate = `${day}/${month}/${year}`;
+            
+            // THE KILRR HACK: Setting Vendor Code as "KILRR" so it acts as an internal Raw Material
+            let outputTags = [];
+            for(let i = startNo; i <= endNo; i++) {
+                outputTags.push(`${dateFmt}/${pCode}/KILRR/${i}`);
+            }
 
-            const res = await fetch('/create-sub-assembly-job', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ job_code: curJob, weight: wt, packs: packs }) });
-            const data = await res.json();
-            if(data.error) return alert("Error: " + data.error);
-
-            // ULTIMATE PRINT ENGINE - FIXED LAYOUT (No top bar, tightened to prevent clipping)
             let printWindow = window.open('', '_blank');
-            let html = `<html><head><style>
-                @page { size: 75mm 75mm; margin: 0; }
-                body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; }
-                .label { width: 73mm; height: 72mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow: hidden; }
-                
-                /* Massive Product Name */
-                .title { text-align: center; font-size: 24px; font-weight: 900; text-transform: uppercase; margin: 1mm 0 0 0; line-height: 1; width: 100%; border-bottom: 3px solid black; padding-bottom: 1mm;}
-                .subtitle { font-size: 14px; font-weight: 900; color: #333; margin-bottom: 2mm; width: 100%; }
-                
-                .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; margin: 1mm 0;}
-                .qr-container img { width: 32mm; height: 32mm; margin-bottom: 1mm;}
-                
-                .process-text { font-size: 11px; font-weight: 900; text-transform: uppercase; background: black; color: white; padding: 2px 8px; border-radius: 4px; margin-bottom: 1mm;}
-                
-                .bottom-section { width: 100%; margin-bottom: 1mm;}
-                .tag-string { text-align: center; font-size: 14px; font-weight: 900; font-family: monospace; margin-bottom: 1mm; }
-                .weight-bar { text-align: center; font-size: 20px; font-weight: 900; padding: 1mm 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; }
-            </style></head><body>`;
+            if(!printWindow) return alert("⚠️ Popup Blocked! Allow popups to print.");
 
-            data.tags.forEach(tagObj => {
-                let qr = new QRious({ value: tagObj.tag, size: 250, level: 'M' });
-                html += `
-                <div class="label">
-                    <div class="title">${data.target_name}</div>
-                    <div class="subtitle">CODE: ${data.target_code}</div>
-                    <div class="qr-container">
-                        <img src="${qr.toDataURL()}">
-                        <div class="process-text">${data.process_type}</div>
-                    </div>
-                    <div class="bottom-section">
-                        <div class="tag-string">${tagObj.tag}</div>
-                        <div class="weight-bar">NET WT: ${tagObj.weight} KG</div>
-                    </div>
-                </div>`;
-            });
+            try {
+                printWindow.document.write('<html><body style="background:#f8fafc;"><h2 style="font-family:sans-serif; text-align:center; margin-top:50px; color:#3b82f6;">Logging to Traceability Engine...</h2></body></html>');
 
-            html += `</body><script>window.onload = () => { window.print(); window.close(); };<\/script></html>`;
-            printWindow.document.write(html);
-            printWindow.document.close();
+                // Log to backend
+                const res = await fetch('/log-preprocess', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        output_tags: outputTags,
+                        product_code: pCode,
+                        process_type: processType,
+                        parent_tags: parentTags.join(', ')
+                    })
+                });
+                
+                const data = await res.json();
+                if(data.error) throw new Error(data.error);
 
-            document.getElementById('output_wt').value = "";
-            document.getElementById('out_packs').value = 1;
-        }
+                // Print the Internal RM Labels (Exact same size as Inwarding layout)
+                let html = `<html><head><style>
+                    @page { size: 75mm 75mm; margin: 0; }
+                    body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; }
+                    .label { width: 73mm; height: 73mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden; }
+                    .title { font-size: 22px; font-weight: 900; text-transform: uppercase; margin: 0; padding-bottom: 1.5mm; border-bottom: 3px solid black; width: 100%; line-height: 1; }
+                    .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin: auto 0; }
+                    .qr-container img { width: 36mm; height: 36mm; margin-bottom: 1mm; }
+                    .date-text { font-size: 13px; font-weight: 900; text-transform: uppercase; margin: 0; line-height: 1; }
+                    .bottom-section { width: 100%; margin-bottom: 1mm; }
+                    .tag-string { font-size: 16px; font-weight: 900; font-family: monospace; margin: 0 0 1.5mm 0; line-height: 1; }
+                    .weight-bar { font-size: 21px; font-weight: 900; padding: 1.5mm 0; margin: 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; line-height: 1; }
+                </style></head><body>`;
 
-        async function closeJob() {
-            if(confirm("Are you sure you want to close this job? You will no longer be able to print tags for this hopper.")) {
-                await fetch('/close-preprocess-job', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ job_code: curJob }) });
-                location.reload();
+                outputTags.forEach(tagStr => {
+                    let qrEngine = new QRious({ value: tagStr, size: 250, level: 'M' });
+                    html += `
+                    <div class="label">
+                        <div class="title">${pName}</div>
+                        <div class="qr-container">
+                            <img src="${qrEngine.toDataURL()}">
+                            <div class="date-text">DATE: ${dispDate}</div>
+                        </div>
+                        <div class="bottom-section">
+                            <div class="tag-string">${tagStr}</div>
+                            <div class="weight-bar">NET WT: ${padWeight} KG</div>
+                        </div>
+                    </div>`;
+                });
+
+                html += `</body><script>window.onload = () => { window.print(); window.close(); };<\/script></html>`;
+                
+                printWindow.document.open(); 
+                printWindow.document.write(html);
+                printWindow.document.close();
+
+                // Clear setup
+                document.getElementById('start_no').value = endNo + 1;
+                document.getElementById('end_no').value = endNo + 1;
+                parentTags = [];
+                renderTags();
+
+            } catch(e) { 
+                printWindow.close();
+                alert("Database Error: " + e.message); 
             }
         }
     </script>
