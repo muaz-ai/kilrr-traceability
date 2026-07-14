@@ -320,4 +320,35 @@ app.get("/api/dashboard-traceability", async (req, res) => {
 // LAUNCH SERVER
 // ==========================================
 const PORT = process.env.PORT || 3000;
+// ==========================================
+// 7. PRE-PROCESS / SUB-ASSEMBLY ROUTE
+// ==========================================
+app.post("/log-preprocess", async (req, res) => {
+    try {
+        // Auto-create the FSSAI table if it doesn't exist yet
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS sub_assemblies (
+                id SERIAL PRIMARY KEY,
+                sub_tag VARCHAR(255),
+                product_code VARCHAR(100),
+                process_type VARCHAR(100),
+                parent_tag TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        const { output_tags, product_code, process_type, parent_tags } = req.body;
+        
+        // Log every single printed sub-assembly bag to the FSSAI database
+        for(let tag of output_tags) {
+            await pool.query(
+                "INSERT INTO sub_assemblies (sub_tag, product_code, process_type, parent_tag) VALUES ($1, $2, $3, $4)",
+                [tag, product_code, process_type, parent_tags]
+            );
+        }
+        res.json({status: "success"});
+    } catch(e) {
+        res.status(500).json({error: e.message});
+    }
+});
 app.listen(PORT, () => console.log(`✅ Kilrr Factory Engine Online on Port ${PORT}`));
