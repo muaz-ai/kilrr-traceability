@@ -9,6 +9,7 @@
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; }
         body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 100px; min-height: 100vh;}
+        
         .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
         .brand { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;}
         .brand span { color: var(--kilrr-orange); }
@@ -16,6 +17,7 @@
         .nav-btn { color: #cbd5e1; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; transition: 0.2s; padding: 8px 12px; border-radius: 8px;}
         .nav-btn:hover { background: rgba(255,255,255,0.1); color: white;}
         .nav-btn.active { color: white; background: var(--kilrr-orange);}
+        
         .container { max-width: 800px; margin: 30px auto; padding: 0 15px; }
         
         .card { background: var(--card-bg); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; margin-bottom: 25px; position: relative;}
@@ -77,6 +79,7 @@
             .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 20px; margin-bottom: 4px;}
+            .card { padding: 20px;}
         }
     </style>
 </head>
@@ -163,6 +166,7 @@
             <div id="scanned_items_list" style="max-height: 200px; overflow-y:auto; padding:5px;"></div>
         </div>
     </div>
+    
     <script>
         let operators = JSON.parse(localStorage.getItem('kilrr_ops')) || ["Muaz", "Arbaaz", "Rahul", "Ramesh"];
         let userPrefixes = JSON.parse(localStorage.getItem('kilrr_prefixes')) || {};
@@ -332,7 +336,7 @@
             update(); setTimeout(() => document.getElementById('rm_tag').focus(), 500);
         }
 
-        // MOBILE KEYBOARD FIX
+        // MOBILE KEYBOARD SUPPRESSION ADDED HERE
         function toggleCamera() { 
             const rd = document.getElementById('reader'); 
             if(rd.style.display === 'none' || rd.style.display === '') { 
@@ -343,7 +347,7 @@
                         if(isCameraProcessing) return; 
                         isCameraProcessing = true;
                         document.getElementById('rm_tag').value = txt; 
-                        document.getElementById('rm_tag').blur(); // Suppress Keyboard
+                        document.getElementById('rm_tag').blur(); // Suppress mobile keyboard
                         manualScan().then(() => {
                             setTimeout(() => { isCameraProcessing = false; }, 2000);
                         }); 
