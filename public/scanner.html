@@ -195,8 +195,7 @@
                     renderRecipes();
                 }
             } catch(e) { 
-                console.error("Could not load recipes");
-                document.getElementById('recipe_grid').innerHTML = `<div style="color:var(--danger-red); font-size:12px; font-weight:bold;">Database disconnected. Please verify backend.</div>`;
+                document.getElementById('recipe_grid').innerHTML = `<div style="color:var(--danger-red); font-size:12px; font-weight:bold;">Database disconnected. Check Backend.</div>`;
             }
         }
 
@@ -323,11 +322,14 @@
             document.getElementById('title').innerText = curB; 
             document.getElementById('active_meta').innerText = `${curF} | Operator: ${curOp}`;
             
-            const reqRes = await fetch(`/recipe-requirements/${encodeURIComponent(curF)}`);
-            recipeRequirements = await reqRes.json();
-            if(Array.isArray(recipeRequirements)) {
-                validRecipeCodes = recipeRequirements.map(i => i.product_code);
-            }
+            try {
+                const reqRes = await fetch(`/recipe-requirements/${encodeURIComponent(curF)}`);
+                recipeRequirements = await reqRes.json();
+                if(Array.isArray(recipeRequirements)) {
+                    validRecipeCodes = recipeRequirements.map(i => i.product_code);
+                } else { recipeRequirements = []; }
+            } catch(e) { recipeRequirements = []; }
+            
             update(); setTimeout(() => document.getElementById('rm_tag').focus(), 500);
         }
 
