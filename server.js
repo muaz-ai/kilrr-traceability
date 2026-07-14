@@ -3,13 +3,13 @@ const path = require('path');
 const { Pool } = require('pg');
 const https = require('https');
 
-// SHIELD 1: Safely loads your Neon Database Key without crashing Render
+// SHIELD 1: Safely load local env vars if running locally, ignore if on Render
 try { require('dotenv').config(); } catch (e) {}
 
 const app = express();
 app.use(express.json());
 
-// SHIELD 2: Safely loads network rules without crashing
+// SHIELD 2: Safely load CORS
 try { const cors = require('cors'); app.use(cors()); } catch (e) {}
 
 app.use(express.static('public'));
@@ -19,12 +19,17 @@ app.use(express.static('public'));
 // ==========================================
 const SHEET_WEBHOOK = process.env.SHEET_WEBHOOK || ""; 
 
+if (!process.env.DATABASE_URL) {
+    console.error("🚨 CRITICAL FATAL ERROR: DATABASE_URL is missing! Render cannot find your Neon database.");
+}
+
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false },
+    connectionTimeoutMillis: 15000 
 });
 
-// The Indestructible Cloud Backup Trigger (100% Native)
+// The Indestructible Cloud Backup Trigger
 function backupToSheets(eventType, operator, payload) {
     if(!SHEET_WEBHOOK || !SHEET_WEBHOOK.startsWith('https')) return;
     try {
@@ -41,7 +46,7 @@ function backupToSheets(eventType, operator, payload) {
     }
 }
 
-// Auto-Create FSSAI Tables
+// Auto-Create and Auto-Update FSSAI Tables
 async function initDB() {
     try {
         await pool.query(`
@@ -66,9 +71,6 @@ async function initDB() {
                 vendor_code VARCHAR(100),
                 vendor_name VARCHAR(255),
                 weight DECIMAL,
-                start_no INT,
-                end_no INT,
-                packs INT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             CREATE TABLE IF NOT EXISTS sub_assemblies (
@@ -77,8 +79,6 @@ async function initDB() {
                 product_code VARCHAR(100),
                 process_type VARCHAR(100),
                 parent_tag TEXT,
-                total_yield VARCHAR(50),
-                batch_code VARCHAR(100),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             CREATE TABLE IF NOT EXISTS batches (
@@ -100,9 +100,24 @@ async function initDB() {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
-        console.log("✅ Kilrr OS Database Architecture Verified & Locked.");
+
+        // Force the database to add any missing columns from our recent upgrades
+        await pool.query(`
+            ALTER TABLE inwarding_logs 
+            ADD COLUMN IF NOT EXISTS start_no INT,
+            ADD COLUMN IF NOT EXISTS end_no INT,
+            ADD COLUMN IF NOT EXISTS packs INT;
+        `);
+
+        await pool.query(`
+            ALTER TABLE sub_assemblies 
+            ADD COLUMN IF NOT EXISTS total_yield VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS batch_code VARCHAR(100);
+        `);
+
+        console.log("✅ Kilrr OS Database Architecture Verified & Updated.");
     } catch (e) {
-        console.error("❌ Database Initialization Error:", e);
+        console.error("❌ Database Initialization Error:", e.message);
     }
 }
 initDB();
@@ -112,7 +127,7 @@ initDB();
 // ==========================================
 app.get("/get-ingredients", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM ingredients ORDER BY ingredient_name")).rows); }
-    catch(e) { res.status(500).json({error: e.message}); }
+    catch(e) { console.error("DB Error:", e.message); res.status(500).json({error: "Database Connection Failed: " + e.message}); }
 });
 
 app.get("/get-vendors", async (req, res) => {
