@@ -12,13 +12,10 @@ try { const cors = require('cors'); app.use(cors()); } catch (e) {}
 
 app.use(express.static('public'));
 
-// ==========================================
-// 1. CLOUD DATABASE & BACKUP SETUP
-// ==========================================
 const SHEET_WEBHOOK = process.env.SHEET_WEBHOOK || ""; 
 
 if (!process.env.DATABASE_URL) {
-    console.error("🚨 CRITICAL FATAL ERROR: DATABASE_URL is missing! Render cannot find your Neon database.");
+    console.error("🚨 CRITICAL FATAL ERROR: DATABASE_URL is missing!");
 }
 
 const pool = new Pool({
@@ -41,7 +38,6 @@ function backupToSheets(eventType, operator, payload) {
     } catch(e) {}
 }
 
-// Auto-Create and Auto-Repair Tables
 async function initDB() {
     try {
         await pool.query(`
@@ -53,36 +49,10 @@ async function initDB() {
             CREATE TABLE IF NOT EXISTS batches (batch_code VARCHAR(100) PRIMARY KEY, fg_code VARCHAR(100), operator_name VARCHAR(100), status VARCHAR(50) DEFAULT 'OPEN', total_weight DECIMAL DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
             CREATE TABLE IF NOT EXISTS scans (id SERIAL PRIMARY KEY, batch_code VARCHAR(100) REFERENCES batches(batch_code) ON DELETE CASCADE, rm_tag VARCHAR(255) UNIQUE, product_code VARCHAR(100), weight DECIMAL DEFAULT 0, operator VARCHAR(100), parent_tags TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
         `);
-
-        // 🔥 THE NaN AUTO-REPAIR SCRIPT 🔥
-        await pool.query("UPDATE inwarding_logs SET weight = 0 WHERE weight IS NULL OR weight::text = 'NaN'");
-        await pool.query("UPDATE scans SET weight = 0 WHERE weight IS NULL OR weight::text = 'NaN'");
-        await pool.query("UPDATE batches SET total_weight = 0 WHERE total_weight IS NULL OR total_weight::text = 'NaN'");
-
-        // Auto-add new FSSAI columns if they don't exist yet
-        await pool.query(`
-            ALTER TABLE inwarding_logs 
-            ADD COLUMN IF NOT EXISTS start_no INT,
-            ADD COLUMN IF NOT EXISTS end_no INT,
-            ADD COLUMN IF NOT EXISTS packs INT;
-        `);
-
-        await pool.query(`
-            ALTER TABLE sub_assemblies 
-            ADD COLUMN IF NOT EXISTS total_yield VARCHAR(50),
-            ADD COLUMN IF NOT EXISTS batch_code VARCHAR(100);
-        `);
-
-        console.log("✅ Kilrr OS Database Architecture Verified & NaN Corruption Repaired.");
-    } catch (e) {
-        console.error("❌ Database Initialization Error:", e.message);
-    }
+    } catch (e) { console.error("❌ Database Error:", e.message); }
 }
 initDB();
 
-// ==========================================
-// 2. MASTER DATA ROUTES 
-// ==========================================
 app.get("/get-ingredients", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM ingredients ORDER BY ingredient_name")).rows); }
     catch(e) { res.status(500).json({error: e.message}); }
@@ -96,46 +66,30 @@ app.get("/get-recipes", async (req, res) => {
     catch(e) { res.status(500).json({error: e.message}); }
 });
 
-// ==========================================
-// 3. INWARDING ROUTES (Safe Math Applied)
-// ==========================================
 app.post("/log-inwarding", async (req, res) => {
     try {
         const { queue } = req.body;
         for(let item of queue) {
             let safeWeight = parseFloat(item.weight);
-            if (isNaN(safeWeight)) safeWeight = 0; // Converts Blank to 0
-
-            await pool.query(
-                "INSERT INTO inwarding_logs (date_received, ingredient_code, ingredient_name, vendor_code, vendor_name, weight, start_no, end_no, packs) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-                [item.dateRaw, item.ingCode, item.ingName, item.venCode, item.venName, safeWeight, item.startNo, item.endNo, item.packs]
-            );
+            if (isNaN(safeWeight)) safeWeight = 0;
+            await pool.query("INSERT INTO inwarding_logs (date_received, ingredient_code, ingredient_name, vendor_code, vendor_name, weight, start_no, end_no, packs) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)", [item.dateRaw, item.ingCode, item.ingName, item.venCode, item.venName, safeWeight, item.startNo, item.endNo, item.packs]);
             backupToSheets("INWARD_LOGGED", "System", item);
         }
         res.json({status: "success"});
     } catch(e) { res.status(500).json({error: e.message}); }
 });
 
-// ==========================================
-// 4. PRE-PROCESS ROUTES
-// ==========================================
 app.post("/log-preprocess", async (req, res) => {
     try {
         const { output_tags, product_code, process_type, parent_tags, total_yield, batch_code } = req.body;
         for(let tag of output_tags) {
-            await pool.query(
-                "INSERT INTO sub_assemblies (sub_tag, product_code, process_type, parent_tag, total_yield, batch_code) VALUES ($1, $2, $3, $4, $5, $6)",
-                [tag, product_code, process_type, parent_tags, total_yield, batch_code]
-            );
+            await pool.query("INSERT INTO sub_assemblies (sub_tag, product_code, process_type, parent_tag, total_yield, batch_code) VALUES ($1, $2, $3, $4, $5, $6)", [tag, product_code, process_type, parent_tags, total_yield, batch_code]);
         }
         backupToSheets("PREPROCESS_LOGGED", "System", req.body);
         res.json({status: "success"});
     } catch(e) { res.status(500).json({error: e.message}); }
 });
 
-// ==========================================
-// 5. SCANNER ROUTES (Safe Math Applied)
-// ==========================================
 app.get("/open-batches", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM batches WHERE status = 'OPEN' ORDER BY created_at DESC")).rows); }
     catch(e) { res.status(500).json({error: e.message}); }
@@ -152,10 +106,11 @@ app.post("/create-batch", async (req, res) => {
     }
 });
 
+// CASE-INSENSITIVE FIX (ILIKE)
 app.get("/recipe-requirements/:fg_code", async (req, res) => {
     try {
         const fgCode = req.params.fg_code;
-        const result = await pool.query(`SELECT r.ingredient_code as product_code, i.ingredient_name FROM recipes r LEFT JOIN ingredients i ON r.ingredient_code = i.product_code WHERE r.fg_code = $1`, [fgCode]);
+        const result = await pool.query(`SELECT r.ingredient_code as product_code, i.ingredient_name FROM recipes r LEFT JOIN ingredients i ON r.ingredient_code = i.product_code WHERE r.fg_code ILIKE $1`, [fgCode]);
         res.json(result.rows);
     } catch(e) { res.status(500).json({error: e.message}); }
 });
@@ -172,10 +127,11 @@ app.post("/scan", async (req, res) => {
             let wip = await pool.query("SELECT parent_tag FROM sub_assemblies WHERE sub_tag = $1", [rm_tag]);
             if(wip.rows.length > 0) parent_tags = wip.rows[0].parent_tag;
         } else {
-            let inw = await pool.query("SELECT weight FROM inwarding_logs WHERE ingredient_code = $1 AND vendor_code = $2 ORDER BY created_at DESC LIMIT 1", [product_code, vendor_code]);
+            // CASE-INSENSITIVE FIX FOR WEIGHT FETCHING
+            let inw = await pool.query("SELECT weight FROM inwarding_logs WHERE ingredient_code ILIKE $1 AND vendor_code ILIKE $2 ORDER BY created_at DESC LIMIT 1", [product_code, vendor_code]);
             if(inw.rows.length > 0) {
                 weight = parseFloat(inw.rows[0].weight);
-                if (isNaN(weight)) weight = 0; // Catch DB NaNs
+                if (isNaN(weight)) weight = 0;
             }
         }
 
@@ -216,9 +172,6 @@ app.post("/delete-batch", async (req, res) => {
     } catch(e) { res.status(500).json({error: e.message}); }
 });
 
-// ==========================================
-// 6. DASHBOARD ROUTES
-// ==========================================
 app.get("/api/dashboard-traceability", async (req, res) => {
     try {
         const batches = await pool.query("SELECT * FROM batches ORDER BY created_at DESC LIMIT 50");
