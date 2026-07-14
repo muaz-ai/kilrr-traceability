@@ -1,11 +1,8 @@
 const express = require('express');
-const cors = require('cors');
 const path = require('path');
 const { Pool } = require('pg');
-require('dotenv').config();
 
 const app = express();
-app.use(cors());
 app.use(express.json());
 
 // Serve HTML files from the public folder
@@ -209,7 +206,6 @@ app.post("/scan", async (req, res) => {
         let weight = 0;
         let parent_tags = null;
 
-        // FSSAI HACK: Intelligently determine if input is an Inwarded Raw Material or a Pre-Processed WIP Masala
         if (vendor_code === 'KILRR') {
             let wip = await pool.query("SELECT parent_tag FROM sub_assemblies WHERE sub_tag = $1", [rm_tag]);
             if(wip.rows.length > 0) parent_tags = wip.rows[0].parent_tag;
@@ -218,7 +214,6 @@ app.post("/scan", async (req, res) => {
             if(inw.rows.length > 0) weight = inw.rows[0].weight;
         }
 
-        // Lock it to the database
         await pool.query(
             "INSERT INTO scans (batch_code, rm_tag, product_code, weight, operator, parent_tags) VALUES ($1, $2, $3, $4, $5, $6)",
             [batch_code, rm_tag, product_code, weight, operator, parent_tags]
@@ -226,7 +221,6 @@ app.post("/scan", async (req, res) => {
 
         await pool.query("UPDATE batches SET total_weight = total_weight + $1 WHERE batch_code = $2", [weight, batch_code]);
 
-        // Indestructible Backup Trigger
         backupToSheets("SCAN_ADDED", operator, { batch_code, rm_tag, product_code, weight, parent_tags });
 
         res.json({status: "success"});
