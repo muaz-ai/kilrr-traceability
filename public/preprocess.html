@@ -26,7 +26,6 @@
 
         .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;}
         
-        /* Glass/Neon Panels */
         .card { background: var(--panel-bg); border-radius: 16px; padding: 35px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); border: 1px solid #334155; position: relative;}
         .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent-blue), #60a5fa); border-radius: 16px 16px 0 0;}
         .card.card-green::before { background: linear-gradient(90deg, var(--success-neon), #34d399); }
@@ -37,11 +36,9 @@
         label { font-weight: 800; font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 8px; text-transform: uppercase;}
         label span.sub { color: #64748b; font-size: 11px; font-weight: 700; display: block; margin-top: 2px;}
 
-        /* Deep Inputs */
         input, select { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 1px solid #475569; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: var(--input-bg); color: var(--text-main); transition: 0.2s ease;}
         input:focus, select:focus { border-color: var(--accent-blue); outline: none; box-shadow: 0 0 0 4px rgba(59,130,246,0.2);}
         input[readonly] { background: #0f172a; color: #475569; cursor: not-allowed; border-color: #1e293b;}
-        
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
 
         button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; background: var(--accent-blue); color: white; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4); transition: transform 0.1s;}
@@ -53,7 +50,6 @@
 
         .row-inputs { display: flex; gap: 15px; }
         
-        /* Dark Custom Dropdown */
         .custom-dropdown-container { position: relative; width: 100%; margin-bottom: 20px;}
         .custom-dropdown-container input { margin-bottom: 0; }
         .custom-dropdown-list { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: var(--panel-bg); border: 2px solid var(--accent-blue); border-radius: 12px; max-height: 250px; overflow-y: auto; z-index: 9999; box-shadow: 0 15px 30px rgba(0,0,0,0.8); display: none; padding: 10px; }
@@ -142,6 +138,17 @@
 
             <div class="row-inputs">
                 <div style="flex:1;">
+                    <label>एकूण वजन <span class="sub">TOTAL BATCH YIELD (KG)</span></label>
+                    <input type="text" inputmode="numeric" id="total_yield" placeholder="e.g. 130">
+                </div>
+                <div style="flex:1;">
+                    <label>बॅच नंबर <span class="sub">BATCH / LOT NO. (FOR FIFO)</span></label>
+                    <input type="text" id="batch_code" placeholder="e.g. B-01" style="text-transform: uppercase;">
+                </div>
+            </div>
+
+            <div class="row-inputs">
+                <div style="flex:1;">
                     <label>पहिली गोणी <span class="sub">START BAG</span></label>
                     <input type="text" inputmode="numeric" id="start_no" value="1">
                 </div>
@@ -190,13 +197,12 @@
         let isSingleItemProcess = false;
         let html5QrcodeScanner = null;
         let isCameraProcessing = false;
-        let globalCombinedList = []; // Stores database to allow manual typing autofill
+        let globalCombinedList = []; 
 
         window.onload = async () => {
             document.getElementById('date').valueAsDate = new Date();
             document.getElementById('scan_input').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); addTag(); }});
             
-            // SMART AUTO-FILL: If user types manually instead of clicking dropdown
             document.getElementById('recipe_search').addEventListener('blur', function() {
                 setTimeout(() => { 
                     let typedVal = this.value.trim();
@@ -224,7 +230,7 @@
                     }
                 });
 
-                globalCombinedList = combinedList; // Save globally
+                globalCombinedList = combinedList; 
 
                 attachCustomDropdown('recipe_search', combinedList, 'display', 'code', (selectedCode, selectedName) => {
                     document.getElementById('product_code').value = selectedCode;
@@ -395,6 +401,9 @@
             const pName = document.getElementById('recipe_search').value.trim().toUpperCase();
             const pCode = document.getElementById('product_code').value.trim().toUpperCase();
             const processType = document.getElementById('process_type').value;
+            
+            const totalYield = document.getElementById('total_yield').value.replace(/[^0-9.]/g, '');
+            const batchCode = document.getElementById('batch_code').value.trim().toUpperCase();
             const weightRaw = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
             
             let startNo = parseInt(document.getElementById('start_no').value.replace(/[^0-9]/g, ''));
@@ -433,24 +442,30 @@
                         output_tags: outputTags,
                         product_code: pCode,
                         process_type: processType,
-                        parent_tags: parentTags.join(', ')
+                        parent_tags: parentTags.join(', '),
+                        total_yield: totalYield,
+                        batch_code: batchCode
                     })
                 });
                 
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
 
+                // DYNAMIC BATCH CODE INJECTION: Only renders if user typed a Batch Code
+                let batchCodeHTML = batchCode ? `<div class="batch-box">BATCH: ${batchCode}</div>` : '';
+
                 let html = `<html><head><style>
                     @page { size: 75mm 75mm; margin: 0; }
                     body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; }
-                    .label { width: 73mm; height: 73mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden; }
-                    .title { font-size: 22px; font-weight: 900; text-transform: uppercase; margin: 0; padding-bottom: 1.5mm; border-bottom: 3px solid black; width: 100%; line-height: 1; }
-                    .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin: auto 0; }
-                    .qr-container img { width: 36mm; height: 36mm; margin-bottom: 1mm; }
-                    .date-text { font-size: 13px; font-weight: 900; text-transform: uppercase; margin: 0; line-height: 1; }
+                    .label { width: 73mm; height: 73mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow: hidden; }
+                    .title { font-size: 21px; font-weight: 900; text-transform: uppercase; margin: 0; padding-bottom: 1.5mm; border-bottom: 3px solid black; width: 100%; line-height: 1; text-align: center;}
+                    .batch-box { font-size: 16px; font-weight: 900; color: white; background: black; padding: 2px 10px; border-radius: 4px; margin-top: 1.5mm; display: inline-block; line-height: 1; letter-spacing: 0.5px;}
+                    .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; flex: 1; }
+                    .qr-container img { width: 33mm; height: 33mm; margin-bottom: 1mm; }
+                    .date-text { font-size: 12px; font-weight: 900; text-transform: uppercase; margin: 0; line-height: 1; }
                     .bottom-section { width: 100%; margin-bottom: 1mm; }
-                    .tag-string { font-size: 16px; font-weight: 900; font-family: monospace; margin: 0 0 1.5mm 0; line-height: 1; }
-                    .weight-bar { font-size: 21px; font-weight: 900; padding: 1.5mm 0; margin: 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; line-height: 1; }
+                    .tag-string { font-size: 14px; font-weight: 900; font-family: monospace; margin: 0 0 1.5mm 0; line-height: 1; }
+                    .weight-bar { font-size: 20px; font-weight: 900; padding: 1.5mm 0; margin: 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; line-height: 1; }
                 </style></head><body>`;
 
                 outputTags.forEach(tagStr => {
@@ -458,6 +473,7 @@
                     html += `
                     <div class="label">
                         <div class="title">${pName}</div>
+                        ${batchCodeHTML}
                         <div class="qr-container">
                             <img src="${qrEngine.toDataURL()}">
                             <div class="date-text">DATE: ${dispDate}</div>
