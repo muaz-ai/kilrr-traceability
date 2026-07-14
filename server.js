@@ -1,193 +1,240 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Kilrr OS - Traceability Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; }
-        body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 50px;}
-        .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;}
-        .brand { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;}
-        .brand span { color: var(--kilrr-orange); }
-        .nav-links { display: flex; gap: 10px; }
-        .nav-btn { color: #cbd5e1; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; padding: 8px 12px; border-radius: 8px;}
-        .nav-btn:hover { background: rgba(255,255,255,0.1); color: white;}
-        .nav-btn.active { color: var(--kilrr-orange); }
+const express = require('express');
+const path = require('path');
+const { Pool } = require('pg');
+const https = require('https');
 
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; }
-        
-        .header-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;}
-        h2 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; text-transform: uppercase; color: var(--navy-command); margin:0;}
-        .sub-heading { font-weight: 700; color: #64748b; font-size: 14px; margin-top: 5px;}
-        
-        .btn-export { background: linear-gradient(135deg, #059669, #047857); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3);}
+try { require('dotenv').config(); } catch (e) {}
 
-        .table-header { display: grid; grid-template-columns: 1.5fr 2fr 1fr 1fr 1fr 1fr; background: var(--navy-command); color: white; padding: 15px 20px; border-radius: 12px 12px 0 0; font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;}
-        
-        .batch-row { background: white; border: 1px solid #cbd5e1; border-top: none; padding: 15px 20px; display: grid; grid-template-columns: 1.5fr 2fr 1fr 1fr 1fr 1fr; align-items: center; font-weight: 700; cursor: pointer; transition: 0.2s;}
-        .batch-row:hover { background: #fff7ed; }
-        .batch-row:last-child { border-radius: 0 0 12px 12px; }
-        
-        .b-code { color: var(--kilrr-orange); font-family: monospace; font-size: 16px;}
-        .b-recipe { font-weight: 900; font-size: 15px;}
-        .b-weight { color: var(--success-green); font-weight: 900;}
-        .b-status { background: #e0f2fe; color: #2563eb; font-size: 11px; padding: 4px 10px; border-radius: 20px; display: inline-block; width: fit-content;}
-        .b-status.closed { background: #f1f5f9; color: #64748b; }
-        .b-date { color: #64748b; font-size: 13px; font-weight: 600;}
+const app = express();
+app.use(express.json());
 
-        .scan-drawer { background: #f8fafc; border: 1px solid #cbd5e1; border-top: none; padding: 20px; display: none; border-left: 4px solid var(--kilrr-orange);}
-        .scan-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-        .scan-pill { background: white; border: 1px solid #cbd5e1; padding: 10px 15px; border-radius: 8px; font-size: 13px; font-weight: 700; display: flex; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.02); min-width: 150px;}
-        .scan-pill span { color: #64748b; font-size: 11px; font-weight: 800; margin-bottom: 3px; font-family: monospace;}
-        .scan-pill .wgt { color: var(--success-green); font-size: 14px; font-weight: 900; margin-top: 5px;}
-    </style>
-</head>
-<body>
-    <nav class="nav-top">
-        <a href="index.html" class="brand">Kilrr <span>OS</span></a>
-        <div class="nav-links">
-            <a href="index.html" class="nav-btn">Hub</a>
-            <a href="inwarding.html" class="nav-btn">Inward</a>
-            <a href="preprocess.html" class="nav-btn">Pre-Process</a>
-            <a href="scanner.html" class="nav-btn">Scanner</a>
-            <a href="dashboard.html" class="nav-btn active">Dashboard</a>
-            <a href="master.html" class="nav-btn">Master</a>
-        </div>
-    </nav>
+try { const cors = require('cors'); app.use(cors()); } catch (e) {}
 
-    <div class="container">
-        <div class="header-row">
-            <div>
-                <h2>Master Traceability Engine</h2>
-                <div class="sub-heading">Click on any batch to view the ingredient breakdown and parent origins.</div>
-            </div>
-            <button class="btn-export" onclick="exportToExcel()">⬇ Export to Excel</button>
-        </div>
+app.use(express.static('public'));
 
-        <div class="table-header">
-            <div>Batch Code</div>
-            <div>Recipe</div>
-            <div>Total Weight</div>
-            <div>Operator</div>
-            <div>Status</div>
-            <div>Started</div>
-        </div>
-        
-        <div id="batch_list">
-            <div style="background:white; padding:40px; text-align:center; color:#94a3b8; font-weight:bold; border: 1px solid #cbd5e1; border-top: none;">Loading Traceability Data...</div>
-        </div>
-    </div>
+// ==========================================
+// 1. CLOUD DATABASE & BACKUP SETUP
+// ==========================================
+const SHEET_WEBHOOK = process.env.SHEET_WEBHOOK || ""; 
 
-    <script>
-        let rawData = [];
+if (!process.env.DATABASE_URL) {
+    console.error("🚨 CRITICAL FATAL ERROR: DATABASE_URL is missing! Render cannot find your Neon database.");
+}
 
-        window.onload = async () => {
-            try {
-                const res = await fetch('/api/dashboard-traceability');
-                rawData = await res.json();
-                renderDashboard();
-            } catch(e) {
-                document.getElementById('batch_list').innerHTML = `<div style="background:white; padding:40px; text-align:center; color:red; font-weight:bold; border: 1px solid #cbd5e1; border-top: none;">Database Connection Failed</div>`;
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+    connectionTimeoutMillis: 15000 
+});
+
+function backupToSheets(eventType, operator, payload) {
+    if(!SHEET_WEBHOOK || !SHEET_WEBHOOK.startsWith('https')) return;
+    try {
+        const data = JSON.stringify({ event_type: eventType, operator: operator, payload: payload });
+        const req = https.request(SHEET_WEBHOOK, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(data) }
+        });
+        req.on('error', (e) => console.error("Sheets Backup Error:", e.message));
+        req.write(data);
+        req.end();
+    } catch(e) {}
+}
+
+// Auto-Create and Auto-Repair Tables
+async function initDB() {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS ingredients (product_code VARCHAR(100) PRIMARY KEY, ingredient_name VARCHAR(255));
+            CREATE TABLE IF NOT EXISTS vendors (vendor_code VARCHAR(100) PRIMARY KEY, vendor_name VARCHAR(255));
+            CREATE TABLE IF NOT EXISTS recipes (id SERIAL PRIMARY KEY, fg_code VARCHAR(100), ingredient_code VARCHAR(100));
+            CREATE TABLE IF NOT EXISTS inwarding_logs (id SERIAL PRIMARY KEY, date_received DATE, ingredient_code VARCHAR(100), ingredient_name VARCHAR(255), vendor_code VARCHAR(100), vendor_name VARCHAR(255), weight DECIMAL, start_no INT, end_no INT, packs INT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+            CREATE TABLE IF NOT EXISTS sub_assemblies (id SERIAL PRIMARY KEY, sub_tag VARCHAR(255), product_code VARCHAR(100), process_type VARCHAR(100), parent_tag TEXT, total_yield VARCHAR(50), batch_code VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+            CREATE TABLE IF NOT EXISTS batches (batch_code VARCHAR(100) PRIMARY KEY, fg_code VARCHAR(100), operator_name VARCHAR(100), status VARCHAR(50) DEFAULT 'OPEN', total_weight DECIMAL DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+            CREATE TABLE IF NOT EXISTS scans (id SERIAL PRIMARY KEY, batch_code VARCHAR(100) REFERENCES batches(batch_code) ON DELETE CASCADE, rm_tag VARCHAR(255) UNIQUE, product_code VARCHAR(100), weight DECIMAL DEFAULT 0, operator VARCHAR(100), parent_tags TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+        `);
+
+        // 🔥 THE NaN AUTO-REPAIR SCRIPT 🔥
+        await pool.query("UPDATE inwarding_logs SET weight = 0 WHERE weight IS NULL OR weight::text = 'NaN'");
+        await pool.query("UPDATE scans SET weight = 0 WHERE weight IS NULL OR weight::text = 'NaN'");
+        await pool.query("UPDATE batches SET total_weight = 0 WHERE total_weight IS NULL OR total_weight::text = 'NaN'");
+
+        // Auto-add new FSSAI columns if they don't exist yet
+        await pool.query(`
+            ALTER TABLE inwarding_logs 
+            ADD COLUMN IF NOT EXISTS start_no INT,
+            ADD COLUMN IF NOT EXISTS end_no INT,
+            ADD COLUMN IF NOT EXISTS packs INT;
+        `);
+
+        await pool.query(`
+            ALTER TABLE sub_assemblies 
+            ADD COLUMN IF NOT EXISTS total_yield VARCHAR(50),
+            ADD COLUMN IF NOT EXISTS batch_code VARCHAR(100);
+        `);
+
+        console.log("✅ Kilrr OS Database Architecture Verified & NaN Corruption Repaired.");
+    } catch (e) {
+        console.error("❌ Database Initialization Error:", e.message);
+    }
+}
+initDB();
+
+// ==========================================
+// 2. MASTER DATA ROUTES 
+// ==========================================
+app.get("/get-ingredients", async (req, res) => {
+    try { res.json((await pool.query("SELECT * FROM ingredients ORDER BY ingredient_name")).rows); }
+    catch(e) { res.status(500).json({error: e.message}); }
+});
+app.get("/get-vendors", async (req, res) => {
+    try { res.json((await pool.query("SELECT * FROM vendors ORDER BY vendor_name")).rows); }
+    catch(e) { res.status(500).json({error: e.message}); }
+});
+app.get("/get-recipes", async (req, res) => {
+    try { res.json((await pool.query("SELECT * FROM recipes")).rows); }
+    catch(e) { res.status(500).json({error: e.message}); }
+});
+
+// ==========================================
+// 3. INWARDING ROUTES (Safe Math Applied)
+// ==========================================
+app.post("/log-inwarding", async (req, res) => {
+    try {
+        const { queue } = req.body;
+        for(let item of queue) {
+            let safeWeight = parseFloat(item.weight);
+            if (isNaN(safeWeight)) safeWeight = 0; // Converts Blank to 0
+
+            await pool.query(
+                "INSERT INTO inwarding_logs (date_received, ingredient_code, ingredient_name, vendor_code, vendor_name, weight, start_no, end_no, packs) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+                [item.dateRaw, item.ingCode, item.ingName, item.venCode, item.venName, safeWeight, item.startNo, item.endNo, item.packs]
+            );
+            backupToSheets("INWARD_LOGGED", "System", item);
+        }
+        res.json({status: "success"});
+    } catch(e) { res.status(500).json({error: e.message}); }
+});
+
+// ==========================================
+// 4. PRE-PROCESS ROUTES
+// ==========================================
+app.post("/log-preprocess", async (req, res) => {
+    try {
+        const { output_tags, product_code, process_type, parent_tags, total_yield, batch_code } = req.body;
+        for(let tag of output_tags) {
+            await pool.query(
+                "INSERT INTO sub_assemblies (sub_tag, product_code, process_type, parent_tag, total_yield, batch_code) VALUES ($1, $2, $3, $4, $5, $6)",
+                [tag, product_code, process_type, parent_tags, total_yield, batch_code]
+            );
+        }
+        backupToSheets("PREPROCESS_LOGGED", "System", req.body);
+        res.json({status: "success"});
+    } catch(e) { res.status(500).json({error: e.message}); }
+});
+
+// ==========================================
+// 5. SCANNER ROUTES (Safe Math Applied)
+// ==========================================
+app.get("/open-batches", async (req, res) => {
+    try { res.json((await pool.query("SELECT * FROM batches WHERE status = 'OPEN' ORDER BY created_at DESC")).rows); }
+    catch(e) { res.status(500).json({error: e.message}); }
+});
+
+app.post("/create-batch", async (req, res) => {
+    try {
+        const { batch_code, fg_code, operator_name } = req.body;
+        await pool.query("INSERT INTO batches (batch_code, fg_code, operator_name) VALUES ($1, $2, $3)", [batch_code, fg_code, operator_name]);
+        res.json({status: "success"});
+    } catch(e) {
+        if(e.code === '23505') return res.status(400).json({error: "Batch code already exists!"});
+        res.status(500).json({error: e.message});
+    }
+});
+
+app.get("/recipe-requirements/:fg_code", async (req, res) => {
+    try {
+        const fgCode = req.params.fg_code;
+        const result = await pool.query(`SELECT r.ingredient_code as product_code, i.ingredient_name FROM recipes r LEFT JOIN ingredients i ON r.ingredient_code = i.product_code WHERE r.fg_code = $1`, [fgCode]);
+        res.json(result.rows);
+    } catch(e) { res.status(500).json({error: e.message}); }
+});
+
+app.post("/scan", async (req, res) => {
+    try {
+        const { batch_code, rm_tag, operator } = req.body;
+        let parts = rm_tag.split('/');
+        let product_code = parts.length >= 2 ? parts[1] : rm_tag;
+        let vendor_code = parts.length >= 3 ? parts[2] : null;
+        let weight = 0; let parent_tags = null;
+
+        if (vendor_code === 'KILRR') {
+            let wip = await pool.query("SELECT parent_tag FROM sub_assemblies WHERE sub_tag = $1", [rm_tag]);
+            if(wip.rows.length > 0) parent_tags = wip.rows[0].parent_tag;
+        } else {
+            let inw = await pool.query("SELECT weight FROM inwarding_logs WHERE ingredient_code = $1 AND vendor_code = $2 ORDER BY created_at DESC LIMIT 1", [product_code, vendor_code]);
+            if(inw.rows.length > 0) {
+                weight = parseFloat(inw.rows[0].weight);
+                if (isNaN(weight)) weight = 0; // Catch DB NaNs
             }
         }
 
-        function formatSafeWeight(val) {
-            let w = parseFloat(val);
-            if(isNaN(w)) return "0.00 KG";
-            return w.toFixed(2) + " KG";
+        await pool.query("INSERT INTO scans (batch_code, rm_tag, product_code, weight, operator, parent_tags) VALUES ($1, $2, $3, $4, $5, $6)", [batch_code, rm_tag, product_code, weight, operator, parent_tags]);
+        await pool.query("UPDATE batches SET total_weight = COALESCE(total_weight, 0) + $1 WHERE batch_code = $2", [weight, batch_code]);
+        res.json({status: "success"});
+    } catch(e) {
+        if(e.code === '23505') return res.status(400).json({error: "Duplicate tag!"});
+        res.status(500).json({error: e.message});
+    }
+});
+
+app.post("/undo-scan", async (req, res) => {
+    try {
+        const { batch_code, rm_tag } = req.body;
+        const scanData = await pool.query("SELECT weight FROM scans WHERE batch_code = $1 AND rm_tag = $2", [batch_code, rm_tag]);
+        if(scanData.rows.length > 0) {
+            let w = parseFloat(scanData.rows[0].weight);
+            if(isNaN(w)) w = 0;
+            await pool.query("DELETE FROM scans WHERE batch_code = $1 AND rm_tag = $2", [batch_code, rm_tag]);
+            await pool.query("UPDATE batches SET total_weight = COALESCE(total_weight, 0) - $1 WHERE batch_code = $2", [w, batch_code]);
         }
+        res.json({status: "success"});
+    } catch(e) { res.status(500).json({error: e.message}); }
+});
 
-        function renderDashboard() {
-            const list = document.getElementById('batch_list');
-            if(rawData.length === 0) {
-                list.innerHTML = `<div style="background:white; padding:40px; text-align:center; color:#64748b; font-weight:bold; border: 1px solid #cbd5e1; border-top: none;">No batches recorded yet.</div>`;
-                return;
-            }
+app.get("/current-scans/:batch_code", async (req, res) => {
+    try { res.json((await pool.query("SELECT * FROM scans WHERE batch_code = $1 ORDER BY created_at DESC", [req.params.batch_code])).rows); }
+    catch(e) { res.status(500).json({error: e.message}); }
+});
 
-            let html = '';
-            rawData.forEach((b, index) => {
-                let dateStr = new Date(b.created_at).toLocaleString('en-GB', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' });
-                
-                let scanHTML = '';
-                if(b.scans && b.scans.length > 0) {
-                    scanHTML = b.scans.map(s => {
-                        let name = s.ingredient_name || "Unknown RM";
-                        return `
-                        <div class="scan-pill">
-                            <span>${name}</span>
-                            <div style="color:var(--navy-command);">${s.rm_tag}</div>
-                            <div class="wgt">${formatSafeWeight(s.weight)}</div>
-                        </div>`;
-                    }).join('');
-                } else {
-                    scanHTML = `<div style="color:#94a3b8; font-size:13px; font-weight:bold;">No materials scanned yet.</div>`;
-                }
+app.post("/delete-batch", async (req, res) => {
+    try {
+        const { pin, batch_code } = req.body;
+        if(pin !== "1234") return res.status(403).json({error: "Unauthorized"});
+        await pool.query("DELETE FROM batches WHERE batch_code = $1", [batch_code]);
+        res.json({status: "success"});
+    } catch(e) { res.status(500).json({error: e.message}); }
+});
 
-                html += `
-                <div class="batch-row" onclick="toggleDrawer(${index})">
-                    <div class="b-code">${b.batch_code}</div>
-                    <div class="b-recipe">${b.fg_code}</div>
-                    <div class="b-weight">${formatSafeWeight(b.total_weight)}</div>
-                    <div>${b.operator_name || 'System'}</div>
-                    <div><span class="b-status ${b.status.toLowerCase()}">${b.status}</span></div>
-                    <div class="b-date">${dateStr}</div>
-                </div>
-                <div class="scan-drawer" id="drawer_${index}">
-                    <div class="scan-grid">${scanHTML}</div>
-                </div>`;
-            });
-            list.innerHTML = html;
-        }
+// ==========================================
+// 6. DASHBOARD ROUTES
+// ==========================================
+app.get("/api/dashboard-traceability", async (req, res) => {
+    try {
+        const batches = await pool.query("SELECT * FROM batches ORDER BY created_at DESC LIMIT 50");
+        const scans = await pool.query("SELECT s.*, i.ingredient_name FROM scans s LEFT JOIN ingredients i ON s.product_code = i.product_code");
+        let result = batches.rows.map(b => { b.scans = scans.rows.filter(s => s.batch_code === b.batch_code); return b; });
+        res.json(result);
+    } catch(e) { res.status(500).json({error: e.message}); }
+});
+app.get("/api/dashboard-inwarding", async (req, res) => {
+    try { res.json((await pool.query("SELECT * FROM inwarding_logs ORDER BY created_at DESC LIMIT 200")).rows); }
+    catch(e) { res.status(500).json({error: e.message}); }
+});
+app.get("/api/dashboard-preprocess", async (req, res) => {
+    try { res.json((await pool.query("SELECT * FROM sub_assemblies ORDER BY created_at DESC LIMIT 200")).rows); }
+    catch(e) { res.status(500).json({error: e.message}); }
+});
 
-        function toggleDrawer(index) {
-            const drawer = document.getElementById(`drawer_${index}`);
-            drawer.style.display = drawer.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function exportToExcel() {
-            if(rawData.length === 0) return alert("No data to export!");
-            
-            let exportData = [];
-            rawData.forEach(b => {
-                if(b.scans && b.scans.length > 0) {
-                    b.scans.forEach(s => {
-                        exportData.push({
-                            "Batch Code": b.batch_code,
-                            "Recipe": b.fg_code,
-                            "Batch Operator": b.operator_name,
-                            "Batch Status": b.status,
-                            "Batch Started": new Date(b.created_at).toLocaleString(),
-                            "Total Batch Weight (KG)": parseFloat(b.total_weight) || 0,
-                            "Scanned RM Tag": s.rm_tag,
-                            "RM Name": s.ingredient_name || s.product_code,
-                            "RM Weight Issued (KG)": parseFloat(s.weight) || 0,
-                            "RM Sub-Assembly Origins": s.parent_tags || "Direct Sourced"
-                        });
-                    });
-                } else {
-                    exportData.push({
-                        "Batch Code": b.batch_code,
-                        "Recipe": b.fg_code,
-                        "Batch Operator": b.operator_name,
-                        "Batch Status": b.status,
-                        "Batch Started": new Date(b.created_at).toLocaleString(),
-                        "Total Batch Weight (KG)": parseFloat(b.total_weight) || 0,
-                        "Scanned RM Tag": "NONE",
-                        "RM Name": "NONE",
-                        "RM Weight Issued (KG)": 0,
-                        "RM Sub-Assembly Origins": "NONE"
-                    });
-                }
-            });
-
-            const ws = XLSX.utils.json_to_sheet(exportData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "FSSAI_Traceability");
-            XLSX.writeFile(wb, `Kilrr_Traceability_${new Date().toISOString().slice(0,10)}.xlsx`);
-        }
-    </script>
-</body>
-</html>
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🏭 Kilrr OS Engine running globally on port ${PORT}`));
