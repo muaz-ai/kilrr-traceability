@@ -103,6 +103,7 @@
     </nav>
 
     <div class="container">
+        <!-- SETUP SCREEN -->
         <div class="card" id="setup">
             <details style="margin-bottom: 25px; background: #fff7ed; padding: 15px; border-radius: 12px; border: 2px solid #ffedd5;">
                 <summary style="font-weight: 900; color: var(--kilrr-orange); cursor: pointer; outline: none; font-size: 16px;">▶ चालू काम परत उघडा (Resume Active Run)</summary>
@@ -117,17 +118,22 @@
             <div class="touch-grid" id="operator_grid"></div>
             
             <label style="font-weight: 800; font-size: 12px; color: #64748b; display: block; margin-bottom: 8px;">2. आपण काय बनवत आहोत? (WHAT ARE WE MAKING?)</label>
-            <div class="touch-grid" id="recipe_grid"></div>
+            <div class="touch-grid" id="recipe_grid">
+                <div style="font-size: 12px; color: #94a3b8; font-weight: bold;">Loading Master Data...</div>
+            </div>
 
-            <label style="font-weight: 800; font-size: 12px; color: #64748b; display: block; margin-bottom: 8px;">3. लॉट आणि रन नंबर (LOT & RUN NUMBER)</label>
+            <label style="font-weight: 800; font-size: 12px; color: #64748b; display: block; margin-bottom: 8px;">3. बॅचची माहिती (BATCH DETAILS: PREFIX, LOT, RUN)</label>
             <div style="display:flex; gap:10px; margin-bottom: 25px;">
+                <!-- NEW USER-DEFINED PREFIX INPUT -->
+                <input type="text" id="prefix_input" class="setup-input" placeholder="Prefix (e.g. LK)" style="margin-bottom: 0; text-transform: uppercase;">
                 <input type="text" id="lot_input" class="setup-input" placeholder="Lot (e.g. 190)" style="margin-bottom: 0;">
-                <input type="number" id="run_input" class="setup-input" placeholder="Run # (e.g. 3)" pattern="[0-9]*" inputmode="numeric" style="margin-bottom: 0;">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" id="run_input" class="setup-input" placeholder="Run # (e.g. 3)" style="margin-bottom: 0;">
             </div>
             
             <button class="btn-huge" onclick="startNewBatch()">⚡ सुरु करा (GENERATE & START)</button>
         </div>
         
+        <!-- WORK SCREEN -->
         <div class="card" id="work" style="display:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #e2e8f0; padding-bottom:15px; margin-bottom:20px;">
                 <div>
@@ -137,6 +143,7 @@
                 <button style="width:auto; padding:10px 15px; font-weight:900; background:var(--danger-red); color:white; border:none; border-radius:8px; cursor:pointer;" onclick="location.reload()">बंद करा (EXIT)</button>
             </div>
 
+            <!-- BAG & WEIGHT KPIs -->
             <div class="summary-grid">
                 <div class="summary-box">
                     <div class="marathi-label">किती गोण्या स्कॅन केल्या<br><span style="font-size:10px; letter-spacing:1px;">BAGS SCANNED</span></div>
@@ -150,6 +157,7 @@
 
             <button class="btn-undo" id="undo_btn" onclick="undoLastScan()">⚠️ मागे घ्या (UNDO LAST SCAN - 30s)</button>
 
+            <!-- SCAN INPUT & CAMERA -->
             <div style="display:flex; gap:10px; margin-bottom: 15px;">
                 <input type="text" id="rm_tag" class="setup-input" style="margin:0; border-color:var(--navy-command); font-size:16px;" placeholder="बारकोड स्कॅन करा..." autocomplete="off">
                 <button style="width:auto; padding:0 25px; background:var(--navy-command); color:white; border:none; border-radius:12px; font-weight:900; cursor:pointer;" onclick="manualScan()">ऍड करा</button>
@@ -158,6 +166,7 @@
             <div id="reader"></div>
             <button class="btn-cam" id="camToggleBtn" onclick="toggleCamera()">📷 मोबाईल कॅमेरा चालू करा</button>
 
+            <!-- RECIPE VALIDATION FEED (CHECKLIST) -->
             <h3 style="font-family:'Space Grotesk'; font-size:16px; margin-top:25px; margin-bottom:5px; color:var(--navy-command);">काय काय लागणार? (Ingredients)</h3>
             <div class="recipe-feed" id="recipe_checklist">
                 <div style="text-align:center; color:#94a3b8; font-weight:bold;">Loading...</div>
@@ -169,27 +178,13 @@
     </div>
     
     <script>
-        const RECIPE_PREFIXES = {
-            "Tandoori": "TAN", 
-            "Achaari": "ACH", 
-            "Pesto": "BP", 
-            "Shawarma": "SH",
-            "Dhaniya": "DH", 
-            "Pudina": "PUD", 
-            "PUDINA": "PUD", 
-            "Pudin": "PUD", 
-            "Afghan-Ka-Shaitaan": "AFG", 
-            "Lucknowi Tamancha": "LK",
-            "Peri": "PER", 
-            "Saza-E-KaaliMirch": "KM", 
-            "Gangs of Awadh": "GOA",
-            "Curry 9211": "CUR", 
-            "Kaalimirch Hathkadi": "KAL", 
-            "Palak ka Panchnama": "PAL"
-        };
-
         let operators = JSON.parse(localStorage.getItem('kilrr_ops')) || ["Muaz", "Arbaaz", "Rahul", "Ramesh"];
+        
+        // NEW: Stores the user's preferred prefix for each recipe locally
+        let userPrefixes = JSON.parse(localStorage.getItem('kilrr_prefixes')) || {};
+        
         let curB="", curF="", curPrefix="", curOp="", validRecipeCodes=[], recipeRequirements=[], localScannedTags=[], allOpenBatches=[];
+        let activeRecipes = [];
         let lastScanTag = null, undoTimer = null, undoCountdown = 0, html5QrcodeScanner = null;
         let isCameraProcessing = false;
 
@@ -202,10 +197,22 @@
 
         window.onload = async () => { 
             renderOperators();
-            renderRecipes();
+            await fetchDynamicRecipes();
             loadOpenBatches();
             document.getElementById('rm_tag').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); manualScan(); }});
         };
+
+        async function fetchDynamicRecipes() {
+            try {
+                const res = await fetch('/get-recipes');
+                const data = await res.json();
+                activeRecipes = [...new Set(data.map(r => r.fg_code))];
+                renderRecipes();
+            } catch(e) { 
+                console.error("Could not load recipes");
+                document.getElementById('recipe_grid').innerHTML = `<div style="color:var(--danger-red); font-size:12px; font-weight:bold;">Database connection error.</div>`;
+            }
+        }
 
         function renderOperators() {
             const grid = document.getElementById('operator_grid');
@@ -226,7 +233,13 @@
 
         function renderRecipes() {
             const grid = document.getElementById('recipe_grid');
-            grid.innerHTML = Object.keys(RECIPE_PREFIXES).map(name => `<div class="touch-btn" onclick="selectRecipe(this, '${name}', '${RECIPE_PREFIXES[name]}')"><span style="font-size:12px;">${name}</span></div>`).join('');
+            if(activeRecipes.length === 0) {
+                grid.innerHTML = `<div style="color:var(--danger-red); font-size:12px; font-weight:bold;">No recipes mapped in Master Data.</div>`;
+                return;
+            }
+            grid.innerHTML = activeRecipes.map(name => {
+                return `<div class="touch-btn" onclick="selectRecipe(this, '${name}')"><span style="font-size:12px;">${name}</span></div>`;
+            }).join('');
         }
 
         function addNewOperator() {
@@ -241,9 +254,17 @@
             document.getElementById('operator_grid').querySelectorAll('.touch-btn').forEach(btn => btn.classList.remove('selected'));
             el.classList.add('selected'); curOp = op; 
         }
-        function selectRecipe(el, name, prefix) { 
+        
+        function selectRecipe(el, name) { 
             document.getElementById('recipe_grid').querySelectorAll('.touch-btn').forEach(btn => btn.classList.remove('selected'));
-            el.classList.add('selected'); curF = name; curPrefix = prefix;
+            el.classList.add('selected'); curF = name;
+            
+            // SMART MEMORY: Auto-fill their preferred prefix if they've used it before
+            if(userPrefixes[name]) {
+                document.getElementById('prefix_input').value = userPrefixes[name];
+            } else {
+                document.getElementById('prefix_input').value = ""; // Let them type a new one
+            }
         }
 
         async function loadOpenBatches() {
@@ -291,12 +312,20 @@
         }
 
         async function startNewBatch() { 
+            let prefix = document.getElementById('prefix_input').value.trim().toUpperCase();
             let lot = document.getElementById('lot_input').value.trim().toUpperCase();
             let runNum = document.getElementById('run_input').value.trim();
+            
             if(!curOp) return alert("Please tap an operator!"); 
             if(!curF) return alert("Please tap a recipe!"); 
+            if(!prefix) return alert("Please type a Prefix code for this recipe!");
             if(!lot || !runNum) return alert("Please enter Lot number and Run Number!");
             
+            // SMART MEMORY: Save their prefix choice for next time
+            userPrefixes[curF] = prefix;
+            localStorage.setItem('kilrr_prefixes', JSON.stringify(userPrefixes));
+            
+            curPrefix = prefix;
             curB = `${curPrefix}${lot}-B${runNum}`;
             const res = await fetch('/create-batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({batch_code:curB,fg_code:curF,operator_name:curOp})}); 
             const data = await res.json(); 
