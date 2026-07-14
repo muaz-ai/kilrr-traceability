@@ -3,13 +3,11 @@ const path = require('path');
 const { Pool } = require('pg');
 const https = require('https');
 
-// SHIELD 1: Safely load local env vars if running locally, ignore if on Render
 try { require('dotenv').config(); } catch (e) {}
 
 const app = express();
 app.use(express.json());
 
-// SHIELD 2: Safely load CORS
 try { const cors = require('cors'); app.use(cors()); } catch (e) {}
 
 app.use(express.static('public'));
@@ -20,7 +18,7 @@ app.use(express.static('public'));
 const SHEET_WEBHOOK = process.env.SHEET_WEBHOOK || ""; 
 
 if (!process.env.DATABASE_URL) {
-    console.error("🚨 CRITICAL FATAL ERROR: DATABASE_URL is missing! Render cannot find your Neon database.");
+    console.error("🚨 CRITICAL FATAL ERROR: DATABASE_URL is missing!");
 }
 
 const pool = new Pool({
@@ -29,7 +27,6 @@ const pool = new Pool({
     connectionTimeoutMillis: 15000 
 });
 
-// The Indestructible Cloud Backup Trigger
 function backupToSheets(eventType, operator, payload) {
     if(!SHEET_WEBHOOK || !SHEET_WEBHOOK.startsWith('https')) return;
     try {
@@ -41,81 +38,28 @@ function backupToSheets(eventType, operator, payload) {
         req.on('error', (e) => console.error("Sheets Backup Error:", e.message));
         req.write(data);
         req.end();
-    } catch(e) {
-        console.error("Backup execution failed, but DB is safe.");
-    }
+    } catch(e) {}
 }
 
-// Auto-Create and Auto-Update FSSAI Tables
+// Auto-Create and Auto-Repair Tables
 async function initDB() {
     try {
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS ingredients (
-                product_code VARCHAR(100) PRIMARY KEY,
-                ingredient_name VARCHAR(255)
-            );
-            CREATE TABLE IF NOT EXISTS vendors (
-                vendor_code VARCHAR(100) PRIMARY KEY,
-                vendor_name VARCHAR(255)
-            );
-            CREATE TABLE IF NOT EXISTS recipes (
-                id SERIAL PRIMARY KEY,
-                fg_code VARCHAR(100),
-                ingredient_code VARCHAR(100)
-            );
-            CREATE TABLE IF NOT EXISTS inwarding_logs (
-                id SERIAL PRIMARY KEY,
-                date_received DATE,
-                ingredient_code VARCHAR(100),
-                ingredient_name VARCHAR(255),
-                vendor_code VARCHAR(100),
-                vendor_name VARCHAR(255),
-                weight DECIMAL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-            CREATE TABLE IF NOT EXISTS sub_assemblies (
-                id SERIAL PRIMARY KEY,
-                sub_tag VARCHAR(255),
-                product_code VARCHAR(100),
-                process_type VARCHAR(100),
-                parent_tag TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-            CREATE TABLE IF NOT EXISTS batches (
-                batch_code VARCHAR(100) PRIMARY KEY,
-                fg_code VARCHAR(100),
-                operator_name VARCHAR(100),
-                status VARCHAR(50) DEFAULT 'OPEN',
-                total_weight DECIMAL DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-            CREATE TABLE IF NOT EXISTS scans (
-                id SERIAL PRIMARY KEY,
-                batch_code VARCHAR(100) REFERENCES batches(batch_code) ON DELETE CASCADE,
-                rm_tag VARCHAR(255) UNIQUE,
-                product_code VARCHAR(100),
-                weight DECIMAL DEFAULT 0,
-                operator VARCHAR(100),
-                parent_tags TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
+            CREATE TABLE IF NOT EXISTS ingredients (product_code VARCHAR(100) PRIMARY KEY, ingredient_name VARCHAR(255));
+            CREATE TABLE IF NOT EXISTS vendors (vendor_code VARCHAR(100) PRIMARY KEY, vendor_name VARCHAR(255));
+            CREATE TABLE IF NOT EXISTS recipes (id SERIAL PRIMARY KEY, fg_code VARCHAR(100), ingredient_code VARCHAR(100));
+            CREATE TABLE IF NOT EXISTS inwarding_logs (id SERIAL PRIMARY KEY, date_received DATE, ingredient_code VARCHAR(100), ingredient_name VARCHAR(255), vendor_code VARCHAR(100), vendor_name VARCHAR(255), weight DECIMAL, start_no INT, end_no INT, packs INT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+            CREATE TABLE IF NOT EXISTS sub_assemblies (id SERIAL PRIMARY KEY, sub_tag VARCHAR(255), product_code VARCHAR(100), process_type VARCHAR(100), parent_tag TEXT, total_yield VARCHAR(50), batch_code VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+            CREATE TABLE IF NOT EXISTS batches (batch_code VARCHAR(100) PRIMARY KEY, fg_code VARCHAR(100), operator_name VARCHAR(100), status VARCHAR(50) DEFAULT 'OPEN', total_weight DECIMAL DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+            CREATE TABLE IF NOT EXISTS scans (id SERIAL PRIMARY KEY, batch_code VARCHAR(100) REFERENCES batches(batch_code) ON DELETE CASCADE, rm_tag VARCHAR(255) UNIQUE, product_code VARCHAR(100), weight DECIMAL DEFAULT 0, operator VARCHAR(100), parent_tags TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
         `);
 
-        // Force the database to add any missing columns from our recent upgrades
-        await pool.query(`
-            ALTER TABLE inwarding_logs 
-            ADD COLUMN IF NOT EXISTS start_no INT,
-            ADD COLUMN IF NOT EXISTS end_no INT,
-            ADD COLUMN IF NOT EXISTS packs INT;
-        `);
+        // 🔥 THE NaN AUTO-REPAIR SCRIPT 🔥
+        await pool.query("UPDATE inwarding_logs SET weight = 0 WHERE weight IS NULL OR weight::text = 'NaN'");
+        await pool.query("UPDATE scans SET weight = 0 WHERE weight IS NULL OR weight::text = 'NaN'");
+        await pool.query("UPDATE batches SET total_weight = 0 WHERE total_weight IS NULL OR total_weight::text = 'NaN'");
 
-        await pool.query(`
-            ALTER TABLE sub_assemblies 
-            ADD COLUMN IF NOT EXISTS total_yield VARCHAR(50),
-            ADD COLUMN IF NOT EXISTS batch_code VARCHAR(100);
-        `);
-
-        console.log("✅ Kilrr OS Database Architecture Verified & Updated.");
+        console.log("✅ Kilrr OS Database Architecture Verified & NaN Corruption Repaired.");
     } catch (e) {
         console.error("❌ Database Initialization Error:", e.message);
     }
@@ -127,29 +71,30 @@ initDB();
 // ==========================================
 app.get("/get-ingredients", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM ingredients ORDER BY ingredient_name")).rows); }
-    catch(e) { console.error("DB Error:", e.message); res.status(500).json({error: "Database Connection Failed: " + e.message}); }
+    catch(e) { res.status(500).json({error: e.message}); }
 });
-
 app.get("/get-vendors", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM vendors ORDER BY vendor_name")).rows); }
     catch(e) { res.status(500).json({error: e.message}); }
 });
-
 app.get("/get-recipes", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM recipes")).rows); }
     catch(e) { res.status(500).json({error: e.message}); }
 });
 
 // ==========================================
-// 3. INWARDING ROUTES
+// 3. INWARDING ROUTES (Safe Math Applied)
 // ==========================================
 app.post("/log-inwarding", async (req, res) => {
     try {
         const { queue } = req.body;
         for(let item of queue) {
+            let safeWeight = parseFloat(item.weight);
+            if (isNaN(safeWeight)) safeWeight = 0; // Converts Blank to 0
+
             await pool.query(
                 "INSERT INTO inwarding_logs (date_received, ingredient_code, ingredient_name, vendor_code, vendor_name, weight, start_no, end_no, packs) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-                [item.dateRaw, item.ingCode, item.ingName, item.venCode, item.venName, item.weight, item.startNo, item.endNo, item.packs]
+                [item.dateRaw, item.ingCode, item.ingName, item.venCode, item.venName, safeWeight, item.startNo, item.endNo, item.packs]
             );
             backupToSheets("INWARD_LOGGED", "System", item);
         }
@@ -175,7 +120,7 @@ app.post("/log-preprocess", async (req, res) => {
 });
 
 // ==========================================
-// 5. SCANNER ROUTES
+// 5. SCANNER ROUTES (Safe Math Applied)
 // ==========================================
 app.get("/open-batches", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM batches WHERE status = 'OPEN' ORDER BY created_at DESC")).rows); }
@@ -186,7 +131,6 @@ app.post("/create-batch", async (req, res) => {
     try {
         const { batch_code, fg_code, operator_name } = req.body;
         await pool.query("INSERT INTO batches (batch_code, fg_code, operator_name) VALUES ($1, $2, $3)", [batch_code, fg_code, operator_name]);
-        backupToSheets("BATCH_STARTED", operator_name, { batch_code, fg_code });
         res.json({status: "success"});
     } catch(e) {
         if(e.code === '23505') return res.status(400).json({error: "Batch code already exists!"});
@@ -215,12 +159,14 @@ app.post("/scan", async (req, res) => {
             if(wip.rows.length > 0) parent_tags = wip.rows[0].parent_tag;
         } else {
             let inw = await pool.query("SELECT weight FROM inwarding_logs WHERE ingredient_code = $1 AND vendor_code = $2 ORDER BY created_at DESC LIMIT 1", [product_code, vendor_code]);
-            if(inw.rows.length > 0) weight = inw.rows[0].weight;
+            if(inw.rows.length > 0) {
+                weight = parseFloat(inw.rows[0].weight);
+                if (isNaN(weight)) weight = 0; // Catch DB NaNs
+            }
         }
 
         await pool.query("INSERT INTO scans (batch_code, rm_tag, product_code, weight, operator, parent_tags) VALUES ($1, $2, $3, $4, $5, $6)", [batch_code, rm_tag, product_code, weight, operator, parent_tags]);
-        await pool.query("UPDATE batches SET total_weight = total_weight + $1 WHERE batch_code = $2", [weight, batch_code]);
-        backupToSheets("SCAN_ADDED", operator, { batch_code, rm_tag, product_code, weight, parent_tags });
+        await pool.query("UPDATE batches SET total_weight = COALESCE(total_weight, 0) + $1 WHERE batch_code = $2", [weight, batch_code]);
         res.json({status: "success"});
     } catch(e) {
         if(e.code === '23505') return res.status(400).json({error: "Duplicate tag!"});
@@ -233,9 +179,10 @@ app.post("/undo-scan", async (req, res) => {
         const { batch_code, rm_tag } = req.body;
         const scanData = await pool.query("SELECT weight FROM scans WHERE batch_code = $1 AND rm_tag = $2", [batch_code, rm_tag]);
         if(scanData.rows.length > 0) {
-            let w = scanData.rows[0].weight || 0;
+            let w = parseFloat(scanData.rows[0].weight);
+            if(isNaN(w)) w = 0;
             await pool.query("DELETE FROM scans WHERE batch_code = $1 AND rm_tag = $2", [batch_code, rm_tag]);
-            await pool.query("UPDATE batches SET total_weight = total_weight - $1 WHERE batch_code = $2", [w, batch_code]);
+            await pool.query("UPDATE batches SET total_weight = COALESCE(total_weight, 0) - $1 WHERE batch_code = $2", [w, batch_code]);
         }
         res.json({status: "success"});
     } catch(e) { res.status(500).json({error: e.message}); }
