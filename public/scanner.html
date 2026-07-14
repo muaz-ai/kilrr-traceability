@@ -3,78 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <title>Kilrr Factory OS - Scanner</title>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; }
-        
-        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #0f172a; margin: 0; padding-bottom: 100px; min-height: 100vh;}
-        
-        .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
-        .brand { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase;}
+        body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 100px; min-height: 100vh;}
+        .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
+        .brand { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;}
         .brand span { color: var(--kilrr-orange); }
         .nav-links { display: flex; gap: 10px; }
         .nav-btn { color: #cbd5e1; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; transition: 0.2s; padding: 8px 12px; border-radius: 8px;}
-        .nav-btn:hover { background: rgba(255,255,255,0.05); color: white;}
+        .nav-btn:hover { background: rgba(255,255,255,0.1); color: white;}
         .nav-btn.active { color: white; background: var(--kilrr-orange);}
-
         .container { max-width: 800px; margin: 30px auto; padding: 0 15px; }
-        .card { background: var(--card-bg); border-radius: 16px; padding: 25px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; position: relative;}
-        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #ea580c, #f97316); border-radius: 16px 16px 0 0;}
         
-        h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; text-transform: uppercase; color: var(--navy-command);}
-        .marathi-title { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 15px; font-weight: 800; display: block; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;}
+        .card { background: var(--card-bg); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; margin-bottom: 25px; position: relative;}
+        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--kilrr-orange), #f97316); border-radius: 16px 16px 0 0;}
+        
+        h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; text-transform: uppercase; color: var(--navy-command); letter-spacing: 0.5px;}
+        .marathi-title { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 14px; font-weight: 800; display: block; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
         
         .touch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px;}
         .touch-btn { background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 12px 10px; font-weight: 800; font-size: 14px; color: var(--navy-command); cursor: pointer; text-align: center; transition: 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 60px; position: relative;}
         .touch-btn.selected { background: #fff7ed; border-color: var(--kilrr-orange); color: var(--kilrr-orange); box-shadow: 0 4px 10px rgba(234,88,12,0.15);}
         .touch-btn.add-btn { border: 2px dashed #94a3b8; color: #64748b; }
-        
-        .delete-op { position: absolute; top: -5px; right: -5px; background: var(--danger-red); color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: flex; justify-content: center; align-items: center; border: 2px solid white; display: none; }
+        .delete-op { position: absolute; top: -5px; right: -5px; background: var(--danger-red); color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: flex; justify-content: center; align-items: center; display: none; }
         .touch-btn:hover .delete-op { display: flex; }
 
-        input.setup-input, select.setup-input { width: 100%; padding: 16px; box-sizing: border-box; border-radius: 12px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 15px; background: #fff;}
-        input.setup-input:focus, select.setup-input:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 4px rgba(234,88,12,0.1);}
-        input.setup-input:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+        label { font-weight: 800; font-size: 13px; color: var(--navy-command); display: block; margin-bottom: 8px; text-transform: uppercase;}
+
+        input.setup-input { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 15px; background: #f8fafc; color: #0f172a; transition: 0.2s ease;}
+        input.setup-input:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 4px rgba(234,88,12,0.15);}
         
-        button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 20px; cursor: pointer; text-transform: uppercase; background: linear-gradient(135deg, #ea580c, #c2410c); color: white; box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);}
-        button.btn-cam { width: 100%; padding: 15px; border: 3px solid var(--kilrr-orange); border-radius: 12px; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase; background: #fff7ed; color: var(--kilrr-orange); margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 10px;}
-        
-        .search-bar { width: 100%; padding: 12px 15px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 14px; margin-bottom: 15px; font-weight: 600; font-family: 'Inter'; background: #f8fafc;}
+        button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 20px; cursor: pointer; text-transform: uppercase; background: linear-gradient(135deg, #ea580c, #c2410c); color: white; box-shadow: 0 8px 15px rgba(234, 88, 12, 0.3); transition: transform 0.1s;}
+        button.btn-huge:active { transform: translateY(2px); }
+        button.btn-cam { width: 100%; padding: 15px; border: 2px solid var(--kilrr-orange); border-radius: 12px; font-family: 'Inter', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase; background: #fff7ed; color: var(--kilrr-orange); margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 10px;}
+
+        .search-bar { width: 100%; padding: 12px 15px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 14px; margin-bottom: 15px; font-weight: 600; background: #f8fafc;}
         .resume-feed { max-height: 250px; overflow-y: auto; padding-right: 5px; }
-        .resume-pill { background: #fff; border: 2px solid #cbd5e1; padding: 15px; border-radius: 10px; font-weight: 800; font-family: 'Space Grotesk'; font-size: 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;}
+        .resume-pill { background: white; border: 2px solid #cbd5e1; padding: 15px; border-radius: 10px; font-weight: 800; font-family: 'Space Grotesk'; font-size: 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;}
         .resume-pill:hover { border-color: var(--kilrr-orange); background: #fff7ed; }
-        .btn-del-batch { background: var(--danger-red); color: white; border: none; border-radius: 6px; padding: 8px 12px; font-weight: bold; cursor: pointer; font-family: 'Inter';}
-        .btn-play-batch { background: var(--success-green); color: white; border: none; border-radius: 6px; padding: 8px 20px; font-weight: bold; cursor: pointer; font-family: 'Inter';}
+        .btn-del-batch { background: var(--danger-red); color: white; border: none; border-radius: 6px; padding: 8px 12px; font-weight: bold; cursor: pointer;}
+        .btn-play-batch { background: var(--success-green); color: white; border: none; border-radius: 6px; padding: 8px 20px; font-weight: bold; cursor: pointer;}
 
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .summary-box { background: linear-gradient(145deg, #f8fafc, #f1f5f9); border: 2px solid #e2e8f0; border-radius: 16px; padding: 15px; text-align: center; box-shadow: inset 0 2px 4px rgba(255,255,255,0.8); }
-        .summary-box.active-box { background: linear-gradient(145deg, #ecfdf5, #d1fae5); border-color: var(--success-green); }
+        .summary-box { background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 16px; padding: 15px; text-align: center; }
+        .summary-box.active-box { background: #ecfdf5; border-color: var(--success-green); }
         .marathi-label { font-size: 13px; font-weight: 800; color: #64748b; margin-bottom: 5px; }
         .marathi-label-green { color: var(--success-green); }
         .val-text { font-size: 32px; font-family: 'Space Grotesk'; font-weight: 900; color: var(--navy-command); line-height: 1;}
         
-        .recipe-feed { border: 2px solid #e2e8f0; border-radius: 16px; padding: 15px; background: #f8fafc; margin-bottom: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);}
-        .feed-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border: 1px solid #cbd5e1; border-radius: 10px; margin-bottom: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        .recipe-feed { border: 2px solid #e2e8f0; border-radius: 16px; padding: 15px; background: #f8fafc; margin-bottom: 20px;}
+        .feed-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border: 1px solid #cbd5e1; border-radius: 10px; margin-bottom: 8px;}
         .feed-item.done { border-color: var(--success-green); background: #ecfdf5; }
         .feed-name { font-weight: 800; font-size: 16px; color: var(--navy-command); }
         .feed-status { font-weight: 900; font-size: 15px; color: #94a3b8; background: #f1f5f9; padding: 4px 10px; border-radius: 6px;}
         .feed-item.done .feed-status { color: var(--success-green); background: #d1fae5;}
 
         .btn-undo { background: #fef08a; color: #854d0e; border: 3px solid #eab308; display: none; margin-bottom: 20px; font-size: 16px; width: 100%; padding: 15px; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 10px rgba(234, 179, 8, 0.2);}
-
         #reader { width: 100%; border-radius: 16px; overflow: hidden; border: 3px solid #cbd5e1; margin-bottom: 15px; display: none; background: black;}
         #scan_flash { position: fixed; inset: 0; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 60px; font-weight: 900; color: white; opacity: 0; transition: opacity 0.2s;}
 
         @media (max-width: 1024px) { 
             body { padding-bottom: 90px; }
-            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap;}
+            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap; border-top: 3px solid var(--kilrr-orange);}
             .brand { display: none; }
-            .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 8px 12px; border-radius: 8px;}
+            .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 8px 12px;}
             .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 20px; margin-bottom: 4px;}
@@ -82,8 +77,6 @@
             .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 20px; margin-bottom: 4px;}
-            .card { padding: 20px; border-radius: 16px;}
-            .val-text { font-size: 26px; }
         }
     </style>
 </head>
@@ -103,7 +96,6 @@
     </nav>
 
     <div class="container">
-        <!-- SETUP SCREEN -->
         <div class="card" id="setup">
             <details style="margin-bottom: 25px; background: #fff7ed; padding: 15px; border-radius: 12px; border: 2px solid #ffedd5;">
                 <summary style="font-weight: 900; color: var(--kilrr-orange); cursor: pointer; outline: none; font-size: 16px;">▶ चालू काम परत उघडा (Resume Active Run)</summary>
@@ -114,26 +106,24 @@
             <h2>Start New Run</h2>
             <span class="marathi-title">नवीन काम चालू करा</span>
             
-            <label style="font-weight: 800; font-size: 12px; color: #64748b; display: block; margin-bottom: 8px;">1. कोण स्कॅन करत आहे? (WHO IS SCANNING?)</label>
+            <label>1. कोण स्कॅन करत आहे? (WHO IS SCANNING?)</label>
             <div class="touch-grid" id="operator_grid"></div>
             
-            <label style="font-weight: 800; font-size: 12px; color: #64748b; display: block; margin-bottom: 8px;">2. आपण काय बनवत आहोत? (WHAT ARE WE MAKING?)</label>
+            <label>2. आपण काय बनवत आहोत? (WHAT ARE WE MAKING?)</label>
             <div class="touch-grid" id="recipe_grid">
                 <div style="font-size: 12px; color: #94a3b8; font-weight: bold;">Loading Master Data...</div>
             </div>
 
-            <label style="font-weight: 800; font-size: 12px; color: #64748b; display: block; margin-bottom: 8px;">3. बॅचची माहिती (BATCH DETAILS: PREFIX, LOT, RUN)</label>
+            <label>3. बॅचची माहिती (BATCH DETAILS)</label>
             <div style="display:flex; gap:10px; margin-bottom: 25px;">
-                <!-- NEW USER-DEFINED PREFIX INPUT -->
                 <input type="text" id="prefix_input" class="setup-input" placeholder="Prefix (e.g. LK)" style="margin-bottom: 0; text-transform: uppercase;">
                 <input type="text" id="lot_input" class="setup-input" placeholder="Lot (e.g. 190)" style="margin-bottom: 0;">
-                <input type="text" inputmode="numeric" pattern="[0-9]*" id="run_input" class="setup-input" placeholder="Run # (e.g. 3)" style="margin-bottom: 0;">
+                <input type="text" inputmode="numeric" id="run_input" class="setup-input" placeholder="Run # (e.g. 3)" style="margin-bottom: 0;">
             </div>
             
             <button class="btn-huge" onclick="startNewBatch()">⚡ सुरु करा (GENERATE & START)</button>
         </div>
         
-        <!-- WORK SCREEN -->
         <div class="card" id="work" style="display:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #e2e8f0; padding-bottom:15px; margin-bottom:20px;">
                 <div>
@@ -143,7 +133,6 @@
                 <button style="width:auto; padding:10px 15px; font-weight:900; background:var(--danger-red); color:white; border:none; border-radius:8px; cursor:pointer;" onclick="location.reload()">बंद करा (EXIT)</button>
             </div>
 
-            <!-- BAG & WEIGHT KPIs -->
             <div class="summary-grid">
                 <div class="summary-box">
                     <div class="marathi-label">किती गोण्या स्कॅन केल्या<br><span style="font-size:10px; letter-spacing:1px;">BAGS SCANNED</span></div>
@@ -157,32 +146,27 @@
 
             <button class="btn-undo" id="undo_btn" onclick="undoLastScan()">⚠️ मागे घ्या (UNDO LAST SCAN - 30s)</button>
 
-            <!-- SCAN INPUT & CAMERA -->
             <div style="display:flex; gap:10px; margin-bottom: 15px;">
                 <input type="text" id="rm_tag" class="setup-input" style="margin:0; border-color:var(--navy-command); font-size:16px;" placeholder="बारकोड स्कॅन करा..." autocomplete="off">
-                <button style="width:auto; padding:0 25px; background:var(--navy-command); color:white; border:none; border-radius:12px; font-weight:900; cursor:pointer;" onclick="manualScan()">ऍड करा</button>
+                <button style="width:auto; padding:0 25px; background:var(--navy-command); color:white; border:none; border-radius:10px; font-weight:900; cursor:pointer;" onclick="manualScan()">ऍड करा</button>
             </div>
             
             <div id="reader"></div>
             <button class="btn-cam" id="camToggleBtn" onclick="toggleCamera()">📷 मोबाईल कॅमेरा चालू करा</button>
 
-            <!-- RECIPE VALIDATION FEED (CHECKLIST) -->
             <h3 style="font-family:'Space Grotesk'; font-size:16px; margin-top:25px; margin-bottom:5px; color:var(--navy-command);">काय काय लागणार? (Ingredients)</h3>
             <div class="recipe-feed" id="recipe_checklist">
                 <div style="text-align:center; color:#94a3b8; font-weight:bold;">Loading...</div>
             </div>
 
-            <h3 style="font-family:'Space Grotesk'; font-size:14px; margin-top:20px; border-bottom:2px solid #e2e8f0; padding-bottom:5px;">आत्ताच स्कॅन केलेले (Recent Scans)</h3>
+            <h3 style="font-family:'Space Grotesk'; font-size:14px; margin-top:20px; border-bottom:2px solid #e2e8f0; padding-bottom:5px; color:var(--navy-command);">आत्ताच स्कॅन केलेले (Recent Scans)</h3>
             <div id="scanned_items_list" style="max-height: 200px; overflow-y:auto; padding:5px;"></div>
         </div>
     </div>
     
     <script>
         let operators = JSON.parse(localStorage.getItem('kilrr_ops')) || ["Muaz", "Arbaaz", "Rahul", "Ramesh"];
-        
-        // NEW: Stores the user's preferred prefix for each recipe locally
         let userPrefixes = JSON.parse(localStorage.getItem('kilrr_prefixes')) || {};
-        
         let curB="", curF="", curPrefix="", curOp="", validRecipeCodes=[], recipeRequirements=[], localScannedTags=[], allOpenBatches=[];
         let activeRecipes = [];
         let lastScanTag = null, undoTimer = null, undoCountdown = 0, html5QrcodeScanner = null;
@@ -206,11 +190,13 @@
             try {
                 const res = await fetch('/get-recipes');
                 const data = await res.json();
-                activeRecipes = [...new Set(data.map(r => r.fg_code))];
-                renderRecipes();
+                if(Array.isArray(data)) {
+                    activeRecipes = [...new Set(data.map(r => r.fg_code))];
+                    renderRecipes();
+                }
             } catch(e) { 
                 console.error("Could not load recipes");
-                document.getElementById('recipe_grid').innerHTML = `<div style="color:var(--danger-red); font-size:12px; font-weight:bold;">Database connection error.</div>`;
+                document.getElementById('recipe_grid').innerHTML = `<div style="color:var(--danger-red); font-size:12px; font-weight:bold;">Database disconnected. Please verify backend.</div>`;
             }
         }
 
@@ -234,10 +220,11 @@
         function renderRecipes() {
             const grid = document.getElementById('recipe_grid');
             if(activeRecipes.length === 0) {
-                grid.innerHTML = `<div style="color:var(--danger-red); font-size:12px; font-weight:bold;">No recipes mapped in Master Data.</div>`;
+                grid.innerHTML = `<div style="color:#64748b; font-size:12px; font-weight:bold;">No recipes mapped.</div>`;
                 return;
             }
             grid.innerHTML = activeRecipes.map(name => {
+                if(!name) return '';
                 return `<div class="touch-btn" onclick="selectRecipe(this, '${name}')"><span style="font-size:12px;">${name}</span></div>`;
             }).join('');
         }
@@ -258,12 +245,10 @@
         function selectRecipe(el, name) { 
             document.getElementById('recipe_grid').querySelectorAll('.touch-btn').forEach(btn => btn.classList.remove('selected'));
             el.classList.add('selected'); curF = name;
-            
-            // SMART MEMORY: Auto-fill their preferred prefix if they've used it before
             if(userPrefixes[name]) {
                 document.getElementById('prefix_input').value = userPrefixes[name];
             } else {
-                document.getElementById('prefix_input').value = ""; // Let them type a new one
+                document.getElementById('prefix_input').value = ""; 
             }
         }
 
@@ -271,7 +256,7 @@
             try {
                 const bRes = await fetch('/open-batches'); 
                 allOpenBatches = await bRes.json();
-                renderResumeFeed(allOpenBatches);
+                if(Array.isArray(allOpenBatches)) renderResumeFeed(allOpenBatches);
             } catch(e) {}
         }
 
@@ -287,7 +272,7 @@
                         <span style="font-size:12px; color:#64748b; font-weight:600;">${b.fg_code} | ${b.operator_name || 'System'}</span>
                     </div>
                     <div style="display:flex; gap:8px;">
-                        <button class="btn-del-batch" onclick="deleteBatch('${b.batch_code}')">🗑️</button>
+                        <button class="btn-del-batch" onclick="deleteBatch('${b.batch_code}')">✕</button>
                         <button class="btn-play-batch" onclick="resumeBatch('${b.batch_code}', '${b.fg_code}', '${b.operator_name}')">▶</button>
                     </div>
                 </div>
@@ -321,7 +306,6 @@
             if(!prefix) return alert("Please type a Prefix code for this recipe!");
             if(!lot || !runNum) return alert("Please enter Lot number and Run Number!");
             
-            // SMART MEMORY: Save their prefix choice for next time
             userPrefixes[curF] = prefix;
             localStorage.setItem('kilrr_prefixes', JSON.stringify(userPrefixes));
             
@@ -341,8 +325,9 @@
             
             const reqRes = await fetch(`/recipe-requirements/${encodeURIComponent(curF)}`);
             recipeRequirements = await reqRes.json();
-            validRecipeCodes = recipeRequirements.map(i => i.product_code);
-            
+            if(Array.isArray(recipeRequirements)) {
+                validRecipeCodes = recipeRequirements.map(i => i.product_code);
+            }
             update(); setTimeout(() => document.getElementById('rm_tag').focus(), 500);
         }
 
@@ -426,34 +411,35 @@
         
         async function update() { 
             const scans = await fetch(`/current-scans/${encodeURIComponent(curB)}`).then(r=>r.json()); 
-            localScannedTags = scans.map(s => s.rm_tag);
-            
-            document.getElementById('total_bags').innerText = scans.length;
-            document.getElementById('total_weight').innerText = scans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0).toFixed(2);
+            if(Array.isArray(scans)) {
+                localScannedTags = scans.map(s => s.rm_tag);
+                document.getElementById('total_bags').innerText = scans.length;
+                document.getElementById('total_weight').innerText = scans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0).toFixed(2);
 
-            if(recipeRequirements.length > 0) {
-                const checklistHTML = recipeRequirements.map(req => {
-                    const matchedScans = scans.filter(s => s.product_code === req.product_code);
-                    const totalKg = matchedScans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
-                    const isDone = matchedScans.length > 0;
-                    return `
-                        <div class="feed-item ${isDone ? 'done' : ''}">
-                            <div class="feed-name">${req.ingredient_name || req.product_code} <span style="font-size:12px; color:#94a3b8;">(${req.product_code})</span></div>
-                            <div class="feed-status">${isDone ? `✅ ${totalKg.toFixed(2)} KG` : '⏳ बाकी आहे'}</div>
-                        </div>
-                    `;
-                }).join('');
-                document.getElementById('recipe_checklist').innerHTML = checklistHTML;
-            } else {
-                document.getElementById('recipe_checklist').innerHTML = `<div style="text-align:center; color:var(--danger-red); font-weight:bold;">No ingredients mapped. Check Master Data.</div>`;
-            }
+                if(recipeRequirements.length > 0) {
+                    const checklistHTML = recipeRequirements.map(req => {
+                        const matchedScans = scans.filter(s => s.product_code === req.product_code);
+                        const totalKg = matchedScans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
+                        const isDone = matchedScans.length > 0;
+                        return `
+                            <div class="feed-item ${isDone ? 'done' : ''}">
+                                <div class="feed-name">${req.ingredient_name || req.product_code} <span style="font-size:12px; color:#94a3b8;">(${req.product_code})</span></div>
+                                <div class="feed-status">${isDone ? `✅ ${totalKg.toFixed(2)} KG` : '⏳ बाकी आहे'}</div>
+                            </div>
+                        `;
+                    }).join('');
+                    document.getElementById('recipe_checklist').innerHTML = checklistHTML;
+                } else {
+                    document.getElementById('recipe_checklist').innerHTML = `<div style="text-align:center; color:var(--danger-red); font-weight:bold;">No ingredients mapped. Check Master Data.</div>`;
+                }
 
-            if(scans.length === 0) { document.getElementById('scanned_items_list').innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:bold; font-size:12px;">No tags yet...</div>`; } 
-            else { 
-                document.getElementById('scanned_items_list').innerHTML = [...scans].map(s => `
-                <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #e2e8f0; font-family:monospace; font-weight:bold; font-size:13px; color:#475569;">
-                    <span>${s.rm_tag}</span><span style="color:var(--success-green);">${parseFloat(s.weight||0).toFixed(2)} KG</span>
-                </div>`).join(''); 
+                if(scans.length === 0) { document.getElementById('scanned_items_list').innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:bold; font-size:12px;">No tags yet...</div>`; } 
+                else { 
+                    document.getElementById('scanned_items_list').innerHTML = [...scans].map(s => `
+                    <div style="display:flex; justify-content:space-between; padding:12px; background:white; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:8px; font-family:monospace; font-weight:bold; font-size:13px; color:var(--navy-command);">
+                        <span>${s.rm_tag}</span><span style="color:var(--success-green);">${parseFloat(s.weight||0).toFixed(2)} KG</span>
+                    </div>`).join(''); 
+                }
             }
         }
     </script>
