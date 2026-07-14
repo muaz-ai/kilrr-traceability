@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Kilrr OS - Pre-Process & Sub-Assembly</title>
+    <!-- Anti-Caching Meta Tags -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
@@ -21,7 +24,7 @@
 
         .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;}
         
-        .card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); position: relative;}
+        .card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); position: relative; overflow: visible;}
         .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 16px 16px 0 0;}
         .card.card-green::before { background: linear-gradient(90deg, #059669, #10b981); }
         
@@ -29,7 +32,7 @@
         .marathi-title { font-family: 'Inter', sans-serif; color: #3b82f6; font-size: 14px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
         
         label { font-weight: 800; font-size: 13px; color: var(--navy-command); display: block; margin-bottom: 8px; text-transform: uppercase;}
-        label span.sub { color: #64748b; font-size: 11px; font-weight: 700; display: block; margin-top: 2px;}
+        label span.sub { color: #64748b; font-size: 11px; font-weight: 700; display: block; margin-top: 2px; letter-spacing: 0.5px;}
 
         input, select { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #f8fafc; transition: 0.2s ease;}
         input:focus, select:focus { border-color: #3b82f6; outline: none; background: #ffffff; box-shadow: 0 0 0 4px rgba(59,130,246,0.15);}
@@ -40,8 +43,25 @@
 
         .row-inputs { display: flex; gap: 15px; }
         
+        /* CUSTOM DROPDOWN */
+        .custom-dropdown-container { position: relative; width: 100%; margin-bottom: 20px;}
+        .custom-dropdown-container input { margin-bottom: 0; }
+        .custom-dropdown-list { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: #ffffff; border: 2px solid #3b82f6; border-radius: 12px; max-height: 250px; overflow-y: auto; z-index: 9999; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15); display: none; padding: 10px; }
+        .custom-dropdown-item { padding: 15px 20px; font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.1s; margin-bottom: 4px; border-bottom: 1px solid #f1f5f9; }
+        .custom-dropdown-item:hover { background: #eff6ff; color: #2563eb; }
+
+        /* CHECKLIST & SCANS */
+        .recipe-feed { border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px; background: #f8fafc; margin-bottom: 20px;}
+        .feed-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+        .feed-item.done { border-color: var(--success-green); background: #ecfdf5; }
+        .feed-name { font-weight: 800; font-size: 15px; color: var(--navy-command); }
+        .feed-status { font-weight: 900; font-size: 14px; color: #94a3b8; background: #f1f5f9; padding: 4px 10px; border-radius: 6px;}
+        .feed-item.done .feed-status { color: var(--success-green); background: #d1fae5;}
+
         .scanned-parents { max-height: 150px; overflow-y: auto; padding: 10px; border: 2px solid #cbd5e1; border-radius: 10px; background: #f1f5f9; margin-bottom: 20px;}
-        .parent-tag { background: white; padding: 10px; border-radius: 6px; font-family: monospace; font-weight: bold; border: 1px solid #cbd5e1; margin-bottom: 5px; font-size: 14px;}
+        .parent-tag { background: white; padding: 12px 15px; border-radius: 8px; font-family: monospace; font-weight: bold; border: 1px solid #cbd5e1; margin-bottom: 8px; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+
+        #scan_flash { position: fixed; inset: 0; z-index: 9999; display: none; justify-content: center; align-items: center; text-align: center; font-family: 'Space Grotesk', sans-serif; font-size: 60px; font-weight: 900; color: white; opacity: 0; transition: opacity 0.2s;}
 
         @media (max-width: 1024px) { 
             .container { grid-template-columns: 1fr; margin-top: 15px; gap: 20px;}
@@ -60,6 +80,8 @@
     </style>
 </head>
 <body>
+    <div id="scan_flash"></div>
+
     <nav class="nav-top">
         <a href="index.html" class="brand">Kilrr <span>OS</span></a>
         <div class="nav-links">
@@ -78,26 +100,26 @@
             <h2>Sub-Assembly Setup</h2>
             <span class="marathi-title">अंतर्गत माल बनवणे (Base Masalas)</span>
             
+            <label>काय बनवत आहात? <span class="sub">1. SELECT RECIPE (e.g. Garam Masala)</span></label>
+            <div class="custom-dropdown-container">
+                <input type="text" id="recipe_search" placeholder="Search Master Recipe..." autocomplete="off">
+                <input type="hidden" id="product_name">
+            </div>
+
             <div class="row-inputs">
                 <div style="flex:1;">
-                    <label>तारीख <span class="sub">DATE</span></label>
-                    <input type="date" id="date">
+                    <label>प्रॉडक्ट कोड <span class="sub">2. OUTPUT SHORT CODE (e.g. GM)</span></label>
+                    <input type="text" id="product_code" placeholder="Code..." style="text-transform: uppercase;">
                 </div>
                 <div style="flex:1;">
-                    <label>प्रक्रिया <span class="sub">PROCESS TYPE</span></label>
+                    <label>प्रक्रिया <span class="sub">3. PROCESS TYPE</span></label>
                     <select id="process_type">
-                        <option value="BLENDING">Blending (Mixing Base)</option>
+                        <option value="BLENDING">Blending</option>
                         <option value="ROASTING">Roasting</option>
                         <option value="GRINDING">Grinding</option>
                     </select>
                 </div>
             </div>
-
-            <label>काय बनवत आहात? <span class="sub">OUTPUT PRODUCT NAME (e.g. Garam Masala)</span></label>
-            <input type="text" id="product_name" placeholder="Name of Masala..." style="text-transform: uppercase;">
-
-            <label>प्रॉडक्ट कोड <span class="sub">OUTPUT PRODUCT CODE (e.g. GM)</span></label>
-            <input type="text" id="product_code" placeholder="Short Code..." style="text-transform: uppercase;">
 
             <div class="row-inputs">
                 <div style="flex:1;">
@@ -115,19 +137,25 @@
             </div>
             
             <input type="hidden" id="qty">
+            <input type="hidden" id="date">
         </div>
 
         <!-- INPUT SCANNING & EXECUTION -->
         <div class="card card-green">
             <h2 style="color:var(--success-green);">Input Traceability</h2>
-            <span class="marathi-title" style="color:var(--success-green);">कोणते बारकोड वापरले? (Parent Tags)</span>
+            <span class="marathi-title" style="color:var(--success-green);">कोणते बारकोड वापरले? (Scan Raw Materials)</span>
             
-            <label>स्कॅन करा <span class="sub">SCAN RM TAGS GOING INTO MACHINE</span></label>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="scan_input" placeholder="Scan barcode here..." autocomplete="off">
-                <button style="padding:0 20px; background:var(--navy-command); color:white; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="addTag()">ADD</button>
+            <div style="display:flex; gap:10px; margin-bottom: 20px;">
+                <input type="text" id="scan_input" placeholder="Scan barcode here..." autocomplete="off" style="margin:0; border-color:var(--navy-command);">
+                <button style="padding:0 25px; background:var(--navy-command); color:white; border-radius:10px; font-weight:900; cursor:pointer;" onclick="addTag()">ADD</button>
             </div>
 
+            <h3 style="font-family:'Space Grotesk'; font-size:15px; margin-bottom:5px; color:var(--navy-command);">काय काय लागणार? (Recipe Checklist)</h3>
+            <div class="recipe-feed" id="recipe_checklist">
+                <div style="text-align:center; color:#94a3b8; font-weight:bold; font-size:14px;">Select a recipe first to see requirements.</div>
+            </div>
+
+            <h3 style="font-family:'Space Grotesk'; font-size:14px; margin-bottom:5px; color:var(--navy-command);">आत्ताच स्कॅन केलेले (Active Inputs)</h3>
             <div class="scanned-parents" id="parent_list">
                 <div style="color:#94a3b8; text-align:center; padding:10px; font-size:12px;">No parent barcodes scanned yet.</div>
             </div>
@@ -138,11 +166,95 @@
 
     <script>
         let parentTags = [];
+        let validRecipeCodes = [];
+        let recipeRequirements = [];
+        let scannedIngCodes = []; // Keeps track of what ingredient codes have been scanned
 
-        window.onload = () => {
+        window.onload = async () => {
             document.getElementById('date').valueAsDate = new Date();
             document.getElementById('scan_input').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); addTag(); }});
+            
+            // Fetch Recipes from DB to populate dropdown
+            try {
+                const res = await fetch('/get-recipes');
+                const data = await res.json();
+                const uniqueRecipes = [...new Set(data.map(r => r.fg_code))].map(name => ({ recipe_name: name }));
+                attachCustomDropdown('recipe_search', uniqueRecipes, 'recipe_name', 'recipe_name', 'recipe_name', 'product_name', async (selectedRecipe) => {
+                    await loadChecklist(selectedRecipe);
+                });
+            } catch(e) { console.error("Master data fetch failed."); }
         };
+
+        function flash(success, txt) { 
+            const f = document.getElementById('scan_flash'); 
+            f.style.background = success ? 'rgba(5,150,105,0.95)' : 'rgba(220,38,38,0.95)';
+            f.innerText = txt; f.style.display='flex'; f.style.opacity='1'; 
+            setTimeout(()=>{f.style.opacity='0'; setTimeout(()=>f.style.display='none',200);}, 600); 
+        }
+
+        function attachCustomDropdown(inputId, dataArray, searchKey, displayKey, codeKey, hiddenId, onSelectCallback) {
+            const inp = document.getElementById(inputId); 
+            const list = document.createElement('div'); 
+            list.className = 'custom-dropdown-list'; 
+            inp.parentNode.appendChild(list);
+            
+            function renderList(filterTxt = "") {
+                list.innerHTML = ''; 
+                const matches = dataArray.filter(item => item[searchKey].toLowerCase().includes(filterTxt.toLowerCase()));
+                if(matches.length === 0) { list.style.display = 'none'; return; }
+                
+                matches.forEach(match => { 
+                    let div = document.createElement('div'); div.className = 'custom-dropdown-item'; 
+                    div.innerHTML = `<strong style="color:#3b82f6;">${match[displayKey]}</strong>`; 
+                    div.onclick = () => { 
+                        inp.value = match[displayKey]; 
+                        document.getElementById(hiddenId).value = match[codeKey]; 
+                        list.style.display = 'none'; 
+                        if(onSelectCallback) onSelectCallback(match[codeKey]);
+                    }; 
+                    list.appendChild(div); 
+                }); 
+                list.style.display = 'block';
+            }
+            
+            inp.addEventListener('input', function() { 
+                document.getElementById(hiddenId).value = "";
+                renderList(this.value); 
+            }); 
+            inp.addEventListener('focus', function() { renderList(this.value); });
+            document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
+        }
+
+        async function loadChecklist(recipeName) {
+            try {
+                const reqRes = await fetch(`/recipe-requirements/${encodeURIComponent(recipeName)}`);
+                recipeRequirements = await reqRes.json();
+                validRecipeCodes = recipeRequirements.map(i => i.product_code);
+                parentTags = []; // Reset scans when changing recipe
+                scannedIngCodes = [];
+                renderChecklist();
+                renderTags();
+            } catch (e) { console.error("Failed to load checklist"); }
+        }
+
+        function renderChecklist() {
+            const list = document.getElementById('recipe_checklist');
+            if(recipeRequirements.length === 0) {
+                list.innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:bold; font-size:14px;">Select a recipe first to see requirements.</div>`;
+                return;
+            }
+
+            const html = recipeRequirements.map(req => {
+                const isDone = scannedIngCodes.includes(req.product_code);
+                return `
+                    <div class="feed-item ${isDone ? 'done' : ''}">
+                        <div class="feed-name">${req.ingredient_name || req.product_code} <span style="font-size:12px; color:#94a3b8;">(${req.product_code})</span></div>
+                        <div class="feed-status">${isDone ? `✅ Scanned` : '⏳ Pending'}</div>
+                    </div>
+                `;
+            }).join('');
+            list.innerHTML = html;
+        }
 
         function calcQty() {
             let s = parseInt(document.getElementById('start_no').value.replace(/[^0-9]/g, ''));
@@ -154,10 +266,30 @@
             const inp = document.getElementById('scan_input');
             const val = inp.value.trim();
             if(!val) return;
-            if(!parentTags.includes(val)) {
-                parentTags.push(val);
-                renderTags();
+
+            // SMART VALIDATION LOGIC
+            let parts = val.split('/'); 
+            let pCode = parts.length >= 2 ? parts[1] : val;
+
+            if (validRecipeCodes.length > 0 && !validRecipeCodes.includes(pCode)) {
+                flash(false, "❌ WRONG INGREDIENT");
+                inp.value = ""; inp.focus();
+                return;
             }
+
+            if(parentTags.includes(val)) {
+                flash(false, "❌ DUPLICATE");
+                inp.value = ""; inp.focus();
+                return;
+            }
+
+            parentTags.push(val);
+            scannedIngCodes.push(pCode);
+            flash(true, "✅ ACCEPTED");
+            
+            renderTags();
+            renderChecklist();
+            
             inp.value = "";
             inp.focus();
         }
@@ -169,11 +301,26 @@
                 return;
             }
             list.innerHTML = parentTags.map((t, i) => `
-                <div class="parent-tag" style="display:flex; justify-content:space-between;">
+                <div class="parent-tag" style="display:flex; justify-content:space-between; align-items:center;">
                     <span>${t}</span>
-                    <span style="color:red; cursor:pointer;" onclick="parentTags.splice(${i},1); renderTags();">✕</span>
+                    <button style="background:var(--danger-red); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-weight:bold;" onclick="removeTag(${i})">X</button>
                 </div>
             `).join('');
+        }
+
+        function removeTag(index) {
+            let tagToRemove = parentTags[index];
+            let parts = tagToRemove.split('/'); 
+            let codeToRemove = parts.length >= 2 ? parts[1] : tagToRemove;
+            
+            parentTags.splice(index, 1);
+            
+            // Remove the code from scannedIngCodes to uncheck the checklist
+            let codeIndex = scannedIngCodes.indexOf(codeToRemove);
+            if(codeIndex > -1) scannedIngCodes.splice(codeIndex, 1);
+            
+            renderTags();
+            renderChecklist();
         }
 
         async function generateAndPrint() {
@@ -187,7 +334,7 @@
             let endNo = parseInt(document.getElementById('end_no').value.replace(/[^0-9]/g, ''));
 
             if(!pName || !pCode || !weight || isNaN(startNo) || isNaN(endNo)) {
-                return alert("⚠️ Please fill out all Sub-Assembly details correctly.");
+                return alert("⚠️ Please fill out Output Short Code and Bag details correctly.");
             }
 
             if(parentTags.length === 0) {
@@ -211,7 +358,6 @@
             try {
                 printWindow.document.write('<html><body style="background:#f8fafc;"><h2 style="font-family:sans-serif; text-align:center; margin-top:50px; color:#3b82f6;">Logging to Traceability Engine...</h2></body></html>');
 
-                // Log to backend
                 const res = await fetch('/log-preprocess', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -266,7 +412,9 @@
                 document.getElementById('start_no').value = endNo + 1;
                 document.getElementById('end_no').value = endNo + 1;
                 parentTags = [];
+                scannedIngCodes = [];
                 renderTags();
+                renderChecklist();
 
             } catch(e) { 
                 printWindow.close();
