@@ -42,6 +42,8 @@
         input:focus, select:focus { border-color: var(--accent-blue); outline: none; box-shadow: 0 0 0 4px rgba(59,130,246,0.2);}
         input[readonly] { background: #0f172a; color: #475569; cursor: not-allowed; border-color: #1e293b;}
         
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+
         button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; background: var(--accent-blue); color: white; box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4); transition: transform 0.1s;}
         button.btn-huge:active { transform: translateY(2px); }
         button.btn-success { background: var(--success-neon); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); color: #020617; }
@@ -107,18 +109,26 @@
             <h2>Execution Terminal</h2>
             <span class="marathi-title">अंतर्गत माल बनवणे (Base Masalas / Repacking)</span>
             
-            <label style="color:var(--accent-blue);">काय बनवत आहात? किंवा काय पॅक करत आहात? <span class="sub">1. SEARCH TARGET PRODUCT (e.g. Garam Masala OR Jeera)</span></label>
-            <div class="custom-dropdown-container">
-                <input type="text" id="recipe_search" placeholder="Search Master Database..." autocomplete="off">
+            <div class="row-inputs">
+                <div style="flex:1;">
+                    <label>तारीख <span class="sub">1. DATE</span></label>
+                    <input type="date" id="date">
+                </div>
+                <div style="flex:2;">
+                    <label style="color:var(--accent-blue);">काय बनवत आहात? <span class="sub">2. SEARCH TARGET PRODUCT</span></label>
+                    <div class="custom-dropdown-container">
+                        <input type="text" id="recipe_search" placeholder="Search Master Database..." autocomplete="off">
+                    </div>
+                </div>
             </div>
 
             <div class="row-inputs">
                 <div style="flex:1;">
-                    <label>प्रॉडक्ट कोड <span class="sub">2. OUTPUT CODE (e.g. GM)</span></label>
+                    <label>प्रॉडक्ट कोड <span class="sub">3. OUTPUT CODE (e.g. GM)</span></label>
                     <input type="text" id="product_code" placeholder="Code..." style="text-transform: uppercase;">
                 </div>
                 <div style="flex:1;">
-                    <label>प्रक्रिया <span class="sub">3. PROCESS TYPE</span></label>
+                    <label>प्रक्रिया <span class="sub">4. PROCESS TYPE</span></label>
                     <select id="process_type">
                         <option value="CLEANING">Cleaning / Sorting</option>
                         <option value="REPACKING">Re-Packaging (LDPE)</option>
@@ -133,20 +143,17 @@
             <div class="row-inputs">
                 <div style="flex:1;">
                     <label>पहिली गोणी <span class="sub">START BAG</span></label>
-                    <input type="text" inputmode="numeric" id="start_no" value="1" oninput="calcQty()">
+                    <input type="text" inputmode="numeric" id="start_no" value="1">
                 </div>
                 <div style="flex:1;">
                     <label>शेवटची गोणी <span class="sub">END BAG</span></label>
-                    <input type="text" inputmode="numeric" id="end_no" value="1" oninput="calcQty()">
+                    <input type="text" inputmode="numeric" id="end_no" value="1">
                 </div>
                 <div style="flex:1;">
                     <label>वजन (KG) <span class="sub">WT/BAG (OPTIONAL)</span></label>
                     <input type="text" inputmode="numeric" id="weight" placeholder="Blank to write">
                 </div>
             </div>
-            
-            <input type="hidden" id="qty">
-            <input type="hidden" id="date">
         </div>
 
         <div class="card card-green">
@@ -183,17 +190,26 @@
         let isSingleItemProcess = false;
         let html5QrcodeScanner = null;
         let isCameraProcessing = false;
+        let globalCombinedList = []; // Stores database to allow manual typing autofill
 
         window.onload = async () => {
             document.getElementById('date').valueAsDate = new Date();
             document.getElementById('scan_input').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); addTag(); }});
             
-            // SECURITY FIX: User typed manually but didn't click. Auto-fetch on blur.
+            // SMART AUTO-FILL: If user types manually instead of clicking dropdown
             document.getElementById('recipe_search').addEventListener('blur', function() {
-                setTimeout(() => { if(this.value.trim() !== "") loadChecklist(this.value.trim()); }, 200);
+                setTimeout(() => { 
+                    let typedVal = this.value.trim();
+                    if(typedVal !== "") {
+                        let found = globalCombinedList.find(c => c.display.toLowerCase() === typedVal.toLowerCase());
+                        if(found) {
+                            document.getElementById('product_code').value = found.code;
+                        }
+                        loadChecklist(typedVal); 
+                    }
+                }, 200);
             });
 
-            // THE UNIVERSAL SEARCH: Pulling BOTH Ingredients and Recipes
             try {
                 let combinedList = [];
                 
@@ -207,6 +223,8 @@
                         combinedList.push({ display: r, code: r.substring(0,3).toUpperCase() });
                     }
                 });
+
+                globalCombinedList = combinedList; // Save globally
 
                 attachCustomDropdown('recipe_search', combinedList, 'display', 'code', (selectedCode, selectedName) => {
                     document.getElementById('product_code').value = selectedCode;
@@ -222,7 +240,6 @@
             setTimeout(()=>{f.style.opacity='0'; setTimeout(()=>f.style.display='none',200);}, 600); 
         }
 
-        // Added Mobile Camera to Pre-Process
         function toggleCamera() { 
             const rd = document.getElementById('reader'); 
             if(rd.style.display === 'none' || rd.style.display === '') { 
@@ -314,12 +331,6 @@
             list.innerHTML = html;
         }
 
-        function calcQty() {
-            let s = parseInt(document.getElementById('start_no').value.replace(/[^0-9]/g, ''));
-            let e = parseInt(document.getElementById('end_no').value.replace(/[^0-9]/g, ''));
-            document.getElementById('qty').value = (isNaN(s) || isNaN(e) || e < s) ? 0 : (e - s) + 1;
-        }
-
         function addTag() {
             const inp = document.getElementById('scan_input');
             const val = inp.value.trim();
@@ -389,8 +400,9 @@
             let startNo = parseInt(document.getElementById('start_no').value.replace(/[^0-9]/g, ''));
             let endNo = parseInt(document.getElementById('end_no').value.replace(/[^0-9]/g, ''));
 
+            if(!dateVal) return alert("⚠️ Date is missing! Please select a Date.");
             if(!pName || !pCode || isNaN(startNo) || isNaN(endNo)) {
-                return alert("⚠️ Please fill out Target Product and Bag details correctly.");
+                return alert("⚠️ Please fill out Target Product, Short Code, and Bag details correctly.");
             }
 
             if(parentTags.length === 0) {
