@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Kilrr OS - Material Intake</title>
+    <title>Kilrr OS - Inwarding Engine</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; }
+        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; --accent-blue: #2563eb; }
         body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 100px; min-height: 100vh;}
+        
         .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
         .brand { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;}
         .brand span { color: var(--kilrr-orange); }
@@ -16,38 +17,35 @@
         .nav-btn { color: #cbd5e1; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; transition: 0.2s; padding: 8px 12px; border-radius: 8px;}
         .nav-btn:hover { background: rgba(255,255,255,0.1); color: white;}
         .nav-btn.active { color: white; background: var(--kilrr-orange);}
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;}
         
-        .card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; position: relative;}
-        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--kilrr-orange), #f97316); border-radius: 16px 16px 0 0;}
+        .container { max-width: 800px; margin: 30px auto; padding: 0 15px; }
+        
+        .card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; position: relative; margin-bottom: 30px;}
+        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 16px 16px 0 0;}
         .card.card-green::before { background: linear-gradient(90deg, var(--success-green), #10b981); }
-        .card.card-full { grid-column: 1 / -1; }
         
         h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 24px; text-transform: uppercase; color: var(--navy-command); letter-spacing: 0.5px;}
-        .marathi-title { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 14px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
+        .marathi-title { font-family: 'Inter', sans-serif; color: var(--accent-blue); font-size: 14px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
+        .marathi-title.green-title { color: var(--success-green); }
         
         label { font-weight: 800; font-size: 13px; color: var(--navy-command); display: block; margin-bottom: 8px; text-transform: uppercase;}
         label span.sub { color: #64748b; font-size: 11px; font-weight: 700; display: block; margin-top: 2px;}
 
         input, select { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #f8fafc; color: #0f172a; transition: 0.2s ease;}
-        input:focus, select:focus { border-color: var(--kilrr-orange); outline: none; background: #ffffff; box-shadow: 0 0 0 4px rgba(234,88,12,0.15);}
+        input:focus, select:focus { border-color: var(--accent-blue); outline: none; background: #ffffff; box-shadow: 0 0 0 4px rgba(59,130,246,0.15);}
         input[readonly] { background: #e2e8f0; color: #64748b; cursor: not-allowed; border-color: #cbd5e1;}
 
-        button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; background: linear-gradient(135deg, #ea580c, #c2410c); color: white; box-shadow: 0 8px 15px rgba(234, 88, 12, 0.3); transition: transform 0.1s;}
+        button.btn-huge { width: 100%; padding: 20px; border: none; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 18px; cursor: pointer; text-transform: uppercase; background: linear-gradient(135deg, #059669, #047857); color: white; box-shadow: 0 8px 15px rgba(5, 150, 105, 0.3); transition: transform 0.1s;}
         button.btn-huge:active { transform: translateY(2px); }
-        button.btn-success { background: linear-gradient(135deg, #059669, #047857); box-shadow: 0 8px 15px rgba(5, 150, 105, 0.3); }
-        
+
         .row-inputs { display: flex; gap: 15px; }
-        
+
+        /* Custom Dropdown Styling for Master Data */
         .custom-dropdown-container { position: relative; width: 100%; margin-bottom: 20px;}
         .custom-dropdown-container input { margin-bottom: 0; }
-        .custom-dropdown-list { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: #ffffff; border: 2px solid var(--kilrr-orange); border-radius: 12px; max-height: 250px; overflow-y: auto; z-index: 9999; box-shadow: 0 15px 30px rgba(0,0,0,0.15); display: none; padding: 10px; }
+        .custom-dropdown-list { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: #ffffff; border: 2px solid var(--accent-blue); border-radius: 12px; max-height: 250px; overflow-y: auto; z-index: 9999; box-shadow: 0 15px 30px rgba(0,0,0,0.15); display: none; padding: 10px; }
         .custom-dropdown-item { padding: 15px 20px; font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.1s; margin-bottom: 4px; border-bottom: 1px solid #f1f5f9; color: #0f172a;}
-        .custom-dropdown-item:hover { background: #fff7ed; color: var(--kilrr-orange); }
-
-        .preview-box { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 25px; display: flex; justify-content: center; align-items: center; background: #f8fafc; margin-bottom: 25px;}
-        .queue-list { max-height: 160px; overflow-y: auto; padding: 10px; border: 2px solid #e2e8f0; border-radius: 12px; background: #f1f5f9; margin-bottom: 25px;}
-        .queue-item { background: white; padding: 12px 15px; border-radius: 8px; margin-bottom: 8px; font-family: monospace; font-weight: bold; border: 1px solid #cbd5e1; font-size: 15px; color: #0f172a;}
+        .custom-dropdown-item:hover { background: #eff6ff; color: var(--accent-blue); }
 
         @media (max-width: 1024px) { 
             .container { grid-template-columns: 1fr; margin-top: 15px; gap: 20px;}
@@ -58,14 +56,15 @@
             .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 20px; margin-bottom: 4px;}
-            .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 20px; margin-bottom: 4px;}
             .card { padding: 20px;}
+            .row-inputs { flex-direction: column; gap: 0; }
         }
     </style>
 </head>
 <body>
+
     <nav class="nav-top">
         <a href="index.html" class="brand">Kilrr <span>OS</span></a>
         <div class="nav-links">
@@ -74,104 +73,118 @@
             <a href="preprocess.html" class="nav-btn">Pre-Process</a>
             <a href="scanner.html" class="nav-btn">Scanner</a>
             <a href="dashboard.html" class="nav-btn">Dashboard</a>
-            <a href="master.html" class="nav-btn">Master Data</a>
+            <a href="master.html" class="nav-btn">Master</a>
         </div>
     </nav>
 
     <div class="container">
-        <!-- SETUP -->
         <div class="card">
-            <h2>Material Intake Setup</h2>
-            <span class="marathi-title">नवीन माल भरणे</span>
+            <h2>Raw Material Inwarding</h2>
+            <span class="marathi-title">कच्चा माल नोंदणी (Warehouse Entry)</span>
             
             <div class="row-inputs">
                 <div style="flex:1;">
-                    <label>आलेला दिनांक <span class="sub">DATE RECEIVED</span></label>
-                    <input type="date" id="date" onchange="generatePreview()">
+                    <label>तारीख <span class="sub">1. DATE RECEIVED</span></label>
+                    <input type="date" id="date">
                 </div>
-                <div style="flex:1;">
-                    <label>वजन प्रति गोणी <span class="sub">NET WT/BAG (KG)</span></label>
-                    <input type="text" inputmode="numeric" id="weight" placeholder="e.g. 25" oninput="generatePreview()">
+                <div style="flex:2;">
+                    <label style="color:var(--accent-blue);">कोणाकडून माल आला? <span class="sub">2. SEARCH VENDOR</span></label>
+                    <div class="custom-dropdown-container">
+                        <input type="text" id="ven_search" placeholder="Search Master Vendors..." autocomplete="off">
+                    </div>
                 </div>
-            </div>
-
-            <label>कच्चा माल <span class="sub">RAW MATERIAL DATABASE</span></label>
-            <div class="custom-dropdown-container">
-                <input type="text" id="ing_search" placeholder="Search Material..." autocomplete="off">
-                <input type="hidden" id="ing_code"><input type="hidden" id="ing_name">
-            </div>
-
-            <label>व्हेंडर / व्यापारी <span class="sub">APPROVED VENDOR CODE</span></label>
-            <div class="custom-dropdown-container">
-                <input type="text" id="ven_search" placeholder="Enter Vendor Code (e.g. 3S)..." autocomplete="off" style="text-transform: uppercase;">
-                <input type="hidden" id="ven_code"><input type="hidden" id="ven_name">
             </div>
 
             <div class="row-inputs">
                 <div style="flex:1;">
-                    <label>पहिली गोणी <span class="sub">START ID</span></label>
-                    <input type="text" inputmode="numeric" id="start_no" value="1" oninput="generatePreview()">
+                    <label>वेंडर कोड <span class="sub">VENDOR SHORT CODE</span></label>
+                    <input type="text" id="ven_code" placeholder="Code..." readonly>
                 </div>
-                <div style="flex:1;">
-                    <label>शेवटची गोणी <span class="sub">END ID</span></label>
-                    <input type="text" inputmode="numeric" id="end_no" value="1" oninput="generatePreview()">
-                </div>
-                <div style="flex:1;">
-                    <label>एकूण गोण्या <span class="sub">TOTAL BAGS</span></label>
-                    <input type="text" id="qty" placeholder="0" readonly>
+                <div style="flex:2;">
+                    <label style="color:var(--accent-blue);">कोणता माल आला? <span class="sub">3. SEARCH MATERIAL</span></label>
+                    <div class="custom-dropdown-container">
+                        <input type="text" id="ing_search" placeholder="Search Raw Materials..." autocomplete="off">
+                    </div>
                 </div>
             </div>
 
-            <button class="btn-huge" onclick="stageTags()">➕ प्रिंटिंगसाठी रेडी करा (STAGE FOR PRINTING)</button>
+            <div class="row-inputs">
+                <div style="flex:1;">
+                    <label>प्रॉडक्ट कोड <span class="sub">MATERIAL SHORT CODE</span></label>
+                    <input type="text" id="ing_code" placeholder="Code..." readonly>
+                </div>
+            </div>
         </div>
 
-        <!-- PRINT ENGINE -->
         <div class="card card-green">
-            <h2 style="color:var(--success-green);">Print Execution Engine</h2>
-            <span class="marathi-title" style="color:var(--success-green); border-color:#e2e8f0;">प्रिंटर मशीन</span>
-            
-            <label>लेबल कसे दिसेल? <span class="sub">LIVE LABEL PREVIEW</span></label>
-            <div class="preview-box" id="preview_area">
-                <div style="color:#94a3b8; font-weight:800; padding:40px 0;">Awaiting Valid Data Input...</div>
+            <h2 style="color:var(--success-green);">Bag & Weight Details</h2>
+            <span class="marathi-title green-title">गोण्या आणि वजन</span>
+
+            <div class="row-inputs">
+                <div style="flex:1;">
+                    <label>पहिली गोणी <span class="sub">START BAG NO.</span></label>
+                    <input type="text" inputmode="numeric" id="start_no" value="1">
+                </div>
+                <div style="flex:1;">
+                    <label>शेवटची गोणी <span class="sub">END BAG NO.</span></label>
+                    <input type="text" inputmode="numeric" id="end_no" value="1">
+                </div>
             </div>
 
-            <label>प्रिंटिंग लाइन <span class="sub">ACTIVE PRINT QUEUE</span></label>
-            <div class="queue-list" id="queue_list">
-                <div style="color:#94a3b8; text-align:center; padding:20px;">No labels staged.</div>
+            <div class="row-inputs">
+                <div style="flex:1;">
+                    <label>वजन (KG) <span class="sub">WEIGHT PER BAG</span></label>
+                    <input type="text" inputmode="decimal" id="weight" placeholder="e.g. 25">
+                </div>
+                <div style="flex:1;">
+                    <label>एकूण पाकिटे <span class="sub">PACKS PER BAG (OPTIONAL)</span></label>
+                    <input type="text" inputmode="numeric" id="packs" placeholder="e.g. 50">
+                </div>
             </div>
 
-            <button class="btn-huge btn-success" onclick="executePrint()">🖨️ प्रिंट करा (EXECUTE PRINT SEQUENCE)</button>
-        </div>
-
-        <div class="card card-full">
-            <h2>Recently Generated Labels</h2>
-            <span class="marathi-title">आत्ताच प्रिंट केलेले (This Session)</span>
-            <div id="history_list">
-                <div style="color:#94a3b8; font-weight:800; text-align:center; padding:20px; border: 2px dashed #cbd5e1; border-radius: 12px; background: #f8fafc;">No tags printed in this session yet.</div>
-            </div>
+            <button class="btn-huge" onclick="generateAndPrint()" style="margin-top: 15px;">🖨️ जनरेट आणि प्रिंट करा (GENERATE INWARD TAGS)</button>
         </div>
     </div>
 
     <script>
-        let printQueue = [];
-        let generatedTagsForPreview = [];
-        let sessionHistory = []; 
+        let allVendors = [];
+        let allIngredients = [];
 
         window.onload = async () => {
             document.getElementById('date').valueAsDate = new Date();
-            try {
-                const iRes = await fetch('/get-ingredients'); 
-                const ingredients = await iRes.json();
-                attachCustomDropdown('ing_search', ingredients, 'ingredient_name', 'ingredient_name', 'product_code', 'ing_name', 'ing_code', false);
-                
-                const vRes = await fetch('/get-vendors'); 
-                const vendors = await vRes.json();
-                attachCustomDropdown('ven_search', vendors, 'vendor_code', 'vendor_name', 'vendor_code', 'ven_name', 'ven_code', true);
-            } catch(e) { console.error("Master data fetch failed."); }
-            generatePreview();
+            await loadMasterData();
         };
 
-        function attachCustomDropdown(inputId, dataArray, searchKey, displayKey, codeKey, nameHiddenId, codeHiddenId, isVendor = false) {
+        async function loadMasterData() {
+            try {
+                const venRes = await fetch('/get-vendors');
+                const ingRes = await fetch('/get-ingredients');
+                
+                const venData = await venRes.json();
+                const ingData = await ingRes.json();
+
+                if(Array.isArray(venData)) {
+                    allVendors = venData.map(v => ({ display: v.vendor_name, code: v.vendor_code }));
+                    attachCustomDropdown('ven_search', allVendors, 'display', 'code', (code, name) => {
+                        document.getElementById('ven_code').value = code;
+                    });
+                }
+
+                if(Array.isArray(ingData)) {
+                    allIngredients = ingData.map(i => ({ display: i.ingredient_name, code: i.product_code }));
+                    attachCustomDropdown('ing_search', allIngredients, 'display', 'code', (code, name) => {
+                        document.getElementById('ing_code').value = code;
+                    });
+                }
+            } catch(e) {
+                console.error("Master data fetch failed.");
+                document.getElementById('ven_search').placeholder = "⚠️ ERROR: Database Disconnected!";
+                document.getElementById('ing_search').placeholder = "⚠️ ERROR: Database Disconnected!";
+            }
+        }
+
+        // Searchable Custom Dropdown Logic
+        function attachCustomDropdown(inputId, dataArray, displayKey, codeKey, onSelectCallback) {
             const inp = document.getElementById(inputId); 
             const list = document.createElement('div'); 
             list.className = 'custom-dropdown-list'; 
@@ -179,212 +192,138 @@
             
             function renderList(filterTxt = "") {
                 list.innerHTML = ''; 
-                const matches = dataArray.filter(item => {
-                    if(!item[codeKey]) return false;
-                    if (isVendor) {
-                        return item[codeKey].toLowerCase().includes(filterTxt.toLowerCase());
-                    } else {
-                        return (item[searchKey]||"").toLowerCase().includes(filterTxt.toLowerCase()) || item[codeKey].toLowerCase().includes(filterTxt.toLowerCase());
-                    }
-                });
+                const matches = dataArray.filter(item => 
+                    (item[displayKey] || "").toLowerCase().includes(filterTxt.toLowerCase()) || 
+                    (item[codeKey] || "").toLowerCase().includes(filterTxt.toLowerCase())
+                );
 
                 if(matches.length === 0) { list.style.display = 'none'; return; }
                 
                 matches.forEach(match => { 
                     let div = document.createElement('div'); div.className = 'custom-dropdown-item'; 
-                    if (isVendor) {
-                        div.innerHTML = `<strong style="color:var(--kilrr-orange); font-size:18px;">${match[codeKey]}</strong>`; 
-                    } else {
-                        div.innerHTML = `<strong style="color:var(--kilrr-orange);">${match[codeKey]}</strong> - ${match[displayKey]}`; 
-                    }
+                    div.innerHTML = `<strong style="color:var(--accent-blue);">${match[codeKey]}</strong> - ${match[displayKey]}`; 
                     div.onclick = () => { 
-                        inp.value = isVendor ? match[codeKey] : match[displayKey]; 
-                        document.getElementById(nameHiddenId).value = match[displayKey]; 
-                        document.getElementById(codeHiddenId).value = match[codeKey]; 
+                        inp.value = match[displayKey]; 
                         list.style.display = 'none'; 
-                        generatePreview();
+                        if(onSelectCallback) onSelectCallback(match[codeKey], match[displayKey]);
                     }; 
                     list.appendChild(div); 
                 }); 
                 list.style.display = 'block';
             }
             
-            inp.addEventListener('input', function() { 
-                document.getElementById(codeHiddenId).value = "";
-                document.getElementById(nameHiddenId).value = "";
-                renderList(this.value); 
-            }); 
+            inp.addEventListener('input', function() { renderList(this.value); }); 
             inp.addEventListener('focus', function() { renderList(this.value); });
             document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
         }
 
-        function generatePreview() {
+        async function generateAndPrint() {
             const dateVal = document.getElementById('date').value;
-            const ingCode = document.getElementById('ing_code').value;
-            const ingName = document.getElementById('ing_name').value;
-            const venCode = document.getElementById('ven_code').value;
-            const weightVal = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
+            const venName = document.getElementById('ven_search').value.trim().toUpperCase();
+            const venCode = document.getElementById('ven_code').value.trim().toUpperCase();
+            const ingName = document.getElementById('ing_search').value.trim().toUpperCase();
+            const ingCode = document.getElementById('ing_code').value.trim().toUpperCase();
             
             let startNo = parseInt(document.getElementById('start_no').value.replace(/[^0-9]/g, ''));
             let endNo = parseInt(document.getElementById('end_no').value.replace(/[^0-9]/g, ''));
+            const weightRaw = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
+            const packsRaw = document.getElementById('packs').value.replace(/[^0-9]/g, '');
 
-            if(isNaN(startNo) || isNaN(endNo) || endNo < startNo) {
-                document.getElementById('qty').value = 0;
-            } else {
-                document.getElementById('qty').value = (endNo - startNo) + 1;
-            }
-
-            if(!dateVal || !ingCode || !venCode || isNaN(startNo) || isNaN(endNo) || endNo < startNo || !weightVal) {
-                document.getElementById('preview_area').innerHTML = `<div style="color:#94a3b8; font-weight:800; padding:40px 0;">Awaiting Valid Data Input...</div>`;
-                generatedTagsForPreview = [];
-                return;
-            }
+            if(!dateVal) return alert("⚠️ Date is missing! Please select a Date.");
+            if(!venName || !venCode) return alert("⚠️ Please select a valid Vendor from the Master Data list.");
+            if(!ingName || !ingCode) return alert("⚠️ Please select a valid Raw Material from the Master Data list.");
+            if(isNaN(startNo) || isNaN(endNo) || startNo > endNo) return alert("⚠️ Please enter correct Start and End Bag numbers.");
+            if(!weightRaw) return alert("⚠️ Please enter the Weight per bag.");
 
             const [year, month, day] = dateVal.split('-');
             const dateFmt = `${day}${month}`;
-            const padWeight = String(weightVal).padStart(2, '0');
             const dispDate = `${day}/${month}/${year}`;
             
-            generatedTagsForPreview = [];
+            const weightText = `NET WT: ${String(weightRaw).padStart(2, '0')} KG`;
+
+            let queue = [];
             for(let i = startNo; i <= endNo; i++) {
-                generatedTagsForPreview.push(`${dateFmt}/${ingCode}/${venCode}/${i}`);
+                queue.push({
+                    dateRaw: dateVal,
+                    ingCode: ingCode,
+                    ingName: ingName,
+                    venCode: venCode,
+                    venName: venName,
+                    weight: weightRaw,
+                    startNo: i,
+                    endNo: i,
+                    packs: packsRaw || null,
+                    tagStr: `${dateFmt}/${ingCode}/${venCode}/${i}`
+                });
             }
 
-            let qr = new QRious({ value: generatedTagsForPreview[0], size: 250, level: 'M' });
-            document.getElementById('preview_area').innerHTML = `
-                <div style="background:white; padding:10px; border:2px solid black; width: 250px; color: black; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box;">
-                    <div style="font-weight:900; font-size:22px; text-transform:uppercase; margin: 0; padding-bottom: 5px; border-bottom: 3px solid black; width: 100%; line-height: 1; text-align: center;">${ingName}</div>
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin: 10px 0;">
-                        <img src="${qr.toDataURL()}" style="width:130px; height:130px; margin-bottom: 5px;">
-                        <div style="font-weight:900; font-size:13px; text-transform:uppercase; margin: 0; line-height: 1;">DATE: ${dispDate}</div>
-                    </div>
-                    <div style="width: 100%; margin-bottom: 5px;">
-                        <div style="font-size:16px; font-weight:900; font-family:monospace; margin: 0 0 5px 0; line-height: 1; text-align: center;">${generatedTagsForPreview[0]}</div>
-                        <div style="font-size:21px; font-weight:900; padding: 5px 0; margin: 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; line-height: 1; text-align: center;">NET WT: ${padWeight} KG</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function stageTags() {
-            const ingCode = document.getElementById('ing_code').value;
-            const venCode = document.getElementById('ven_code').value;
-
-            if(!ingCode || !venCode) return alert("⚠️ ERROR: You MUST tap the Material and Vendor code from the dropdown list!");
-            if(generatedTagsForPreview.length === 0) return alert("Fill all fields correctly first!");
-            
-            const dateVal = document.getElementById('date').value;
-            const [year, month, day] = dateVal.split('-');
-            
-            let startVal = document.getElementById('start_no').value.replace(/[^0-9]/g, '');
-            let endVal = document.getElementById('end_no').value.replace(/[^0-9]/g, '');
-            
-            const batchObj = {
-                dateRaw: dateVal, dateFmt: `${day}${month}`,
-                ingCode: ingCode, ingName: document.getElementById('ing_name').value,
-                venCode: venCode, venName: document.getElementById('ven_name').value,
-                weight: document.getElementById('weight').value.replace(/[^0-9.]/g, ''),
-                startNo: parseInt(startVal), endNo: parseInt(endVal),
-                packs: parseInt(document.getElementById('qty').value)
-            };
-
-            printQueue.push(batchObj);
-            updateQueueUI();
-            
-            let nextStart = batchObj.endNo + 1;
-            document.getElementById('start_no').value = nextStart;
-            document.getElementById('end_no').value = nextStart;
-            generatePreview();
-        }
-
-        function updateQueueUI() {
-            const qList = document.getElementById('queue_list');
-            if(printQueue.length === 0) {
-                qList.innerHTML = `<div style="color:#94a3b8; text-align:center; padding:20px;">No labels staged.</div>`;
-                return;
-            }
-            qList.innerHTML = printQueue.map((item, index) => `
-                <div class="queue-item" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><span style="color:var(--kilrr-orange); font-size:16px;">${item.ingCode}</span> | Vendor: <span style="font-family:monospace; font-weight:900;">${item.venCode}</span> | Bags: ${item.startNo} to ${item.endNo}</div>
-                    <button style="background:var(--danger-red); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold; font-size: 16px;" onclick="removeFromQueue(${index})">X</button>
-                </div>
-            `).join('');
-        }
-
-        function removeFromQueue(index) { printQueue.splice(index, 1); updateQueueUI(); }
-
-        function updateHistoryUI() {
-            const histDiv = document.getElementById('history_list');
-            if(sessionHistory.length === 0) return;
-            histDiv.innerHTML = sessionHistory.map((item, idx) => {
-                let tagStart = `${item.dateFmt}/${item.ingCode}/${item.venCode}/${item.startNo}`;
-                let tagEnd = `${item.dateFmt}/${item.ingCode}/${item.venCode}/${item.endNo}`;
-                let tagDisplay = item.startNo === item.endNo ? tagStart : `${tagStart} to ${tagEnd}`;
-
-                return `
-                <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:20px; border:1px solid #cbd5e1; border-radius:12px; margin-bottom:12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
-                    <div>
-                        <div style="font-weight:900; color:var(--navy-command); font-size:18px;">${item.ingName} <span style="font-size:14px; color:var(--danger-red); font-family:monospace;">(Vendor: ${item.venCode})</span></div>
-                        <div style="font-family:monospace; color:var(--kilrr-orange); font-weight:bold; font-size:16px; margin-top:8px;">${tagDisplay}</div>
-                    </div>
-                    <div style="text-align:right;">
-                        <div style="font-weight:900; font-size:18px; color:var(--success-green);">${item.packs} Bags @ ${item.weight} KG</div>
-                        <button style="margin-top:10px; background:#f1f5f9; color:var(--navy-command); border:2px solid #cbd5e1; padding:8px 16px; border-radius:8px; font-weight:900; cursor:pointer;" onclick="reprintHistory(${idx})">🖨️ REPRINT</button>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-        
-        function getPrintHTML(queueArray) {
-            let html = `<html><head><style>
-                @page { size: 75mm 75mm; margin: 0; }
-                body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; }
-                .label { width: 73mm; height: 73mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden; }
-                .title { font-size: 22px; font-weight: 900; text-transform: uppercase; margin: 0; padding-bottom: 1.5mm; border-bottom: 3px solid black; width: 100%; line-height: 1; }
-                .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin: auto 0; }
-                .qr-container img { width: 36mm; height: 36mm; margin-bottom: 1mm; }
-                .date-text { font-size: 13px; font-weight: 900; text-transform: uppercase; margin: 0; line-height: 1; }
-                .bottom-section { width: 100%; margin-bottom: 1mm; }
-                .tag-string { font-size: 16px; font-weight: 900; font-family: monospace; margin: 0 0 1.5mm 0; line-height: 1; }
-                .weight-bar { font-size: 21px; font-weight: 900; padding: 1.5mm 0; margin: 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; line-height: 1; }
-            </style></head><body>`;
-            queueArray.forEach(item => {
-                for(let i = item.startNo; i <= item.endNo; i++) {
-                    let tagStr = `${item.dateFmt}/${item.ingCode}/${item.venCode}/${i}`;
-                    let qrEngine = new QRious({ value: tagStr, size: 250, level: 'M' });
-                    let dispDate = `${item.dateRaw.split('-')[2]}/${item.dateRaw.split('-')[1]}/${item.dateRaw.split('-')[0]}`;
-                    let padWeight = String(item.weight).padStart(2, '0');
-                    html += `<div class="label"><div class="title">${item.ingName}</div><div class="qr-container"><img src="${qrEngine.toDataURL()}"><div class="date-text">DATE: ${dispDate}</div></div><div class="bottom-section"><div class="tag-string">${tagStr}</div><div class="weight-bar">NET WT: ${padWeight} KG</div></div></div>`;
-                }
-            });
-            html += `</body><script>window.onload = () => { window.print(); window.close(); };<\/script></html>`;
-            return html;
-        }
-
-        function reprintHistory(idx) {
             let printWindow = window.open('', '_blank');
-            if(!printWindow) return alert("⚠️ Popup Blocked! Please allow popups for Kilrr OS to print labels.");
-            printWindow.document.write(getPrintHTML([sessionHistory[idx]]));
-            printWindow.document.close();
-        }
+            if(!printWindow) return alert("⚠️ Popup Blocked! Allow popups to print.");
 
-        async function executePrint() {
-            if(printQueue.length === 0) return alert("Queue is empty!");
-            let printWindow = window.open('', '_blank');
-            if(!printWindow) return alert("⚠️ Popup Blocked!");
             try {
-                printWindow.document.write('<html><body style="background:#f8fafc;"><h2 style="font-family:sans-serif; text-align:center; margin-top:50px; color:#ea580c;">Logging to Kilrr Database...</h2></body></html>');
-                const res = await fetch('/log-inwarding', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ queue: printQueue }) });
-                const data = await res.json();
-                if(data.error) { printWindow.close(); return alert("Database Error: " + data.error); }
+                printWindow.document.write('<html><body style="background:#f8fafc;"><h2 style="font-family:sans-serif; text-align:center; margin-top:50px; color:#059669;">Logging Inward to Database...</h2></body></html>');
 
+                const res = await fetch('/log-inwarding', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ queue: queue })
+                });
+                
+                const data = await res.json();
+                if(data.error) throw new Error(data.error);
+
+                // 🔥 THE NEW HIGH-CONTRAST INDUSTRIAL LABEL DESIGN 🔥
+                let html = `<html><head><style>
+                    @page { size: 75mm 75mm; margin: 0; }
+                    body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; }
+                    
+                    .label { width: 73mm; height: 73mm; box-sizing: border-box; padding: 0; border: 3px solid black; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden; }
+                    
+                    /* Top Black Bar */
+                    .title-bar { background: black; color: white; width: 100%; padding: 4mm 0; font-size: 20px; font-weight: 900; text-transform: uppercase; line-height: 1.1; text-align: center; letter-spacing: 0.5px; }
+                    
+                    /* Middle Section (White Background for QR) */
+                    .middle-section { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; }
+                    .vendor-box { font-size: 14px; font-weight: 900; color: black; background: #e2e8f0; padding: 3px 12px; border-radius: 4px; margin-top: 2mm; display: inline-block; line-height: 1; border: 1px solid black;}
+                    .qr-image { width: 33mm; height: 33mm; margin: 1.5mm 0; }
+                    .date-text { font-size: 14px; font-weight: 900; text-transform: uppercase; margin: 0; line-height: 1; }
+                    .tag-string { font-size: 14px; font-weight: 900; font-family: monospace; margin: 1.5mm 0 0 0; line-height: 1; }
+                    
+                    /* Bottom Black Bar */
+                    .weight-bar { background: black; color: white; width: 100%; padding: 4mm 0; font-size: 26px; font-weight: 900; line-height: 1; text-align: center; letter-spacing: 0.5px; }
+                </style></head><body>`;
+
+                queue.forEach(item => {
+                    let qrEngine = new QRious({ value: item.tagStr, size: 250, level: 'M' });
+                    html += `
+                    <div class="label">
+                        <div class="title-bar">${item.ingName}</div>
+                        
+                        <div class="middle-section">
+                            <div class="vendor-box">VENDOR: ${item.venCode}</div>
+                            <img class="qr-image" src="${qrEngine.toDataURL()}">
+                            <div class="date-text">DATE: ${dispDate}</div>
+                            <div class="tag-string">${item.tagStr}</div>
+                        </div>
+                        
+                        <div class="weight-bar">${weightText}</div>
+                    </div>`;
+                });
+
+                html += `</body><script>window.onload = () => { window.print(); window.close(); };<\/script></html>`;
+                
                 printWindow.document.open(); 
-                printWindow.document.write(getPrintHTML(printQueue));
+                printWindow.document.write(html);
                 printWindow.document.close();
 
-                printQueue.forEach(item => sessionHistory.unshift(item));
-                printQueue = []; updateQueueUI(); updateHistoryUI();
-            } catch(e) { printWindow.close(); alert("Execution Failed. Check server connection."); }
+                // Reset form for next batch
+                document.getElementById('start_no').value = endNo + 1;
+                document.getElementById('end_no').value = endNo + 1;
+
+            } catch(e) { 
+                printWindow.close();
+                alert("Database Error: " + e.message); 
+            }
         }
     </script>
 </body>
