@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Kilrr OS - Master Data</title>
+    <title>Kilrr OS - Master Admin Vault</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
@@ -16,6 +16,14 @@
         .nav-btn { color: #cbd5e1; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; padding: 8px 12px; border-radius: 8px;}
         .nav-btn:hover { background: rgba(255,255,255,0.1); color: white;}
         .nav-btn.active { color: white; background: var(--kilrr-orange);}
+
+        /* THE VAULT OVERLAY */
+        #vault_gate { position: fixed; inset: 0; background: rgba(11, 17, 33, 0.98); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .vault-box { background: white; padding: 40px; border-radius: 16px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border-top: 6px solid var(--danger-red);}
+        .vault-box h1 { font-family: 'Space Grotesk'; font-size: 24px; color: var(--navy-command); margin-top: 0; text-transform: uppercase;}
+        .vault-box input { font-size: 20px; text-align: center; letter-spacing: 2px; border-color: var(--navy-command);}
+
+        #main_content { display: none; } /* Hidden by default */
 
         .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;}
         
@@ -50,82 +58,113 @@
             .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 20px; margin-bottom: 4px;}
-            .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 20px; margin-bottom: 4px;}
         }
     </style>
 </head>
 <body>
-    <nav class="nav-top">
-        <a href="index.html" class="brand">Kilrr <span>OS</span></a>
-        <div class="nav-links">
-            <a href="index.html" class="nav-btn">Hub</a>
-            <a href="inwarding.html" class="nav-btn">Inward</a>
-            <a href="preprocess.html" class="nav-btn">Pre-Process</a>
-            <a href="scanner.html" class="nav-btn">Scanner</a>
-            <a href="dashboard.html" class="nav-btn">Dashboard</a>
-            <a href="master.html" class="nav-btn active">Master</a>
+
+    <div id="vault_gate">
+        <div class="vault-box">
+            <h1>RESTRICTED ZONE</h1>
+            <p style="color:#64748b; font-size:14px; font-weight:700; margin-bottom:25px;">Enter the Master Data encryption key.</p>
+            <input type="password" id="auth_key" placeholder="••••••••••••••" onkeypress="if(event.key === 'Enter') unlockVault()">
+            <button class="btn-dark" onclick="unlockVault()">🔓 UNLOCK SERVER</button>
         </div>
-    </nav>
+    </div>
 
-    <div class="container">
-        <div>
-            <div class="card" style="margin-bottom: 30px;">
-                <h2>Raw Materials</h2>
-                <div class="row">
-                    <div style="flex:1;">
-                        <label>Code (e.g. SALT)</label>
-                        <input type="text" id="mat_code" style="text-transform: uppercase;">
+    <div id="main_content">
+        <nav class="nav-top">
+            <a href="index.html" class="brand">Kilrr <span>OS</span></a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-btn">Hub</a>
+                <a href="inwarding.html" class="nav-btn">Inward</a>
+                <a href="preprocess.html" class="nav-btn">Pre-Process</a>
+                <a href="scanner.html" class="nav-btn">Scanner</a>
+                <a href="dashboard.html" class="nav-btn">Dashboard</a>
+                <a href="master.html" class="nav-btn active">Master</a>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div>
+                <div class="card" style="margin-bottom: 30px;">
+                    <h2>Raw Materials Database</h2>
+                    <div class="row">
+                        <div style="flex:1;">
+                            <label>Code (e.g. SALT)</label>
+                            <input type="text" id="mat_code" style="text-transform: uppercase;">
+                        </div>
+                        <div style="flex:2;">
+                            <label>Ingredient Name</label>
+                            <input type="text" id="mat_name">
+                        </div>
                     </div>
-                    <div style="flex:2;">
-                        <label>Name</label>
-                        <input type="text" id="mat_name">
-                    </div>
+                    <button onclick="saveMaterial()">💾 Save Material</button>
                 </div>
-                <button onclick="saveMaterial()">Save Material</button>
-            </div>
 
-            <div class="card">
-                <h2>Approved Vendors</h2>
-                <div class="row">
-                    <div style="flex:1;">
-                        <label>Code (e.g. V-01)</label>
-                        <input type="text" id="ven_code" style="text-transform: uppercase;">
+                <div class="card">
+                    <h2>Approved Vendors</h2>
+                    <div class="row">
+                        <div style="flex:1;">
+                            <label>Code (e.g. V-01)</label>
+                            <input type="text" id="ven_code" style="text-transform: uppercase;">
+                        </div>
+                        <div style="flex:2;">
+                            <label>Vendor Name</label>
+                            <input type="text" id="ven_name">
+                        </div>
                     </div>
-                    <div style="flex:2;">
-                        <label>Vendor Name</label>
-                        <input type="text" id="ven_name">
-                    </div>
+                    <button onclick="saveVendor()">💾 Save Vendor</button>
                 </div>
-                <button onclick="saveVendor()">Save Vendor</button>
             </div>
-        </div>
 
-        <div class="card card-orange">
-            <h2>Recipe Validation Matrix</h2>
-            <div style="background: #fff7ed; color: var(--kilrr-orange); padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; margin-bottom: 20px;">
-                ⚠️ Updating an existing recipe will completely replace its ingredients. To delete a recipe, just leave the ingredients box blank and hit update!
+            <div class="card card-orange">
+                <h2>Master Recipe Engine</h2>
+                <div style="background: #fff7ed; color: var(--kilrr-orange); padding: 12px; border-radius: 8px; font-weight: bold; font-size: 13px; margin-bottom: 20px;">
+                    ⚠️ Updating a recipe replaces all previous ingredients. To completely delete a recipe, leave the ingredients box blank and hit update.
+                </div>
+                
+                <label>Master Flavour Profile (FG Name / Code)</label>
+                <input type="text" id="rec_fg" placeholder="E.g. Garam Masala">
+                
+                <label>Required Ingredient Codes (Comma Separated)</label>
+                <input type="text" id="rec_ing" placeholder="E.g. JE, CS, BP, TU" style="text-transform: uppercase;">
+                
+                <button class="btn-dark" onclick="updateRecipe()">⚙️ Update Master Recipe</button>
+
+                <h3 style="font-family:'Space Grotesk'; font-size:16px; margin-top:30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Active Recipes</h3>
+                <div class="recipe-list" id="active_recipes_list">Loading...</div>
             </div>
-            
-            <label>Master Flavour Profile (FG Name / Code)</label>
-            <input type="text" id="rec_fg" placeholder="E.g. Gangs of Awadh">
-            
-            <label>Required Ingredient Codes (Comma Separated)</label>
-            <input type="text" id="rec_ing" placeholder="E.g. GIN, GAR, ONI" style="text-transform: uppercase;">
-            
-            <label>Manager PIN</label>
-            <input type="password" id="rec_pin" placeholder="****">
-            
-            <button class="btn-dark" onclick="updateRecipe()">Update Master Recipe</button>
-
-            <h3 style="font-family:'Space Grotesk'; font-size:16px; margin-top:30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Active Recipes</h3>
-            <div class="recipe-list" id="active_recipes_list">Loading...</div>
         </div>
     </div>
 
     <script>
-        window.onload = loadActiveRecipes;
+        let sessionKey = sessionStorage.getItem('kilrr_vault_key');
+
+        window.onload = () => {
+            // Check if they are already logged in this session
+            if(sessionKey === "Kilrrspicesdata") {
+                document.getElementById('vault_gate').style.display = 'none';
+                document.getElementById('main_content').style.display = 'block';
+                loadActiveRecipes();
+            }
+        };
+
+        function unlockVault() {
+            const keyAttempt = document.getElementById('auth_key').value;
+            if(keyAttempt === "Kilrrspicesdata") {
+                sessionStorage.setItem('kilrr_vault_key', keyAttempt);
+                sessionKey = keyAttempt;
+                document.getElementById('vault_gate').style.display = 'none';
+                document.getElementById('main_content').style.display = 'block';
+                loadActiveRecipes();
+            } else {
+                alert("❌ INVALID ENCRYPTION KEY");
+                document.getElementById('auth_key').value = '';
+            }
+        }
 
         async function saveMaterial() {
             const code = document.getElementById('mat_code').value.trim().toUpperCase();
@@ -133,10 +172,12 @@
             if(!code || !name) return alert("Fill both fields");
             
             try {
-                const res = await fetch('/add-ingredient', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code, name})});
+                // Notice we now attach the sessionKey to prove authorization to the backend
+                const res = await fetch('/add-ingredient', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code, name, master_key: sessionKey})});
                 const data = await res.json();
+                if(data.error) return alert(data.error);
                 if(data.status==='success') { 
-                    alert("Material Saved!"); 
+                    alert("✅ Material Saved to Vault!"); 
                     document.getElementById('mat_code').value = ''; document.getElementById('mat_name').value = '';
                 }
             } catch(e) { alert("Error saving material"); }
@@ -148,10 +189,11 @@
             if(!code || !name) return alert("Fill both fields");
             
             try {
-                const res = await fetch('/add-vendor', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code, name})});
+                const res = await fetch('/add-vendor', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code, name, master_key: sessionKey})});
                 const data = await res.json();
+                if(data.error) return alert(data.error);
                 if(data.status==='success') { 
-                    alert("Vendor Saved!"); 
+                    alert("✅ Vendor Saved to Vault!"); 
                     document.getElementById('ven_code').value = ''; document.getElementById('ven_name').value = '';
                 }
             } catch(e) { alert("Error saving vendor"); }
@@ -160,20 +202,17 @@
         async function updateRecipe() {
             const fg_code = document.getElementById('rec_fg').value.trim();
             const ingredients = document.getElementById('rec_ing').value.trim();
-            const pin = document.getElementById('rec_pin').value.trim();
             
             if(!fg_code) return alert("Target Product Name is required.");
-            if(pin !== "1234") return alert("Invalid PIN.");
 
             try {
-                const res = await fetch('/update-recipe', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({fg_code, ingredients, pin})});
+                const res = await fetch('/update-recipe', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({fg_code, ingredients, master_key: sessionKey})});
                 const data = await res.json();
+                if(data.error) return alert(data.error);
                 if(data.status==='success') { 
-                    alert("Recipe Updated Successfully!"); 
-                    document.getElementById('rec_fg').value = ''; document.getElementById('rec_ing').value = ''; document.getElementById('rec_pin').value = '';
+                    alert("✅ Recipe Updated in Master Vault!"); 
+                    document.getElementById('rec_fg').value = ''; document.getElementById('rec_ing').value = '';
                     loadActiveRecipes();
-                } else {
-                    alert(data.error);
                 }
             } catch(e) { alert("Error updating recipe."); }
         }
@@ -183,11 +222,12 @@
                 const res = await fetch('/get-recipes');
                 const rawRecipes = await res.json();
                 
-                // Group by FG Code
                 const grouped = {};
                 rawRecipes.forEach(r => {
                     if(!grouped[r.fg_code]) grouped[r.fg_code] = [];
-                    if(r.ingredient_code) grouped[r.fg_code].push(r.ingredient_code);
+                    if(r.ingredient_code && r.ingredient_code !== 'null') {
+                        grouped[r.fg_code].push(r.ingredient_code);
+                    }
                 });
 
                 const list = document.getElementById('active_recipes_list');
@@ -202,7 +242,7 @@
                             ${fg}
                             <button class="btn-delete" onclick="quickEdit('${fg}', '${grouped[fg].join(', ')}')">✎ EDIT</button>
                         </div>
-                        <div class="ing-codes">${grouped[fg].join(', ') || '<span style="color:var(--danger-red);">BROKEN LINK - PLEASE EDIT</span>'}</div>
+                        <div class="ing-codes">${grouped[fg].join(', ') || '<span style="color:var(--danger-red);">EMPTY RECIPE</span>'}</div>
                     </div>
                 `).join('');
 
@@ -214,7 +254,6 @@
         function quickEdit(fg, ings) {
             document.getElementById('rec_fg').value = fg;
             document.getElementById('rec_ing').value = ings;
-            document.getElementById('rec_pin').focus();
         }
     </script>
 </body>
