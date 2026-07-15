@@ -79,7 +79,6 @@
             .nav-btn[href="audit.html"]::before { content: "📋"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 20px; margin-bottom: 4px;}
-            .card { padding: 20px;}
         }
     </style>
 </head>
@@ -189,16 +188,21 @@
             document.getElementById('rm_tag').addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); manualScan(); }});
         };
 
+        // DIAGNOSTIC UPGRADE: Prints exact error if DB fails
         async function fetchDynamicRecipes() {
             try {
                 const res = await fetch('/get-recipes');
                 const data = await res.json();
+                if(data.error) {
+                    document.getElementById('recipe_grid').innerHTML = `<div style="color:red; font-size:12px; font-weight:bold;">DB Error: ${data.error}</div>`;
+                    return;
+                }
                 if(Array.isArray(data)) {
                     activeRecipes = [...new Set(data.map(r => r.fg_code))];
                     renderRecipes();
                 }
             } catch(e) { 
-                document.getElementById('recipe_grid').innerHTML = `<div style="color:var(--danger-red); font-size:12px; font-weight:bold;">Database disconnected. Check Backend.</div>`;
+                document.getElementById('recipe_grid').innerHTML = `<div style="color:red; font-size:12px; font-weight:bold;">Network disconnected.</div>`;
             }
         }
 
@@ -328,7 +332,10 @@
             try {
                 const reqRes = await fetch(`/recipe-requirements/${encodeURIComponent(curF)}`);
                 recipeRequirements = await reqRes.json();
-                if(Array.isArray(recipeRequirements)) {
+                if(recipeRequirements.error) {
+                    document.getElementById('recipe_checklist').innerHTML = `<div style="text-align:center; color:red; font-weight:bold;">DB Error: ${recipeRequirements.error}</div>`;
+                    recipeRequirements = [];
+                } else if(Array.isArray(recipeRequirements)) {
                     validRecipeCodes = recipeRequirements.map(i => i.product_code);
                 } else { recipeRequirements = []; }
             } catch(e) { recipeRequirements = []; }
@@ -336,7 +343,7 @@
             update(); setTimeout(() => document.getElementById('rm_tag').focus(), 500);
         }
 
-        // MOBILE KEYBOARD SUPPRESSION ADDED HERE
+        // MOBILE KEYBOARD SUPPRESSION
         function toggleCamera() { 
             const rd = document.getElementById('reader'); 
             if(rd.style.display === 'none' || rd.style.display === '') { 
@@ -347,7 +354,7 @@
                         if(isCameraProcessing) return; 
                         isCameraProcessing = true;
                         document.getElementById('rm_tag').value = txt; 
-                        document.getElementById('rm_tag').blur(); // Suppress mobile keyboard
+                        document.getElementById('rm_tag').blur(); // 🛡️ Suppress Keyboard
                         manualScan().then(() => {
                             setTimeout(() => { isCameraProcessing = false; }, 2000);
                         }); 
@@ -387,7 +394,7 @@
                 
                 if(data.error) {
                     localScannedTags = localScannedTags.filter(t => t !== cleanTag); 
-                    flash(false, "❌ आधीच स्कॅन केले (DUPLICATE)"); 
+                    flash(false, "❌ " + data.error); 
                     inp.value=""; inp.disabled=false; 
                     if(!isCameraProcessing) inp.focus(); else inp.blur();
                     return;
@@ -403,7 +410,7 @@
             }
             
             inp.disabled=false; 
-            if(!isCameraProcessing) inp.focus(); else inp.blur(); // Mobile Keyboard Block
+            if(!isCameraProcessing) inp.focus(); else inp.blur(); 
         }
 
         function startUndoTimer() {
@@ -423,36 +430,47 @@
         }
         
         async function update() { 
-            const scans = await fetch(`/current-scans/${encodeURIComponent(curB)}`).then(r=>r.json()); 
-            if(Array.isArray(scans)) {
-                localScannedTags = scans.map(s => s.rm_tag);
-                document.getElementById('total_bags').innerText = scans.length;
-                document.getElementById('total_weight').innerText = scans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0).toFixed(2);
+            try {
+                const res = await fetch(`/current-scans/${encodeURIComponent(curB)}`);
+                const scans = await res.json();
 
-                if(recipeRequirements.length > 0) {
-                    const checklistHTML = recipeRequirements.map(req => {
-                        const matchedScans = scans.filter(s => s.product_code === req.product_code);
-                        const totalKg = matchedScans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
-                        const isDone = matchedScans.length > 0;
-                        return `
-                            <div class="feed-item ${isDone ? 'done' : ''}">
-                                <div class="feed-name">${req.ingredient_name || req.product_code} <span style="font-size:12px; color:#94a3b8;">(${req.product_code})</span></div>
-                                <div class="feed-status">${isDone ? `✅ ${totalKg.toFixed(2)} KG` : '⏳ बाकी आहे'}</div>
-                            </div>
-                        `;
-                    }).join('');
-                    document.getElementById('recipe_checklist').innerHTML = checklistHTML;
-                } else {
-                    document.getElementById('recipe_checklist').innerHTML = `<div style="text-align:center; color:var(--danger-red); font-weight:bold;">No ingredients mapped. Check Master Data.</div>`;
+                if(scans.error) {
+                    document.getElementById('scanned_items_list').innerHTML = `<div style="color:red; text-align:center;">DB Error: ${scans.error}</div>`;
+                    return;
                 }
 
-                if(scans.length === 0) { document.getElementById('scanned_items_list').innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:bold; font-size:12px;">No tags yet...</div>`; } 
-                else { 
-                    document.getElementById('scanned_items_list').innerHTML = [...scans].map(s => `
-                    <div style="display:flex; justify-content:space-between; padding:12px; background:white; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:8px; font-family:monospace; font-weight:bold; font-size:13px; color:var(--navy-command);">
-                        <span>${s.rm_tag}</span><span style="color:var(--success-green);">${parseFloat(s.weight||0).toFixed(2)} KG</span>
-                    </div>`).join(''); 
+                if(Array.isArray(scans)) {
+                    localScannedTags = scans.map(s => s.rm_tag);
+                    document.getElementById('total_bags').innerText = scans.length;
+                    document.getElementById('total_weight').innerText = scans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0).toFixed(2);
+
+                    if(recipeRequirements.length > 0) {
+                        const checklistHTML = recipeRequirements.map(req => {
+                            const matchedScans = scans.filter(s => s.product_code === req.product_code);
+                            const totalKg = matchedScans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
+                            const isDone = matchedScans.length > 0;
+                            return `
+                                <div class="feed-item ${isDone ? 'done' : ''}">
+                                    <div class="feed-name">${req.ingredient_name || req.product_code} <span style="font-size:12px; color:#94a3b8;">(${req.product_code})</span></div>
+                                    <div class="feed-status">${isDone ? `✅ ${totalKg.toFixed(2)} KG` : '⏳ बाकी आहे'}</div>
+                                </div>
+                            `;
+                        }).join('');
+                        document.getElementById('recipe_checklist').innerHTML = checklistHTML;
+                    } else {
+                        document.getElementById('recipe_checklist').innerHTML = `<div style="text-align:center; color:var(--danger-red); font-weight:bold;">No ingredients mapped. Check Master Data.</div>`;
+                    }
+
+                    if(scans.length === 0) { document.getElementById('scanned_items_list').innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:bold; font-size:12px;">No tags yet...</div>`; } 
+                    else { 
+                        document.getElementById('scanned_items_list').innerHTML = [...scans].map(s => `
+                        <div style="display:flex; justify-content:space-between; padding:12px; background:white; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:8px; font-family:monospace; font-weight:bold; font-size:13px; color:var(--navy-command);">
+                            <span>${s.rm_tag}</span><span style="color:var(--success-green);">${parseFloat(s.weight||0).toFixed(2)} KG</span>
+                        </div>`).join(''); 
+                    }
                 }
+            } catch(e) {
+                document.getElementById('scanned_items_list').innerHTML = `<div style="color:red; text-align:center; font-weight:bold;">Network Error fetching scans.</div>`;
             }
         }
     </script>
