@@ -250,15 +250,15 @@
 
             let qr = new QRious({ value: generatedTagsForPreview[0], size: 250, level: 'M' });
             document.getElementById('preview_area').innerHTML = `
-                <div style="background:white; padding:10px; border:2px solid black; width: 250px; color: black; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box;">
-                    <div style="font-weight:900; font-size:22px; text-transform:uppercase; margin: 0; padding-bottom: 5px; border-bottom: 3px solid black; width: 100%; line-height: 1; text-align: center;">${ingName}</div>
+                <div style="background:white; padding:10px; border:2px solid black; width: 280px; color: black; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box;">
+                    <div style="font-weight:900; font-size:26px; text-transform:uppercase; margin: 0; padding-bottom: 5px; border-bottom: 4px solid black; width: 100%; line-height: 1; text-align: center; background: black; color: white;">${ingName}</div>
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin: 10px 0;">
                         <img src="${qr.toDataURL()}" style="width:130px; height:130px; margin-bottom: 5px;">
-                        <div style="font-weight:900; font-size:13px; text-transform:uppercase; margin: 0; line-height: 1;">DATE: ${dispDate}</div>
+                        <div style="font-weight:900; font-size:18px; text-transform:uppercase; margin: 0; line-height: 1; background: black; color: white; padding: 4px 10px;">DATE: ${dispDate}</div>
                     </div>
                     <div style="width: 100%; margin-bottom: 5px;">
-                        <div style="font-size:16px; font-weight:900; font-family:monospace; margin: 0 0 5px 0; line-height: 1; text-align: center;">${generatedTagsForPreview[0]}</div>
-                        <div style="font-size:21px; font-weight:900; padding: 5px 0; margin: 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; line-height: 1; text-align: center;">NET WT: ${padWeight} KG</div>
+                        <div style="font-size:18px; font-weight:900; font-family:monospace; margin: 0 0 5px 0; line-height: 1; text-align: center;">${generatedTagsForPreview[0]}</div>
+                        <div style="font-size:28px; font-weight:900; padding: 8px 0; margin: 0; border-top: 4px solid black; border-bottom: 4px solid black; width: 100%; line-height: 1; text-align: center;">NET WT: ${padWeight} KG</div>
                     </div>
                 </div>
             `;
@@ -333,31 +333,33 @@
             }).join('');
         }
         
-        // 🔥 THE PERFECTED PRINT FORMAT FUNCTION 🔥
+        // 🔥 THE PERFECTED PRINT FORMAT FUNCTION (MASSIVE FONTS + EXACT MARGINS) 🔥
         function getPrintHTML(queueArray) {
             let html = `<html><head><style>
                 @media print {
                     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                    @page { size: 75mm 75mm; margin: 0; }
+                    body { margin: 0; padding: 0; }
                 }
-                @page { size: 75mm 75mm; margin: 0; }
-                body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; }
+                body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; margin: 0; padding: 0; }
                 
-                .label { width: 73mm; height: 73mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow: hidden; border: 1px dashed #ccc;}
+                /* Removed dashed border, set box-sizing so it stretches perfectly to the thermal label edge */
+                .label { width: 75mm; height: 75mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden; background: white; }
                 
-                /* Name: Black Background, White Text */
-                .title-bar { background-color: black !important; color: white !important; width: 100%; padding: 3mm 0; font-size: 20px; font-weight: 900; text-transform: uppercase; margin: 0; text-align: center; line-height: 1.1; }
+                /* Name: Black Background, MASSIVE White Text */
+                .title-bar { background-color: black !important; color: white !important; width: 100%; padding: 4mm 0; font-size: 28px; font-weight: 900; text-transform: uppercase; margin: 0; text-align: center; line-height: 1.1; display: flex; align-items: center; justify-content: center; }
                 
                 /* Middle Section */
                 .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; margin-top: 1mm;}
-                .qr-image { width: 34mm; height: 34mm; margin-bottom: 1mm; }
+                .qr-image { width: 34mm; height: 34mm; margin-bottom: 2mm; }
                 
-                /* Date: Black Background, White Text */
-                .date-bar { background-color: black !important; color: white !important; padding: 2px 10px; font-size: 14px; font-weight: 900; text-transform: uppercase; margin: 1mm 0; line-height: 1.2; display: inline-block; }
+                /* Date: Black Background, BOLDER White Text */
+                .date-bar { background-color: black !important; color: white !important; padding: 3px 12px; font-size: 18px; font-weight: 900; text-transform: uppercase; margin: 1mm 0; line-height: 1.2; display: inline-block; }
                 
-                .tag-string { font-size: 14px; font-weight: 900; font-family: monospace; margin: 1mm 0 2mm 0; line-height: 1; }
+                .tag-string { font-size: 18px; font-weight: 900; font-family: monospace; margin: 1mm 0 2mm 0; line-height: 1; }
                 
-                /* Bottom Weight: White Background, Thick Black Lines */
-                .weight-bar { font-size: 24px; font-weight: 900; padding: 2mm 0; margin: 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; text-align: center; line-height: 1; }
+                /* Bottom Weight: White Background, MASSIVE Text, THICK Lines */
+                .weight-bar { font-size: 32px; font-weight: 900; padding: 3mm 0; margin: 0; border-top: 5px solid black; border-bottom: 5px solid black; width: 100%; text-align: center; line-height: 1; }
             </style></head><body>`;
 
             queueArray.forEach(item => {
