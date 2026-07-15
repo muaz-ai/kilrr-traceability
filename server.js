@@ -12,6 +12,7 @@ try { const cors = require('cors'); app.use(cors()); } catch (e) {}
 app.use(express.static('public'));
 
 const SHEET_WEBHOOK = process.env.SHEET_WEBHOOK || ""; 
+const MASTER_PASSWORD = "Kilrrspicesdata";
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -42,36 +43,40 @@ async function initDB() {
             CREATE TABLE IF NOT EXISTS batches (batch_code VARCHAR(100) PRIMARY KEY, fg_code VARCHAR(100), operator_name VARCHAR(100), status VARCHAR(50) DEFAULT 'OPEN', total_weight DECIMAL DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
             CREATE TABLE IF NOT EXISTS scans (id SERIAL PRIMARY KEY, batch_code VARCHAR(100) REFERENCES batches(batch_code) ON DELETE CASCADE, rm_tag VARCHAR(255) UNIQUE, product_code VARCHAR(100), weight DECIMAL DEFAULT 0, operator VARCHAR(100), parent_tags TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
         `);
-        console.log("✅ Kilrr OS Database Connected & Verified.");
+        console.log("✅ Kilrr OS Database Connected & Secured.");
     } catch (e) { console.error("❌ DB Init Error:", e.message); }
 }
 initDB();
 
-// --- MASTER DATA ROUTES ---
+// --- SECURED MASTER DATA ROUTES ---
 app.get("/get-ingredients", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM ingredients ORDER BY ingredient_name")).rows); }
     catch(e) { res.status(500).json({error: e.message}); }
 });
 app.post("/add-ingredient", async (req, res) => {
+    if(req.body.master_key !== MASTER_PASSWORD) return res.status(403).json({error: "ACCESS DENIED: Invalid Master Password."});
     try { await pool.query("INSERT INTO ingredients (product_code, ingredient_name) VALUES ($1, $2) ON CONFLICT (product_code) DO UPDATE SET ingredient_name = $2", [req.body.code, req.body.name]); res.json({status: "success"}); }
     catch(e) { res.status(500).json({error: e.message}); }
 });
+
 app.get("/get-vendors", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM vendors ORDER BY vendor_name")).rows); }
     catch(e) { res.status(500).json({error: e.message}); }
 });
 app.post("/add-vendor", async (req, res) => {
+    if(req.body.master_key !== MASTER_PASSWORD) return res.status(403).json({error: "ACCESS DENIED: Invalid Master Password."});
     try { await pool.query("INSERT INTO vendors (vendor_code, vendor_name) VALUES ($1, $2) ON CONFLICT (vendor_code) DO UPDATE SET vendor_name = $2", [req.body.code, req.body.name]); res.json({status: "success"}); }
     catch(e) { res.status(500).json({error: e.message}); }
 });
+
 app.get("/get-recipes", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM recipes")).rows); }
     catch(e) { res.status(500).json({error: e.message}); }
 });
 app.post("/update-recipe", async (req, res) => {
+    if(req.body.master_key !== MASTER_PASSWORD) return res.status(403).json({error: "ACCESS DENIED: Invalid Master Password."});
     try {
-        const { fg_code, ingredients, pin } = req.body;
-        if(pin !== "1234") return res.status(403).json({error: "Invalid PIN."});
+        const { fg_code, ingredients } = req.body;
         await pool.query("DELETE FROM recipes WHERE fg_code ILIKE $1", [fg_code]);
         if(ingredients) {
             const codes = ingredients.split(',').map(c => c.trim().toUpperCase());
@@ -80,6 +85,7 @@ app.post("/update-recipe", async (req, res) => {
         res.json({status: "success"});
     } catch(e) { res.status(500).json({error: e.message}); }
 });
+
 app.get("/recipe-requirements/:fg_code", async (req, res) => {
     try {
         const result = await pool.query(`SELECT r.ingredient_code as product_code, i.ingredient_name FROM recipes r LEFT JOIN ingredients i ON r.ingredient_code = i.product_code WHERE r.fg_code ILIKE $1`, [req.params.fg_code]);
@@ -157,7 +163,9 @@ app.get("/current-scans/:batch_code", async (req, res) => {
     catch(e) { res.status(500).json({error: e.message}); }
 });
 
+// Upgraded scanner batch deletion to use the new master password
 app.post("/delete-batch", async (req, res) => {
+    if(req.body.pin !== MASTER_PASSWORD) return res.status(403).json({error: "ACCESS DENIED: Invalid Master Password."});
     try {
         await pool.query("DELETE FROM batches WHERE batch_code = $1", [req.body.batch_code]);
         res.json({status: "success"});
