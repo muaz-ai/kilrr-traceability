@@ -15,7 +15,7 @@ app.use(express.static('public'));
 const SHEET_WEBHOOK = process.env.SHEET_WEBHOOK || ""; 
 
 if (!process.env.DATABASE_URL) {
-    console.error("🚨 CRITICAL FATAL ERROR: DATABASE_URL is missing!");
+    console.error("🚨 CRITICAL ERROR: DATABASE_URL is missing!");
 }
 
 const pool = new Pool({
@@ -49,6 +49,13 @@ async function initDB() {
             CREATE TABLE IF NOT EXISTS batches (batch_code VARCHAR(100) PRIMARY KEY, fg_code VARCHAR(100), operator_name VARCHAR(100), status VARCHAR(50) DEFAULT 'OPEN', total_weight DECIMAL DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
             CREATE TABLE IF NOT EXISTS scans (id SERIAL PRIMARY KEY, batch_code VARCHAR(100) REFERENCES batches(batch_code) ON DELETE CASCADE, rm_tag VARCHAR(255) UNIQUE, product_code VARCHAR(100), weight DECIMAL DEFAULT 0, operator VARCHAR(100), parent_tags TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
         `);
+
+        try {
+            await pool.query("UPDATE inwarding_logs SET weight = 0 WHERE weight IS NULL OR weight::text = 'NaN'");
+            await pool.query("UPDATE scans SET weight = 0 WHERE weight IS NULL OR weight::text = 'NaN'");
+            await pool.query("UPDATE batches SET total_weight = 0 WHERE total_weight IS NULL OR total_weight::text = 'NaN'");
+        } catch(e) { console.error("Safe math repair skipped: ", e.message); }
+
     } catch (e) { console.error("❌ Database Error:", e.message); }
 }
 initDB();
@@ -106,7 +113,6 @@ app.post("/create-batch", async (req, res) => {
     }
 });
 
-// CASE-INSENSITIVE FIX (ILIKE)
 app.get("/recipe-requirements/:fg_code", async (req, res) => {
     try {
         const fgCode = req.params.fg_code;
@@ -127,9 +133,13 @@ app.post("/scan", async (req, res) => {
             let wip = await pool.query("SELECT parent_tag FROM sub_assemblies WHERE sub_tag = $1", [rm_tag]);
             if(wip.rows.length > 0) parent_tags = wip.rows[0].parent_tag;
         } else {
-            // CASE-INSENSITIVE FIX FOR WEIGHT FETCHING
-            let inw = await pool.query("SELECT weight FROM inwarding_logs WHERE ingredient_code ILIKE $1 AND vendor_code ILIKE $2 ORDER BY created_at DESC LIMIT 1", [product_code, vendor_code]);
-            if(inw.rows.length > 0) {
+            let inw;
+            if (vendor_code) {
+                inw = await pool.query("SELECT weight FROM inwarding_logs WHERE ingredient_code ILIKE $1 AND vendor_code ILIKE $2 ORDER BY created_at DESC LIMIT 1", [product_code, vendor_code]);
+            } else {
+                inw = await pool.query("SELECT weight FROM inwarding_logs WHERE ingredient_code ILIKE $1 ORDER BY created_at DESC LIMIT 1", [product_code]);
+            }
+            if(inw && inw.rows.length > 0) {
                 weight = parseFloat(inw.rows[0].weight);
                 if (isNaN(weight)) weight = 0;
             }
