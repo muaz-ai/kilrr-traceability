@@ -40,7 +40,6 @@ function backupToSheets(eventType, operator, payload) {
 
 async function initDB() {
     try {
-        // 1. Ensure core tables exist
         await pool.query(`
             CREATE TABLE IF NOT EXISTS ingredients (product_code VARCHAR(100) PRIMARY KEY, ingredient_name VARCHAR(255));
             CREATE TABLE IF NOT EXISTS vendors (vendor_code VARCHAR(100) PRIMARY KEY, vendor_name VARCHAR(255));
@@ -50,8 +49,6 @@ async function initDB() {
             CREATE TABLE IF NOT EXISTS batches (batch_code VARCHAR(100) PRIMARY KEY, fg_code VARCHAR(100), operator_name VARCHAR(100), status VARCHAR(50) DEFAULT 'OPEN', total_weight DECIMAL DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
             CREATE TABLE IF NOT EXISTS scans (id SERIAL PRIMARY KEY, batch_code VARCHAR(100) REFERENCES batches(batch_code) ON DELETE CASCADE, rm_tag VARCHAR(255) UNIQUE, product_code VARCHAR(100), weight DECIMAL DEFAULT 0, operator VARCHAR(100), parent_tags TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
         `);
-
-        // 2. 🔥 SCHEMA PATCHER: Force-add missing columns to old tables 🔥
         const patches = [
             `ALTER TABLE recipes ADD COLUMN IF NOT EXISTS ingredient_code VARCHAR(100);`,
             `ALTER TABLE recipes ADD COLUMN IF NOT EXISTS fg_code VARCHAR(100);`,
@@ -62,42 +59,69 @@ async function initDB() {
             `ALTER TABLE sub_assemblies ADD COLUMN IF NOT EXISTS total_yield VARCHAR(50);`,
             `ALTER TABLE sub_assemblies ADD COLUMN IF NOT EXISTS batch_code VARCHAR(100);`
         ];
-
-        for (let patch of patches) {
-            try { await pool.query(patch); } catch(err) { /* Ignore safe failures */ }
-        }
-
-        // 3. Auto-Repair NaN Corruptions
-        try {
-            await pool.query("UPDATE inwarding_logs SET weight = 0 WHERE weight IS NULL OR weight::text = 'NaN'");
-            await pool.query("UPDATE scans SET weight = 0 WHERE weight IS NULL OR weight::text = 'NaN'");
-            await pool.query("UPDATE batches SET total_weight = 0 WHERE total_weight IS NULL OR total_weight::text = 'NaN'");
-        } catch(e) {}
-
-        console.log("✅ Kilrr OS Database Architecture Verified & Patched.");
+        for (let patch of patches) { try { await pool.query(patch); } catch(err) {} }
     } catch (e) { console.error("❌ Database Error:", e.message); }
 }
 initDB();
 
+// ==========================================
+// MASTER DATA ROUTES (FIXED: ADDED POST ROUTES)
+// ==========================================
 app.get("/get-ingredients", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM ingredients ORDER BY ingredient_name")).rows); }
     catch(e) { res.status(500).json({error: e.message}); }
 });
+
+app.post("/add-ingredient", async (req, res) => {
+    try {
+        await pool.query("INSERT INTO ingredients (product_code, ingredient_name) VALUES ($1, $2) ON CONFLICT (product_code) DO UPDATE SET ingredient_name = $2", [req.body.code, req.body.name]);
+        res.json({status: "success"});
+    } catch(e) { res.status(500).json({error: e.message}); }
+});
+
 app.get("/get-vendors", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM vendors ORDER BY vendor_name")).rows); }
     catch(e) { res.status(500).json({error: e.message}); }
 });
+
+app.post("/add-vendor", async (req, res) => {
+    try {
+        await pool.query("INSERT INTO vendors (vendor_code, vendor_name) VALUES ($1, $2) ON CONFLICT (vendor_code) DO UPDATE SET vendor_name = $2", [req.body.code, req.body.name]);
+        res.json({status: "success"});
+    } catch(e) { res.status(500).json({error: e.message}); }
+});
+
 app.get("/get-recipes", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM recipes")).rows); }
     catch(e) { res.status(500).json({error: e.message}); }
 });
 
+app.post("/update-recipe", async (req, res) => {
+    try {
+        const { fg_code, ingredients, pin } = req.body;
+        if(pin !== "1234") return res.status(403).json({error: "Invalid Manager PIN."});
+
+        // Delete old broken recipe, then save new correct one
+        await pool.query("DELETE FROM recipes WHERE fg_code ILIKE $1", [fg_code]);
+
+        if(ingredients && ingredients.trim() !== "") {
+            const codes = ingredients.split(',').map(c => c.trim().toUpperCase()).filter(c => c);
+            for(let code of codes) {
+                await pool.query("INSERT INTO recipes (fg_code, ingredient_code) VALUES ($1, $2)", [fg_code, code]);
+            }
+        }
+        res.json({status: "success"});
+    } catch(e) { res.status(500).json({error: e.message}); }
+});
+
+// ==========================================
+// FACTORY ROUTES
+// ==========================================
 app.post("/log-inwarding", async (req, res) => {
     try {
         const { queue } = req.body;
         for(let item of queue) {
-            let safeWeight = parseFloat(item.weight);
-            if (isNaN(safeWeight)) safeWeight = 0;
+            let safeWeight = parseFloat(item.weight); if (isNaN(safeWeight)) safeWeight = 0;
             await pool.query("INSERT INTO inwarding_logs (date_received, ingredient_code, ingredient_name, vendor_code, vendor_name, weight, start_no, end_no, packs) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)", [item.dateRaw, item.ingCode, item.ingName, item.venCode, item.venName, safeWeight, item.startNo, item.endNo, item.packs]);
             backupToSheets("INWARD_LOGGED", "System", item);
         }
