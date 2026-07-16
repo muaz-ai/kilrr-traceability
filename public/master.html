@@ -17,7 +17,6 @@
         .nav-btn:hover { background: rgba(255,255,255,0.1); color: white;}
         .nav-btn.active { color: white; background: var(--kilrr-orange);}
 
-        /* THE VAULT OVERLAY & TOGGLES */
         #vault_gate { position: fixed; inset: 0; background: rgba(11, 17, 33, 0.98); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .vault-box { background: white; padding: 40px; border-radius: 16px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border-top: 6px solid var(--danger-red);}
         .vault-box h1 { font-family: 'Space Grotesk'; font-size: 24px; color: var(--navy-command); margin-top: 0; text-transform: uppercase;}
@@ -28,7 +27,6 @@
         .toggle-row:last-child { margin-bottom: 0; }
         .toggle-row span { font-weight: 800; font-size: 13px; color: var(--navy-command); }
         
-        /* CSS Switch */
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 24px;}
@@ -56,13 +54,22 @@
 
         .row { display: flex; gap: 10px; }
 
-        /* Compact Data Lists */
         .data-scroll-box { max-height: 180px; overflow-y: auto; margin-top: 15px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc;}
-        .data-row { display: flex; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #e2e8f0; font-size: 13px; font-weight: 600; color: var(--navy-command);}
+        .data-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid #e2e8f0; font-size: 13px; font-weight: 600; color: var(--navy-command);}
         .data-row:last-child { border-bottom: none; }
-        .data-code { font-family: monospace; font-weight: bold; color: var(--kilrr-orange); background: #fff7ed; padding: 2px 6px; border-radius: 4px;}
+        .data-code { font-family: monospace; font-weight: bold; color: var(--kilrr-orange); background: #fff7ed; padding: 2px 6px; border-radius: 4px; margin-left: 5px;}
+        
+        .action-btns { display: flex; gap: 5px; }
+        .btn-icon { background: #e2e8f0; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .btn-icon:hover { background: #cbd5e1; }
+        .btn-icon.delete { color: var(--danger-red); }
+        .btn-icon.delete:hover { background: #fef2f2; }
 
-        /* Clean Recipe UI */
+        /* The New Checkbox Grid UI */
+        .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 220px; overflow-y: auto; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 8px; padding: 15px; margin-bottom: 20px;}
+        .cb-label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--navy-command); cursor: pointer;}
+        .cb-label input { width: 16px; height: 16px; accent-color: var(--kilrr-orange); cursor: pointer; }
+
         .recipe-list { max-height: 400px; overflow-y: auto; margin-top: 15px; padding-right: 5px;}
         .recipe-pill { background: white; border: 1px solid #cbd5e1; padding: 15px; border-radius: 10px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
         .recipe-name { font-weight: 900; font-size: 16px; color: var(--navy-command); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
@@ -70,8 +77,8 @@
         .ing-badge-container { display: flex; flex-wrap: wrap; gap: 6px; }
         .ing-badge { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; font-family: monospace; font-weight: bold; font-size: 12px; padding: 4px 8px; border-radius: 6px;}
         
-        .btn-edit { background: #f1f5f9; color: var(--accent-blue, #2563eb); border: 2px solid #cbd5e1; padding: 4px 12px; font-size: 11px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s;}
-        .btn-edit:hover { background: #e0f2fe; border-color: #ba86fc; }
+        .btn-edit { background: #f1f5f9; color: #2563eb; border: 2px solid #cbd5e1; padding: 4px 12px; font-size: 11px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s;}
+        .btn-edit:hover { background: #e0f2fe; border-color: #2563eb; }
 
         @media (max-width: 1024px) { 
             .container { grid-template-columns: 1fr; margin-top: 15px; gap: 20px;}
@@ -88,8 +95,6 @@
     </style>
 </head>
 <body>
-
-    <!-- THE VAULT GATE -->
     <div id="vault_gate">
         <div class="vault-box">
             <h1>RESTRICTED ZONE</h1>
@@ -112,7 +117,6 @@
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
     <div id="main_content">
         <nav class="nav-top">
             <a href="index.html" class="brand">Kilrr <span>OS</span></a>
@@ -127,7 +131,6 @@
         </nav>
 
         <div class="container">
-            <!-- LEFT COLUMN: Materials & Vendors -->
             <div>
                 <div class="card" style="margin-bottom: 30px;">
                     <h2>Raw Materials Database</h2>
@@ -168,18 +171,19 @@
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN: Recipe Engine -->
             <div class="card card-orange">
                 <h2>Master Recipe Engine</h2>
                 <div style="background: #fff7ed; color: var(--kilrr-orange); padding: 12px; border-radius: 8px; font-weight: bold; font-size: 12px; margin-bottom: 20px; line-height: 1.4;">
-                    ⚠️ Updating a recipe replaces all previous ingredients. To completely delete a recipe, leave the ingredient box blank and hit update.
+                    ⚠️ Updating a recipe replaces all previous ingredients. To completely delete a recipe, uncheck all boxes and hit update.
                 </div>
                 
                 <label>Master Flavour Profile (FG Name / Code)</label>
                 <input type="text" id="rec_fg" placeholder="E.g. Garam Masala">
                 
-                <label>Required Ingredient Codes (Comma Separated)</label>
-                <input type="text" id="rec_ing" placeholder="E.g. JE, CS, BP, TU" style="text-transform: uppercase;">
+                <label>Select Ingredients (Checkboxes)</label>
+                <div id="recipe_checkboxes" class="checkbox-grid">
+                    <div style="color:#94a3b8; font-size:12px; grid-column: 1 / -1; text-align:center;">Loading materials...</div>
+                </div>
                 
                 <button class="btn-dark" onclick="updateRecipe()">⚙️ Update Master Recipe</button>
 
@@ -191,6 +195,7 @@
 
     <script>
         let sessionKey = sessionStorage.getItem('kilrr_vault_key');
+        let globalIngredients = [];
 
         window.onload = () => {
             if(sessionKey === "Kilrrspicesdata") {
@@ -225,31 +230,50 @@
             try {
                 const res = await fetch('/get-ingredients');
                 const data = await res.json();
+                
+                globalIngredients = data;
+                renderRecipeCheckboxes(); // Update checkboxes automatically
+
                 const list = document.getElementById('materials_list');
                 if(data.length === 0) { list.innerHTML = `<div style="padding:15px; text-align:center; color:#94a3b8; font-size:12px; font-weight:bold;">No materials saved.</div>`; return; }
                 
                 list.innerHTML = data.map(m => `
                     <div class="data-row">
-                        <span>${m.ingredient_name}</span>
-                        <span class="data-code">${m.product_code}</span>
+                        <div><span>${m.ingredient_name}</span> <span class="data-code">${m.product_code}</span></div>
+                        <div class="action-btns">
+                            <button class="btn-icon" onclick="editMaterial('${m.product_code}', '${m.ingredient_name}')">✎</button>
+                            <button class="btn-icon delete" onclick="deleteMaterial('${m.product_code}')">🗑️</button>
+                        </div>
                     </div>
                 `).join('');
             } catch(e) { document.getElementById('materials_list').innerHTML = `<div style="color:red; padding:10px;">Error loading data.</div>`; }
+        }
+
+        function editMaterial(code, name) {
+            document.getElementById('mat_code').value = code;
+            document.getElementById('mat_name').value = name;
+        }
+
+        async function deleteMaterial(code) {
+            if(!confirm(`Are you sure you want to permanently delete Raw Material: ${code}?`)) return;
+            try {
+                const res = await fetch('/delete-ingredient', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code: code, master_key: sessionKey})});
+                const data = await res.json();
+                if(data.error) return alert(data.error);
+                loadMaterials();
+            } catch(e) { alert("Error deleting material"); }
         }
 
         async function saveMaterial() {
             const code = document.getElementById('mat_code').value.trim().toUpperCase();
             const name = document.getElementById('mat_name').value.trim();
             if(!code || !name) return alert("Fill both fields");
-            
             try {
                 const res = await fetch('/add-ingredient', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code, name, master_key: sessionKey})});
                 const data = await res.json();
                 if(data.error) return alert(data.error);
-                if(data.status==='success') { 
-                    document.getElementById('mat_code').value = ''; document.getElementById('mat_name').value = '';
-                    loadMaterials(); // Refresh list
-                }
+                document.getElementById('mat_code').value = ''; document.getElementById('mat_name').value = '';
+                loadMaterials(); 
             } catch(e) { alert("Error saving material"); }
         }
 
@@ -263,30 +287,61 @@
                 
                 list.innerHTML = data.map(v => `
                     <div class="data-row">
-                        <span>${v.vendor_name}</span>
-                        <span class="data-code">${v.vendor_code}</span>
+                        <div><span>${v.vendor_name}</span> <span class="data-code">${v.vendor_code}</span></div>
+                        <div class="action-btns">
+                            <button class="btn-icon" onclick="editVendor('${v.vendor_code}', '${v.vendor_name}')">✎</button>
+                            <button class="btn-icon delete" onclick="deleteVendor('${v.vendor_code}')">🗑️</button>
+                        </div>
                     </div>
                 `).join('');
             } catch(e) { document.getElementById('vendors_list').innerHTML = `<div style="color:red; padding:10px;">Error loading data.</div>`; }
+        }
+
+        function editVendor(code, name) {
+            document.getElementById('ven_code').value = code;
+            document.getElementById('ven_name').value = name;
+        }
+
+        async function deleteVendor(code) {
+            if(!confirm(`Are you sure you want to permanently delete Vendor: ${code}?`)) return;
+            try {
+                const res = await fetch('/delete-vendor', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code: code, master_key: sessionKey})});
+                const data = await res.json();
+                if(data.error) return alert(data.error);
+                loadVendors();
+            } catch(e) { alert("Error deleting vendor"); }
         }
 
         async function saveVendor() {
             const code = document.getElementById('ven_code').value.trim().toUpperCase();
             const name = document.getElementById('ven_name').value.trim();
             if(!code || !name) return alert("Fill both fields");
-            
             try {
                 const res = await fetch('/add-vendor', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code, name, master_key: sessionKey})});
                 const data = await res.json();
                 if(data.error) return alert(data.error);
-                if(data.status==='success') { 
-                    document.getElementById('ven_code').value = ''; document.getElementById('ven_name').value = '';
-                    loadVendors(); // Refresh list
-                }
+                document.getElementById('ven_code').value = ''; document.getElementById('ven_name').value = '';
+                loadVendors();
             } catch(e) { alert("Error saving vendor"); }
         }
 
-        // --- RECIPE LOGIC ---
+        // --- RECIPE LOGIC (NEW CHECKBOXES) ---
+        function renderRecipeCheckboxes(selectedCodes = []) {
+            const container = document.getElementById('recipe_checkboxes');
+            if (globalIngredients.length === 0) {
+                container.innerHTML = `<div style="color:#94a3b8; font-size:12px; grid-column: 1 / -1; text-align:center;">Add Raw Materials first.</div>`;
+                return;
+            }
+            container.innerHTML = globalIngredients.map(ing => {
+                const isChecked = selectedCodes.includes(ing.product_code) ? 'checked' : '';
+                return `
+                <label class="cb-label">
+                    <input type="checkbox" class="recipe-cb" value="${ing.product_code}" ${isChecked}> 
+                    ${ing.ingredient_name} <span style="color:var(--kilrr-orange);">(${ing.product_code})</span>
+                </label>`;
+            }).join('');
+        }
+
         async function loadActiveRecipes() {
             try {
                 const res = await fetch('/get-recipes');
@@ -318,12 +373,11 @@
                     <div class="recipe-pill">
                         <div class="recipe-name">
                             ${fg}
-                            <button class="btn-edit" onclick="quickEdit('${fg}', '${grouped[fg].join(', ')}')">✎ EDIT</button>
+                            <button class="btn-edit" onclick="quickEdit('${fg}', '${grouped[fg].join(',')}')">✎ EDIT</button>
                         </div>
                         <div class="ing-badge-container">${ingHTML}</div>
                     </div>
                 `}).join('');
-
             } catch(e) {
                 document.getElementById('active_recipes_list').innerHTML = `<div style="color:red; font-weight:bold;">Failed to load recipes.</div>`;
             }
@@ -331,7 +385,10 @@
 
         async function updateRecipe() {
             const fg_code = document.getElementById('rec_fg').value.trim();
-            const ingredients = document.getElementById('rec_ing').value.trim();
+            
+            // Gather all checked boxes and join them with a comma
+            const checkedBoxes = document.querySelectorAll('.recipe-cb:checked');
+            const ingredients = Array.from(checkedBoxes).map(cb => cb.value).join(',');
             
             if(!fg_code) return alert("Target Product Name is required.");
 
@@ -340,7 +397,8 @@
                 const data = await res.json();
                 if(data.error) return alert(data.error);
                 if(data.status==='success') { 
-                    document.getElementById('rec_fg').value = ''; document.getElementById('rec_ing').value = '';
+                    document.getElementById('rec_fg').value = ''; 
+                    renderRecipeCheckboxes(); // Uncheck all boxes
                     loadActiveRecipes();
                 }
             } catch(e) { alert("Error updating recipe."); }
@@ -348,8 +406,11 @@
 
         function quickEdit(fg, ings) {
             document.getElementById('rec_fg').value = fg;
-            document.getElementById('rec_ing').value = ings;
-            document.getElementById('rec_ing').focus();
+            const selectedCodes = ings.split(',').map(s => s.trim());
+            renderRecipeCheckboxes(selectedCodes); // Automatically checks the right boxes!
+            
+            // Scroll up to the form
+            document.getElementById('rec_fg').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     </script>
 </body>
