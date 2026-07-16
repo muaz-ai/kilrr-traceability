@@ -85,6 +85,7 @@
     </nav>
 
     <div class="container">
+        <!-- LEFT CARD: SETUP -->
         <div class="card">
             <h2>Factory Execution Setup</h2>
             <span class="marathi-title">अंतर्गत माल बनवणे (Base Masalas / Repacking)</span>
@@ -146,6 +147,7 @@
             </div>
         </div>
 
+        <!-- RIGHT CARD: SCANNER -->
         <div class="card card-green">
             <h2 style="color:var(--success-green);">Traceability Engine</h2>
             <span class="marathi-title green-title">कोणते बारकोड वापरले? (Scan Input Tags)</span>
@@ -182,7 +184,7 @@
                 
                 attachCustomDropdown('recipe_search', allIngredients, 'ingredient_name', 'product_code', async (code, name) => {
                     document.getElementById('product_code').value = code;
-                    await loadRecipeReqs(code);
+                    await loadRecipeReqs(name, code); // 🔥 PASS BOTH NAME AND CODE
                 });
             } catch(e) { console.error("Master data fetch failed."); }
         };
@@ -220,14 +222,22 @@
             document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
         }
 
-        async function loadRecipeReqs(fgCode) {
+        // 🔥 BULLETPROOF RECIPE LOADER 🔥
+        async function loadRecipeReqs(name, code) {
             try {
-                const res = await fetch(`/recipe-requirements/${fgCode}`);
-                const data = await res.json();
+                // First check if recipe exists under the full name (e.g. "Garam Masala")
+                let res = await fetch(`/recipe-requirements/${encodeURIComponent(name)}`);
+                let data = await res.json();
+                
+                // Fallback: If nothing found, check if it was saved under short code (e.g. "GM")
+                if (data.length === 0 && code) {
+                    res = await fetch(`/recipe-requirements/${encodeURIComponent(code)}`);
+                    data = await res.json();
+                }
+                
                 recipeReqs = data;
                 renderChecklist();
                 
-                // Clear old scans when switching products
                 parentTags = [];
                 renderTags();
             } catch(e) { console.error("Error loading checklist."); }
@@ -241,7 +251,6 @@
             }
             
             box.innerHTML = recipeReqs.map(r => {
-                // Ignore old null ghosts
                 if(!r.product_code || r.product_code === 'null') return ''; 
                 return `
                 <div class="req-item" id="req_${r.product_code}">
@@ -264,21 +273,20 @@
             const targetCode = document.getElementById('product_code').value.trim().toUpperCase();
             if(!targetCode) return alert("⚠️ Select what you are making first!");
 
-            // 1. Is it a single item process? (e.g. Target is BP, output is BP)
+            // 1. Single item process restrictions
             if (recipeReqs.length === 0) {
                 if (scannedCode !== targetCode) {
                     document.getElementById('barcode_input').value = '';
                     return alert(`🛑 STOP! WRONG INGREDIENT! \n\nYou are supposed to be processing [ ${targetCode} ]. \nBut you just scanned [ ${scannedCode} ].`);
                 }
             } else {
-                // 2. It is a recipe blend. Is the scanned code on the checklist?
+                // 2. Blend recipe restrictions
                 let reqItem = recipeReqs.find(r => r.product_code === scannedCode);
                 if(!reqItem) {
                     document.getElementById('barcode_input').value = '';
                     return alert(`🛑 STOP! WRONG INGREDIENT! \n\n[ ${scannedCode} ] is NOT required for this recipe.`);
                 }
 
-                // Mark UI as scanned
                 let uiRow = document.getElementById(`req_${scannedCode}`);
                 if(uiRow) {
                     uiRow.classList.add('scanned');
@@ -295,7 +303,6 @@
             let removedBarcode = parentTags[index];
             parentTags.splice(index, 1);
             
-            // Uncheck in UI if it was part of a recipe
             let scannedCode = removedBarcode.split('/')[1];
             let isStillScanned = parentTags.some(t => t.split('/')[1] === scannedCode);
             
@@ -335,28 +342,17 @@
                 }
                 body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; margin: 0; padding: 0; }
                 
-                /* Locked size with precise box-sizing */
                 .label { width: 75mm; height: 75mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden; background: white; }
-                
-                /* Title: Black Background, MASSIVE White Text */
                 .title-bar { background-color: black !important; color: white !important; width: 100%; padding: 4mm 0; font-size: 28px; font-weight: 900; text-transform: uppercase; margin: 0; text-align: center; line-height: 1.1; display: flex; align-items: center; justify-content: center; }
-                
-                /* Middle Section */
                 .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; margin-top: 1mm;}
                 .qr-image { width: 34mm; height: 34mm; margin-bottom: 2mm; }
-                
-                /* Date: Black Background, BOLDER White Text */
                 .date-bar { background-color: black !important; color: white !important; padding: 3px 12px; font-size: 18px; font-weight: 900; text-transform: uppercase; margin: 1mm 0; line-height: 1.2; display: inline-block; }
-                
                 .tag-string { font-size: 18px; font-weight: 900; font-family: monospace; margin: 1mm 0 2mm 0; line-height: 1; }
-                
-                /* Bottom Weight: White Background, MASSIVE Text, THICK Lines */
                 .weight-bar { font-size: 32px; font-weight: 900; padding: 3mm 0; margin: 0; border-top: 5px solid black; border-bottom: 5px solid black; width: 100%; text-align: center; line-height: 1; }
             </style></head><body>`;
 
             queueArray.forEach(tagStr => {
                 let qrEngine = new QRious({ value: tagStr, size: 250, level: 'M' });
-                // We leave WT blank on WIP tags usually so laborers can write it, unless filled in form
                 let weightVal = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
                 let wtText = weightVal ? `NET WT: ${String(weightVal).padStart(2,'0')} KG` : `NET WT: ___ KG`;
                 
@@ -425,12 +421,10 @@
                 const data = await res.json();
                 if(data.error) throw new Error(data.error);
 
-                // Print the exact same format
                 printWindow.document.open(); 
                 printWindow.document.write(getPrintHTML(outputTags, pName, dispDate));
                 printWindow.document.close();
 
-                // Reset form
                 document.getElementById('start_no').value = endNo + 1;
                 document.getElementById('end_no').value = endNo + 1;
                 parentTags = [];
