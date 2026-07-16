@@ -65,9 +65,10 @@
         .btn-icon.delete { color: var(--danger-red); }
         .btn-icon.delete:hover { background: #fef2f2; }
 
-        /* The New Checkbox Grid UI */
-        .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 220px; overflow-y: auto; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 8px; padding: 15px; margin-bottom: 20px;}
-        .cb-label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--navy-command); cursor: pointer;}
+        .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 250px; overflow-y: auto; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 8px; padding: 15px; margin-bottom: 20px;}
+        .cb-label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--navy-command); cursor: pointer; background: white; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; transition: 0.2s;}
+        .cb-label:hover { border-color: var(--kilrr-orange); box-shadow: 0 2px 4px rgba(234, 88, 12, 0.1); }
+        .cb-label.selected { background: #fff7ed; border-color: var(--kilrr-orange); }
         .cb-label input { width: 16px; height: 16px; accent-color: var(--kilrr-orange); cursor: pointer; }
 
         .recipe-list { max-height: 400px; overflow-y: auto; margin-top: 15px; padding-right: 5px;}
@@ -180,7 +181,13 @@
                 <label>Master Flavour Profile (FG Name / Code)</label>
                 <input type="text" id="rec_fg" placeholder="E.g. Garam Masala">
                 
-                <label>Select Ingredients (Checkboxes)</label>
+                <!-- NEW SEARCH BAR FOR INGREDIENTS -->
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <label>Select Ingredients (Checkboxes)</label>
+                    <label style="color:var(--kilrr-orange);">Selected float to top ⬆️</label>
+                </div>
+                <input type="text" id="recipe_search" placeholder="🔍 Search ingredients..." oninput="renderRecipeCheckboxes()" style="margin-bottom: 10px; padding: 10px 15px; font-size:14px;">
+                
                 <div id="recipe_checkboxes" class="checkbox-grid">
                     <div style="color:#94a3b8; font-size:12px; grid-column: 1 / -1; text-align:center;">Loading materials...</div>
                 </div>
@@ -196,6 +203,7 @@
     <script>
         let sessionKey = sessionStorage.getItem('kilrr_vault_key');
         let globalIngredients = [];
+        let currentRecipeIngredients = []; // Tracks what is currently checked
 
         window.onload = () => {
             if(sessionKey === "Kilrrspicesdata") {
@@ -232,7 +240,7 @@
                 const data = await res.json();
                 
                 globalIngredients = data;
-                renderRecipeCheckboxes(); // Update checkboxes automatically
+                renderRecipeCheckboxes();
 
                 const list = document.getElementById('materials_list');
                 if(data.length === 0) { list.innerHTML = `<div style="padding:15px; text-align:center; color:#94a3b8; font-size:12px; font-weight:bold;">No materials saved.</div>`; return; }
@@ -325,19 +333,60 @@
             } catch(e) { alert("Error saving vendor"); }
         }
 
-        // --- RECIPE LOGIC (NEW CHECKBOXES) ---
-        function renderRecipeCheckboxes(selectedCodes = []) {
+        // --- NEW AUTO-SORTING & SEARCHING CHECKBOX LOGIC ---
+        function toggleIngredient(code) {
+            if (currentRecipeIngredients.includes(code)) {
+                currentRecipeIngredients = currentRecipeIngredients.filter(c => c !== code); // Remove
+            } else {
+                currentRecipeIngredients.push(code); // Add
+            }
+            renderRecipeCheckboxes(); // Re-render to move to top instantly
+        }
+
+        function renderRecipeCheckboxes() {
             const container = document.getElementById('recipe_checkboxes');
+            const searchTerm = document.getElementById('recipe_search').value.toLowerCase();
+
             if (globalIngredients.length === 0) {
                 container.innerHTML = `<div style="color:#94a3b8; font-size:12px; grid-column: 1 / -1; text-align:center;">Add Raw Materials first.</div>`;
                 return;
             }
-            container.innerHTML = globalIngredients.map(ing => {
-                const isChecked = selectedCodes.includes(ing.product_code) ? 'checked' : '';
+
+            // 1. Sort: Selected items float to the top, unselected stay below alphabetically
+            let sortedIngredients = [...globalIngredients].sort((a, b) => {
+                const aSelected = currentRecipeIngredients.includes(a.product_code);
+                const bSelected = currentRecipeIngredients.includes(b.product_code);
+                
+                if (aSelected && !bSelected) return -1;
+                if (!aSelected && bSelected) return 1;
+                
+                // If both are selected or both are unselected, sort alphabetically by name
+                return a.ingredient_name.localeCompare(b.ingredient_name);
+            });
+
+            // 2. Filter by Search Bar
+            if (searchTerm) {
+                sortedIngredients = sortedIngredients.filter(ing => 
+                    ing.ingredient_name.toLowerCase().includes(searchTerm) || 
+                    ing.product_code.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // 3. Render HTML
+            if (sortedIngredients.length === 0) {
+                container.innerHTML = `<div style="color:#94a3b8; font-size:12px; grid-column: 1 / -1; text-align:center;">No ingredients found matching "${searchTerm}"</div>`;
+                return;
+            }
+
+            container.innerHTML = sortedIngredients.map(ing => {
+                const isChecked = currentRecipeIngredients.includes(ing.product_code);
+                const checkedAttr = isChecked ? 'checked' : '';
+                const selectedClass = isChecked ? 'selected' : '';
+                
                 return `
-                <label class="cb-label">
-                    <input type="checkbox" class="recipe-cb" value="${ing.product_code}" ${isChecked}> 
-                    ${ing.ingredient_name} <span style="color:var(--kilrr-orange);">(${ing.product_code})</span>
+                <label class="cb-label ${selectedClass}">
+                    <input type="checkbox" class="recipe-cb" value="${ing.product_code}" ${checkedAttr} onchange="toggleIngredient('${ing.product_code}')"> 
+                    ${ing.ingredient_name} <span style="color:var(--kilrr-orange); margin-left:auto;">${ing.product_code}</span>
                 </label>`;
             }).join('');
         }
@@ -385,10 +434,7 @@
 
         async function updateRecipe() {
             const fg_code = document.getElementById('rec_fg').value.trim();
-            
-            // Gather all checked boxes and join them with a comma
-            const checkedBoxes = document.querySelectorAll('.recipe-cb:checked');
-            const ingredients = Array.from(checkedBoxes).map(cb => cb.value).join(',');
+            const ingredients = currentRecipeIngredients.join(',');
             
             if(!fg_code) return alert("Target Product Name is required.");
 
@@ -398,7 +444,9 @@
                 if(data.error) return alert(data.error);
                 if(data.status==='success') { 
                     document.getElementById('rec_fg').value = ''; 
-                    renderRecipeCheckboxes(); // Uncheck all boxes
+                    document.getElementById('recipe_search').value = ''; 
+                    currentRecipeIngredients = []; // Clear selection
+                    renderRecipeCheckboxes(); // Reset checkboxes
                     loadActiveRecipes();
                 }
             } catch(e) { alert("Error updating recipe."); }
@@ -406,10 +454,13 @@
 
         function quickEdit(fg, ings) {
             document.getElementById('rec_fg').value = fg;
-            const selectedCodes = ings.split(',').map(s => s.trim());
-            renderRecipeCheckboxes(selectedCodes); // Automatically checks the right boxes!
+            document.getElementById('recipe_search').value = ''; // Clear search field
             
-            // Scroll up to the form
+            // Populate our tracking array and trigger the re-render/auto-sort
+            currentRecipeIngredients = ings ? ings.split(',').map(s => s.trim()).filter(Boolean) : [];
+            renderRecipeCheckboxes(); 
+            
+            // Scroll to it automatically
             document.getElementById('rec_fg').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     </script>
