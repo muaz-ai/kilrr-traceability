@@ -41,16 +41,24 @@
         .btn-action.close { background: var(--navy-command); font-size: 16px;}
         .btn-action.delete { background: var(--danger-red); font-size: 16px;}
 
-        /* GRIDS */
+        /* GRIDS & OPERATORS */
         .grid-select { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-bottom: 25px;}
         .grid-item { position: relative; background: white; border: 2px solid #cbd5e1; padding: 20px 10px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; color: var(--navy-command);}
         .grid-item:hover { border-color: var(--kilrr-orange); background: #fff7ed;}
         .grid-item.active { border-color: var(--kilrr-orange); background: var(--kilrr-orange); color: white; box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3);}
         
-        .op-del { position: absolute; top: -8px; right: -8px; background: var(--danger-red); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; display: flex; align-items: center; justify-content: center; font-family: sans-serif; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: none; cursor: pointer; z-index: 10;}
+        /* Always Visible Delete Button for Operators */
+        .op-del { position: absolute; top: -8px; right: -8px; background: var(--danger-red); color: white; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; display: flex; align-items: center; justify-content: center; font-family: sans-serif; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: none; cursor: pointer; z-index: 10; transition: 0.1s;}
+        .op-del:active { transform: scale(0.9); }
 
         label { font-weight: 900; font-size: 13px; color: var(--navy-command); display: block; margin-bottom: 12px; text-transform: uppercase;}
         
+        /* INLINE RUN CONFIG BOX */
+        .run-config-box { display: none; background: #fff7ed; padding: 20px; border: 2px solid var(--kilrr-orange); border-radius: 12px; margin-top: 15px; animation: slideDown 0.3s ease;}
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .config-input { width: 100%; padding: 14px; box-sizing: border-box; border-radius: 8px; border: 2px solid #cbd5e1; font-size: 16px; font-weight: 800; font-family: 'Inter'; margin-bottom: 15px;}
+        .config-input:focus { outline: none; border-color: var(--kilrr-orange); }
+
         /* SCANNER VIEW */
         #scan_view { display: none; background: white; padding: 30px; border-radius: 16px; border-top: 6px solid var(--navy-command); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); margin: 30px auto; max-width: 900px;}
         
@@ -76,7 +84,7 @@
 
         .scan-input-wrapper { display: flex; gap: 10px; margin-bottom: 25px; }
         #scan_input { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid var(--kilrr-orange); font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin: 0; color: #0f172a; outline: none; transition: 0.2s;}
-        #scan_input:disabled { background: #e2e8f0; border-color: #cbd5e1; cursor: not-allowed; }
+        #scan_input:disabled { background: #f1f5f9; border-color: #cbd5e1; cursor: not-allowed; opacity: 0.7;}
         .btn-add { background: var(--navy-command); color: white; border: none; border-radius: 10px; font-weight: 900; padding: 0 30px; cursor: pointer; font-size: 16px; transition: 0.2s; }
         .btn-add:active { transform: scale(0.95); }
 
@@ -84,18 +92,15 @@
         .scan-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; font-family: monospace; font-weight: bold; font-size: 14px;}
         .scan-weight { color: var(--danger-red); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 900; }
 
-        /* MULTI-BATCH CREATOR MODAL */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(11, 17, 33, 0.85); backdrop-filter: blur(5px); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s;}
-        .batch-modal-content { background: white; width: 100%; max-width: 450px; border-radius: 16px; padding: 30px; text-align: left; box-shadow: 0 25px 50px rgba(0,0,0,0.3); border-top: 6px solid var(--kilrr-orange); transform: translateY(20px); transition: transform 0.2s;}
-        
-        .modal-input { width: 100%; padding: 14px; box-sizing: border-box; border-radius: 8px; border: 2px solid #cbd5e1; font-size: 16px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px;}
-        .modal-input:focus { outline: none; border-color: var(--kilrr-orange); }
-
         /* GENERIC DIALOG MODAL */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(11, 17, 33, 0.85); backdrop-filter: blur(5px); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s;}
         .dialog-content { background: white; width: 100%; max-width: 420px; border-radius: 16px; padding: 35px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.3); transform: translateY(20px); transition: transform 0.2s; border-top: 6px solid var(--kilrr-orange);}
         .modal-icon { font-size: 45px; margin-bottom: 10px; line-height: 1;}
         .modal-title { font-family: 'Space Grotesk'; font-size: 24px; font-weight: 900; color: var(--navy-command); margin: 0 0 10px 0; text-transform: uppercase;}
         .modal-desc { font-size: 15px; font-weight: 600; color: #64748b; margin-bottom: 25px; line-height: 1.5;}
+        
+        .modal-input { width: 100%; padding: 16px; box-sizing: border-box; border-radius: 8px; border: 2px solid var(--navy-command); font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 25px; text-align: center;}
+        .modal-input:focus { outline: none; border-color: var(--kilrr-orange); }
         
         .modal-actions { display: flex; gap: 15px; justify-content: center;}
         .btn-modal { flex: 1; padding: 16px; border: none; border-radius: 8px; font-weight: 900; font-size: 15px; cursor: pointer; text-transform: uppercase; transition: 0.1s;}
@@ -157,6 +162,24 @@
             <div class="grid-select" id="recipe_grid">
                 <div style="grid-column: 1/-1; text-align:center; color:#94a3b8; font-weight:bold;">Loading Recipes...</div>
             </div>
+
+            <!-- INLINE RUN CONFIGURATION FORM -->
+            <div id="run_config" class="run-config-box">
+                <h3 style="margin-top:0; color:var(--navy-command); font-family:'Space Grotesk';">Configure <span id="config_fg_name" style="color:var(--kilrr-orange);"></span></h3>
+                
+                <div style="display:flex; gap:15px; margin-bottom:10px;">
+                    <div style="flex:1;">
+                        <label>Batch Code (e.g. DH190)</label>
+                        <input type="text" id="config_batch_code" class="config-input" style="text-transform:uppercase;">
+                    </div>
+                    <div style="flex:1;">
+                        <label>Total Runs (For Tracking)</label>
+                        <input type="number" id="config_runs" class="config-input" value="1" min="1">
+                    </div>
+                </div>
+
+                <button onclick="submitNewRun()" style="width:100%; background:var(--success-green); color:white; border:none; padding:15px; border-radius:8px; font-weight:900; font-size:16px; cursor:pointer;">START PRODUCTION</button>
+            </div>
         </div>
     </div>
 
@@ -184,7 +207,7 @@
         <label>बारकोड स्कॅन करा (SCAN HERE)</label>
         <div class="scan-input-wrapper">
             <input type="text" id="scan_input" placeholder="Scan barcode..." autocomplete="off" onkeypress="if(event.key === 'Enter') submitScan()">
-            <button class="btn-add" onclick="submitScan()">ADD</button>
+            <button class="btn-add" id="btn_add" onclick="submitScan()">ADD</button>
         </div>
 
         <label>आत्ताच स्कॅन केलेले (ACTIVE SCANS)</label>
@@ -194,33 +217,6 @@
         
         <div style="text-align:center; margin-top:15px;">
             <a href="#" onclick="backToSetup()" style="color:#64748b; font-weight:bold; font-size:14px; text-decoration:none;">← Back to Hub (Leaves batch active)</a>
-        </div>
-    </div>
-
-    <!-- BATCH CREATION MODAL -->
-    <div id="batch_create_modal" class="modal-overlay">
-        <div class="batch-modal-content" id="batch_box">
-            <h2 style="margin-top:0;">Create Batch Runs</h2>
-            <p style="color:#64748b; font-size:13px; font-weight:600; margin-bottom:20px;">Target Product: <span id="new_batch_fg" style="color:var(--kilrr-orange); font-weight:900;"></span></p>
-
-            <label>Batch Prefix (E.g. AFG204)</label>
-            <input type="text" id="batch_prefix" class="modal-input" style="text-transform: uppercase;">
-            
-            <div style="display:flex; gap:15px;">
-                <div style="flex:1;">
-                    <label>Start Number</label>
-                    <input type="number" id="batch_start" class="modal-input" value="1" min="1">
-                </div>
-                <div style="flex:1;">
-                    <label>Total Batches</label>
-                    <input type="number" id="batch_count" class="modal-input" value="1" min="1">
-                </div>
-            </div>
-
-            <div class="modal-actions" style="margin-top:10px;">
-                <button class="btn-modal btn-cancel" onclick="closeBatchModal()">CANCEL</button>
-                <button class="btn-modal btn-confirm" onclick="submitNewBatches()">CREATE</button>
-            </div>
         </div>
     </div>
 
@@ -252,6 +248,7 @@
         let activeFGCode = null;
         let activeReqs = [];
         let activeScans = [];
+        let isScanning = false; // Prevents duplicate triggers
 
         window.onload = () => {
             renderOperators();
@@ -260,7 +257,7 @@
         };
 
         // ==========================================
-        // WORLD CLASS MODAL SYSTEM
+        // UNIFIED DIALOG MODAL
         // ==========================================
         let modalCallback = null;
 
@@ -296,16 +293,8 @@
                 icon.textContent = '⚠️';
                 box.style.borderTopColor = 'var(--kilrr-orange)';
                 confirmBtn.style.background = 'var(--kilrr-orange)';
-                confirmBtn.textContent = 'CONFIRM';
+                confirmBtn.textContent = 'PROCEED';
                 cancelBtn.style.display = 'block';
-            } else if (type === 'prompt') {
-                icon.textContent = '✏️';
-                box.style.borderTopColor = 'var(--accent-blue)';
-                confirmBtn.style.background = 'var(--accent-blue)';
-                confirmBtn.textContent = 'CONTINUE';
-                cancelBtn.style.display = 'block';
-                inp.style.display = 'block';
-                setTimeout(() => inp.focus(), 50);
             } else if (type === 'password') {
                 icon.textContent = '🔒';
                 box.style.borderTopColor = 'var(--danger-red)';
@@ -327,7 +316,6 @@
             box.style.transform = 'translateY(20px)';
             
             let val = null;
-            if (document.getElementById('modal_input').style.display === 'block') val = document.getElementById('modal_input').value;
             if (document.getElementById('modal_password').style.display === 'block') val = document.getElementById('modal_password').value;
 
             setTimeout(() => { m.style.display = 'none'; }, 200);
@@ -342,7 +330,6 @@
             }
         }
 
-        document.getElementById('modal_input').addEventListener('keypress', function(e) { if (e.key === 'Enter') closeModal(true); });
         document.getElementById('modal_password').addEventListener('keypress', function(e) { if (e.key === 'Enter') closeModal(true); });
 
         // ==========================================
@@ -365,17 +352,17 @@
         }
 
         function addOperator() {
-            showDialog("New Operator", "Enter the name of the new Operator:", "prompt", (val) => {
-                if(!val || val.trim() === '') return;
-                operators.push(val.trim());
+            let name = prompt("Enter the name of the new Operator:");
+            if(name && name.trim() !== '') {
+                operators.push(name.trim());
                 localStorage.setItem('kilrr_operators', JSON.stringify(operators));
-                selectOperator(val.trim());
-            });
+                selectOperator(name.trim());
+            }
         }
 
         function deleteOperator(event, idx) {
             event.stopPropagation(); 
-            showDialog("Remove Operator?", `Are you sure you want to remove ${operators[idx]}?`, "confirm", (confirmed) => {
+            showDialog("Remove Operator?", `Remove ${operators[idx]} from the system?`, "confirm", (confirmed) => {
                 if(!confirmed) return;
                 if(selectedOperator === operators[idx]) selectedOperator = null;
                 operators.splice(idx, 1);
@@ -413,7 +400,7 @@
                         <span class="batch-sub">${b.fg_code} | ${b.operator_name}</span>
                     </div>
                     <div class="action-btns">
-                        <!-- HARD DELETE -->
+                        <!-- 2-STEP DELETE -->
                         <button class="btn-action delete" title="Permanently Delete" onclick="triggerDeleteBatch('${b.batch_code}')">🗑️</button>
                         <!-- SOFT CLOSE -->
                         <button class="btn-action close" title="Soft Close (Save Data)" onclick="closeBatchList('${b.batch_code}')">✔</button>
@@ -431,96 +418,80 @@
                 const uniqueFG = [...new Set(raw.map(r => r.fg_code))]; 
                 
                 document.getElementById('recipe_grid').innerHTML = uniqueFG.map(fg => `
-                    <div class="grid-item" onclick="openBatchModal('${fg}')">${fg}</div>
+                    <div class="grid-item" onclick="openRunConfig('${fg}', this)">${fg}</div>
                 `).join('');
             } catch(e) { console.error("Error loading recipes"); }
         }
 
-        function openBatchModal(fgName) {
+        // SHOW INLINE BATCH CONFIGURATION
+        function openRunConfig(fgName, el) {
             if(!selectedOperator) return showDialog("Missing Info", "Please select WHO IS SCANNING first!", "error");
             
             selectedRecipeFG = fgName;
-            document.getElementById('new_batch_fg').textContent = fgName;
             
-            let prefixSuggest = fgName.substring(0,3).toUpperCase() + new Date().getDate();
-            document.getElementById('batch_prefix').value = prefixSuggest;
-            document.getElementById('batch_start').value = 1;
-            document.getElementById('batch_count').value = 1;
+            // Visual feedback on selected recipe
+            document.querySelectorAll('#recipe_grid .grid-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+
+            document.getElementById('config_fg_name').textContent = fgName;
+            document.getElementById('config_batch_code').value = '';
+            document.getElementById('config_runs').value = 1;
             
-            const m = document.getElementById('batch_create_modal');
-            const box = document.getElementById('batch_box');
-            m.style.display = 'flex';
-            setTimeout(() => { m.style.opacity = '1'; box.style.transform = 'translateY(0)'; }, 10);
+            document.getElementById('run_config').style.display = 'block';
+            document.getElementById('config_batch_code').focus();
         }
 
-        function closeBatchModal() {
-            const m = document.getElementById('batch_create_modal');
-            const box = document.getElementById('batch_box');
-            m.style.opacity = '0';
-            box.style.transform = 'translateY(20px)';
-            setTimeout(() => { m.style.display = 'none'; }, 200);
-        }
-
-        async function submitNewBatches() {
-            let prefix = document.getElementById('batch_prefix').value.trim().toUpperCase();
-            let startNo = parseInt(document.getElementById('batch_start').value);
-            let count = parseInt(document.getElementById('batch_count').value);
+        async function submitNewRun() {
+            let code = document.getElementById('config_batch_code').value.trim().toUpperCase();
+            let runs = document.getElementById('config_runs').value;
             
-            if(!prefix || isNaN(startNo) || isNaN(count) || count < 1) return alert("Fill all fields correctly");
+            if(!code) return showDialog("Error", "Please enter a valid Batch Code.", "error");
 
-            closeBatchModal();
+            // Format as "DH190 [6 Runs]" so it groups into ONE single batch in the database
+            let finalBatchCode = runs > 1 ? `${code} [${runs} RUNS]` : code;
 
             try {
-                for(let i=0; i<count; i++) {
-                    let currentNo = startNo + i;
-                    let batchCode = `${prefix}-B${currentNo}`;
-                    
-                    await fetch('/create-batch', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ batch_code: batchCode, fg_code: selectedRecipeFG, operator_name: selectedOperator })
-                    });
-                }
-                loadOpenBatches();
-                
-                // If they just created 1 batch, automatically open it
-                if(count === 1) {
-                    resumeRun(`${prefix}-B${startNo}`, selectedRecipeFG, selectedOperator);
-                } else {
-                    showDialog("Success", `Created ${count} batches successfully!`, "success");
-                }
-            } catch(e) { showDialog("Error", "Failed to connect to database.", "error"); }
+                const res = await fetch('/create-batch', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ batch_code: finalBatchCode, fg_code: selectedRecipeFG, operator_name: selectedOperator })
+                });
+                const data = await res.json();
+                if(data.error) return showDialog("Database Error", data.error, "error");
+
+                // Clear inline form
+                document.getElementById('run_config').style.display = 'none';
+                document.querySelectorAll('#recipe_grid .grid-item').forEach(i => i.classList.remove('active'));
+
+                // Open the new master batch
+                resumeRun(finalBatchCode, selectedRecipeFG, selectedOperator);
+            } catch(e) { showDialog("Error", "Server connection failed.", "error"); }
         }
 
         // ==========================================
-        // DOUBLE CONFIRMATION DELETE LOGIC
+        // FIXED 2-STEP DOUBLE CONFIRMATION DELETE
         // ==========================================
         function triggerDeleteBatch(batchCode) {
-            showDialog("CRITICAL WARNING", `Are you sure you want to permanently delete Batch [${batchCode}]?\n\nType "DELETE" to confirm.`, "prompt", (val) => {
-                if (val && val.toUpperCase() === "DELETE") {
-                    
-                    // Delay slightly so first modal closes smoothly before opening next
-                    setTimeout(() => {
-                        showDialog("AUTHORIZATION REQUIRED", "Enter Master PIN to authorize deletion:", "password", async (pin) => {
-                            if (!pin) return;
-                            try {
-                                const res = await fetch('/delete-batch', {
-                                    method: 'POST',
-                                    headers: {'Content-Type': 'application/json'},
-                                    body: JSON.stringify({ batch_code: batchCode, pin: pin })
-                                });
-                                const data = await res.json();
-                                if(data.error) return showDialog("Access Denied", data.error, "error");
-                                
-                                loadOpenBatches();
-                                showDialog("Wiped", `Batch ${batchCode} has been permanently deleted.`, "success");
-                            } catch(e) { showDialog("Error", "Server error", "error"); }
-                        });
-                    }, 300);
-
-                } else if (val !== null) {
-                    setTimeout(() => showDialog("Error", "You didn't type DELETE correctly. Request canceled.", "error"), 300);
-                }
+            showDialog("Confirm Deletion", `Are you sure you want to permanently delete Batch [${batchCode}]?`, "confirm", (confirmed) => {
+                if(!confirmed) return;
+                
+                // Step 2: Master PIN Authorization
+                setTimeout(() => {
+                    showDialog("Authorization Required", "Enter Master PIN to authorize deletion:", "password", async (pin) => {
+                        if (!pin) return;
+                        try {
+                            const res = await fetch('/delete-batch', {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({ batch_code: batchCode, pin: pin })
+                            });
+                            const data = await res.json();
+                            if(data.error) return showDialog("Access Denied", data.error, "error");
+                            
+                            loadOpenBatches();
+                        } catch(e) { showDialog("Error", "Server error", "error"); }
+                    });
+                }, 300); // Slight delay for smooth modal transition
             });
         }
 
@@ -585,7 +556,7 @@
             } catch(e) { console.error(e); }
         }
 
-        // INGREDIENT-WISE WEIGHT BREAKDOWN
+        // RESTORED INGREDIENT-WISE WEIGHT BREAKDOWN PILLS
         function renderReqs() {
             const list = document.getElementById('scan_reqs');
             if(activeReqs.length === 0) {
@@ -635,12 +606,18 @@
             }).join('');
         }
 
+        // ==========================================
+        // BULLETPROOF ANTI-DUPLICATE SCANNER
+        // ==========================================
         async function submitScan() {
+            if(isScanning) return; // Block rapid double-fire
+            
             const inp = document.getElementById('scan_input');
+            const btn = document.getElementById('btn_add');
             const barcode = inp.value.trim().toUpperCase();
             if(!barcode) return;
             
-            // ANTI-DUPLICATE LOCKOUT
+            // INSTANT LOCAL DUPLICATE CHECK
             if (activeScans.some(s => s.rm_tag === barcode)) {
                 inp.value = '';
                 return showDialog("Duplicate Scan!", `Barcode [ ${barcode} ] is already in this batch!`, "error");
@@ -657,8 +634,13 @@
                 }
             }
 
-            // Disable input temporarily to prevent rapid double-scanning bypass
+            // LOCK UI TO PREVENT RAPID DUPLICATE HARDWARE SCANNING
+            isScanning = true;
             inp.disabled = true;
+            btn.disabled = true;
+
+            // Optimistic local push (blocks duplicate scanning millisecond before server replies)
+            activeScans.unshift({ rm_tag: barcode, weight: 0, product_code: barcode.split('/')[1] });
 
             try {
                 const res = await fetch('/scan', {
@@ -670,11 +652,15 @@
                 if(data.error) throw new Error(data.error);
                 
                 inp.value = '';
-                await loadScans();
+                await loadScans(); // Pull fresh data with exact weights
             } catch(e) { 
+                activeScans.shift(); // Remove optimistic local push if failed
                 showDialog("Scan Failed", "Network disconnected or database error.", "error"); 
             } finally {
+                // UNLOCK UI
+                isScanning = false;
                 inp.disabled = false;
+                btn.disabled = false;
                 setTimeout(() => inp.focus(), 50);
             }
         }
