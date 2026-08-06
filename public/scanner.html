@@ -20,7 +20,7 @@
 
         .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
         
-        /* CARDS (Exact match to screenshot) */
+        /* CARDS */
         .card { background: var(--card-bg); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; position: relative; margin-bottom: 30px;}
         .card-orange { border-top: 6px solid var(--kilrr-orange); }
 
@@ -35,40 +35,41 @@
         .batch-sub { color: #64748b; font-size: 13px; font-weight: 700; font-family: 'Inter'; }
         
         .action-btns { display: flex; gap: 8px;}
-        .btn-action { border: none; padding: 12px 18px; border-radius: 8px; font-weight: 900; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; transition: 0.1s;}
+        .btn-action { border: none; padding: 10px 16px; border-radius: 8px; font-weight: 900; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; transition: 0.1s;}
         .btn-action:active { transform: scale(0.95); }
-        .btn-action.play { background: var(--success-green); font-size: 18px;}
-        .btn-action.close { background: var(--danger-red); font-size: 18px;}
+        .btn-action.play { background: var(--success-green); font-size: 16px;}
+        .btn-action.close { background: var(--danger-red); font-size: 16px;}
 
         .grid-select { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-bottom: 25px;}
         .grid-item { background: white; border: 2px solid #cbd5e1; padding: 20px 10px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; color: var(--navy-command);}
         .grid-item:hover { border-color: var(--kilrr-orange); background: #fff7ed;}
-        .grid-item.active { border-color: var(--kilrr-orange); background: #fff7ed; color: var(--navy-command); box-shadow: 0 4px 15px rgba(234, 88, 12, 0.1);}
+        .grid-item.active { border-color: var(--kilrr-orange); background: var(--kilrr-orange); color: white; box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3);}
         
         label { font-weight: 900; font-size: 13px; color: var(--navy-command); display: block; margin-bottom: 12px; text-transform: uppercase;}
         
-        /* SCANNER VIEW (RESTORED EXACT UI) */
+        /* SCANNER VIEW */
         #scan_view { display: none; background: white; padding: 30px; border-radius: 16px; border-top: 6px solid var(--success-green); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); margin: 30px auto; max-width: 900px;}
         
-        /* The Dark Navy Header Block */
         .scanner-header { background: var(--navy-command); color: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; text-align: center;}
         .scanner-title { font-family: 'Space Grotesk'; font-size: 26px; font-weight: 900; margin: 0; text-transform: uppercase; color: var(--kilrr-orange);}
         .scanner-sub { font-size: 13px; font-weight: 700; margin-top: 5px; color: white;}
         .scanner-sub span { color: var(--kilrr-orange); }
 
-        /* The Dashed Live Stats Row */
         .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
         .stat-card { background: white; border: 2px dashed #cbd5e1; padding: 20px; border-radius: 12px; text-align: center; }
         .stat-label { font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
         .stat-value { font-size: 28px; font-weight: 900; color: var(--navy-command); }
         .stat-value span { font-size: 14px; color: var(--kilrr-orange); font-weight: 800;}
 
-        /* The Exact Pill UI */
+        /* INGREDIENT BREAKDOWN PILLS */
         .req-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px;}
-        .req-pill { background: white; border: 1px solid #cbd5e1; padding: 16px; border-radius: 8px; font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; color: #64748b; transition: 0.3s;}
-        .req-pill.done { border-color: var(--success-green); color: var(--success-green); background: white;}
-        
-        /* The Orange Bordered Input */
+        .req-pill { background: white; border: 1px solid #cbd5e1; padding: 16px; border-radius: 8px; font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; align-items: center; color: #64748b; transition: 0.3s;}
+        .req-pill.done { border-color: var(--success-green); color: var(--success-green); background: #ecfdf5;}
+        .req-name { font-weight: 800; }
+        .req-status { display: flex; gap: 10px; align-items: center; font-family: monospace; font-size: 15px;}
+        .ing-weight { color: var(--navy-command); }
+        .ing-weight-zero { color: #cbd5e1; }
+
         .scan-input-wrapper { display: flex; gap: 10px; margin-bottom: 25px; }
         #scan_input { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid var(--kilrr-orange); font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin: 0; color: #0f172a; outline: none;}
         .btn-add { background: var(--navy-command); color: white; border: none; border-radius: 10px; font-weight: 900; padding: 0 30px; cursor: pointer; font-size: 16px; transition: 0.2s; }
@@ -77,6 +78,18 @@
         .scan-history { max-height: 250px; overflow-y: auto; background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px;}
         .scan-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; font-family: monospace; font-weight: bold; font-size: 14px;}
         .scan-weight { color: var(--kilrr-orange); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 900; }
+
+        /* WORLD-CLASS CUSTOM MODAL */
+        #kilrr_modal { position: fixed; inset: 0; background: rgba(11, 17, 33, 0.8); backdrop-filter: blur(5px); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s;}
+        .modal-content { background: white; width: 100%; max-width: 400px; border-radius: 16px; padding: 30px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.3); transform: translateY(20px); transition: transform 0.2s;}
+        .modal-icon { font-size: 40px; margin-bottom: 15px; }
+        .modal-title { font-family: 'Space Grotesk'; font-size: 22px; font-weight: 900; color: var(--navy-command); margin: 0 0 10px 0; text-transform: uppercase;}
+        .modal-desc { font-size: 14px; font-weight: 600; color: #64748b; margin-bottom: 25px; line-height: 1.5;}
+        .modal-actions { display: flex; gap: 10px; justify-content: center;}
+        .btn-modal { flex: 1; padding: 14px; border: none; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; text-transform: uppercase; transition: 0.1s;}
+        .btn-modal:active { transform: scale(0.95); }
+        .btn-cancel { background: #e2e8f0; color: var(--navy-command); }
+        .btn-confirm { background: var(--kilrr-orange); color: white; }
 
         @media (max-width: 1024px) { 
             .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap; border-top: 3px solid var(--kilrr-orange); z-index: 999;}
@@ -112,7 +125,9 @@
             <h2>Resume Active Run</h2>
             <span class="marathi-title">चालू काम परत उघडा</span>
             
-            <input type="text" id="search_batches" placeholder="🔍 Search open batches..." oninput="renderOpenBatches()" style="width:100%; padding:14px; border-radius:8px; border:1px solid #cbd5e1; margin-bottom:15px; font-weight:bold; font-size:14px;">
+            <div style="position: relative;">
+                <input type="text" id="search_batches" placeholder="🔍 Search open batches..." oninput="renderOpenBatches()" style="width:100%; padding:14px 14px 14px 40px; border-radius:8px; border:1px solid #cbd5e1; margin-bottom:15px; font-weight:bold; font-size:14px; outline:none;">
+            </div>
             
             <div class="batch-list" id="open_batches_list">
                 <div style="text-align:center; padding:20px; color:#94a3b8; font-weight:bold;">Loading...</div>
@@ -139,14 +154,11 @@
 
     <!-- ACTIVE SCANNER VIEW -->
     <div class="container" id="scan_view">
-        
-        <!-- The Restored Navy Header -->
         <div class="scanner-header">
             <h1 class="scanner-title" id="scan_fg_name">RECIPE NAME</h1>
             <div class="scanner-sub">Batch: <span id="scan_batch_code">BATCH-01</span> | Operator: <span id="scan_op">MUAZ</span></div>
         </div>
 
-        <!-- The Restored Dashed Live Stats -->
         <div class="stats-row">
             <div class="stat-card">
                 <div class="stat-label">Total Packets</div>
@@ -170,8 +182,23 @@
         <label>आत्ताच स्कॅन केलेले (ACTIVE SCANS)</label>
         <div class="scan-history" id="scan_history">Loading...</div>
 
-        <div style="text-align:center; margin-top:20px;">
+        <button onclick="closeCurrentRun()" style="width:100%; margin-top:25px; background:var(--navy-command); color:white; border:none; padding:20px; border-radius:12px; font-size:18px; font-weight:900; font-family:'Space Grotesk'; cursor:pointer; box-shadow: 0 5px 15px rgba(11, 17, 33, 0.3);">✔ काम संपले (FINISH & CLOSE BATCH)</button>
+        
+        <div style="text-align:center; margin-top:15px;">
             <a href="#" onclick="backToSetup()" style="color:#64748b; font-weight:bold; font-size:14px; text-decoration:none;">← Back to Hub (Leaves batch active)</a>
+        </div>
+    </div>
+
+    <!-- CUSTOM FSSAI DIALOG MODAL -->
+    <div id="kilrr_modal">
+        <div class="modal-content" id="modal_content_box">
+            <div class="modal-icon" id="modal_icon">🛑</div>
+            <h3 class="modal-title" id="modal_title">Title</h3>
+            <p class="modal-desc" id="modal_desc">Message goes here.</p>
+            <div class="modal-actions">
+                <button id="modal_cancel" class="btn-modal btn-cancel" onclick="closeModal(false)">CANCEL</button>
+                <button id="modal_confirm" class="btn-modal btn-confirm" onclick="closeModal(true)">CONFIRM</button>
+            </div>
         </div>
     </div>
 
@@ -183,6 +210,63 @@
         let activeFGCode = null;
         let activeReqs = [];
         let activeScans = [];
+
+        // --- WORLD CLASS MODAL SYSTEM ---
+        let modalCallback = null;
+
+        function showDialog(title, desc, type, callback) {
+            document.getElementById('modal_title').textContent = title;
+            document.getElementById('modal_desc').textContent = desc;
+            
+            const m = document.getElementById('kilrr_modal');
+            const box = document.getElementById('modal_content_box');
+            const cancelBtn = document.getElementById('modal_cancel');
+            const confirmBtn = document.getElementById('modal_confirm');
+            const icon = document.getElementById('modal_icon');
+
+            modalCallback = callback;
+
+            if (type === 'error') {
+                icon.textContent = '🛑';
+                confirmBtn.style.background = 'var(--danger-red)';
+                confirmBtn.textContent = 'OK';
+                cancelBtn.style.display = 'none';
+            } else if (type === 'confirm') {
+                icon.textContent = '⚠️';
+                confirmBtn.style.background = 'var(--kilrr-orange)';
+                confirmBtn.textContent = 'CONFIRM';
+                cancelBtn.style.display = 'block';
+            } else if (type === 'success') {
+                icon.textContent = '✅';
+                confirmBtn.style.background = 'var(--success-green)';
+                confirmBtn.textContent = 'OK';
+                cancelBtn.style.display = 'none';
+            }
+
+            m.style.display = 'flex';
+            setTimeout(() => {
+                m.style.opacity = '1';
+                box.style.transform = 'translateY(0)';
+            }, 10);
+        }
+
+        function closeModal(result) {
+            const m = document.getElementById('kilrr_modal');
+            const box = document.getElementById('modal_content_box');
+            m.style.opacity = '0';
+            box.style.transform = 'translateY(20px)';
+            setTimeout(() => { m.style.display = 'none'; }, 200);
+            
+            if (modalCallback) {
+                modalCallback(result);
+                modalCallback = null;
+            }
+            
+            // Refocus scanner if it was an error in scanner view
+            if (document.getElementById('scan_view').style.display === 'block') {
+                setTimeout(() => document.getElementById('scan_input').focus(), 100);
+            }
+        }
 
         window.onload = () => {
             loadOpenBatches();
@@ -219,7 +303,7 @@
                         <span class="batch-sub">${b.fg_code} | ${b.operator_name}</span>
                     </div>
                     <div class="action-btns">
-                        <!-- SOFT CLOSE LOGIC (Saves to FSSAI records, removes from screen) -->
+                        <!-- SOFT CLOSE LOGIC -->
                         <button class="btn-action close" onclick="closeBatchList('${b.batch_code}')">✖</button>
                         <!-- RESUME LOGIC -->
                         <button class="btn-action play" onclick="resumeRun('${b.batch_code}', '${b.fg_code}', '${b.operator_name}')">►</button>
@@ -252,7 +336,7 @@
         }
 
         async function startNewRun(fgName, el) {
-            if(!selectedOperator) return alert("⚠️ Please select WHO IS SCANNING first!");
+            if(!selectedOperator) return showDialog("Missing Information", "Please select WHO IS SCANNING first!", "error");
             
             let batchCode = prompt(`Enter a Batch Code for ${fgName}:\n(e.g., ${fgName.substring(0,3).toUpperCase()}-123)`);
             if(!batchCode) return;
@@ -265,26 +349,28 @@
                     body: JSON.stringify({ batch_code: batchCode, fg_code: fgName, operator_name: selectedOperator })
                 });
                 const data = await res.json();
-                if(data.error) return alert(data.error);
+                if(data.error) return showDialog("Error", data.error, "error");
 
                 resumeRun(batchCode, fgName, selectedOperator);
-            } catch(e) { alert("Database Error"); }
+            } catch(e) { showDialog("Error", "Database Connection Failed", "error"); }
         }
 
-        // SOFT CLOSE EXECUTION (From the Hub Screen)
-        async function closeBatchList(batchCode) {
-            if(!confirm(`Are you sure you want to finish and close batch ${batchCode}?\n(This permanently saves the FSSAI data and clears it from the screen)`)) return;
-            try {
-                await fetch('/close-batch', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ batch_code: batchCode })
-                });
-                loadOpenBatches(); 
-            } catch(e) { alert("Error closing batch"); }
+        // FSSAI SOFT CLOSE FROM THE HUB
+        function closeBatchList(batchCode) {
+            showDialog("Finish Run?", `Are you sure you want to finish and close batch ${batchCode}? Data will be saved permanently.`, "confirm", async (confirmed) => {
+                if(!confirmed) return;
+                try {
+                    await fetch('/close-batch', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ batch_code: batchCode })
+                    });
+                    loadOpenBatches(); 
+                } catch(e) { showDialog("Error", "Failed to close batch.", "error"); }
+            });
         }
 
-        // --- SCANNER VIEW LOGIC ---
+        // --- ACTIVE SCANNER VIEW LOGIC ---
         async function resumeRun(batchCode, fgCode, opName) {
             document.getElementById('setup_view').style.display = 'none';
             document.getElementById('scan_view').style.display = 'block';
@@ -320,7 +406,7 @@
                 const res = await fetch(`/current-scans/${activeBatchCode}`);
                 activeScans = await res.json();
                 
-                // RESTORED: CALCULATE LIVE STATS FOR THE UI
+                // LIVE STATS CALCULATION
                 let totalWeight = activeScans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
                 document.getElementById('stat_count').textContent = activeScans.length;
                 document.getElementById('stat_weight').textContent = totalWeight.toFixed(2);
@@ -330,6 +416,7 @@
             } catch(e) { console.error(e); }
         }
 
+        // 🔥 INGREDIENT-WISE WEIGHT BREAKDOWN RENDERER 🔥
         function renderReqs() {
             const list = document.getElementById('scan_reqs');
             if(activeReqs.length === 0) {
@@ -337,15 +424,25 @@
                 return;
             }
 
-            // Exactly matching the CSS aesthetic from the photo
             list.innerHTML = activeReqs.map(r => {
                 if(!r.product_code || r.product_code === 'null') return '';
-                let isScanned = activeScans.some(s => s.product_code === r.product_code);
                 
-                if(isScanned) {
-                    return `<div class="req-pill done"><span>${r.ingredient_name}</span> <span>✔</span></div>`;
+                // Filter scans just for this specific ingredient
+                let ingScans = activeScans.filter(s => s.product_code === r.product_code);
+                let ingWeight = ingScans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
+                
+                if(ingScans.length > 0) {
+                    return `
+                    <div class="req-pill done">
+                        <div class="req-name">${r.ingredient_name}</div>
+                        <div class="req-status"><span class="ing-weight">${ingWeight.toFixed(2)} KG</span> <span>✔</span></div>
+                    </div>`;
                 } else {
-                    return `<div class="req-pill"><span>${r.ingredient_name}</span> <span>⏳</span></div>`;
+                    return `
+                    <div class="req-pill">
+                        <div class="req-name">${r.ingredient_name}</div>
+                        <div class="req-status"><span class="ing-weight-zero">0.00 KG</span> <span>⏳</span></div>
+                    </div>`;
                 }
             }).join('');
         }
@@ -357,7 +454,6 @@
                 return;
             }
 
-            // Exactly matching the CSS aesthetic from the photo
             list.innerHTML = activeScans.map(s => {
                 let dispWeight = s.weight > 0 ? `<span class="scan-weight">${s.weight} KG</span>` : `<span class="scan-weight">--</span>`;
                 return `
@@ -383,7 +479,7 @@
                 let isValid = activeReqs.some(r => r.product_code === pCode);
                 if(!isValid) {
                     inp.value = '';
-                    return alert(`🛑 STOP! \n\n[ ${pCode} ] is NOT required to make ${activeFGCode}!`);
+                    return showDialog("Wrong Ingredient!", `[ ${pCode} ] is NOT required to make ${activeFGCode}!`, "error");
                 }
             }
 
@@ -398,7 +494,8 @@
                 
                 inp.value = '';
                 await loadScans(); // Triggers UI and Stats update automatically
-            } catch(e) { alert("Scan Failed: " + e.message); }
+                inp.focus();
+            } catch(e) { showDialog("Scan Failed", e.message, "error"); }
         }
 
         async function undoScan(tag) {
@@ -408,8 +505,23 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ batch_code: activeBatchCode, rm_tag: tag })
                 });
-                await loadScans(); // Recalculates total weight automatically
-            } catch(e) { alert("Undo Failed."); }
+                await loadScans(); 
+            } catch(e) { showDialog("Error", "Undo Failed.", "error"); }
+        }
+
+        // FSSAI SOFT CLOSE FROM INSIDE THE SCANNER
+        function closeCurrentRun() {
+            showDialog("Finish Run?", `Are you sure you want to finish and close batch ${activeBatchCode}? Data will be saved permanently.`, "confirm", async (confirmed) => {
+                if(!confirmed) return;
+                try {
+                    await fetch('/close-batch', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ batch_code: activeBatchCode })
+                    });
+                    backToSetup(); 
+                } catch(e) { showDialog("Error", "Failed to close batch.", "error"); }
+            });
         }
     </script>
 </body>
