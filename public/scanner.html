@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #10b981; --danger-red: #dc2626; --warning-yellow: #eab308; --card-bg: #ffffff; --accent-blue: #2563eb; }
+        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #10b981; --danger-red: #dc2626; --card-bg: #ffffff; --accent-blue: #2563eb; }
         body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 80px;}
         
         /* NAVIGATION */
@@ -19,6 +19,7 @@
         .nav-btn.active { color: white; background: var(--kilrr-orange);}
 
         .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
+        .container-wide { max-width: 1400px; margin: 30px auto; padding: 0 15px; }
         
         /* CARDS */
         .card { background: var(--card-bg); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; position: relative; margin-bottom: 30px;}
@@ -50,7 +51,7 @@
         .op-del { position: absolute; top: -8px; right: -8px; background: var(--danger-red); color: white; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; display: flex; align-items: center; justify-content: center; font-family: sans-serif; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: none; cursor: pointer; z-index: 10; transition: 0.1s;}
         .op-del:active { transform: scale(0.9); }
 
-        label { font-weight: 900; font-size: 13px; color: var(--navy-command); display: block; margin-bottom: 12px; text-transform: uppercase;}
+        label { font-weight: 900; font-size: 14px; color: var(--navy-command); display: block; margin-bottom: 12px; text-transform: uppercase;}
         
         /* INLINE RUN CONFIG BOX */
         .run-config-box { display: none; background: #fff7ed; padding: 20px; border: 2px solid var(--kilrr-orange); border-radius: 12px; margin-top: 15px; animation: slideDown 0.3s ease;}
@@ -58,43 +59,46 @@
         .config-input { width: 100%; padding: 14px; box-sizing: border-box; border-radius: 8px; border: 2px solid #cbd5e1; font-size: 16px; font-weight: 800; font-family: 'Inter'; margin-bottom: 15px;}
         .config-input:focus { outline: none; border-color: var(--kilrr-orange); }
 
-        /* SCANNER VIEW */
-        #scan_view { display: none; background: white; padding: 30px; border-radius: 16px; border-top: 6px solid var(--navy-command); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); margin: 30px auto; max-width: 900px;}
+        /* 🔥 ULTRA-WIDE SCANNER VIEW 🔥 */
+        #scan_view { display: none; background: white; padding: 40px; border-radius: 16px; border-top: 8px solid var(--navy-command); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.15); margin: 30px auto;}
         
-        .scanner-header { background: var(--navy-command); color: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; text-align: center;}
-        .scanner-title { font-family: 'Space Grotesk'; font-size: 26px; font-weight: 900; margin: 0; text-transform: uppercase; color: var(--kilrr-orange);}
-        .scanner-sub { font-size: 13px; font-weight: 700; margin-top: 5px; color: white;}
+        .scanner-header { background: var(--navy-command); color: white; padding: 35px; border-radius: 12px; margin-bottom: 30px; text-align: center;}
+        .scanner-title { font-family: 'Space Grotesk'; font-size: 36px; font-weight: 900; margin: 0; text-transform: uppercase; color: var(--kilrr-orange);}
+        .scanner-sub { font-size: 16px; font-weight: 700; margin-top: 8px; color: white;}
         .scanner-sub span { color: var(--kilrr-orange); }
 
-        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
-        .stat-card { background: white; border: 2px dashed #cbd5e1; padding: 20px; border-radius: 12px; text-align: center; }
-        .stat-label { font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
-        .stat-value { font-size: 28px; font-weight: 900; color: var(--navy-command); }
-        .stat-value span { font-size: 14px; color: var(--kilrr-orange); font-weight: 800;}
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
+        .stat-card { background: white; border: 3px dashed #cbd5e1; padding: 30px; border-radius: 16px; text-align: center; }
+        .stat-label { font-size: 16px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 10px; }
+        .stat-value { font-size: 48px; font-weight: 900; color: var(--navy-command); line-height: 1;}
+        .stat-value span { font-size: 20px; color: var(--kilrr-orange); font-weight: 800;}
 
-        /* INGREDIENT BREAKDOWN PILLS */
-        .req-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px;}
-        .req-pill { background: white; border: 1px solid #cbd5e1; padding: 16px 20px; border-radius: 8px; font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; align-items: center; color: var(--success-green); transition: 0.3s;}
+        /* MASSIVE INGREDIENT PILLS */
+        .req-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 15px; margin-bottom: 40px;}
+        .req-pill { background: white; border: 2px solid #cbd5e1; padding: 24px 30px; border-radius: 12px; font-weight: 800; font-size: 18px; display: flex; justify-content: space-between; align-items: center; color: var(--success-green); transition: 0.3s;}
         .req-pill.pending { color: #64748b; }
         .req-pill.done { border-color: var(--success-green); background: #ecfdf5;}
-        .req-name { font-weight: 800; display: flex; align-items: center; gap: 6px; }
-        .req-code { font-family: monospace; font-size: 12px; color: var(--navy-command); opacity: 0.6; background: #e2e8f0; padding: 2px 6px; border-radius: 4px;}
-        .req-status { display: flex; gap: 10px; align-items: center; font-size: 14px; font-weight: 900;}
+        .req-name { font-weight: 900; display: flex; align-items: center; gap: 10px; }
+        .req-code { font-family: monospace; font-size: 14px; color: var(--navy-command); opacity: 0.6; background: #e2e8f0; padding: 4px 8px; border-radius: 6px;}
+        .req-status { display: flex; gap: 15px; align-items: center; font-size: 18px; font-weight: 900;}
         .ing-weight { color: var(--navy-command); }
         .ing-weight-zero { color: #cbd5e1; }
 
-        .scan-input-wrapper { display: flex; gap: 10px; margin-bottom: 25px; }
-        #scan_input { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid var(--kilrr-orange); font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin: 0; color: #0f172a; outline: none; transition: 0.2s;}
+        /* MASSIVE SCANNER INPUT */
+        .scan-input-wrapper { display: flex; gap: 15px; margin-bottom: 30px; }
+        #scan_input { width: 100%; padding: 25px 30px; box-sizing: border-box; border-radius: 12px; border: 4px solid var(--kilrr-orange); font-size: 32px; font-weight: 900; font-family: 'Inter', sans-serif; margin: 0; color: #0f172a; outline: none; transition: 0.2s;}
         #scan_input:disabled { background: #f1f5f9; border-color: #cbd5e1; cursor: not-allowed; opacity: 0.7;}
-        .btn-add { background: var(--navy-command); color: white; border: none; border-radius: 10px; font-weight: 900; padding: 0 30px; cursor: pointer; font-size: 16px; transition: 0.2s; }
+        .btn-add { background: var(--navy-command); color: white; border: none; border-radius: 12px; font-weight: 900; padding: 0 40px; cursor: pointer; font-size: 24px; transition: 0.2s; }
         .btn-add:active { transform: scale(0.95); }
 
-        .scan-history { max-height: 250px; overflow-y: auto; background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px;}
-        .scan-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; font-family: monospace; font-weight: bold; font-size: 14px;}
-        .scan-weight { color: var(--danger-red); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 900; }
+        .scan-history { max-height: 350px; overflow-y: auto; background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px;}
+        .scan-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 10px; font-family: monospace; font-weight: bold; font-size: 18px;}
+        .scan-weight { color: var(--danger-red); font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 900; }
 
-        /* FULL SCREEN FLASH OVERLAY */
-        #flash_overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9998; opacity: 0; transition: opacity 0.5s ease-out; }
+        /* 🔥 HARDWARE ACCELERATED FLASH OVERLAY 🔥 */
+        #flash_overlay { position: fixed; inset: 0; pointer-events: none; z-index: 10000; opacity: 0; transition: opacity 0.3s ease-out; display: flex; flex-direction: column; align-items: center; justify-content: center;}
+        .flash-icon { font-size: 120px; line-height: 1; margin-bottom: 20px; text-shadow: 0 10px 20px rgba(0,0,0,0.3);}
+        .flash-text { color: white; font-size: 80px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; text-transform: uppercase; margin: 0; text-shadow: 0 10px 20px rgba(0,0,0,0.3); text-align: center;}
 
         /* GENERIC DIALOG MODAL */
         .modal-overlay { position: fixed; inset: 0; background: rgba(11, 17, 33, 0.85); backdrop-filter: blur(5px); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s;}
@@ -116,19 +120,21 @@
             .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap; border-top: 3px solid var(--kilrr-orange); z-index: 999;}
             .brand { display: none; }
             .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 8px 12px;}
-            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 20px; margin-bottom: 4px;}
-            .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 20px; margin-bottom: 4px;}
-            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 20px; margin-bottom: 4px;}
-            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 20px; margin-bottom: 4px;}
-            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 20px; margin-bottom: 4px;}
-            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 20px; margin-bottom: 4px;}
             .req-list { grid-template-columns: 1fr; }
             .card { padding: 20px;}
+            #scan_view { padding: 20px; }
+            .stat-value { font-size: 32px; }
+            #scan_input { padding: 16px; font-size: 20px; }
+            .flash-text { font-size: 40px; }
         }
     </style>
 </head>
 <body>
-    <div id="flash_overlay"></div> <!-- Full Screen Color Flash -->
+    <!-- 🔥 MASSIVE FULL SCREEN FLASH UI 🔥 -->
+    <div id="flash_overlay">
+        <div class="flash-icon" id="flash_icon"></div>
+        <h1 class="flash-text" id="flash_text"></h1>
+    </div>
 
     <nav class="nav-top">
         <a href="index.html" class="brand">Kilrr <span>OS</span></a>
@@ -179,7 +185,7 @@
                         <input type="text" id="config_batch_code" class="config-input" style="text-transform:uppercase;">
                     </div>
                     <div style="flex:1;">
-                        <label>Total Runs (For Tracking)</label>
+                        <label>Total Runs</label>
                         <input type="number" id="config_runs" class="config-input" value="1" min="1">
                     </div>
                 </div>
@@ -189,8 +195,8 @@
         </div>
     </div>
 
-    <!-- ACTIVE SCANNER VIEW -->
-    <div class="container" id="scan_view">
+    <!-- ULTRA-WIDE SCANNER VIEW -->
+    <div class="container-wide" id="scan_view">
         <div class="scanner-header">
             <h1 class="scanner-title" id="scan_fg_name">RECIPE NAME</h1>
             <div class="scanner-sub">Batch: <span id="scan_batch_code">BATCH-01</span> | Operator: <span id="scan_op">MUAZ</span></div>
@@ -219,10 +225,10 @@
         <label>आत्ताच स्कॅन केलेले (ACTIVE SCANS)</label>
         <div class="scan-history" id="scan_history">Loading...</div>
 
-        <button onclick="closeCurrentRun()" style="width:100%; margin-top:25px; background:var(--navy-command); color:white; border:none; padding:20px; border-radius:12px; font-size:18px; font-weight:900; font-family:'Space Grotesk'; cursor:pointer; box-shadow: 0 5px 15px rgba(11, 17, 33, 0.3);">✔ काम संपले (FINISH & CLOSE BATCH)</button>
+        <button onclick="closeCurrentRun()" style="width:100%; margin-top:30px; background:var(--navy-command); color:white; border:none; padding:25px; border-radius:12px; font-size:22px; font-weight:900; font-family:'Space Grotesk'; cursor:pointer; box-shadow: 0 5px 15px rgba(11, 17, 33, 0.3);">✔ काम संपले (FINISH & CLOSE BATCH)</button>
         
-        <div style="text-align:center; margin-top:15px;">
-            <a href="#" onclick="backToSetup()" style="color:#64748b; font-weight:bold; font-size:14px; text-decoration:none;">← Back to Hub (Leaves batch active)</a>
+        <div style="text-align:center; margin-top:20px;">
+            <a href="#" onclick="backToSetup()" style="color:#64748b; font-weight:bold; font-size:16px; text-decoration:none;">← Back to Hub (Leaves batch active)</a>
         </div>
     </div>
 
@@ -233,8 +239,7 @@
             <h3 class="modal-title" id="modal_title">Title</h3>
             <p class="modal-desc" id="modal_desc">Message goes here.</p>
             
-            <input type="text" id="modal_input" class="modal-input" style="display:none;" autocomplete="off" placeholder="Type here...">
-            <input type="password" id="modal_password" class="modal-input" style="display:none;" placeholder="Enter Master PIN..." autocomplete="off">
+            <input type="password" id="modal_password" class="modal-input" style="display:none;" placeholder="Enter PIN (1234)..." autocomplete="off">
 
             <div class="modal-actions">
                 <button id="modal_cancel" class="btn-modal btn-cancel" onclick="closeModal(false)">CANCEL</button>
@@ -263,21 +268,47 @@
         };
 
         // ==========================================
-        // HARDWARE ACCELERATED SCREEN FLASH
+        // SYSTEM AUDIO & HARDWARE FLASH
         // ==========================================
+        function speakAlert(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stop any currently playing audio
+                let msg = new SpeechSynthesisUtterance();
+                msg.text = text;
+                msg.rate = 1.0;
+                window.speechSynthesis.speak(msg);
+            }
+        }
+
         function triggerFlash(type) {
             const overlay = document.getElementById('flash_overlay');
+            const fIcon = document.getElementById('flash_icon');
+            const fText = document.getElementById('flash_text');
+            
             overlay.style.transition = 'none'; 
             
-            if (type === 'success') overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.4)';
-            else if (type === 'error') overlay.style.backgroundColor = 'rgba(220, 38, 38, 0.5)';
-            else if (type === 'duplicate') overlay.style.backgroundColor = 'rgba(234, 179, 8, 0.5)'; // Warning Yellow
+            if (type === 'success') {
+                overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.95)';
+                fIcon.textContent = '✅';
+                fText.textContent = 'SUCCESS';
+                speakAlert('Success');
+            } else if (type === 'error') {
+                overlay.style.backgroundColor = 'rgba(220, 38, 38, 0.95)';
+                fIcon.textContent = '🛑';
+                fText.textContent = 'WRONG ITEM';
+                speakAlert('Wrong Ingredient');
+            } else if (type === 'duplicate') {
+                overlay.style.backgroundColor = 'rgba(234, 179, 8, 0.95)'; 
+                fIcon.textContent = '⚠️';
+                fText.textContent = 'DUPLICATE';
+                speakAlert('Duplicate Scan');
+            }
             
             overlay.style.opacity = '1';
-            void overlay.offsetWidth; // Force Reflow to ensure flash triggers instantly
+            void overlay.offsetWidth; 
             
-            overlay.style.transition = 'opacity 0.6s ease-out';
-            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.8s ease-in';
+            setTimeout(() => { overlay.style.opacity = '0'; }, 600); // Holds solid for a half second then fades
         }
 
         // ==========================================
@@ -294,23 +325,15 @@
             const cancelBtn = document.getElementById('modal_cancel');
             const confirmBtn = document.getElementById('modal_confirm');
             const icon = document.getElementById('modal_icon');
-            const inp = document.getElementById('modal_input');
             const pwd = document.getElementById('modal_password');
 
-            inp.style.display = 'none'; inp.value = '';
             pwd.style.display = 'none'; pwd.value = '';
             modalCallback = callback;
 
-            if (type === 'error' || type === 'duplicate') {
+            if (type === 'error') {
                 icon.textContent = '🛑';
                 box.style.borderTopColor = 'var(--danger-red)';
                 confirmBtn.style.background = 'var(--danger-red)';
-                confirmBtn.textContent = 'OK';
-                cancelBtn.style.display = 'none';
-            } else if (type === 'success') {
-                icon.textContent = '✅';
-                box.style.borderTopColor = 'var(--success-green)';
-                confirmBtn.style.background = 'var(--success-green)';
                 confirmBtn.textContent = 'OK';
                 cancelBtn.style.display = 'none';
             } else if (type === 'confirm') {
@@ -319,14 +342,6 @@
                 confirmBtn.style.background = 'var(--kilrr-orange)';
                 confirmBtn.textContent = 'PROCEED';
                 cancelBtn.style.display = 'block';
-            } else if (type === 'prompt') {
-                icon.textContent = '✏️';
-                box.style.borderTopColor = 'var(--accent-blue)';
-                confirmBtn.style.background = 'var(--accent-blue)';
-                confirmBtn.textContent = 'CONTINUE';
-                cancelBtn.style.display = 'block';
-                inp.style.display = 'block';
-                setTimeout(() => inp.focus(), 50);
             } else if (type === 'password') {
                 icon.textContent = '🔒';
                 box.style.borderTopColor = 'var(--danger-red)';
@@ -348,7 +363,6 @@
             box.style.transform = 'translateY(20px)';
             
             let val = null;
-            if (document.getElementById('modal_input').style.display === 'block') val = document.getElementById('modal_input').value;
             if (document.getElementById('modal_password').style.display === 'block') val = document.getElementById('modal_password').value;
 
             setTimeout(() => { m.style.display = 'none'; }, 200);
@@ -363,7 +377,6 @@
             }
         }
 
-        document.getElementById('modal_input').addEventListener('keypress', function(e) { if (e.key === 'Enter') closeModal(true); });
         document.getElementById('modal_password').addEventListener('keypress', function(e) { if (e.key === 'Enter') closeModal(true); });
 
         // ==========================================
@@ -386,12 +399,12 @@
         }
 
         function addOperator() {
-            showDialog("New Operator", "Enter the name of the new Operator:", "prompt", (val) => {
-                if(!val || val.trim() === '') return;
-                operators.push(val.trim());
+            let name = prompt("Enter the name of the new Operator:");
+            if(name && name.trim() !== '') {
+                operators.push(name.trim());
                 localStorage.setItem('kilrr_operators', JSON.stringify(operators));
-                selectOperator(val.trim());
-            });
+                selectOperator(name.trim());
+            }
         }
 
         function deleteOperator(event, idx) {
@@ -434,11 +447,9 @@
                         <span class="batch-sub">${b.fg_code} | ${b.operator_name}</span>
                     </div>
                     <div class="action-btns">
-                        <!-- HARD DELETE -->
+                        <!-- SINGLE STEP DELETE MODAL -->
                         <button class="btn-action delete" title="Permanently Delete" onclick="triggerDeleteBatch('${b.batch_code}')">🗑️</button>
-                        <!-- SOFT CLOSE -->
-                        <button class="btn-action close" title="Soft Close (Save Data)" onclick="closeBatchList('${b.batch_code}')">✔</button>
-                        <!-- RESUME -->
+                        <!-- RESUME RUN -->
                         <button class="btn-action play" title="Resume Run" onclick="resumeRun('${b.batch_code}', '${b.fg_code}', '${b.operator_name}')">►</button>
                     </div>
                 </div>
@@ -498,43 +509,35 @@
         }
 
         // ==========================================
-        // DOUBLE CONFIRMATION DELETE LOGIC
+        // FIXED SINGLE CONFIRMATION PIN DELETE
         // ==========================================
         function triggerDeleteBatch(batchCode) {
-            showDialog("Confirm Deletion", `Are you sure you want to permanently delete Batch [${batchCode}]?\n\nType "DELETE" to confirm.`, "prompt", (val) => {
-                if (val && val.toUpperCase() === "DELETE") {
-                    setTimeout(() => {
-                        showDialog("Authorization Required", "Enter Master PIN to authorize deletion:", "password", async (pin) => {
-                            if (!pin) return;
-                            try {
-                                const res = await fetch('/delete-batch', {
-                                    method: 'POST',
-                                    headers: {'Content-Type': 'application/json'},
-                                    body: JSON.stringify({ batch_code: batchCode, pin: pin })
-                                });
-                                const data = await res.json();
-                                if(data.error) return showDialog("Access Denied", data.error, "error");
-                                
-                                loadOpenBatches();
-                            } catch(e) { showDialog("Error", "Server error", "error"); }
-                        });
-                    }, 300);
-                } else if (val !== null) {
-                    setTimeout(() => showDialog("Error", "You didn't type DELETE correctly. Request canceled.", "error"), 300);
-                }
+            showDialog("Delete Batch", `Enter PIN to permanently delete [ ${batchCode} ]:`, "password", async (pin) => {
+                if (!pin) return;
+                try {
+                    const res = await fetch('/delete-batch', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ batch_code: batchCode, pin: pin })
+                    });
+                    const data = await res.json();
+                    if(data.error) return showDialog("Access Denied", data.error, "error");
+                    
+                    loadOpenBatches();
+                } catch(e) { showDialog("Error", "Server error", "error"); }
             });
         }
 
-        function closeBatchList(batchCode) {
-            showDialog("Finish Run?", `Are you sure you want to close batch ${batchCode}? Data will be saved permanently.`, "confirm", async (confirmed) => {
+        function closeCurrentRun() {
+            showDialog("Finish Run?", `Close batch ${activeBatchCode}? Data will be saved permanently.`, "confirm", async (confirmed) => {
                 if(!confirmed) return;
                 try {
                     await fetch('/close-batch', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ batch_code: batchCode })
+                        body: JSON.stringify({ batch_code: activeBatchCode })
                     });
-                    loadOpenBatches(); 
+                    backToSetup(); 
                 } catch(e) { showDialog("Error", "Failed to close batch.", "error"); }
             });
         }
@@ -555,6 +558,9 @@
 
             await loadReqs();
             await loadScans();
+            
+            // Speak batch start
+            speakAlert("Ready");
             document.getElementById('scan_input').focus();
         }
 
@@ -586,7 +592,7 @@
             } catch(e) { console.error(e); }
         }
 
-        // 🔥 RESTORED INGREDIENT-WISE WEIGHT BREAKDOWN WITH SHORTCODES 🔥
+        // 🔥 RESTORED INGREDIENT SHORTCODES & WEIGHT BREAKDOWN 🔥
         function renderReqs() {
             const list = document.getElementById('scan_reqs');
             if(activeReqs.length === 0) {
@@ -630,7 +636,7 @@
                     <span>${s.rm_tag}</span>
                     <div style="display:flex; gap:20px; align-items:center;">
                         ${dispWeight}
-                        <button style="background:transparent; border:none; color:var(--danger-red); cursor:pointer; font-weight:900; font-size:16px;" onclick="undoScan('${s.rm_tag}')">✖</button>
+                        <button style="background:transparent; border:none; color:var(--danger-red); cursor:pointer; font-weight:900; font-size:22px;" onclick="undoScan('${s.rm_tag}')">✖</button>
                     </div>
                 </div>`;
             }).join('');
@@ -647,11 +653,11 @@
             const barcode = inp.value.trim().toUpperCase();
             if(!barcode) return;
             
-            // LOCAL DUPLICATE CHECK
+            // INSTANT LOCAL DUPLICATE CHECK (Locks it mathematically)
             if (activeScans.some(s => s.rm_tag === barcode)) {
                 inp.value = '';
-                triggerFlash('duplicate'); // Flash Yellow/Orange
-                return showDialog("Duplicate Scan!", `Barcode [ ${barcode} ] is already in this batch!`, "duplicate");
+                triggerFlash('duplicate'); 
+                return; // Flash and Audio handle the alert
             }
 
             // Recipe Verification
@@ -661,8 +667,8 @@
                 let isValid = activeReqs.some(r => r.product_code === pCode);
                 if(!isValid) {
                     inp.value = '';
-                    triggerFlash('error'); // Flash Red
-                    return showDialog("Wrong Ingredient!", `[ ${pCode} ] is NOT required to make ${activeFGCode}!`, "error");
+                    triggerFlash('error'); 
+                    return; // Flash and Audio handle the alert
                 }
             }
 
@@ -709,20 +715,6 @@
                 });
                 await loadScans(); 
             } catch(e) { showDialog("Error", "Undo Failed.", "error"); }
-        }
-
-        function closeCurrentRun() {
-            showDialog("Finish Run?", `Are you sure you want to finish and close batch ${activeBatchCode}? Data will be saved permanently.`, "confirm", async (confirmed) => {
-                if(!confirmed) return;
-                try {
-                    await fetch('/close-batch', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ batch_code: activeBatchCode })
-                    });
-                    backToSetup(); 
-                } catch(e) { showDialog("Error", "Failed to close batch.", "error"); }
-            });
         }
     </script>
 </body>
