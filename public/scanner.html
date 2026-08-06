@@ -35,20 +35,25 @@
         .batch-sub { color: #64748b; font-size: 13px; font-weight: 700; font-family: 'Inter'; }
         
         .action-btns { display: flex; gap: 8px;}
-        .btn-action { border: none; padding: 10px 16px; border-radius: 8px; font-weight: 900; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; transition: 0.1s;}
+        .btn-action { border: none; padding: 10px 14px; border-radius: 8px; font-weight: 900; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; transition: 0.1s;}
         .btn-action:active { transform: scale(0.95); }
         .btn-action.play { background: var(--success-green); font-size: 16px;}
-        .btn-action.close { background: var(--danger-red); font-size: 16px;}
+        .btn-action.close { background: var(--navy-command); font-size: 16px;}
+        .btn-action.delete { background: var(--danger-red); font-size: 16px;}
 
+        /* OPERATOR & RECIPE GRIDS */
         .grid-select { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-bottom: 25px;}
-        .grid-item { background: white; border: 2px solid #cbd5e1; padding: 20px 10px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; color: var(--navy-command);}
+        .grid-item { position: relative; background: white; border: 2px solid #cbd5e1; padding: 20px 10px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; color: var(--navy-command);}
         .grid-item:hover { border-color: var(--kilrr-orange); background: #fff7ed;}
         .grid-item.active { border-color: var(--kilrr-orange); background: var(--kilrr-orange); color: white; box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3);}
         
+        .op-del { position: absolute; top: -8px; right: -8px; background: var(--danger-red); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; display: none; align-items: center; justify-content: center; font-family: sans-serif; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: none; cursor: pointer;}
+        .grid-item:hover .op-del { display: flex; }
+
         label { font-weight: 900; font-size: 13px; color: var(--navy-command); display: block; margin-bottom: 12px; text-transform: uppercase;}
         
         /* SCANNER VIEW */
-        #scan_view { display: none; background: white; padding: 30px; border-radius: 16px; border-top: 6px solid var(--success-green); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); margin: 30px auto; max-width: 900px;}
+        #scan_view { display: none; background: white; padding: 30px; border-radius: 16px; border-top: 6px solid var(--navy-command); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); margin: 30px auto; max-width: 900px;}
         
         .scanner-header { background: var(--navy-command); color: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; text-align: center;}
         .scanner-title { font-family: 'Space Grotesk'; font-size: 26px; font-weight: 900; margin: 0; text-transform: uppercase; color: var(--kilrr-orange);}
@@ -63,10 +68,11 @@
 
         /* INGREDIENT BREAKDOWN PILLS */
         .req-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px;}
-        .req-pill { background: white; border: 1px solid #cbd5e1; padding: 16px; border-radius: 8px; font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; align-items: center; color: #64748b; transition: 0.3s;}
-        .req-pill.done { border-color: var(--success-green); color: var(--success-green); background: #ecfdf5;}
+        .req-pill { background: white; border: 1px solid #cbd5e1; padding: 16px 20px; border-radius: 8px; font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; align-items: center; color: var(--success-green); transition: 0.3s;}
+        .req-pill.pending { color: #64748b; }
+        .req-pill.done { border-color: var(--success-green); background: #ecfdf5;}
         .req-name { font-weight: 800; }
-        .req-status { display: flex; gap: 10px; align-items: center; font-family: monospace; font-size: 15px;}
+        .req-status { display: flex; gap: 10px; align-items: center; font-size: 14px; font-weight: 900;}
         .ing-weight { color: var(--navy-command); }
         .ing-weight-zero { color: #cbd5e1; }
 
@@ -76,17 +82,21 @@
         .btn-add:active { transform: scale(0.95); }
 
         .scan-history { max-height: 250px; overflow-y: auto; background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px;}
-        .scan-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; font-family: monospace; font-weight: bold; font-size: 14px;}
-        .scan-weight { color: var(--kilrr-orange); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 900; }
+        .scan-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; font-family: monospace; font-weight: bold; font-size: 14px;}
+        .scan-weight { color: var(--danger-red); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 900; }
 
-        /* WORLD-CLASS CUSTOM MODAL */
-        #kilrr_modal { position: fixed; inset: 0; background: rgba(11, 17, 33, 0.8); backdrop-filter: blur(5px); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s;}
-        .modal-content { background: white; width: 100%; max-width: 400px; border-radius: 16px; padding: 30px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.3); transform: translateY(20px); transition: transform 0.2s;}
-        .modal-icon { font-size: 40px; margin-bottom: 15px; }
-        .modal-title { font-family: 'Space Grotesk'; font-size: 22px; font-weight: 900; color: var(--navy-command); margin: 0 0 10px 0; text-transform: uppercase;}
-        .modal-desc { font-size: 14px; font-weight: 600; color: #64748b; margin-bottom: 25px; line-height: 1.5;}
-        .modal-actions { display: flex; gap: 10px; justify-content: center;}
-        .btn-modal { flex: 1; padding: 14px; border: none; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; text-transform: uppercase; transition: 0.1s;}
+        /* WORLD-CLASS CUSTOM FSSAI MODAL */
+        #kilrr_modal { position: fixed; inset: 0; background: rgba(11, 17, 33, 0.85); backdrop-filter: blur(5px); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s;}
+        .modal-content { background: white; width: 100%; max-width: 420px; border-radius: 16px; padding: 35px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.3); transform: translateY(20px); transition: transform 0.2s; border-top: 6px solid var(--kilrr-orange);}
+        .modal-icon { font-size: 45px; margin-bottom: 10px; line-height: 1;}
+        .modal-title { font-family: 'Space Grotesk'; font-size: 24px; font-weight: 900; color: var(--navy-command); margin: 0 0 10px 0; text-transform: uppercase;}
+        .modal-desc { font-size: 15px; font-weight: 600; color: #64748b; margin-bottom: 25px; line-height: 1.5;}
+        
+        .modal-input { width: 100%; padding: 16px; box-sizing: border-box; border-radius: 8px; border: 2px solid var(--navy-command); font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 25px; text-align: center;}
+        .modal-input:focus { outline: none; border-color: var(--kilrr-orange); }
+        
+        .modal-actions { display: flex; gap: 15px; justify-content: center;}
+        .btn-modal { flex: 1; padding: 16px; border: none; border-radius: 8px; font-weight: 900; font-size: 15px; cursor: pointer; text-transform: uppercase; transition: 0.1s;}
         .btn-modal:active { transform: scale(0.95); }
         .btn-cancel { background: #e2e8f0; color: var(--navy-command); }
         .btn-confirm { background: var(--kilrr-orange); color: white; }
@@ -125,9 +135,7 @@
             <h2>Resume Active Run</h2>
             <span class="marathi-title">चालू काम परत उघडा</span>
             
-            <div style="position: relative;">
-                <input type="text" id="search_batches" placeholder="🔍 Search open batches..." oninput="renderOpenBatches()" style="width:100%; padding:14px 14px 14px 40px; border-radius:8px; border:1px solid #cbd5e1; margin-bottom:15px; font-weight:bold; font-size:14px; outline:none;">
-            </div>
+            <input type="text" id="search_batches" placeholder="🔍 Search open batches..." oninput="renderOpenBatches()" style="width:100%; padding:14px; border-radius:8px; border:1px solid #cbd5e1; margin-bottom:15px; font-weight:bold; font-size:14px; outline:none;">
             
             <div class="batch-list" id="open_batches_list">
                 <div style="text-align:center; padding:20px; color:#94a3b8; font-weight:bold;">Loading...</div>
@@ -140,9 +148,7 @@
 
             <label>1. कोण स्कॅन करत आहे? (WHO IS SCANNING?)</label>
             <div class="grid-select" id="operator_grid">
-                <div class="grid-item" onclick="selectOperator('Muaz', this)">Muaz</div>
-                <div class="grid-item" onclick="selectOperator('Arbaaz', this)">Arbaaz</div>
-                <div class="grid-item" style="border-style:dashed; color:#64748b;" onclick="customOperator(this)">+ Add</div>
+                <!-- Populated dynamically via LocalStorage -->
             </div>
 
             <label>2. आपण काय बनवत आहोत? (WHAT ARE WE MAKING?)</label>
@@ -154,6 +160,7 @@
 
     <!-- ACTIVE SCANNER VIEW -->
     <div class="container" id="scan_view">
+        
         <div class="scanner-header">
             <h1 class="scanner-title" id="scan_fg_name">RECIPE NAME</h1>
             <div class="scanner-sub">Batch: <span id="scan_batch_code">BATCH-01</span> | Operator: <span id="scan_op">MUAZ</span></div>
@@ -189,12 +196,16 @@
         </div>
     </div>
 
-    <!-- CUSTOM FSSAI DIALOG MODAL -->
+    <!-- UNIFIED FSSAI DIALOG MODAL -->
     <div id="kilrr_modal">
         <div class="modal-content" id="modal_content_box">
             <div class="modal-icon" id="modal_icon">🛑</div>
             <h3 class="modal-title" id="modal_title">Title</h3>
             <p class="modal-desc" id="modal_desc">Message goes here.</p>
+            
+            <input type="text" id="modal_input" class="modal-input" style="display:none;" autocomplete="off">
+            <input type="password" id="modal_password" class="modal-input" style="display:none;" placeholder="Enter FSSAI PIN..." autocomplete="off">
+
             <div class="modal-actions">
                 <button id="modal_cancel" class="btn-modal btn-cancel" onclick="closeModal(false)">CANCEL</button>
                 <button id="modal_confirm" class="btn-modal btn-confirm" onclick="closeModal(true)">CONFIRM</button>
@@ -203,15 +214,26 @@
     </div>
 
     <script>
+        // GLOBALS
         let allBatches = [];
+        let operators = JSON.parse(localStorage.getItem('kilrr_operators')) || ['Muaz', 'Arbaaz'];
         let selectedOperator = null;
         
+        // Active Scan State
         let activeBatchCode = null;
         let activeFGCode = null;
         let activeReqs = [];
         let activeScans = [];
 
-        // --- WORLD CLASS MODAL SYSTEM ---
+        window.onload = () => {
+            renderOperators();
+            loadOpenBatches();
+            loadRecipes();
+        };
+
+        // ==========================================
+        // WORLD CLASS MODAL SYSTEM
+        // ==========================================
         let modalCallback = null;
 
         function showDialog(title, desc, type, callback) {
@@ -223,57 +245,122 @@
             const cancelBtn = document.getElementById('modal_cancel');
             const confirmBtn = document.getElementById('modal_confirm');
             const icon = document.getElementById('modal_icon');
+            const inp = document.getElementById('modal_input');
+            const pwd = document.getElementById('modal_password');
 
+            inp.style.display = 'none'; inp.value = '';
+            pwd.style.display = 'none'; pwd.value = '';
             modalCallback = callback;
 
             if (type === 'error') {
                 icon.textContent = '🛑';
+                box.style.borderTopColor = 'var(--danger-red)';
                 confirmBtn.style.background = 'var(--danger-red)';
+                confirmBtn.textContent = 'OK';
+                cancelBtn.style.display = 'none';
+            } else if (type === 'success') {
+                icon.textContent = '✅';
+                box.style.borderTopColor = 'var(--success-green)';
+                confirmBtn.style.background = 'var(--success-green)';
                 confirmBtn.textContent = 'OK';
                 cancelBtn.style.display = 'none';
             } else if (type === 'confirm') {
                 icon.textContent = '⚠️';
+                box.style.borderTopColor = 'var(--kilrr-orange)';
                 confirmBtn.style.background = 'var(--kilrr-orange)';
                 confirmBtn.textContent = 'CONFIRM';
                 cancelBtn.style.display = 'block';
-            } else if (type === 'success') {
-                icon.textContent = '✅';
-                confirmBtn.style.background = 'var(--success-green)';
-                confirmBtn.textContent = 'OK';
-                cancelBtn.style.display = 'none';
+            } else if (type === 'prompt') {
+                icon.textContent = '✏️';
+                box.style.borderTopColor = 'var(--accent-blue)';
+                confirmBtn.style.background = 'var(--accent-blue)';
+                confirmBtn.textContent = 'CONTINUE';
+                cancelBtn.style.display = 'block';
+                inp.style.display = 'block';
+                setTimeout(() => inp.focus(), 50);
+            } else if (type === 'password') {
+                icon.textContent = '🔒';
+                box.style.borderTopColor = 'var(--danger-red)';
+                confirmBtn.style.background = 'var(--danger-red)';
+                confirmBtn.textContent = 'AUTHORIZE';
+                cancelBtn.style.display = 'block';
+                pwd.style.display = 'block';
+                setTimeout(() => pwd.focus(), 50);
             }
 
             m.style.display = 'flex';
-            setTimeout(() => {
-                m.style.opacity = '1';
-                box.style.transform = 'translateY(0)';
-            }, 10);
+            setTimeout(() => { m.style.opacity = '1'; box.style.transform = 'translateY(0)'; }, 10);
         }
 
-        function closeModal(result) {
+        function closeModal(isConfirmed) {
             const m = document.getElementById('kilrr_modal');
             const box = document.getElementById('modal_content_box');
             m.style.opacity = '0';
             box.style.transform = 'translateY(20px)';
+            
+            let val = null;
+            if (document.getElementById('modal_input').style.display === 'block') val = document.getElementById('modal_input').value;
+            if (document.getElementById('modal_password').style.display === 'block') val = document.getElementById('modal_password').value;
+
             setTimeout(() => { m.style.display = 'none'; }, 200);
             
             if (modalCallback) {
-                modalCallback(result);
+                modalCallback(isConfirmed ? (val !== null ? val : true) : false);
                 modalCallback = null;
             }
             
-            // Refocus scanner if it was an error in scanner view
+            // Refocus barcode scanner if active
             if (document.getElementById('scan_view').style.display === 'block') {
                 setTimeout(() => document.getElementById('scan_input').focus(), 100);
             }
         }
 
-        window.onload = () => {
-            loadOpenBatches();
-            loadRecipes();
-        };
+        // Handle Enter Key in Modals
+        document.getElementById('modal_input').addEventListener('keypress', function(e) { if (e.key === 'Enter') closeModal(true); });
+        document.getElementById('modal_password').addEventListener('keypress', function(e) { if (e.key === 'Enter') closeModal(true); });
 
-        // --- SETUP VIEW LOGIC ---
+        // ==========================================
+        // DYNAMIC OPERATORS
+        // ==========================================
+        function renderOperators() {
+            const grid = document.getElementById('operator_grid');
+            grid.innerHTML = operators.map((op, idx) => `
+                <div class="grid-item ${selectedOperator === op ? 'active' : ''}" onclick="selectOperator('${op}')">
+                    ${op}
+                    <button class="op-del" onclick="deleteOperator(event, ${idx})">✖</button>
+                </div>
+            `).join('');
+            grid.innerHTML += `<div class="grid-item" style="border-style:dashed; color:#64748b;" onclick="addOperator()">+ Add Operator</div>`;
+        }
+
+        function selectOperator(name) {
+            selectedOperator = name;
+            renderOperators();
+        }
+
+        function addOperator() {
+            showDialog("New Operator", "Enter the name of the new FSSAI Operator:", "prompt", (val) => {
+                if(!val || val.trim() === '') return;
+                operators.push(val.trim());
+                localStorage.setItem('kilrr_operators', JSON.stringify(operators));
+                selectOperator(val.trim());
+            });
+        }
+
+        function deleteOperator(event, idx) {
+            event.stopPropagation(); // Prevents selection
+            showDialog("Remove Operator?", `Are you sure you want to remove ${operators[idx]}?`, "confirm", (confirmed) => {
+                if(!confirmed) return;
+                if(selectedOperator === operators[idx]) selectedOperator = null;
+                operators.splice(idx, 1);
+                localStorage.setItem('kilrr_operators', JSON.stringify(operators));
+                renderOperators();
+            });
+        }
+
+        // ==========================================
+        // SETUP VIEW LOGIC
+        // ==========================================
         async function loadOpenBatches() {
             try {
                 const res = await fetch('/open-batches');
@@ -286,10 +373,7 @@
             const list = document.getElementById('open_batches_list');
             const search = document.getElementById('search_batches').value.toLowerCase();
             
-            const filtered = allBatches.filter(b => 
-                b.batch_code.toLowerCase().includes(search) || 
-                b.fg_code.toLowerCase().includes(search)
-            );
+            const filtered = allBatches.filter(b => b.batch_code.toLowerCase().includes(search) || b.fg_code.toLowerCase().includes(search));
 
             if(filtered.length === 0) {
                 list.innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:bold; padding:20px;">No active runs found.</div>`;
@@ -303,10 +387,12 @@
                         <span class="batch-sub">${b.fg_code} | ${b.operator_name}</span>
                     </div>
                     <div class="action-btns">
-                        <!-- SOFT CLOSE LOGIC -->
-                        <button class="btn-action close" onclick="closeBatchList('${b.batch_code}')">✖</button>
-                        <!-- RESUME LOGIC -->
-                        <button class="btn-action play" onclick="resumeRun('${b.batch_code}', '${b.fg_code}', '${b.operator_name}')">►</button>
+                        <!-- HARD DELETE (Requires Double Confirm) -->
+                        <button class="btn-action delete" title="Permanently Delete" onclick="triggerDeleteBatch('${b.batch_code}')">🗑️</button>
+                        <!-- SOFT CLOSE -->
+                        <button class="btn-action close" title="Soft Close (Save FSSAI)" onclick="closeBatchList('${b.batch_code}')">✔</button>
+                        <!-- RESUME -->
+                        <button class="btn-action play" title="Resume Run" onclick="resumeRun('${b.batch_code}', '${b.fg_code}', '${b.operator_name}')">►</button>
                     </div>
                 </div>
             `).join('');
@@ -319,45 +405,66 @@
                 const uniqueFG = [...new Set(raw.map(r => r.fg_code))]; 
                 
                 document.getElementById('recipe_grid').innerHTML = uniqueFG.map(fg => `
-                    <div class="grid-item" onclick="startNewRun('${fg}', this)">${fg}</div>
+                    <div class="grid-item" onclick="startNewRun('${fg}')">${fg}</div>
                 `).join('');
             } catch(e) { console.error("Error loading recipes"); }
         }
 
-        function selectOperator(name, el) {
-            selectedOperator = name;
-            document.querySelectorAll('#operator_grid .grid-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
-        }
-
-        function customOperator(el) {
-            let name = prompt("Enter Operator Name:");
-            if(name) { selectOperator(name, el); el.textContent = name; el.style.borderStyle = 'solid'; }
-        }
-
-        async function startNewRun(fgName, el) {
-            if(!selectedOperator) return showDialog("Missing Information", "Please select WHO IS SCANNING first!", "error");
+        function startNewRun(fgName) {
+            if(!selectedOperator) return showDialog("Missing Info", "Please select WHO IS SCANNING first!", "error");
             
-            let batchCode = prompt(`Enter a Batch Code for ${fgName}:\n(e.g., ${fgName.substring(0,3).toUpperCase()}-123)`);
-            if(!batchCode) return;
-            batchCode = batchCode.trim().toUpperCase();
+            // Replaces browser prompt() with custom modal
+            showDialog("Start New Batch", `Assign a Batch Code for ${fgName}:`, "prompt", async (batchCode) => {
+                if(!batchCode) return;
+                batchCode = batchCode.trim().toUpperCase();
 
-            try {
-                const res = await fetch('/create-batch', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ batch_code: batchCode, fg_code: fgName, operator_name: selectedOperator })
-                });
-                const data = await res.json();
-                if(data.error) return showDialog("Error", data.error, "error");
+                try {
+                    const res = await fetch('/create-batch', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ batch_code: batchCode, fg_code: fgName, operator_name: selectedOperator })
+                    });
+                    const data = await res.json();
+                    if(data.error) return showDialog("Database Error", data.error, "error");
 
-                resumeRun(batchCode, fgName, selectedOperator);
-            } catch(e) { showDialog("Error", "Database Connection Failed", "error"); }
+                    resumeRun(batchCode, fgName, selectedOperator);
+                } catch(e) { showDialog("Error", "Server disconnected.", "error"); }
+            });
         }
 
-        // FSSAI SOFT CLOSE FROM THE HUB
+        // ==========================================
+        // DOUBLE CONFIRMATION DELETE LOGIC
+        // ==========================================
+        function triggerDeleteBatch(batchCode) {
+            showDialog("CRITICAL WARNING", `Are you absolutely sure you want to permanently delete Batch [${batchCode}]? Type "DELETE" to proceed.`, "prompt", (val) => {
+                if (val === "DELETE" || val === "delete") {
+                    
+                    // Second Authorization: PIN
+                    showDialog("AUTHORIZATION REQUIRED", "Enter FSSAI Master PIN to authorize deletion:", "password", async (pin) => {
+                        if (!pin) return;
+                        try {
+                            const res = await fetch('/delete-batch', {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({ batch_code: batchCode, pin: pin })
+                            });
+                            const data = await res.json();
+                            if(data.error) return showDialog("Access Denied", data.error, "error");
+                            
+                            loadOpenBatches();
+                            showDialog("Wiped", `Batch ${batchCode} has been permanently deleted.`, "success");
+                        } catch(e) { showDialog("Error", "Server error", "error"); }
+                    });
+
+                } else if (val) {
+                    showDialog("Error", "You didn't type DELETE correctly.", "error");
+                }
+            });
+        }
+
+        // SOFT CLOSE FROM THE HUB
         function closeBatchList(batchCode) {
-            showDialog("Finish Run?", `Are you sure you want to finish and close batch ${batchCode}? Data will be saved permanently.`, "confirm", async (confirmed) => {
+            showDialog("Finish Run?", `Are you sure you want to finish and close batch ${batchCode}? Data will be saved permanently for FSSAI audits.`, "confirm", async (confirmed) => {
                 if(!confirmed) return;
                 try {
                     await fetch('/close-batch', {
@@ -370,7 +477,9 @@
             });
         }
 
-        // --- ACTIVE SCANNER VIEW LOGIC ---
+        // ==========================================
+        // ACTIVE SCANNER VIEW LOGIC
+        // ==========================================
         async function resumeRun(batchCode, fgCode, opName) {
             document.getElementById('setup_view').style.display = 'none';
             document.getElementById('scan_view').style.display = 'block';
@@ -416,7 +525,7 @@
             } catch(e) { console.error(e); }
         }
 
-        // 🔥 INGREDIENT-WISE WEIGHT BREAKDOWN RENDERER 🔥
+        // 🔥 RESTORED INGREDIENT-WISE BREAKDOWN PILLS 🔥
         function renderReqs() {
             const list = document.getElementById('scan_reqs');
             if(activeReqs.length === 0) {
@@ -427,7 +536,7 @@
             list.innerHTML = activeReqs.map(r => {
                 if(!r.product_code || r.product_code === 'null') return '';
                 
-                // Filter scans just for this specific ingredient
+                // Filter scans for this ingredient to calculate dynamic weight
                 let ingScans = activeScans.filter(s => s.product_code === r.product_code);
                 let ingWeight = ingScans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
                 
@@ -435,13 +544,13 @@
                     return `
                     <div class="req-pill done">
                         <div class="req-name">${r.ingredient_name}</div>
-                        <div class="req-status"><span class="ing-weight">${ingWeight.toFixed(2)} KG</span> <span>✔</span></div>
+                        <div class="req-status"><span class="ing-weight">${ingWeight.toFixed(2)} KG</span> <span style="color:var(--success-green); font-size:18px;">✔</span></div>
                     </div>`;
                 } else {
                     return `
-                    <div class="req-pill">
+                    <div class="req-pill pending">
                         <div class="req-name">${r.ingredient_name}</div>
-                        <div class="req-status"><span class="ing-weight-zero">0.00 KG</span> <span>⏳</span></div>
+                        <div class="req-status"><span class="ing-weight-zero">0.00 KG</span> <span style="color:var(--kilrr-orange);">⏳</span></div>
                     </div>`;
                 }
             }).join('');
@@ -450,18 +559,18 @@
         function renderScans() {
             const list = document.getElementById('scan_history');
             if(activeScans.length === 0) {
-                list.innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:bold; padding:20px;">No ingredients scanned yet.</div>`;
+                list.innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:bold; padding:20px;">No barcodes scanned yet.</div>`;
                 return;
             }
 
             list.innerHTML = activeScans.map(s => {
-                let dispWeight = s.weight > 0 ? `<span class="scan-weight">${s.weight} KG</span>` : `<span class="scan-weight">--</span>`;
+                let dispWeight = s.weight > 0 ? `${s.weight} KG` : `--`;
                 return `
                 <div class="scan-item">
                     <span>${s.rm_tag}</span>
-                    <div style="display:flex; gap:15px; align-items:center;">
-                        ${dispWeight}
-                        <button style="background:transparent; color:var(--danger-red); font-size:18px; font-weight:bold; border:none; cursor:pointer;" onclick="undoScan('${s.rm_tag}')">✖</button>
+                    <div style="display:flex; gap:20px; align-items:center;">
+                        <span class="scan-weight">${dispWeight}</span>
+                        <button style="background:transparent; border:none; color:var(--danger-red); cursor:pointer; font-weight:900; font-size:16px;" onclick="undoScan('${s.rm_tag}')">✖</button>
                     </div>
                 </div>`;
             }).join('');
@@ -472,7 +581,13 @@
             const barcode = inp.value.trim().toUpperCase();
             if(!barcode) return;
             
-            // FSSAI Strict Verification
+            // 🔥 STRICT ANTI-DUPLICATE SCAN CHECK 🔥
+            if (activeScans.some(s => s.rm_tag === barcode)) {
+                inp.value = '';
+                return showDialog("Duplicate Scan!", `Barcode [ ${barcode} ] has already been added to this batch!`, "error");
+            }
+
+            // FSSAI Recipe Verification
             if(activeReqs.length > 0) {
                 let parts = barcode.split('/');
                 let pCode = parts.length >= 2 ? parts[1] : barcode;
@@ -493,7 +608,7 @@
                 if(data.error) throw new Error(data.error);
                 
                 inp.value = '';
-                await loadScans(); // Triggers UI and Stats update automatically
+                await loadScans(); // Triggers UI and Weight breakdown update automatically
                 inp.focus();
             } catch(e) { showDialog("Scan Failed", e.message, "error"); }
         }
