@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #10b981; --danger-red: #dc2626; --card-bg: #ffffff; --accent-blue: #2563eb; }
-        body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 80px;}
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 80px;}
         
         /* NAVIGATION */
         .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
@@ -20,17 +20,16 @@
 
         .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
         
-        /* CARDS */
-        .card { background: var(--card-bg); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); position: relative; margin-bottom: 30px;}
-        .card-hub { border-top: 6px solid var(--kilrr-orange); }
-        .card-scanner { border-top: 6px solid var(--success-green); }
+        /* CARDS (Exact match to screenshot) */
+        .card { background: var(--card-bg); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; position: relative; margin-bottom: 30px;}
+        .card-orange { border-top: 6px solid var(--kilrr-orange); }
 
         h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 20px; text-transform: uppercase; color: var(--navy-command);}
         .marathi-title { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 14px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
 
         /* SETUP VIEW: BATCH LIST & GRIDS */
-        .batch-list { max-height: 350px; overflow-y: auto; background: #fff7ed; padding: 15px; border-radius: 12px; border: 2px solid #fdba74;}
-        .batch-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px; border: 1px solid #cbd5e1; border-radius: 10px; margin-bottom: 10px; transition: 0.2s;}
+        .batch-list { max-height: 350px; overflow-y: auto; background: white; padding: 15px; border-radius: 12px; border: 1px solid #cbd5e1;}
+        .batch-item { display: flex; justify-content: space-between; align-items: center; background: #fff7ed; padding: 15px; border: 1px solid #fdba74; border-radius: 10px; margin-bottom: 10px; transition: 0.2s;}
         .batch-item:hover { border-color: var(--kilrr-orange); box-shadow: 0 4px 10px rgba(234, 88, 12, 0.1);}
         .batch-title { font-weight: 900; font-size: 18px; color: var(--navy-command); margin-bottom: 4px; display: block;}
         .batch-sub { color: #64748b; font-size: 13px; font-weight: 700; font-family: 'Inter'; }
@@ -44,31 +43,34 @@
         .grid-select { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-bottom: 25px;}
         .grid-item { background: white; border: 2px solid #cbd5e1; padding: 20px 10px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; color: var(--navy-command);}
         .grid-item:hover { border-color: var(--kilrr-orange); background: #fff7ed;}
-        .grid-item.active { border-color: var(--kilrr-orange); background: var(--kilrr-orange); color: white; box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3);}
+        .grid-item.active { border-color: var(--kilrr-orange); background: #fff7ed; color: var(--navy-command); box-shadow: 0 4px 15px rgba(234, 88, 12, 0.1);}
         
-        label { font-weight: 800; font-size: 13px; color: var(--navy-command); display: block; margin-bottom: 12px; text-transform: uppercase;}
+        label { font-weight: 900; font-size: 13px; color: var(--navy-command); display: block; margin-bottom: 12px; text-transform: uppercase;}
         
         /* SCANNER VIEW (RESTORED EXACT UI) */
-        #scan_view { display: none; }
+        #scan_view { display: none; background: white; padding: 30px; border-radius: 16px; border-top: 6px solid var(--success-green); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); margin: 30px auto; max-width: 900px;}
         
+        /* The Dark Navy Header Block */
         .scanner-header { background: var(--navy-command); color: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; text-align: center;}
         .scanner-title { font-family: 'Space Grotesk'; font-size: 26px; font-weight: 900; margin: 0; text-transform: uppercase; color: var(--kilrr-orange);}
         .scanner-sub { font-size: 13px; font-weight: 700; margin-top: 5px; color: white;}
         .scanner-sub span { color: var(--kilrr-orange); }
 
-        /* LIVE STATS ROW */
-        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-        .stat-card { background: #f8fafc; border: 2px dashed #cbd5e1; padding: 15px; border-radius: 12px; text-align: center; }
+        /* The Dashed Live Stats Row */
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: white; border: 2px dashed #cbd5e1; padding: 20px; border-radius: 12px; text-align: center; }
         .stat-label { font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
-        .stat-value { font-size: 24px; font-weight: 900; color: var(--navy-command); }
-        .stat-value span { font-size: 14px; color: var(--kilrr-orange); }
+        .stat-value { font-size: 28px; font-weight: 900; color: var(--navy-command); }
+        .stat-value span { font-size: 14px; color: var(--kilrr-orange); font-weight: 800;}
 
-        .req-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px;}
-        .req-pill { background: white; border: 1px solid #cbd5e1; padding: 14px 15px; border-radius: 8px; font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; color: #64748b; transition: 0.3s;}
-        .req-pill.done { border-color: var(--success-green); color: var(--success-green); background: #ecfdf5;}
+        /* The Exact Pill UI */
+        .req-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px;}
+        .req-pill { background: white; border: 1px solid #cbd5e1; padding: 16px; border-radius: 8px; font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; color: #64748b; transition: 0.3s;}
+        .req-pill.done { border-color: var(--success-green); color: var(--success-green); background: white;}
         
+        /* The Orange Bordered Input */
         .scan-input-wrapper { display: flex; gap: 10px; margin-bottom: 25px; }
-        #scan_input { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid var(--kilrr-orange); font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin: 0; color: #0f172a; outline: none; box-shadow: 0 0 10px rgba(234, 88, 12, 0.1);}
+        #scan_input { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid var(--kilrr-orange); font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin: 0; color: #0f172a; outline: none;}
         .btn-add { background: var(--navy-command); color: white; border: none; border-radius: 10px; font-weight: 900; padding: 0 30px; cursor: pointer; font-size: 16px; transition: 0.2s; }
         .btn-add:active { transform: scale(0.95); }
 
@@ -106,18 +108,18 @@
 
     <!-- SETUP VIEW (HUB) -->
     <div class="container" id="setup_view">
-        <div class="card card-hub">
+        <div class="card card-orange">
             <h2>Resume Active Run</h2>
             <span class="marathi-title">चालू काम परत उघडा</span>
             
-            <input type="text" id="search_batches" placeholder="🔍 Search open batches..." oninput="renderOpenBatches()" style="width:100%; padding:14px; border-radius:8px; border:2px solid #cbd5e1; margin-bottom:15px; font-weight:bold; font-size:14px;">
+            <input type="text" id="search_batches" placeholder="🔍 Search open batches..." oninput="renderOpenBatches()" style="width:100%; padding:14px; border-radius:8px; border:1px solid #cbd5e1; margin-bottom:15px; font-weight:bold; font-size:14px;">
             
             <div class="batch-list" id="open_batches_list">
                 <div style="text-align:center; padding:20px; color:#94a3b8; font-weight:bold;">Loading...</div>
             </div>
         </div>
 
-        <div class="card card-hub">
+        <div class="card card-orange">
             <h2>Start New Run</h2>
             <span class="marathi-title">नवीन काम चालू करा</span>
 
@@ -137,43 +139,39 @@
 
     <!-- ACTIVE SCANNER VIEW -->
     <div class="container" id="scan_view">
-        <div class="card card-scanner" style="padding: 20px;">
-            
-            <!-- Exact Match to Screenshot Header -->
-            <div class="scanner-header">
-                <h1 class="scanner-title" id="scan_fg_name">RECIPE NAME</h1>
-                <div class="scanner-sub">Batch: <span id="scan_batch_code">BATCH-01</span> | Operator: <span id="scan_op">MUAZ</span></div>
+        
+        <!-- The Restored Navy Header -->
+        <div class="scanner-header">
+            <h1 class="scanner-title" id="scan_fg_name">RECIPE NAME</h1>
+            <div class="scanner-sub">Batch: <span id="scan_batch_code">BATCH-01</span> | Operator: <span id="scan_op">MUAZ</span></div>
+        </div>
+
+        <!-- The Restored Dashed Live Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-label">Total Packets</div>
+                <div class="stat-value" id="stat_count">0</div>
             </div>
-
-            <!-- RESTORED: Live Weight & Packet Stats -->
-            <div class="stats-row">
-                <div class="stat-card">
-                    <div class="stat-label">Total Packets</div>
-                    <div class="stat-value" id="stat_count">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Total Weight</div>
-                    <div class="stat-value"><span id="stat_weight" style="color:var(--navy-command); font-size:24px;">0.00</span> <span>KG</span></div>
-                </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Weight</div>
+                <div class="stat-value"><span id="stat_weight">0.00</span> <span>KG</span></div>
             </div>
+        </div>
 
-            <label>काय काय टाकायचे आहे? (INGREDIENTS REQUIRED)</label>
-            <div class="req-list" id="scan_reqs">Loading...</div>
+        <label>काय काय टाकायचे आहे? (INGREDIENTS REQUIRED)</label>
+        <div class="req-list" id="scan_reqs">Loading...</div>
 
-            <label>बारकोड स्कॅन करा (SCAN HERE)</label>
-            <div class="scan-input-wrapper">
-                <input type="text" id="scan_input" placeholder="Scan barcode..." autocomplete="off" onkeypress="if(event.key === 'Enter') submitScan()">
-                <button class="btn-add" onclick="submitScan()">ADD</button>
-            </div>
+        <label>बारकोड स्कॅन करा (SCAN HERE)</label>
+        <div class="scan-input-wrapper">
+            <input type="text" id="scan_input" placeholder="Scan barcode..." autocomplete="off" onkeypress="if(event.key === 'Enter') submitScan()">
+            <button class="btn-add" onclick="submitScan()">ADD</button>
+        </div>
 
-            <label>आत्ताच स्कॅन केलेले (ACTIVE SCANS)</label>
-            <div class="scan-history" id="scan_history">Loading...</div>
+        <label>आत्ताच स्कॅन केलेले (ACTIVE SCANS)</label>
+        <div class="scan-history" id="scan_history">Loading...</div>
 
-            <button onclick="closeCurrentRun()" style="width:100%; margin-top:25px; background:var(--success-green); color:white; border:none; padding:20px; border-radius:12px; font-size:18px; font-weight:900; font-family:'Space Grotesk'; cursor:pointer; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);">✔ काम संपले (FINISH & CLOSE BATCH)</button>
-            
-            <div style="text-align:center; margin-top:15px;">
-                <a href="#" onclick="backToSetup()" style="color:#64748b; font-weight:bold; font-size:14px; text-decoration:none;">← Back to Hub (Leave Open)</a>
-            </div>
+        <div style="text-align:center; margin-top:20px;">
+            <a href="#" onclick="backToSetup()" style="color:#64748b; font-weight:bold; font-size:14px; text-decoration:none;">← Back to Hub (Leaves batch active)</a>
         </div>
     </div>
 
@@ -181,7 +179,6 @@
         let allBatches = [];
         let selectedOperator = null;
         
-        // Active Scan State
         let activeBatchCode = null;
         let activeFGCode = null;
         let activeReqs = [];
@@ -222,9 +219,9 @@
                         <span class="batch-sub">${b.fg_code} | ${b.operator_name}</span>
                     </div>
                     <div class="action-btns">
-                        <!-- SOFT CLOSE / ARCHIVE -->
+                        <!-- SOFT CLOSE LOGIC (Saves to FSSAI records, removes from screen) -->
                         <button class="btn-action close" onclick="closeBatchList('${b.batch_code}')">✖</button>
-                        <!-- RESUME -->
+                        <!-- RESUME LOGIC -->
                         <button class="btn-action play" onclick="resumeRun('${b.batch_code}', '${b.fg_code}', '${b.operator_name}')">►</button>
                     </div>
                 </div>
@@ -274,8 +271,9 @@
             } catch(e) { alert("Database Error"); }
         }
 
+        // SOFT CLOSE EXECUTION (From the Hub Screen)
         async function closeBatchList(batchCode) {
-            if(!confirm(`Close batch ${batchCode}? \nThis preserves the data for FSSAI audits.`)) return;
+            if(!confirm(`Are you sure you want to finish and close batch ${batchCode}?\n(This permanently saves the FSSAI data and clears it from the screen)`)) return;
             try {
                 await fetch('/close-batch', {
                     method: 'POST',
@@ -286,7 +284,7 @@
             } catch(e) { alert("Error closing batch"); }
         }
 
-        // --- ACTIVE SCANNER VIEW LOGIC ---
+        // --- SCANNER VIEW LOGIC ---
         async function resumeRun(batchCode, fgCode, opName) {
             document.getElementById('setup_view').style.display = 'none';
             document.getElementById('scan_view').style.display = 'block';
@@ -322,7 +320,7 @@
                 const res = await fetch(`/current-scans/${activeBatchCode}`);
                 activeScans = await res.json();
                 
-                // 🔥 RESTORED: CALCULATE LIVE STATS FOR THE DASHBOARD
+                // RESTORED: CALCULATE LIVE STATS FOR THE UI
                 let totalWeight = activeScans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
                 document.getElementById('stat_count').textContent = activeScans.length;
                 document.getElementById('stat_weight').textContent = totalWeight.toFixed(2);
@@ -359,6 +357,7 @@
                 return;
             }
 
+            // Exactly matching the CSS aesthetic from the photo
             list.innerHTML = activeScans.map(s => {
                 let dispWeight = s.weight > 0 ? `<span class="scan-weight">${s.weight} KG</span>` : `<span class="scan-weight">--</span>`;
                 return `
@@ -377,6 +376,7 @@
             const barcode = inp.value.trim().toUpperCase();
             if(!barcode) return;
             
+            // FSSAI Strict Verification
             if(activeReqs.length > 0) {
                 let parts = barcode.split('/');
                 let pCode = parts.length >= 2 ? parts[1] : barcode;
@@ -410,18 +410,6 @@
                 });
                 await loadScans(); // Recalculates total weight automatically
             } catch(e) { alert("Undo Failed."); }
-        }
-
-        async function closeCurrentRun() {
-            if(!confirm(`Finish and Close Batch ${activeBatchCode}? \n(Data will be saved for Traceability)`)) return;
-            try {
-                await fetch('/close-batch', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ batch_code: activeBatchCode })
-                });
-                backToSetup(); 
-            } catch(e) { alert("Error closing batch"); }
         }
     </script>
 </body>
