@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #10b981; --danger-red: #dc2626; --card-bg: #ffffff; --accent-blue: #2563eb; }
+        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #10b981; --danger-red: #dc2626; --warning-yellow: #eab308; --card-bg: #ffffff; --accent-blue: #2563eb; }
         body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 80px;}
         
         /* NAVIGATION */
@@ -47,7 +47,6 @@
         .grid-item:hover { border-color: var(--kilrr-orange); background: #fff7ed;}
         .grid-item.active { border-color: var(--kilrr-orange); background: var(--kilrr-orange); color: white; box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3);}
         
-        /* Always Visible Delete Button for Operators */
         .op-del { position: absolute; top: -8px; right: -8px; background: var(--danger-red); color: white; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; display: flex; align-items: center; justify-content: center; font-family: sans-serif; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: none; cursor: pointer; z-index: 10; transition: 0.1s;}
         .op-del:active { transform: scale(0.9); }
 
@@ -73,11 +72,13 @@
         .stat-value { font-size: 28px; font-weight: 900; color: var(--navy-command); }
         .stat-value span { font-size: 14px; color: var(--kilrr-orange); font-weight: 800;}
 
+        /* INGREDIENT BREAKDOWN PILLS */
         .req-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px;}
         .req-pill { background: white; border: 1px solid #cbd5e1; padding: 16px 20px; border-radius: 8px; font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; align-items: center; color: var(--success-green); transition: 0.3s;}
         .req-pill.pending { color: #64748b; }
         .req-pill.done { border-color: var(--success-green); background: #ecfdf5;}
-        .req-name { font-weight: 800; }
+        .req-name { font-weight: 800; display: flex; align-items: center; gap: 6px; }
+        .req-code { font-family: monospace; font-size: 12px; color: var(--navy-command); opacity: 0.6; background: #e2e8f0; padding: 2px 6px; border-radius: 4px;}
         .req-status { display: flex; gap: 10px; align-items: center; font-size: 14px; font-weight: 900;}
         .ing-weight { color: var(--navy-command); }
         .ing-weight-zero { color: #cbd5e1; }
@@ -91,6 +92,9 @@
         .scan-history { max-height: 250px; overflow-y: auto; background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px;}
         .scan-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; font-family: monospace; font-weight: bold; font-size: 14px;}
         .scan-weight { color: var(--danger-red); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 900; }
+
+        /* FULL SCREEN FLASH OVERLAY */
+        #flash_overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9998; opacity: 0; transition: opacity 0.5s ease-out; }
 
         /* GENERIC DIALOG MODAL */
         .modal-overlay { position: fixed; inset: 0; background: rgba(11, 17, 33, 0.85); backdrop-filter: blur(5px); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s;}
@@ -124,6 +128,8 @@
     </style>
 </head>
 <body>
+    <div id="flash_overlay"></div> <!-- Full Screen Color Flash -->
+
     <nav class="nav-top">
         <a href="index.html" class="brand">Kilrr <span>OS</span></a>
         <div class="nav-links">
@@ -248,13 +254,31 @@
         let activeFGCode = null;
         let activeReqs = [];
         let activeScans = [];
-        let isScanning = false; // Prevents duplicate triggers
+        let isScanning = false; 
 
         window.onload = () => {
             renderOperators();
             loadOpenBatches();
             loadRecipes();
         };
+
+        // ==========================================
+        // HARDWARE ACCELERATED SCREEN FLASH
+        // ==========================================
+        function triggerFlash(type) {
+            const overlay = document.getElementById('flash_overlay');
+            overlay.style.transition = 'none'; 
+            
+            if (type === 'success') overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.4)';
+            else if (type === 'error') overlay.style.backgroundColor = 'rgba(220, 38, 38, 0.5)';
+            else if (type === 'duplicate') overlay.style.backgroundColor = 'rgba(234, 179, 8, 0.5)'; // Warning Yellow
+            
+            overlay.style.opacity = '1';
+            void overlay.offsetWidth; // Force Reflow to ensure flash triggers instantly
+            
+            overlay.style.transition = 'opacity 0.6s ease-out';
+            overlay.style.opacity = '0';
+        }
 
         // ==========================================
         // UNIFIED DIALOG MODAL
@@ -277,7 +301,7 @@
             pwd.style.display = 'none'; pwd.value = '';
             modalCallback = callback;
 
-            if (type === 'error') {
+            if (type === 'error' || type === 'duplicate') {
                 icon.textContent = '🛑';
                 box.style.borderTopColor = 'var(--danger-red)';
                 confirmBtn.style.background = 'var(--danger-red)';
@@ -295,6 +319,14 @@
                 confirmBtn.style.background = 'var(--kilrr-orange)';
                 confirmBtn.textContent = 'PROCEED';
                 cancelBtn.style.display = 'block';
+            } else if (type === 'prompt') {
+                icon.textContent = '✏️';
+                box.style.borderTopColor = 'var(--accent-blue)';
+                confirmBtn.style.background = 'var(--accent-blue)';
+                confirmBtn.textContent = 'CONTINUE';
+                cancelBtn.style.display = 'block';
+                inp.style.display = 'block';
+                setTimeout(() => inp.focus(), 50);
             } else if (type === 'password') {
                 icon.textContent = '🔒';
                 box.style.borderTopColor = 'var(--danger-red)';
@@ -316,6 +348,7 @@
             box.style.transform = 'translateY(20px)';
             
             let val = null;
+            if (document.getElementById('modal_input').style.display === 'block') val = document.getElementById('modal_input').value;
             if (document.getElementById('modal_password').style.display === 'block') val = document.getElementById('modal_password').value;
 
             setTimeout(() => { m.style.display = 'none'; }, 200);
@@ -330,6 +363,7 @@
             }
         }
 
+        document.getElementById('modal_input').addEventListener('keypress', function(e) { if (e.key === 'Enter') closeModal(true); });
         document.getElementById('modal_password').addEventListener('keypress', function(e) { if (e.key === 'Enter') closeModal(true); });
 
         // ==========================================
@@ -343,7 +377,7 @@
                     <button class="op-del" title="Remove Operator" onclick="deleteOperator(event, ${idx})">✖</button>
                 </div>
             `).join('');
-            grid.innerHTML += `<div class="grid-item" style="border-style:dashed; color:#64748b;" onclick="addOperator()">+ Add Operator</div>`;
+            grid.innerHTML += `<div class="grid-item" style="border-style:dashed; color:#64748b;" onclick="addOperator()">+ Add</div>`;
         }
 
         function selectOperator(name) {
@@ -352,12 +386,12 @@
         }
 
         function addOperator() {
-            let name = prompt("Enter the name of the new Operator:");
-            if(name && name.trim() !== '') {
-                operators.push(name.trim());
+            showDialog("New Operator", "Enter the name of the new Operator:", "prompt", (val) => {
+                if(!val || val.trim() === '') return;
+                operators.push(val.trim());
                 localStorage.setItem('kilrr_operators', JSON.stringify(operators));
-                selectOperator(name.trim());
-            }
+                selectOperator(val.trim());
+            });
         }
 
         function deleteOperator(event, idx) {
@@ -400,7 +434,7 @@
                         <span class="batch-sub">${b.fg_code} | ${b.operator_name}</span>
                     </div>
                     <div class="action-btns">
-                        <!-- 2-STEP DELETE -->
+                        <!-- HARD DELETE -->
                         <button class="btn-action delete" title="Permanently Delete" onclick="triggerDeleteBatch('${b.batch_code}')">🗑️</button>
                         <!-- SOFT CLOSE -->
                         <button class="btn-action close" title="Soft Close (Save Data)" onclick="closeBatchList('${b.batch_code}')">✔</button>
@@ -423,13 +457,11 @@
             } catch(e) { console.error("Error loading recipes"); }
         }
 
-        // SHOW INLINE BATCH CONFIGURATION
         function openRunConfig(fgName, el) {
             if(!selectedOperator) return showDialog("Missing Info", "Please select WHO IS SCANNING first!", "error");
             
             selectedRecipeFG = fgName;
             
-            // Visual feedback on selected recipe
             document.querySelectorAll('#recipe_grid .grid-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
 
@@ -447,7 +479,6 @@
             
             if(!code) return showDialog("Error", "Please enter a valid Batch Code.", "error");
 
-            // Format as "DH190 [6 Runs]" so it groups into ONE single batch in the database
             let finalBatchCode = runs > 1 ? `${code} [${runs} RUNS]` : code;
 
             try {
@@ -459,39 +490,38 @@
                 const data = await res.json();
                 if(data.error) return showDialog("Database Error", data.error, "error");
 
-                // Clear inline form
                 document.getElementById('run_config').style.display = 'none';
                 document.querySelectorAll('#recipe_grid .grid-item').forEach(i => i.classList.remove('active'));
 
-                // Open the new master batch
                 resumeRun(finalBatchCode, selectedRecipeFG, selectedOperator);
             } catch(e) { showDialog("Error", "Server connection failed.", "error"); }
         }
 
         // ==========================================
-        // FIXED 2-STEP DOUBLE CONFIRMATION DELETE
+        // DOUBLE CONFIRMATION DELETE LOGIC
         // ==========================================
         function triggerDeleteBatch(batchCode) {
-            showDialog("Confirm Deletion", `Are you sure you want to permanently delete Batch [${batchCode}]?`, "confirm", (confirmed) => {
-                if(!confirmed) return;
-                
-                // Step 2: Master PIN Authorization
-                setTimeout(() => {
-                    showDialog("Authorization Required", "Enter Master PIN to authorize deletion:", "password", async (pin) => {
-                        if (!pin) return;
-                        try {
-                            const res = await fetch('/delete-batch', {
-                                method: 'POST',
-                                headers: {'Content-Type': 'application/json'},
-                                body: JSON.stringify({ batch_code: batchCode, pin: pin })
-                            });
-                            const data = await res.json();
-                            if(data.error) return showDialog("Access Denied", data.error, "error");
-                            
-                            loadOpenBatches();
-                        } catch(e) { showDialog("Error", "Server error", "error"); }
-                    });
-                }, 300); // Slight delay for smooth modal transition
+            showDialog("Confirm Deletion", `Are you sure you want to permanently delete Batch [${batchCode}]?\n\nType "DELETE" to confirm.`, "prompt", (val) => {
+                if (val && val.toUpperCase() === "DELETE") {
+                    setTimeout(() => {
+                        showDialog("Authorization Required", "Enter Master PIN to authorize deletion:", "password", async (pin) => {
+                            if (!pin) return;
+                            try {
+                                const res = await fetch('/delete-batch', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({ batch_code: batchCode, pin: pin })
+                                });
+                                const data = await res.json();
+                                if(data.error) return showDialog("Access Denied", data.error, "error");
+                                
+                                loadOpenBatches();
+                            } catch(e) { showDialog("Error", "Server error", "error"); }
+                        });
+                    }, 300);
+                } else if (val !== null) {
+                    setTimeout(() => showDialog("Error", "You didn't type DELETE correctly. Request canceled.", "error"), 300);
+                }
             });
         }
 
@@ -556,7 +586,7 @@
             } catch(e) { console.error(e); }
         }
 
-        // RESTORED INGREDIENT-WISE WEIGHT BREAKDOWN PILLS
+        // 🔥 RESTORED INGREDIENT-WISE WEIGHT BREAKDOWN WITH SHORTCODES 🔥
         function renderReqs() {
             const list = document.getElementById('scan_reqs');
             if(activeReqs.length === 0) {
@@ -573,13 +603,13 @@
                 if(ingScans.length > 0) {
                     return `
                     <div class="req-pill done">
-                        <div class="req-name">${r.ingredient_name}</div>
+                        <div class="req-name">${r.ingredient_name} <span class="req-code">${r.product_code}</span></div>
                         <div class="req-status"><span class="ing-weight">${ingWeight.toFixed(2)} KG</span> <span style="font-size:18px;">✔</span></div>
                     </div>`;
                 } else {
                     return `
                     <div class="req-pill pending">
-                        <div class="req-name">${r.ingredient_name}</div>
+                        <div class="req-name">${r.ingredient_name} <span class="req-code">${r.product_code}</span></div>
                         <div class="req-status"><span class="ing-weight-zero">0.00 KG</span> <span style="color:var(--kilrr-orange); font-size:16px;">⏳</span></div>
                     </div>`;
                 }
@@ -610,17 +640,18 @@
         // BULLETPROOF ANTI-DUPLICATE SCANNER
         // ==========================================
         async function submitScan() {
-            if(isScanning) return; // Block rapid double-fire
+            if(isScanning) return; 
             
             const inp = document.getElementById('scan_input');
             const btn = document.getElementById('btn_add');
             const barcode = inp.value.trim().toUpperCase();
             if(!barcode) return;
             
-            // INSTANT LOCAL DUPLICATE CHECK
+            // LOCAL DUPLICATE CHECK
             if (activeScans.some(s => s.rm_tag === barcode)) {
                 inp.value = '';
-                return showDialog("Duplicate Scan!", `Barcode [ ${barcode} ] is already in this batch!`, "error");
+                triggerFlash('duplicate'); // Flash Yellow/Orange
+                return showDialog("Duplicate Scan!", `Barcode [ ${barcode} ] is already in this batch!`, "duplicate");
             }
 
             // Recipe Verification
@@ -630,16 +661,20 @@
                 let isValid = activeReqs.some(r => r.product_code === pCode);
                 if(!isValid) {
                     inp.value = '';
+                    triggerFlash('error'); // Flash Red
                     return showDialog("Wrong Ingredient!", `[ ${pCode} ] is NOT required to make ${activeFGCode}!`, "error");
                 }
             }
 
-            // LOCK UI TO PREVENT RAPID DUPLICATE HARDWARE SCANNING
+            // LOCK UI TO PREVENT RAPID HARDWARE DUPLICATES
             isScanning = true;
             inp.disabled = true;
             btn.disabled = true;
 
-            // Optimistic local push (blocks duplicate scanning millisecond before server replies)
+            // Trigger Success Flash instantly for the operator
+            triggerFlash('success');
+
+            // Optimistic local push 
             activeScans.unshift({ rm_tag: barcode, weight: 0, product_code: barcode.split('/')[1] });
 
             try {
@@ -652,9 +687,9 @@
                 if(data.error) throw new Error(data.error);
                 
                 inp.value = '';
-                await loadScans(); // Pull fresh data with exact weights
+                await loadScans(); 
             } catch(e) { 
-                activeScans.shift(); // Remove optimistic local push if failed
+                activeScans.shift(); 
                 showDialog("Scan Failed", "Network disconnected or database error.", "error"); 
             } finally {
                 // UNLOCK UI
