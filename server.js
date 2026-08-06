@@ -16,7 +16,7 @@ app.use(express.static('public'));
 // 1. CLOUD DATABASE & SECURITY CONFIG
 // ==========================================
 const SHEET_WEBHOOK = process.env.SHEET_WEBHOOK || ""; 
-const MASTER_PASSWORD = "1234"; // 🔥 PIN HAS BEEN CHANGED TO 1234
+const MASTER_PASSWORD = "1234"; // PIN locked to 1234
 
 if (!process.env.DATABASE_URL) {
     console.error("🚨 CRITICAL FATAL ERROR: DATABASE_URL is missing! Render cannot connect to Neon.");
@@ -175,6 +175,12 @@ app.post("/log-preprocess", async (req, res) => {
 
 app.get("/open-batches", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM batches WHERE status = 'OPEN' ORDER BY created_at DESC")).rows); } 
+    catch(e) { res.status(500).json({error: e.message}); }
+});
+
+// 🔥 NEW: Fetch recently closed batches for the Dashboard Archive
+app.get("/closed-batches", async (req, res) => {
+    try { res.json((await pool.query("SELECT * FROM batches WHERE status = 'CLOSED' ORDER BY created_at DESC LIMIT 20")).rows); } 
     catch(e) { res.status(500).json({error: e.message}); }
 });
 
