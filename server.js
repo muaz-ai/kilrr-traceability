@@ -16,7 +16,7 @@ app.use(express.static('public'));
 // 1. CLOUD DATABASE & SECURITY CONFIG
 // ==========================================
 const SHEET_WEBHOOK = process.env.SHEET_WEBHOOK || ""; 
-const MASTER_PASSWORD = "Kilrrspicesdata"; 
+const MASTER_PASSWORD = "1234"; // 🔥 PIN HAS BEEN CHANGED TO 1234
 
 if (!process.env.DATABASE_URL) {
     console.error("🚨 CRITICAL FATAL ERROR: DATABASE_URL is missing! Render cannot connect to Neon.");
@@ -236,7 +236,6 @@ app.get("/current-scans/:batch_code", async (req, res) => {
     catch(e) { res.status(500).json({error: e.message}); }
 });
 
-// 🔥 THE NEW SOFT-CLOSE ROUTE (PRESERVES DATA FOR FSSAI) 🔥
 app.post("/close-batch", async (req, res) => {
     try {
         await pool.query("UPDATE batches SET status = 'CLOSED' WHERE batch_code = $1", [req.body.batch_code]);
@@ -244,7 +243,6 @@ app.post("/close-batch", async (req, res) => {
     } catch(e) { res.status(500).json({error: e.message}); }
 });
 
-// Hard Delete (Restricted to Vault PIN)
 app.post("/delete-batch", async (req, res) => {
     if(req.body.pin !== MASTER_PASSWORD) return res.status(403).json({error: "ACCESS DENIED: Invalid Master Password."});
     try {
