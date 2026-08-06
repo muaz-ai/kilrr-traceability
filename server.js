@@ -236,6 +236,15 @@ app.get("/current-scans/:batch_code", async (req, res) => {
     catch(e) { res.status(500).json({error: e.message}); }
 });
 
+// 🔥 THE NEW SOFT-CLOSE ROUTE (PRESERVES DATA FOR FSSAI) 🔥
+app.post("/close-batch", async (req, res) => {
+    try {
+        await pool.query("UPDATE batches SET status = 'CLOSED' WHERE batch_code = $1", [req.body.batch_code]);
+        res.json({status: "success"});
+    } catch(e) { res.status(500).json({error: e.message}); }
+});
+
+// Hard Delete (Restricted to Vault PIN)
 app.post("/delete-batch", async (req, res) => {
     if(req.body.pin !== MASTER_PASSWORD) return res.status(403).json({error: "ACCESS DENIED: Invalid Master Password."});
     try {
