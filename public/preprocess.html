@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <title>Kilrr OS - Pre-Process Engine</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- QR Code Generator Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-    <!-- Enterprise Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        /* CORE KILRR STYLING */
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; --accent-blue: #2563eb; }
         body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 100px; min-height: 100vh;}
         
@@ -27,11 +24,11 @@
         .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 16px 16px 0 0;}
         .card.card-green::before { background: linear-gradient(90deg, var(--success-green), #10b981); }
 
-        /* MULTI-TASKING SESSION MANAGER UI */
         .session-manager { background: #fff7ed; border: 2px solid var(--kilrr-orange); border-radius: 12px; padding: 15px; margin-bottom: 25px;}
         .session-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;}
         .session-manager select { border-color: var(--kilrr-orange); background: white; margin-bottom: 0; padding: 12px 15px; font-size: 15px; font-weight: 900;}
         .btn-danger-text { background: transparent; color: var(--danger-red); font-size: 12px; font-weight: bold; border: none; padding: 0; width: auto; cursor: pointer;}
+        .btn-success-text { background: transparent; color: var(--success-green); font-size: 12px; font-weight: bold; border: none; padding: 0; width: auto; cursor: pointer; margin-right: 15px;}
 
         h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 20px; text-transform: uppercase; color: var(--navy-command); letter-spacing: 0.5px;}
         .marathi-title { font-family: 'Inter', sans-serif; color: var(--accent-blue); font-size: 14px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
@@ -51,14 +48,12 @@
 
         .row-inputs { display: flex; gap: 15px; }
 
-        /* DROPDOWN UI */
         .custom-dropdown-container { position: relative; width: 100%; margin-bottom: 20px;}
         .custom-dropdown-container input { margin-bottom: 0; }
         .custom-dropdown-list { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: #ffffff; border: 2px solid var(--accent-blue); border-radius: 12px; max-height: 250px; overflow-y: auto; z-index: 9999; box-shadow: 0 15px 30px rgba(0,0,0,0.15); display: none; padding: 10px; }
         .custom-dropdown-item { padding: 15px 20px; font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.1s; margin-bottom: 4px; border-bottom: 1px solid #f1f5f9; color: #0f172a;}
         .custom-dropdown-item:hover { background: #eff6ff; color: var(--accent-blue); }
 
-        /* CHECKLIST UI */
         .checklist-box { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px; margin-bottom: 20px; min-height: 100px; max-height: 250px; overflow-y: auto;}
         .req-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; font-weight: 700; font-size: 14px; transition: 0.3s;}
         .req-item.scanned { background: #ecfdf5; border-color: var(--success-green); color: var(--success-green); transform: scale(0.98);}
@@ -67,7 +62,9 @@
         .tag-pill { background: white; border: 2px solid #cbd5e1; padding: 12px 15px; border-radius: 8px; font-family: monospace; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; align-items: center;}
         .btn-remove { background: var(--danger-red); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; width: auto;}
 
-        /* MOBILE RESPONSIVE NAV */
+        /* PREVIEW CSS */
+        .preview-box { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 25px; display: flex; justify-content: center; align-items: center; background: #f8fafc; margin-bottom: 25px;}
+
         @media (max-width: 1024px) { 
             .container { grid-template-columns: 1fr; margin-top: 15px; gap: 20px;}
             .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap; border-top: 3px solid var(--kilrr-orange); z-index: 999;}
@@ -100,11 +97,13 @@
         <!-- LEFT CARD: SETUP -->
         <div class="card">
             
-            <!-- MULTI-TASKING SESSION MANAGER -->
             <div class="session-manager">
                 <div class="session-header">
                     <label style="color:var(--kilrr-orange); margin:0; font-size:14px;">🔄 ACTIVE TASKS</label>
-                    <button class="btn-danger-text" onclick="deleteCurrentSession()">🗑️ Discard Task</button>
+                    <div style="display:flex; align-items:center;">
+                        <button class="btn-success-text" onclick="finishCurrentSession()">✅ Finish Task</button>
+                        <button class="btn-danger-text" onclick="deleteCurrentSession()">🗑️ Discard</button>
+                    </div>
                 </div>
                 <select id="session_switcher" onchange="switchSession(this.value)">
                     <option value="new">+ START NEW TASK</option>
@@ -172,7 +171,7 @@
             </div>
         </div>
 
-        <!-- RIGHT CARD: SCANNER LOGIC -->
+        <!-- RIGHT CARD: SCANNER -->
         <div class="card card-green">
             <h2 style="color:var(--success-green);">Traceability Engine</h2>
             <span class="marathi-title green-title">कोणते बारकोड वापरले? (Scan Input Tags)</span>
@@ -192,21 +191,23 @@
                 <div style="color:#94a3b8; text-align:center; font-size:12px; padding:10px; border:1px dashed #cbd5e1; border-radius:8px;">No input barcodes scanned yet.</div>
             </div>
 
+            <label>लेबल कसे दिसेल? <span class="sub">LIVE LABEL PREVIEW</span></label>
+            <div class="preview-box" id="preview_area">
+                <div style="color:#94a3b8; font-weight:800; padding:40px 0;">Awaiting Valid Data Input...</div>
+            </div>
+
             <button class="btn-green" onclick="generateAndPrint()" style="padding:20px; font-size:18px; border-radius:12px;">🖨️ जनरेट आणि प्रिंट करा (GENERATE WIP TAGS)</button>
         </div>
     </div>
 
     <script>
-        // GLOBALS
         let allIngredients = [];
         let recipeReqs = [];
         let parentTags = [];
 
-        // SESSION MANAGER GLOBALS
         let activeSessions = JSON.parse(localStorage.getItem('kilrr_wip_sessions')) || {};
         let currentSessionId = 'new';
 
-        // 1. INITIALIZATION & MASTER DATA
         window.onload = async () => {
             initSessions();
             try {
@@ -215,13 +216,13 @@
                 
                 attachCustomDropdown('recipe_search', allIngredients, 'ingredient_name', 'product_code', async (code, name) => {
                     document.getElementById('product_code').value = code;
-                    await loadRecipeReqs(name, code, false); // False = It's a new selection, clear old scanned tags
+                    await loadRecipeReqs(name, code, false);
                     saveSession();
                 });
             } catch(e) { console.error("Master data fetch failed."); }
+            generatePreview();
         };
 
-        // 2. SESSION MANAGER LOGIC
         function initSessions() {
             if(!activeSessions['new']) {
                 document.getElementById('date').valueAsDate = new Date();
@@ -265,6 +266,7 @@
                 recipeReqs = [];
                 renderChecklist();
                 renderTags();
+                generatePreview();
                 return;
             }
 
@@ -284,19 +286,18 @@
 
             renderTags();
             if (s.product_code) {
-                // True = We are loading a saved session, DO NOT wipe out the parentTags we just loaded!
                 await loadRecipeReqs(s.recipe_search, s.product_code, true); 
             } else {
                 recipeReqs = [];
                 renderChecklist();
             }
+            generatePreview();
         }
 
         function saveSession() {
             const pCode = document.getElementById('product_code').value;
             const pName = document.getElementById('recipe_search').value;
             
-            // Prevent saving completely empty sessions
             if (!pCode && parentTags.length === 0) return;
 
             if (currentSessionId === 'new') {
@@ -319,14 +320,26 @@
             
             localStorage.setItem('kilrr_wip_sessions', JSON.stringify(activeSessions));
             updateSessionDropdown();
+            generatePreview();
         }
 
+        // SOFT CLOSE TASK (Just removes from UI, doesn't warn)
+        function finishCurrentSession() {
+            if (currentSessionId === 'new') return alert("Start a task first!");
+            delete activeSessions[currentSessionId];
+            localStorage.setItem('kilrr_wip_sessions', JSON.stringify(activeSessions));
+            currentSessionId = 'new';
+            updateSessionDropdown();
+            loadSession('new');
+        }
+
+        // HARD DISCARD
         function deleteCurrentSession() {
             if (currentSessionId === 'new') {
                 loadSession('new'); 
                 return;
             }
-            if (!confirm("⚠️ WARNING: This will delete this active task and all its scanned progress. Continue?")) return;
+            if (!confirm("⚠️ WARNING: This will discard this active task and all its scanned progress. Continue?")) return;
             
             delete activeSessions[currentSessionId];
             localStorage.setItem('kilrr_wip_sessions', JSON.stringify(activeSessions));
@@ -335,7 +348,6 @@
             loadSession('new');
         }
 
-        // 3. DROPDOWN SEARCH LOGIC
         function attachCustomDropdown(inputId, dataArray, displayKey, codeKey, onSelectCallback) {
             const inp = document.getElementById(inputId); 
             const list = document.createElement('div'); 
@@ -369,18 +381,14 @@
             document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
         }
 
-        // 4. RECIPE REQUIREMENTS LOADER
         async function loadRecipeReqs(name, code, preventReset = false) {
             try {
-                // Check full name first, fallback to code
                 let res = await fetch(`/recipe-requirements/${encodeURIComponent(name)}`);
                 let data = await res.json();
-                
                 if (data.length === 0 && code) {
                     res = await fetch(`/recipe-requirements/${encodeURIComponent(code)}`);
                     data = await res.json();
                 }
-                
                 recipeReqs = data;
                 
                 if(!preventReset) {
@@ -391,37 +399,23 @@
             } catch(e) { console.error("Error loading checklist."); }
         }
 
-        // 5. INTELLIGENT CHECKLIST RENDERER
         function renderChecklist() {
             const box = document.getElementById('recipe_reqs');
             if (recipeReqs.length === 0) {
                 box.innerHTML = `<div style="color:var(--accent-blue); text-align:center; font-weight:800; font-size:13px; padding:20px 0;"><span style="font-size:20px; display:block; margin-bottom:5px;">🔄</span> Single Item Process (No Checklist).<br>Scan matching input tags below.</div>`;
                 return;
             }
-            
             box.innerHTML = recipeReqs.map(r => {
                 if(!r.product_code || r.product_code === 'null') return ''; 
-                
-                // Automatically marks as SCANNED if found in session memory
                 let isScanned = parentTags.some(t => t.split('/')[1] === r.product_code);
-                
                 if (isScanned) {
-                    return `
-                    <div class="req-item scanned" id="req_${r.product_code}">
-                        <div>${r.ingredient_name} <span style="color:#94a3b8;">(${r.product_code})</span></div>
-                        <div>✅ SCANNED</div>
-                    </div>`;
+                    return `<div class="req-item scanned" id="req_${r.product_code}"><div>${r.ingredient_name} <span style="color:#94a3b8;">(${r.product_code})</span></div><div>✅ SCANNED</div></div>`;
                 } else {
-                    return `
-                    <div class="req-item" id="req_${r.product_code}">
-                        <div>${r.ingredient_name} <span style="color:#94a3b8;">(${r.product_code})</span></div>
-                        <div style="color:var(--kilrr-orange);">⏳ PENDING</div>
-                    </div>`;
+                    return `<div class="req-item" id="req_${r.product_code}"><div>${r.ingredient_name} <span style="color:#94a3b8;">(${r.product_code})</span></div><div style="color:var(--kilrr-orange);">⏳ PENDING</div></div>`;
                 }
             }).join('');
         }
 
-        // 6. STRICT POKA-YOKE SCANNER VALIDATION
         function addTag(barcode) {
             barcode = barcode.trim().toUpperCase();
             if(!barcode) return;
@@ -434,21 +428,17 @@
             const targetCode = document.getElementById('product_code').value.trim().toUpperCase();
             if(!targetCode) return alert("⚠️ Select what you are making first!");
 
-            // Single Item restriction
             if (recipeReqs.length === 0) {
                 if (scannedCode !== targetCode) {
                     document.getElementById('barcode_input').value = '';
                     return alert(`🛑 STOP! WRONG INGREDIENT! \n\nYou are processing [ ${targetCode} ]. \nYou scanned [ ${scannedCode} ].`);
                 }
             } else {
-                // Blend recipe restriction
                 let reqItem = recipeReqs.find(r => r.product_code === scannedCode);
                 if(!reqItem) {
                     document.getElementById('barcode_input').value = '';
                     return alert(`🛑 STOP! WRONG INGREDIENT! \n\n[ ${scannedCode} ] is NOT required for this recipe.`);
                 }
-                
-                // Live UI success update
                 let uiRow = document.getElementById(`req_${scannedCode}`);
                 if(uiRow) {
                     uiRow.classList.add('scanned');
@@ -459,7 +449,7 @@
             parentTags.push(barcode);
             renderTags();
             document.getElementById('barcode_input').value = '';
-            saveSession(); // Persist to local storage
+            saveSession(); 
         }
 
         function removeTag(index) {
@@ -469,7 +459,6 @@
             let scannedCode = removedBarcode.split('/')[1];
             let isStillScanned = parentTags.some(t => t.split('/')[1] === scannedCode);
             
-            // Revert UI to pending if removed
             if(!isStillScanned && recipeReqs.length > 0) {
                 let reqItem = recipeReqs.find(r => r.product_code === scannedCode);
                 let uiRow = document.getElementById(`req_${scannedCode}`);
@@ -478,9 +467,8 @@
                     uiRow.innerHTML = `<div>${reqItem.ingredient_name} <span style="color:#94a3b8;">(${scannedCode})</span></div> <div style="color:var(--kilrr-orange);">⏳ PENDING</div>`;
                 }
             }
-
             renderTags();
-            saveSession(); // Persist to local storage
+            saveSession(); 
         }
 
         function renderTags() {
@@ -489,15 +477,46 @@
                 list.innerHTML = `<div style="color:#94a3b8; text-align:center; font-size:12px; padding:10px; border:1px dashed #cbd5e1; border-radius:8px;">No input barcodes scanned yet.</div>`;
                 return;
             }
-            list.innerHTML = parentTags.map((tag, index) => `
-                <div class="tag-pill">
-                    ${tag}
-                    <button class="btn-remove" onclick="removeTag(${index})">X</button>
-                </div>
-            `).join('');
+            list.innerHTML = parentTags.map((tag, index) => `<div class="tag-pill">${tag}<button class="btn-remove" onclick="removeTag(${index})">X</button></div>`).join('');
         }
 
-        // 7. ENTERPRISE EXACT-MARGIN PRINT HTML
+        // 🔥 THE FIXED PREVIEW FUNCTION (MIRRORS PRINT EXACTLY) 🔥
+        function generatePreview() {
+            const dateVal = document.getElementById('date').value;
+            const pCode = document.getElementById('product_code').value.trim().toUpperCase();
+            const pName = document.getElementById('recipe_search').value.trim().toUpperCase();
+            const weightVal = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
+            let startNo = document.getElementById('start_no').value.replace(/[^0-9]/g, '');
+
+            if(!dateVal || !pCode) {
+                document.getElementById('preview_area').innerHTML = `<div style="color:#94a3b8; font-weight:800; padding:40px 0;">Awaiting Valid Data Input...</div>`;
+                return;
+            }
+
+            const [year, month, day] = dateVal.split('-');
+            const dateFmt = `${day}${month}`;
+            const dispDate = `${day}/${month}/${year}`;
+            
+            let tagStr = `${dateFmt}/${pCode}/KILRR/${startNo || 1}`;
+            let qrEngine = new QRious({ value: tagStr, size: 250, level: 'M' });
+            
+            // Explicit blank weight underline logic 
+            let wtText = weightVal ? `NET WT: ${String(weightVal).padStart(2,'0')} KG` : `NET WT: _________ KG`;
+
+            document.getElementById('preview_area').innerHTML = `
+                <div style="background:white; padding:10px; border:2px solid black; width: 280px; color: black; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box;">
+                    <div style="font-weight:900; font-size:26px; text-transform:uppercase; margin: 0; padding-bottom: 5px; border-bottom: 4px solid black; width: 100%; line-height: 1; text-align: center; background: black; color: white;">${pName}</div>
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin: 10px 0;">
+                        <img src="${qrEngine.toDataURL()}" style="width:130px; height:130px; margin-bottom: 5px;">
+                        <div style="font-weight:900; font-size:18px; text-transform:uppercase; margin: 0; line-height: 1; background: black; color: white; padding: 4px 10px;">DATE: ${dispDate}</div>
+                    </div>
+                    <div style="width: 100%; margin-bottom: 5px;">
+                        <div style="font-size:18px; font-weight:900; font-family:monospace; margin: 0 0 5px 0; line-height: 1; text-align: center;">${tagStr}</div>
+                        <div style="font-size:24px; font-weight:900; padding: 8px 0; margin: 0; border-top: 4px solid black; border-bottom: 4px solid black; width: 100%; line-height: 1; text-align: center;">${wtText}</div>
+                    </div>
+                </div>`;
+        }
+
         function getPrintHTML(queueArray, pName, dispDate) {
             let html = `<html><head><style>
                 @media print {
@@ -506,7 +525,6 @@
                     body { margin: 0; padding: 0; }
                 }
                 body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; margin: 0; padding: 0; }
-                
                 .label { width: 75mm; height: 75mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden; background: white; }
                 .title-bar { background-color: black !important; color: white !important; width: 100%; padding: 4mm 0; font-size: 28px; font-weight: 900; text-transform: uppercase; margin: 0; text-align: center; line-height: 1.1; display: flex; align-items: center; justify-content: center; }
                 .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; margin-top: 1mm;}
@@ -519,8 +537,6 @@
             queueArray.forEach(tagStr => {
                 let qrEngine = new QRious({ value: tagStr, size: 250, level: 'M' });
                 let weightVal = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
-                
-                // EXPLICIT BLANK WEIGHT UNDERLINE FOR LABORERS
                 let wtText = weightVal ? `NET WT: ${String(weightVal).padStart(2,'0')} KG` : `NET WT: _________ KG`;
                 
                 html += `
@@ -534,21 +550,17 @@
                     <div class="weight-bar">${wtText}</div>
                 </div>`;
             });
-
             html += `</body><script>window.onload = () => { window.print(); window.close(); };<\/script></html>`;
             return html;
         }
 
-        // 8. DATABASE LOGGING & EXECUTION
         async function generateAndPrint() {
             const dateVal = document.getElementById('date').value;
             const pName = document.getElementById('recipe_search').value.trim().toUpperCase();
             const pCode = document.getElementById('product_code').value.trim().toUpperCase();
             const processType = document.getElementById('process_type').value;
-            
             const totalYield = document.getElementById('total_yield').value.replace(/[^0-9.]/g, '');
             const batchCode = document.getElementById('batch_code').value.trim().toUpperCase();
-            
             let startNo = parseInt(document.getElementById('start_no').value.replace(/[^0-9]/g, ''));
             let endNo = parseInt(document.getElementById('end_no').value.replace(/[^0-9]/g, ''));
 
@@ -562,7 +574,7 @@
             
             let outputTags = [];
             for(let i = startNo; i <= endNo; i++) {
-                outputTags.push(`${dateFmt}/${pCode}/KILRR/${i}`); // WIP tags inherently use "KILRR"
+                outputTags.push(`${dateFmt}/${pCode}/KILRR/${i}`);
             }
 
             let printWindow = window.open('', '_blank');
@@ -570,18 +582,10 @@
 
             try {
                 printWindow.document.write('<html><body style="background:#f8fafc;"><h2 style="font-family:sans-serif; text-align:center; margin-top:50px; color:#ea580c;">Logging WIP Batch to Engine...</h2></body></html>');
-
                 const res = await fetch('/log-preprocess', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        output_tags: outputTags,
-                        product_code: pCode,
-                        process_type: processType,
-                        parent_tags: parentTags.join(', '),
-                        total_yield: totalYield,
-                        batch_code: batchCode
-                    })
+                    body: JSON.stringify({ output_tags: outputTags, product_code: pCode, process_type: processType, parent_tags: parentTags.join(', '), total_yield: totalYield, batch_code: batchCode })
                 });
                 
                 const data = await res.json();
@@ -591,7 +595,6 @@
                 printWindow.document.write(getPrintHTML(outputTags, pName, dispDate));
                 printWindow.document.close();
 
-                // 9. CLEANUP SUCCESSFUL TASK
                 if (currentSessionId !== 'new') {
                     delete activeSessions[currentSessionId];
                     localStorage.setItem('kilrr_wip_sessions', JSON.stringify(activeSessions));
