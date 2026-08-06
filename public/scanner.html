@@ -6,9 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; --accent-blue: #2563eb; }
-        body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 50px;}
+        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #10b981; --danger-red: #dc2626; --card-bg: #ffffff; --accent-blue: #2563eb; }
+        body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 80px;}
         
+        /* NAVIGATION */
         .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
         .brand { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;}
         .brand span { color: var(--kilrr-orange); }
@@ -19,14 +20,15 @@
 
         .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
         
-        /* CARD UI */
-        .card { background: var(--card-bg); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; position: relative; margin-bottom: 30px;}
-        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: var(--kilrr-orange); border-radius: 16px 16px 0 0;}
+        /* CARDS */
+        .card { background: var(--card-bg); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); position: relative; margin-bottom: 30px;}
+        .card-hub { border-top: 6px solid var(--kilrr-orange); }
+        .card-scanner { border-top: 6px solid var(--success-green); }
 
         h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 20px; text-transform: uppercase; color: var(--navy-command);}
         .marathi-title { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 14px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
 
-        /* LIST ITEMS */
+        /* SETUP VIEW: BATCH LIST & GRIDS */
         .batch-list { max-height: 350px; overflow-y: auto; background: #fff7ed; padding: 15px; border-radius: 12px; border: 2px solid #fdba74;}
         .batch-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px; border: 1px solid #cbd5e1; border-radius: 10px; margin-bottom: 10px; transition: 0.2s;}
         .batch-item:hover { border-color: var(--kilrr-orange); box-shadow: 0 4px 10px rgba(234, 88, 12, 0.1);}
@@ -37,9 +39,8 @@
         .btn-action { border: none; padding: 12px 18px; border-radius: 8px; font-weight: 900; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; transition: 0.1s;}
         .btn-action:active { transform: scale(0.95); }
         .btn-action.play { background: var(--success-green); font-size: 18px;}
-        .btn-action.close { background: var(--accent-blue); font-size: 18px;}
+        .btn-action.close { background: var(--danger-red); font-size: 18px;}
 
-        /* SELECTION GRIDS */
         .grid-select { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-bottom: 25px;}
         .grid-item { background: white; border: 2px solid #cbd5e1; padding: 20px 10px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; color: var(--navy-command);}
         .grid-item:hover { border-color: var(--kilrr-orange); background: #fff7ed;}
@@ -47,21 +48,33 @@
         
         label { font-weight: 800; font-size: 13px; color: var(--navy-command); display: block; margin-bottom: 12px; text-transform: uppercase;}
         
-        /* SCANNER VIEW */
+        /* SCANNER VIEW (RESTORED EXACT UI) */
         #scan_view { display: none; }
-        .scanner-header { background: var(--navy-command); color: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; text-align: center;}
-        .scanner-title { font-family: 'Space Grotesk'; font-size: 28px; font-weight: 900; margin: 0; text-transform: uppercase; color: var(--kilrr-orange);}
-        .scanner-sub { font-size: 14px; font-weight: 700; margin-top: 5px;}
-
-        input { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 15px; transition: 0.2s;}
-        input:focus { border-color: var(--kilrr-orange); outline: none;}
-
-        .req-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;}
-        .req-pill { background: white; border: 1px solid #cbd5e1; padding: 12px; border-radius: 8px; font-weight: 800; font-size: 14px; display: flex; justify-content: space-between;}
-        .req-pill.done { background: #ecfdf5; border-color: var(--success-green); color: var(--success-green);}
         
-        .scan-history { max-height: 200px; overflow-y: auto; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px;}
-        .scan-item { display: flex; justify-content: space-between; padding: 10px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; font-family: monospace; font-weight: bold; font-size: 14px;}
+        .scanner-header { background: var(--navy-command); color: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; text-align: center;}
+        .scanner-title { font-family: 'Space Grotesk'; font-size: 26px; font-weight: 900; margin: 0; text-transform: uppercase; color: var(--kilrr-orange);}
+        .scanner-sub { font-size: 13px; font-weight: 700; margin-top: 5px; color: white;}
+        .scanner-sub span { color: var(--kilrr-orange); }
+
+        /* LIVE STATS ROW */
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: #f8fafc; border: 2px dashed #cbd5e1; padding: 15px; border-radius: 12px; text-align: center; }
+        .stat-label { font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
+        .stat-value { font-size: 24px; font-weight: 900; color: var(--navy-command); }
+        .stat-value span { font-size: 14px; color: var(--kilrr-orange); }
+
+        .req-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px;}
+        .req-pill { background: white; border: 1px solid #cbd5e1; padding: 14px 15px; border-radius: 8px; font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; color: #64748b; transition: 0.3s;}
+        .req-pill.done { border-color: var(--success-green); color: var(--success-green); background: #ecfdf5;}
+        
+        .scan-input-wrapper { display: flex; gap: 10px; margin-bottom: 25px; }
+        #scan_input { width: 100%; padding: 16px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid var(--kilrr-orange); font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin: 0; color: #0f172a; outline: none; box-shadow: 0 0 10px rgba(234, 88, 12, 0.1);}
+        .btn-add { background: var(--navy-command); color: white; border: none; border-radius: 10px; font-weight: 900; padding: 0 30px; cursor: pointer; font-size: 16px; transition: 0.2s; }
+        .btn-add:active { transform: scale(0.95); }
+
+        .scan-history { max-height: 250px; overflow-y: auto; background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px;}
+        .scan-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; font-family: monospace; font-weight: bold; font-size: 14px;}
+        .scan-weight { color: var(--kilrr-orange); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 900; }
 
         @media (max-width: 1024px) { 
             .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap; border-top: 3px solid var(--kilrr-orange); z-index: 999;}
@@ -73,8 +86,8 @@
             .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 20px; margin-bottom: 4px;}
             .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 20px; margin-bottom: 4px;}
-            .card { padding: 20px;}
             .req-list { grid-template-columns: 1fr; }
+            .card { padding: 20px;}
         }
     </style>
 </head>
@@ -91,18 +104,20 @@
         </div>
     </nav>
 
+    <!-- SETUP VIEW (HUB) -->
     <div class="container" id="setup_view">
-        <div class="card">
+        <div class="card card-hub">
             <h2>Resume Active Run</h2>
             <span class="marathi-title">चालू काम परत उघडा</span>
             
-            <input type="text" id="search_batches" placeholder="🔍 Search open batches..." oninput="renderOpenBatches()">
+            <input type="text" id="search_batches" placeholder="🔍 Search open batches..." oninput="renderOpenBatches()" style="width:100%; padding:14px; border-radius:8px; border:2px solid #cbd5e1; margin-bottom:15px; font-weight:bold; font-size:14px;">
+            
             <div class="batch-list" id="open_batches_list">
                 <div style="text-align:center; padding:20px; color:#94a3b8; font-weight:bold;">Loading...</div>
             </div>
         </div>
 
-        <div class="card">
+        <div class="card card-hub">
             <h2>Start New Run</h2>
             <span class="marathi-title">नवीन काम चालू करा</span>
 
@@ -120,39 +135,51 @@
         </div>
     </div>
 
-    <!-- SCANNER VIEW -->
+    <!-- ACTIVE SCANNER VIEW -->
     <div class="container" id="scan_view">
-        <div class="card" style="border-top:6px solid var(--success-green);">
+        <div class="card card-scanner" style="padding: 20px;">
+            
+            <!-- Exact Match to Screenshot Header -->
             <div class="scanner-header">
                 <h1 class="scanner-title" id="scan_fg_name">RECIPE NAME</h1>
-                <div class="scanner-sub">Batch: <span id="scan_batch_code" style="color:var(--kilrr-orange);">BATCH-01</span> | Operator: <span id="scan_op">MUAZ</span></div>
+                <div class="scanner-sub">Batch: <span id="scan_batch_code">BATCH-01</span> | Operator: <span id="scan_op">MUAZ</span></div>
+            </div>
+
+            <!-- RESTORED: Live Weight & Packet Stats -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">Total Packets</div>
+                    <div class="stat-value" id="stat_count">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Weight</div>
+                    <div class="stat-value"><span id="stat_weight" style="color:var(--navy-command); font-size:24px;">0.00</span> <span>KG</span></div>
+                </div>
             </div>
 
             <label>काय काय टाकायचे आहे? (INGREDIENTS REQUIRED)</label>
             <div class="req-list" id="scan_reqs">Loading...</div>
 
             <label>बारकोड स्कॅन करा (SCAN HERE)</label>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="scan_input" placeholder="Scan barcode..." autocomplete="off" style="margin:0;" onkeypress="if(event.key === 'Enter') submitScan()">
-                <button onclick="submitScan()" style="background:var(--navy-command); color:white; border:none; border-radius:10px; font-weight:900; padding:0 30px; cursor:pointer;">ADD</button>
+            <div class="scan-input-wrapper">
+                <input type="text" id="scan_input" placeholder="Scan barcode..." autocomplete="off" onkeypress="if(event.key === 'Enter') submitScan()">
+                <button class="btn-add" onclick="submitScan()">ADD</button>
             </div>
 
-            <label style="margin-top:25px;">आत्ताच स्कॅन केलेले (ACTIVE SCANS)</label>
+            <label>आत्ताच स्कॅन केलेले (ACTIVE SCANS)</label>
             <div class="scan-history" id="scan_history">Loading...</div>
 
-            <button onclick="closeCurrentRun()" style="width:100%; margin-top:20px; background:var(--accent-blue); color:white; border:none; padding:20px; border-radius:12px; font-size:18px; font-weight:900; font-family:'Space Grotesk'; cursor:pointer; box-shadow: 0 5px 15px rgba(37,99,235,0.3);">✔ काम संपले (FINISH & CLOSE BATCH)</button>
+            <button onclick="closeCurrentRun()" style="width:100%; margin-top:25px; background:var(--success-green); color:white; border:none; padding:20px; border-radius:12px; font-size:18px; font-weight:900; font-family:'Space Grotesk'; cursor:pointer; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);">✔ काम संपले (FINISH & CLOSE BATCH)</button>
             
             <div style="text-align:center; margin-top:15px;">
-                <a href="#" onclick="backToSetup()" style="color:#64748b; font-weight:bold; font-size:14px; text-decoration:none;">← Back to Hub (Leaves batch open)</a>
+                <a href="#" onclick="backToSetup()" style="color:#64748b; font-weight:bold; font-size:14px; text-decoration:none;">← Back to Hub (Leave Open)</a>
             </div>
         </div>
     </div>
 
     <script>
         let allBatches = [];
-        let allRecipes = [];
         let selectedOperator = null;
-        let selectedRecipeFG = null;
         
         // Active Scan State
         let activeBatchCode = null;
@@ -195,9 +222,9 @@
                         <span class="batch-sub">${b.fg_code} | ${b.operator_name}</span>
                     </div>
                     <div class="action-btns">
-                        <!-- SOFT CLOSE (Saves Data for FSSAI) -->
-                        <button class="btn-action close" onclick="closeBatchList('${b.batch_code}')">✔</button>
-                        <!-- RESUME RUN -->
+                        <!-- SOFT CLOSE / ARCHIVE -->
+                        <button class="btn-action close" onclick="closeBatchList('${b.batch_code}')">✖</button>
+                        <!-- RESUME -->
                         <button class="btn-action play" onclick="resumeRun('${b.batch_code}', '${b.fg_code}', '${b.operator_name}')">►</button>
                     </div>
                 </div>
@@ -208,7 +235,7 @@
             try {
                 const res = await fetch('/get-recipes');
                 const raw = await res.json();
-                const uniqueFG = [...new Set(raw.map(r => r.fg_code))]; // Get unique recipe names
+                const uniqueFG = [...new Set(raw.map(r => r.fg_code))]; 
                 
                 document.getElementById('recipe_grid').innerHTML = uniqueFG.map(fg => `
                     <div class="grid-item" onclick="startNewRun('${fg}', this)">${fg}</div>
@@ -243,25 +270,23 @@
                 const data = await res.json();
                 if(data.error) return alert(data.error);
 
-                // Auto-launch the scanner
                 resumeRun(batchCode, fgName, selectedOperator);
             } catch(e) { alert("Database Error"); }
         }
 
-        // FSSAI SOFT CLOSE FROM HUB
         async function closeBatchList(batchCode) {
-            if(!confirm(`Are you sure you want to Complete & Close batch ${batchCode}?`)) return;
+            if(!confirm(`Close batch ${batchCode}? \nThis preserves the data for FSSAI audits.`)) return;
             try {
                 await fetch('/close-batch', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ batch_code: batchCode })
                 });
-                loadOpenBatches(); // Refresh list immediately
+                loadOpenBatches(); 
             } catch(e) { alert("Error closing batch"); }
         }
 
-        // --- SCANNER VIEW LOGIC ---
+        // --- ACTIVE SCANNER VIEW LOGIC ---
         async function resumeRun(batchCode, fgCode, opName) {
             document.getElementById('setup_view').style.display = 'none';
             document.getElementById('scan_view').style.display = 'block';
@@ -296,8 +321,14 @@
             try {
                 const res = await fetch(`/current-scans/${activeBatchCode}`);
                 activeScans = await res.json();
+                
+                // 🔥 RESTORED: CALCULATE LIVE STATS FOR THE DASHBOARD
+                let totalWeight = activeScans.reduce((sum, s) => sum + (parseFloat(s.weight) || 0), 0);
+                document.getElementById('stat_count').textContent = activeScans.length;
+                document.getElementById('stat_weight').textContent = totalWeight.toFixed(2);
+                
                 renderScans();
-                renderReqs(); // Update checkmarks based on scans
+                renderReqs(); 
             } catch(e) { console.error(e); }
         }
 
@@ -308,14 +339,15 @@
                 return;
             }
 
+            // Exactly matching the CSS aesthetic from the photo
             list.innerHTML = activeReqs.map(r => {
                 if(!r.product_code || r.product_code === 'null') return '';
-                // Check if this product code has been scanned
                 let isScanned = activeScans.some(s => s.product_code === r.product_code);
+                
                 if(isScanned) {
                     return `<div class="req-pill done"><span>${r.ingredient_name}</span> <span>✔</span></div>`;
                 } else {
-                    return `<div class="req-pill"><span style="color:#64748b;">${r.ingredient_name}</span> <span style="color:var(--kilrr-orange);">⏳</span></div>`;
+                    return `<div class="req-pill"><span>${r.ingredient_name}</span> <span>⏳</span></div>`;
                 }
             }).join('');
         }
@@ -327,12 +359,17 @@
                 return;
             }
 
-            list.innerHTML = activeScans.map(s => `
+            list.innerHTML = activeScans.map(s => {
+                let dispWeight = s.weight > 0 ? `<span class="scan-weight">${s.weight} KG</span>` : `<span class="scan-weight">--</span>`;
+                return `
                 <div class="scan-item">
                     <span>${s.rm_tag}</span>
-                    <button class="btn-action" style="background:transparent; color:var(--danger-red); font-size:16px; padding:0;" onclick="undoScan('${s.rm_tag}')">✖</button>
-                </div>
-            `).join('');
+                    <div style="display:flex; gap:15px; align-items:center;">
+                        ${dispWeight}
+                        <button style="background:transparent; color:var(--danger-red); font-size:18px; font-weight:bold; border:none; cursor:pointer;" onclick="undoScan('${s.rm_tag}')">✖</button>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
         async function submitScan() {
@@ -340,7 +377,6 @@
             const barcode = inp.value.trim().toUpperCase();
             if(!barcode) return;
             
-            // FSSAI Strict Verification
             if(activeReqs.length > 0) {
                 let parts = barcode.split('/');
                 let pCode = parts.length >= 2 ? parts[1] : barcode;
@@ -361,7 +397,7 @@
                 if(data.error) throw new Error(data.error);
                 
                 inp.value = '';
-                await loadScans(); // Refresh live data
+                await loadScans(); // Triggers UI and Stats update automatically
             } catch(e) { alert("Scan Failed: " + e.message); }
         }
 
@@ -372,11 +408,10 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ batch_code: activeBatchCode, rm_tag: tag })
                 });
-                await loadScans();
+                await loadScans(); // Recalculates total weight automatically
             } catch(e) { alert("Undo Failed."); }
         }
 
-        // FSSAI SOFT CLOSE FROM SCANNER VIEW
         async function closeCurrentRun() {
             if(!confirm(`Finish and Close Batch ${activeBatchCode}? \n(Data will be saved for Traceability)`)) return;
             try {
@@ -385,7 +420,7 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ batch_code: activeBatchCode })
                 });
-                backToSetup(); // Go back to hub, list will auto-refresh
+                backToSetup(); 
             } catch(e) { alert("Error closing batch"); }
         }
     </script>
