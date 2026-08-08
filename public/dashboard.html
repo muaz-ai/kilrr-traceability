@@ -9,7 +9,6 @@
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #10b981; --danger-red: #dc2626; --warning-yellow: #eab308; --card-bg: #ffffff; --accent-blue: #2563eb; }
         body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 80px;}
         
-        /* NAVIGATION */
         .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
         .brand { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;}
         .brand span { color: var(--kilrr-orange); }
@@ -22,8 +21,11 @@
         
         .card { background: var(--card-bg); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; border-top: 6px solid var(--kilrr-orange); margin-bottom: 30px;}
         
-        h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 24px; text-transform: uppercase; color: var(--navy-command);}
-        .marathi-title { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 14px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
+        /* DASHBOARD TABS */
+        .tab-bar { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px;}
+        .tab-btn { background: transparent; border: none; font-family: 'Space Grotesk'; font-size: 18px; font-weight: 900; color: #64748b; padding: 10px 20px; cursor: pointer; text-transform: uppercase; transition: 0.2s; border-radius: 8px;}
+        .tab-btn:hover { background: #f1f5f9; color: var(--navy-command);}
+        .tab-btn.active { background: var(--navy-command); color: white;}
 
         .search-box { width: 100%; padding: 18px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 16px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 30px; transition: 0.2s;}
         .search-box:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.1);}
@@ -31,7 +33,7 @@
         /* BATCH GRID */
         .batch-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
         .batch-card { background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 25px; transition: 0.2s;}
-        .batch-card:hover { border-color: var(--kilrr-orange); box-shadow: 0 10px 25px rgba(234, 88, 12, 0.1);}
+        .batch-card:hover { border-color: var(--accent-blue); box-shadow: 0 10px 25px rgba(37,99,235,0.1);}
         
         .bc-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px;}
         .bc-title { font-size: 26px; font-weight: 900; color: var(--navy-command); margin: 0; font-family: 'Space Grotesk', sans-serif;}
@@ -44,13 +46,11 @@
 
         .btn-export { background: var(--navy-command); color: white; border: none; padding: 15px 25px; border-radius: 10px; font-weight: 900; font-size: 14px; cursor: pointer; text-transform: uppercase; transition: 0.2s; display: flex; align-items: center; gap: 10px;}
         .btn-export:hover { background: var(--kilrr-orange); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(234, 88, 12, 0.2);}
-        .btn-export:active { transform: translateY(0); }
         
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white;}
         th { background: #f8fafc; text-align: left; padding: 15px; font-size: 12px; color: #64748b; text-transform: uppercase; border-bottom: 2px solid #cbd5e1; font-weight: 900;}
         td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 14px; font-weight: 700; color: var(--navy-command);}
-        td.tag-col { font-family: monospace; color: var(--accent-blue); font-weight: bold; }
-
+        
         .status-open { background: var(--warning-yellow); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 900; vertical-align: middle; margin-left: 10px;}
         .status-closed { background: var(--success-green); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 900; vertical-align: middle; margin-left: 10px;}
 
@@ -79,66 +79,105 @@
 
     <div class="container">
         <div class="card">
-            <h2>Factory Traceability Ledger</h2>
-            <span class="marathi-title">पूर्ण ट्रेसेबिलिटी रेकॉर्ड (Audit Trail)</span>
+            <div class="tab-bar">
+                <button class="tab-btn active" id="tab_batches" onclick="switchTab('batches')">🏭 Batch Traceability</button>
+                <button class="tab-btn" id="tab_inwarding" onclick="switchTab('inwarding')">📦 Inwarding Ledger</button>
+            </div>
 
-            <input type="text" id="search_box" class="search-box" placeholder="🔍 Search by Batch Code, Date, or Recipe Name..." oninput="renderDashboard()">
+            <input type="text" id="search_box" class="search-box" placeholder="🔍 Search Records..." oninput="handleSearch()">
 
-            <div class="batch-grid" id="batch_container">
+            <div class="batch-grid" id="main_container">
                 <div style="text-align:center; padding:50px; font-weight:bold; color:#94a3b8; font-size: 18px;">Syncing with Kilrr Server...</div>
             </div>
         </div>
     </div>
 
     <script>
-        let allData = [];
+        let allBatchData = [];
+        let allInwardData = [];
+        let currentTab = 'batches';
 
         window.onload = async () => {
             try {
-                const res = await fetch('/api/dashboard-traceability');
-                allData = await res.json();
-                renderDashboard();
+                const [batchRes, inwardRes] = await Promise.all([
+                    fetch('/api/dashboard-traceability'),
+                    fetch('/api/dashboard-inwarding')
+                ]);
+                allBatchData = await batchRes.json();
+                allInwardData = await inwardRes.json();
+                renderBatches();
             } catch(e) { 
-                document.getElementById('batch_container').innerHTML = `<div style="text-align:center; color:var(--danger-red); font-weight:900; font-size:20px; padding:40px;">⚠️ Connection to Database Failed.</div>`;
+                document.getElementById('main_container').innerHTML = `<div style="text-align:center; color:var(--danger-red); font-weight:900; font-size:20px; padding:40px;">⚠️ Connection to Database Failed.</div>`;
             }
         };
 
-        function renderDashboard() {
-            const container = document.getElementById('batch_container');
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('tab_batches').classList.remove('active');
+            document.getElementById('tab_inwarding').classList.remove('active');
+            document.getElementById(`tab_${tab}`).classList.add('active');
+            
+            document.getElementById('search_box').value = '';
+            handleSearch();
+        }
+
+        function handleSearch() {
+            if(currentTab === 'batches') renderBatches();
+            else renderInwarding();
+        }
+
+        // 🔥 THE GROUPED BATCH RENDERER 🔥
+        function renderBatches() {
+            const container = document.getElementById('main_container');
             const search = document.getElementById('search_box').value.toLowerCase();
             
-            const filtered = allData.filter(b => 
+            const filtered = allBatchData.filter(b => 
                 b.batch_code.toLowerCase().includes(search) || 
-                b.fg_code.toLowerCase().includes(search) ||
-                new Date(b.created_at).toLocaleDateString().includes(search)
+                b.fg_code.toLowerCase().includes(search)
             );
 
             if(filtered.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:50px; font-weight:bold; color:#94a3b8; font-size: 18px;">No matching records found.</div>`;
+                container.innerHTML = `<div style="text-align:center; padding:50px; font-weight:bold; color:#94a3b8; font-size: 18px;">No matching batch records found.</div>`;
                 return;
             }
 
             container.innerHTML = filtered.map(b => {
                 let statusClass = b.status === 'CLOSED' ? 'status-closed' : 'status-open';
                 let dateStr = new Date(b.created_at).toLocaleString();
-                
-                let totalPacks = b.scans.length;
                 let totalYield = parseFloat(b.total_weight || 0).toFixed(2);
 
-                // Auto-Extracting Vendor & Date directly from the tag for UI display
-                let scansHTML = b.scans.map(s => {
+                // 🔥 GROUP INGREDIENTS FOR CLEAN UI DISPLAY 🔥
+                let groups = {};
+                b.scans.forEach(s => {
                     let tagParts = s.rm_tag.split('/');
-                    let vendorCode = tagParts.length > 2 ? tagParts[2] : 'N/A';
-                    if (vendorCode === 'KILRR') vendorCode = 'WIP (Internal)';
-                    
-                    return `
+                    let rawDate = tagParts[0] || 'N/A';
+                    let fmtDate = rawDate.length === 4 ? `${rawDate.substring(0,2)}/${rawDate.substring(2,4)}` : rawDate;
+                    let vendor = tagParts.length > 2 ? tagParts[2] : 'N/A';
+                    if(vendor === 'KILRR') vendor = 'KILRR (Internal)';
+
+                    let key = `${s.product_code}_${vendor}_${fmtDate}`;
+                    if(!groups[key]) {
+                        groups[key] = {
+                            ingredient: s.ingredient_name || s.product_code,
+                            vendor: vendor,
+                            inwardDate: fmtDate,
+                            bags: 0,
+                            weight: 0
+                        };
+                    }
+                    groups[key].bags += 1;
+                    groups[key].weight += parseFloat(s.weight) || 0;
+                });
+
+                let scansHTML = Object.values(groups).map(g => `
                     <tr>
-                        <td>${new Date(s.created_at).toLocaleTimeString()}</td>
-                        <td class="tag-col">${s.rm_tag}</td>
-                        <td>${s.ingredient_name || s.product_code}</td>
-                        <td><span style="background:#e2e8f0; padding:4px 8px; border-radius:4px; font-size:12px;">${vendorCode}</span></td>
-                    </tr>`;
-                }).join('');
+                        <td style="font-weight:900;">${g.ingredient}</td>
+                        <td style="color:var(--kilrr-orange); font-weight:bold;">${g.vendor}</td>
+                        <td>${g.inwardDate}</td>
+                        <td>${g.bags} Units</td>
+                        <td style="font-weight:900;">${g.weight.toFixed(2)} KG</td>
+                    </tr>
+                `).join('');
 
                 return `
                 <div class="batch-card">
@@ -155,28 +194,60 @@
                     
                     <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px; flex-wrap: wrap; gap: 15px;">
                         <div class="bc-stats">
-                            <div class="stat-pill">Total Scans <span>${totalPacks}</span></div>
+                            <div class="stat-pill">Total Scans <span>${b.scans.length}</span></div>
                             <div class="stat-pill">Batch Yield <span>${totalYield} KG</span></div>
                         </div>
-                        ${b.status === 'CLOSED' ? `<button class="btn-export" onclick='printAuditTrail(${JSON.stringify(b)})'>🖨️ Export Audit Report</button>` : `<div style="color:var(--warning-yellow); font-weight:bold; font-size:13px;">Close batch to enable export.</div>`}
+                        ${b.status === 'CLOSED' ? `<button class="btn-export" onclick='printAuditTrail(${JSON.stringify(b)})'>🖨️ Export FSSAI Report</button>` : `<div style="color:var(--warning-yellow); font-weight:bold; font-size:13px;">Close batch to enable export.</div>`}
                     </div>
 
-                    <div style="max-height: 250px; overflow-y: auto; border: 2px solid #e2e8f0; border-radius:10px;">
+                    <div style="border: 2px solid #e2e8f0; border-radius:10px; overflow: hidden;">
                         <table>
-                            <thead>
-                                <tr><th>Scan Time</th><th>Traceability Tag</th><th>Ingredient</th><th>Vendor Source</th></tr>
-                            </thead>
-                            <tbody>
-                                ${scansHTML || '<tr><td colspan="4" style="text-align:center; padding:20px; color:#94a3b8;">No ingredients scanned yet.</td></tr>'}
-                            </tbody>
+                            <thead><tr><th>Ingredient</th><th>Vendor Source</th><th>Inward Date</th><th>Bags Used</th><th>Total Wt Consumed</th></tr></thead>
+                            <tbody>${scansHTML || '<tr><td colspan="5" style="text-align:center; padding:20px; color:#94a3b8;">No ingredients scanned yet.</td></tr>'}</tbody>
                         </table>
                     </div>
                 </div>`;
             }).join('');
         }
 
-        // 🔥 THE AUTOMATED FSSAI AUDIT GENERATOR 🔥
-        // This solves the "No Inwarding" issue by mathematically slicing the barcode string
+        // 🔥 THE INWARDING LEDGER RENDERER 🔥
+        function renderInwarding() {
+            const container = document.getElementById('main_container');
+            const search = document.getElementById('search_box').value.toLowerCase();
+            
+            const filtered = allInwardData.filter(i => 
+                i.ingredient_name.toLowerCase().includes(search) || 
+                i.vendor_name.toLowerCase().includes(search)
+            );
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:50px; font-weight:bold; color:#94a3b8; font-size: 18px;">No inwarding records found.</div>`;
+                return;
+            }
+
+            let rowsHTML = filtered.map(i => {
+                let d = new Date(i.date_received).toLocaleDateString();
+                let totalWt = (parseFloat(i.packs) * parseFloat(i.weight)).toFixed(2);
+                return `
+                <tr>
+                    <td>${d}</td>
+                    <td style="font-weight:900;">${i.ingredient_name} <br><span style="font-size:11px; color:#64748b; font-family:monospace;">${i.ingredient_code}</span></td>
+                    <td style="color:var(--kilrr-orange); font-weight:bold;">${i.vendor_name} <br><span style="font-size:11px; color:#64748b; font-family:monospace;">${i.vendor_code}</span></td>
+                    <td>${i.start_no} to ${i.end_no} <br><span style="font-size:11px; color:#64748b;">(${i.packs} Bags)</span></td>
+                    <td style="font-weight:900;">${totalWt} KG</td>
+                </tr>`;
+            }).join('');
+
+            container.innerHTML = `
+            <div style="border: 2px solid #e2e8f0; border-radius:10px; overflow: hidden;">
+                <table>
+                    <thead><tr><th>Date Received</th><th>Raw Material</th><th>Vendor Info</th><th>Bag Range</th><th>Total Weight</th></tr></thead>
+                    <tbody>${rowsHTML}</tbody>
+                </table>
+            </div>`;
+        }
+
+        // 🔥 THE GROUPED 1-CLICK FSSAI EXPORT ENGINE 🔥
         function printAuditTrail(batchData) {
             let printWindow = window.open('', '_blank');
             if(!printWindow) return alert("Popup blocked! Allow popups to generate FSSAI reports.");
@@ -184,28 +255,37 @@
             let dateStr = new Date(batchData.created_at).toLocaleString();
             let totalYield = parseFloat(batchData.total_weight || 0).toFixed(2);
 
-            let scansHTML = batchData.scans.map(s => {
-                // Slice barcode logic: DDMM / CODE / VENDOR / BAG
+            let groups = {};
+            batchData.scans.forEach(s => {
                 let tagParts = s.rm_tag.split('/');
-                
-                // Extract Date
                 let rawDate = tagParts[0] || 'N/A';
                 let fmtDate = rawDate.length === 4 ? `${rawDate.substring(0,2)}/${rawDate.substring(2,4)}` : rawDate;
-                
-                // Extract Vendor
                 let vendor = tagParts.length > 2 ? tagParts[2] : 'N/A';
-                let isWIP = vendor === 'KILRR';
-                if(isWIP) vendor = 'KILRR (Internal Process)';
+                if(vendor === 'KILRR') vendor = 'KILRR (Internal)';
 
-                return `
+                let key = `${s.product_code}_${vendor}_${fmtDate}`;
+                if(!groups[key]) {
+                    groups[key] = {
+                        ingredient: s.ingredient_name || s.product_code,
+                        vendor: vendor,
+                        inwardDate: fmtDate,
+                        bags: 0,
+                        weight: 0
+                    };
+                }
+                groups[key].bags += 1;
+                groups[key].weight += parseFloat(s.weight) || 0;
+            });
+
+            let scansHTML = Object.values(groups).map(g => `
                 <tr>
-                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-size:12px;">${new Date(s.created_at).toLocaleTimeString()}</td>
-                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-family:monospace; font-weight:bold; font-size:13px;">${s.rm_tag}</td>
-                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold;">${s.ingredient_name || s.product_code}</td>
-                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold; color:#ea580c;">${vendor}</td>
-                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold;">${fmtDate}</td>
-                </tr>`;
-            }).join('');
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold;">${g.ingredient}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold; color:#ea580c;">${g.vendor}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold;">${g.inwardDate}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0;">${g.bags} Units</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold;">${g.weight.toFixed(2)} KG</td>
+                </tr>
+            `).join('');
 
             let html = `
             <html><head><title>FSSAI Audit Report - ${batchData.batch_code}</title>
@@ -260,15 +340,15 @@
                         </div>
                     </div>
 
-                    <h3>Ingredient Ledger</h3>
+                    <h3>Ingredient Ledger (Grouped Summary)</h3>
                     <table>
                         <thead>
                             <tr>
-                                <th>Scan Time</th>
-                                <th>Master Tag (Barcode)</th>
                                 <th>Ingredient</th>
                                 <th>Vendor Source</th>
                                 <th>Inward Date</th>
+                                <th>Bags Used</th>
+                                <th>Total Wt Consumed</th>
                             </tr>
                         </thead>
                         <tbody>
