@@ -5,44 +5,63 @@
     <title>Kilrr OS - Traceability Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; }
-        body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 50px;}
-        .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;}
+        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #10b981; --danger-red: #dc2626; --warning-yellow: #eab308; --card-bg: #ffffff; --accent-blue: #2563eb; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 80px;}
+        
+        /* NAVIGATION */
+        .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
         .brand { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;}
         .brand span { color: var(--kilrr-orange); }
         .nav-links { display: flex; gap: 10px; }
-        .nav-btn { color: #cbd5e1; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; padding: 8px 12px; border-radius: 8px;}
+        .nav-btn { color: #cbd5e1; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; padding: 8px 12px; border-radius: 8px; transition: 0.2s;}
         .nav-btn:hover { background: rgba(255,255,255,0.1); color: white;}
-        .nav-btn.active { color: var(--kilrr-orange); }
+        .nav-btn.active { color: white; background: var(--kilrr-orange);}
 
         .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; }
         
-        .header-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;}
-        h2 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; text-transform: uppercase; color: var(--navy-command); margin:0;}
-        .sub-heading { font-weight: 700; color: #64748b; font-size: 14px; margin-top: 5px;}
+        .card { background: var(--card-bg); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; border-top: 6px solid var(--kilrr-orange); margin-bottom: 30px;}
         
-        .btn-export { background: linear-gradient(135deg, #059669, #047857); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3);}
+        h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 24px; text-transform: uppercase; color: var(--navy-command);}
+        .marathi-title { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 14px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
 
-        .table-header { display: grid; grid-template-columns: 1.5fr 2fr 1fr 1fr 1fr 1fr; background: var(--navy-command); color: white; padding: 15px 20px; border-radius: 12px 12px 0 0; font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;}
-        
-        .batch-row { background: white; border: 1px solid #cbd5e1; border-top: none; padding: 15px 20px; display: grid; grid-template-columns: 1.5fr 2fr 1fr 1fr 1fr 1fr; align-items: center; font-weight: 700; cursor: pointer; transition: 0.2s;}
-        .batch-row:hover { background: #fff7ed; }
-        .batch-row:last-child { border-radius: 0 0 12px 12px; }
-        
-        .b-code { color: var(--kilrr-orange); font-family: monospace; font-size: 16px;}
-        .b-recipe { font-weight: 900; font-size: 15px;}
-        .b-weight { color: var(--success-green); font-weight: 900;}
-        .b-status { background: #e0f2fe; color: #2563eb; font-size: 11px; padding: 4px 10px; border-radius: 20px; display: inline-block; width: fit-content;}
-        .b-status.closed { background: #f1f5f9; color: #64748b; }
-        .b-date { color: #64748b; font-size: 13px; font-weight: 600;}
+        .search-box { width: 100%; padding: 18px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 16px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 30px; transition: 0.2s;}
+        .search-box:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.1);}
 
-        .scan-drawer { background: #f8fafc; border: 1px solid #cbd5e1; border-top: none; padding: 20px; display: none; border-left: 4px solid var(--kilrr-orange);}
-        .scan-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-        .scan-pill { background: white; border: 1px solid #cbd5e1; padding: 10px 15px; border-radius: 8px; font-size: 13px; font-weight: 700; display: flex; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.02); min-width: 150px;}
-        .scan-pill span { color: #64748b; font-size: 11px; font-weight: 800; margin-bottom: 3px; font-family: monospace;}
-        .scan-pill .wgt { color: var(--success-green); font-size: 14px; font-weight: 900; margin-top: 5px;}
+        /* BATCH GRID */
+        .batch-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .batch-card { background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 25px; transition: 0.2s;}
+        .batch-card:hover { border-color: var(--kilrr-orange); box-shadow: 0 10px 25px rgba(234, 88, 12, 0.1);}
+        
+        .bc-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px;}
+        .bc-title { font-size: 26px; font-weight: 900; color: var(--navy-command); margin: 0; font-family: 'Space Grotesk', sans-serif;}
+        .bc-recipe { font-size: 16px; font-weight: 800; color: var(--kilrr-orange); margin: 5px 0 0 0;}
+        .bc-meta { font-size: 14px; color: #64748b; font-weight: 700; text-align: right; display: flex; flex-direction: column; gap: 5px;}
+        
+        .bc-stats { display: flex; gap: 15px; flex-wrap: wrap;}
+        .stat-pill { background: #f8fafc; padding: 12px 20px; border-radius: 8px; font-weight: 800; font-size: 13px; border: 1px solid #cbd5e1; color: #64748b; text-transform: uppercase;}
+        .stat-pill span { color: var(--navy-command); font-size: 18px; display: block; margin-top: 4px;}
+
+        .btn-export { background: var(--navy-command); color: white; border: none; padding: 15px 25px; border-radius: 10px; font-weight: 900; font-size: 14px; cursor: pointer; text-transform: uppercase; transition: 0.2s; display: flex; align-items: center; gap: 10px;}
+        .btn-export:hover { background: var(--kilrr-orange); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(234, 88, 12, 0.2);}
+        .btn-export:active { transform: translateY(0); }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white;}
+        th { background: #f8fafc; text-align: left; padding: 15px; font-size: 12px; color: #64748b; text-transform: uppercase; border-bottom: 2px solid #cbd5e1; font-weight: 900;}
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 14px; font-weight: 700; color: var(--navy-command);}
+        td.tag-col { font-family: monospace; color: var(--accent-blue); font-weight: bold; }
+
+        .status-open { background: var(--warning-yellow); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 900; vertical-align: middle; margin-left: 10px;}
+        .status-closed { background: var(--success-green); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 900; vertical-align: middle; margin-left: 10px;}
+
+        @media (max-width: 1024px) { 
+            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap; border-top: 3px solid var(--kilrr-orange); z-index: 999;}
+            .brand { display: none; }
+            .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 8px 12px;}
+            .bc-header { flex-direction: column; align-items: flex-start; gap: 15px;}
+            .bc-meta { text-align: left; }
+            .btn-export { width: 100%; justify-content: center; margin-top: 15px;}
+        }
     </style>
 </head>
 <body>
@@ -59,134 +78,216 @@
     </nav>
 
     <div class="container">
-        <div class="header-row">
-            <div>
-                <h2>Master Traceability Engine</h2>
-                <div class="sub-heading">Click on any batch to view the ingredient breakdown and parent origins.</div>
-            </div>
-            <button class="btn-export" onclick="exportToExcel()">⬇ Export to Excel</button>
-        </div>
+        <div class="card">
+            <h2>Factory Traceability Ledger</h2>
+            <span class="marathi-title">पूर्ण ट्रेसेबिलिटी रेकॉर्ड (Audit Trail)</span>
 
-        <div class="table-header">
-            <div>Batch Code</div>
-            <div>Recipe</div>
-            <div>Total Weight</div>
-            <div>Operator</div>
-            <div>Status</div>
-            <div>Started</div>
-        </div>
-        
-        <div id="batch_list">
-            <div style="background:white; padding:40px; text-align:center; color:#94a3b8; font-weight:bold; border: 1px solid #cbd5e1; border-top: none;">Loading Traceability Data...</div>
+            <input type="text" id="search_box" class="search-box" placeholder="🔍 Search by Batch Code, Date, or Recipe Name..." oninput="renderDashboard()">
+
+            <div class="batch-grid" id="batch_container">
+                <div style="text-align:center; padding:50px; font-weight:bold; color:#94a3b8; font-size: 18px;">Syncing with Kilrr Server...</div>
+            </div>
         </div>
     </div>
 
     <script>
-        let rawData = [];
+        let allData = [];
 
         window.onload = async () => {
             try {
                 const res = await fetch('/api/dashboard-traceability');
-                rawData = await res.json();
+                allData = await res.json();
                 renderDashboard();
-            } catch(e) {
-                document.getElementById('batch_list').innerHTML = `<div style="background:white; padding:40px; text-align:center; color:red; font-weight:bold; border: 1px solid #cbd5e1; border-top: none;">Database Connection Failed</div>`;
+            } catch(e) { 
+                document.getElementById('batch_container').innerHTML = `<div style="text-align:center; color:var(--danger-red); font-weight:900; font-size:20px; padding:40px;">⚠️ Connection to Database Failed.</div>`;
             }
-        }
-
-        function formatSafeWeight(val) {
-            let w = parseFloat(val);
-            if(isNaN(w)) return "0.00 KG";
-            return w.toFixed(2) + " KG";
-        }
+        };
 
         function renderDashboard() {
-            const list = document.getElementById('batch_list');
-            if(rawData.length === 0) {
-                list.innerHTML = `<div style="background:white; padding:40px; text-align:center; color:#64748b; font-weight:bold; border: 1px solid #cbd5e1; border-top: none;">No batches recorded yet.</div>`;
+            const container = document.getElementById('batch_container');
+            const search = document.getElementById('search_box').value.toLowerCase();
+            
+            const filtered = allData.filter(b => 
+                b.batch_code.toLowerCase().includes(search) || 
+                b.fg_code.toLowerCase().includes(search) ||
+                new Date(b.created_at).toLocaleDateString().includes(search)
+            );
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:50px; font-weight:bold; color:#94a3b8; font-size: 18px;">No matching records found.</div>`;
                 return;
             }
 
-            let html = '';
-            rawData.forEach((b, index) => {
-                let dateStr = new Date(b.created_at).toLocaleString('en-GB', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' });
+            container.innerHTML = filtered.map(b => {
+                let statusClass = b.status === 'CLOSED' ? 'status-closed' : 'status-open';
+                let dateStr = new Date(b.created_at).toLocaleString();
                 
-                let scanHTML = '';
-                if(b.scans && b.scans.length > 0) {
-                    scanHTML = b.scans.map(s => {
-                        let name = s.ingredient_name || "Unknown RM";
-                        return `
-                        <div class="scan-pill">
-                            <span>${name}</span>
-                            <div style="color:var(--navy-command);">${s.rm_tag}</div>
-                            <div class="wgt">${formatSafeWeight(s.weight)}</div>
-                        </div>`;
-                    }).join('');
-                } else {
-                    scanHTML = `<div style="color:#94a3b8; font-size:13px; font-weight:bold;">No materials scanned yet.</div>`;
-                }
+                let totalPacks = b.scans.length;
+                let totalYield = parseFloat(b.total_weight || 0).toFixed(2);
 
-                html += `
-                <div class="batch-row" onclick="toggleDrawer(${index})">
-                    <div class="b-code">${b.batch_code}</div>
-                    <div class="b-recipe">${b.fg_code}</div>
-                    <div class="b-weight">${formatSafeWeight(b.total_weight)}</div>
-                    <div>${b.operator_name || 'System'}</div>
-                    <div><span class="b-status ${b.status.toLowerCase()}">${b.status}</span></div>
-                    <div class="b-date">${dateStr}</div>
-                </div>
-                <div class="scan-drawer" id="drawer_${index}">
-                    <div class="scan-grid">${scanHTML}</div>
+                // Auto-Extracting Vendor & Date directly from the tag for UI display
+                let scansHTML = b.scans.map(s => {
+                    let tagParts = s.rm_tag.split('/');
+                    let vendorCode = tagParts.length > 2 ? tagParts[2] : 'N/A';
+                    if (vendorCode === 'KILRR') vendorCode = 'WIP (Internal)';
+                    
+                    return `
+                    <tr>
+                        <td>${new Date(s.created_at).toLocaleTimeString()}</td>
+                        <td class="tag-col">${s.rm_tag}</td>
+                        <td>${s.ingredient_name || s.product_code}</td>
+                        <td><span style="background:#e2e8f0; padding:4px 8px; border-radius:4px; font-size:12px;">${vendorCode}</span></td>
+                    </tr>`;
+                }).join('');
+
+                return `
+                <div class="batch-card">
+                    <div class="bc-header">
+                        <div>
+                            <h3 class="bc-title">${b.batch_code} <span class="${statusClass}">${b.status}</span></h3>
+                            <p class="bc-recipe">${b.fg_code}</p>
+                        </div>
+                        <div class="bc-meta">
+                            <div>📅 ${dateStr}</div>
+                            <div>👤 Operator: ${b.operator_name}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px; flex-wrap: wrap; gap: 15px;">
+                        <div class="bc-stats">
+                            <div class="stat-pill">Total Scans <span>${totalPacks}</span></div>
+                            <div class="stat-pill">Batch Yield <span>${totalYield} KG</span></div>
+                        </div>
+                        ${b.status === 'CLOSED' ? `<button class="btn-export" onclick='printAuditTrail(${JSON.stringify(b)})'>🖨️ Export Audit Report</button>` : `<div style="color:var(--warning-yellow); font-weight:bold; font-size:13px;">Close batch to enable export.</div>`}
+                    </div>
+
+                    <div style="max-height: 250px; overflow-y: auto; border: 2px solid #e2e8f0; border-radius:10px;">
+                        <table>
+                            <thead>
+                                <tr><th>Scan Time</th><th>Traceability Tag</th><th>Ingredient</th><th>Vendor Source</th></tr>
+                            </thead>
+                            <tbody>
+                                ${scansHTML || '<tr><td colspan="4" style="text-align:center; padding:20px; color:#94a3b8;">No ingredients scanned yet.</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>`;
-            });
-            list.innerHTML = html;
+            }).join('');
         }
 
-        function toggleDrawer(index) {
-            const drawer = document.getElementById(`drawer_${index}`);
-            drawer.style.display = drawer.style.display === 'block' ? 'none' : 'block';
-        }
+        // 🔥 THE AUTOMATED FSSAI AUDIT GENERATOR 🔥
+        // This solves the "No Inwarding" issue by mathematically slicing the barcode string
+        function printAuditTrail(batchData) {
+            let printWindow = window.open('', '_blank');
+            if(!printWindow) return alert("Popup blocked! Allow popups to generate FSSAI reports.");
 
-        function exportToExcel() {
-            if(rawData.length === 0) return alert("No data to export!");
-            
-            let exportData = [];
-            rawData.forEach(b => {
-                if(b.scans && b.scans.length > 0) {
-                    b.scans.forEach(s => {
-                        exportData.push({
-                            "Batch Code": b.batch_code,
-                            "Recipe": b.fg_code,
-                            "Batch Operator": b.operator_name,
-                            "Batch Status": b.status,
-                            "Batch Started": new Date(b.created_at).toLocaleString(),
-                            "Total Batch Weight (KG)": parseFloat(b.total_weight) || 0,
-                            "Scanned RM Tag": s.rm_tag,
-                            "RM Name": s.ingredient_name || s.product_code,
-                            "RM Weight Issued (KG)": parseFloat(s.weight) || 0,
-                            "RM Sub-Assembly Origins": s.parent_tags || "Direct Sourced"
-                        });
-                    });
-                } else {
-                    exportData.push({
-                        "Batch Code": b.batch_code,
-                        "Recipe": b.fg_code,
-                        "Batch Operator": b.operator_name,
-                        "Batch Status": b.status,
-                        "Batch Started": new Date(b.created_at).toLocaleString(),
-                        "Total Batch Weight (KG)": parseFloat(b.total_weight) || 0,
-                        "Scanned RM Tag": "NONE",
-                        "RM Name": "NONE",
-                        "RM Weight Issued (KG)": 0,
-                        "RM Sub-Assembly Origins": "NONE"
-                    });
-                }
-            });
+            let dateStr = new Date(batchData.created_at).toLocaleString();
+            let totalYield = parseFloat(batchData.total_weight || 0).toFixed(2);
 
-            const ws = XLSX.utils.json_to_sheet(exportData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "FSSAI_Traceability");
-            XLSX.writeFile(wb, `Kilrr_Traceability_${new Date().toISOString().slice(0,10)}.xlsx`);
+            let scansHTML = batchData.scans.map(s => {
+                // Slice barcode logic: DDMM / CODE / VENDOR / BAG
+                let tagParts = s.rm_tag.split('/');
+                
+                // Extract Date
+                let rawDate = tagParts[0] || 'N/A';
+                let fmtDate = rawDate.length === 4 ? `${rawDate.substring(0,2)}/${rawDate.substring(2,4)}` : rawDate;
+                
+                // Extract Vendor
+                let vendor = tagParts.length > 2 ? tagParts[2] : 'N/A';
+                let isWIP = vendor === 'KILRR';
+                if(isWIP) vendor = 'KILRR (Internal Process)';
+
+                return `
+                <tr>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-size:12px;">${new Date(s.created_at).toLocaleTimeString()}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-family:monospace; font-weight:bold; font-size:13px;">${s.rm_tag}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold;">${s.ingredient_name || s.product_code}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold; color:#ea580c;">${vendor}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold;">${fmtDate}</td>
+                </tr>`;
+            }).join('');
+
+            let html = `
+            <html><head><title>FSSAI Audit Report - ${batchData.batch_code}</title>
+            <style>
+                @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
+                body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #0f172a; margin: 0; padding: 40px; background: white; }
+                .report-wrapper { max-width: 900px; margin: 0 auto; border: 2px solid #cbd5e1; padding: 40px; border-radius: 12px; }
+                
+                .header { border-bottom: 4px solid #ea580c; padding-bottom: 25px; margin-bottom: 30px; display:flex; justify-content:space-between; align-items:flex-end;}
+                h1 { margin: 0 0 5px 0; color: #0b1121; font-size: 32px; text-transform: uppercase; letter-spacing: -0.5px;}
+                h2 { color: #ea580c; margin: 0; font-size: 18px; text-transform: uppercase;}
+                .batch-highlight { text-align: right; }
+                .batch-highlight div { font-size: 14px; font-weight: bold; color: #64748b; margin-bottom: 5px; text-transform: uppercase;}
+                .batch-highlight span { background: #0b1121; color: white; padding: 8px 15px; border-radius: 6px; font-size: 24px; font-weight: 900; font-family: monospace;}
+                
+                .meta-box { background: #f8fafc; border: 2px solid #e2e8f0; padding: 25px; border-radius: 10px; margin-bottom: 40px; display: flex; justify-content: space-between;}
+                .meta-col { display: flex; flex-direction: column; gap: 12px; font-size: 15px;}
+                .meta-col strong { color: #64748b; text-transform: uppercase; font-size: 12px; display: block; margin-bottom: 2px;}
+                .meta-col div { font-weight: bold; color: #0b1121; }
+
+                h3 { color: #0b1121; font-size: 20px; text-transform: uppercase; margin: 0 0 15px 0; border-bottom: 2px solid #0b1121; display: inline-block; padding-bottom: 5px;}
+                
+                table { width: 100%; border-collapse: collapse; margin-bottom: 40px;}
+                th { background: #0b1121; color: white; padding: 15px 10px; text-align: left; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;}
+                
+                .footer { text-align: center; border-top: 2px solid #e2e8f0; padding-top: 20px; margin-top: 40px; }
+                .footer p { margin: 0 0 5px 0; font-size: 12px; color: #64748b; font-weight: bold;}
+                .footer-brand { font-size: 16px; font-weight: 900; color: #0b1121; margin: 0;}
+                .footer-brand span { color: #ea580c; }
+            </style>
+            </head><body>
+                <div class="report-wrapper">
+                    <div class="header">
+                        <div>
+                            <h1>Batch Traceability Audit</h1>
+                            <h2>Kilrr Blended Spices - Internal Record</h2>
+                        </div>
+                        <div class="batch-highlight">
+                            <div>Target Product: ${batchData.fg_code}</div>
+                            <span>${batchData.batch_code}</span>
+                        </div>
+                    </div>
+
+                    <div class="meta-box">
+                        <div class="meta-col">
+                            <div><strong>Production Date</strong> ${dateStr}</div>
+                            <div><strong>Supervising Operator</strong> ${batchData.operator_name}</div>
+                        </div>
+                        <div class="meta-col" style="text-align:right;">
+                            <div><strong>Ingredients Scanned</strong> ${batchData.scans.length} Units</div>
+                            <div><strong>Final Logged Yield</strong> ${totalYield} KG</div>
+                        </div>
+                    </div>
+
+                    <h3>Ingredient Ledger</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Scan Time</th>
+                                <th>Master Tag (Barcode)</th>
+                                <th>Ingredient</th>
+                                <th>Vendor Source</th>
+                                <th>Inward Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${scansHTML || '<tr><td colspan="5" style="text-align:center; padding:30px; font-weight:bold;">No ingredients were logged for this batch.</td></tr>'}
+                        </tbody>
+                    </table>
+
+                    <div class="footer">
+                        <p>This report was generated securely via system export. It serves as verifiable FSSAI documentation linking finished goods to raw material origin.</p>
+                        <p class="footer-brand">Kilrr <span>OS</span></p>
+                    </div>
+                </div>
+            </body>
+            <script>window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 500); };<\/script>
+            </html>`;
+
+            printWindow.document.open();
+            printWindow.document.write(html);
+            printWindow.document.close();
         }
     </script>
 </body>
