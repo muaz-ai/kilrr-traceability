@@ -81,7 +81,6 @@
         .req-pill.done .req-code { color: #064e3b; font-size: 14px; font-family: monospace; background: #d1fae5; padding: 4px 8px; border-radius: 6px;}
         .req-pill.done .req-status { color: var(--navy-command); font-weight: 900; display: flex; gap: 15px; align-items: center;}
 
-        /* 🔥 MOBILE HARDWARE SCANNER INPUT SETUP 🔥 */
         .scan-input-wrapper { display: flex; gap: 15px; margin-bottom: 10px; }
         
         #camera_reader { width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 20px; border: 4px solid var(--kilrr-orange); display: none; }
@@ -91,7 +90,6 @@
 
         #scan_input { width: 100%; padding: 25px 30px; box-sizing: border-box; border-radius: 12px; border: 4px solid var(--kilrr-orange); font-size: 32px; font-weight: 900; font-family: 'Inter', sans-serif; margin: 0; color: #0f172a; outline: none; transition: 0.2s;}
         
-        /* Visually style readonly to look normal but block virtual keyboard */
         #scan_input[readonly] { background: #f1f5f9; border-color: #cbd5e1; cursor: pointer;}
         #scan_input[readonly]:focus { border-color: var(--kilrr-orange); }
 
@@ -150,6 +148,7 @@
         </div>
     </nav>
 
+    <!-- SETUP VIEW (HUB) -->
     <div class="container" id="setup_view">
         <div class="card card-orange">
             <h2>Resume Active Run</h2>
@@ -174,6 +173,7 @@
                 <div style="grid-column: 1/-1; text-align:center; color:#94a3b8; font-weight:bold;">Loading Recipes...</div>
             </div>
 
+            <!-- INLINE RUN CONFIGURATION FORM -->
             <div id="run_config" class="run-config-box">
                 <h3 style="margin-top:0; color:var(--navy-command); font-family:'Space Grotesk';">Configure <span id="config_fg_name" style="color:var(--kilrr-orange);"></span></h3>
                 <div style="display:flex; gap:15px; margin-bottom:10px;">
@@ -190,6 +190,7 @@
             </div>
         </div>
 
+        <!-- CLOSED BATCHES ARCHIVE -->
         <div class="card" style="border-top: 6px solid #64748b;">
             <h2>Recently Finished Runs</h2>
             <span class="marathi-title" style="color:#64748b; border-bottom-color:#cbd5e1;">पूर्ण झालेले काम (Tap to view on Dashboard)</span>
@@ -220,15 +221,18 @@
         <label>काय काय टाकायचे आहे? (INGREDIENTS REQUIRED)</label>
         <div class="req-list" id="scan_reqs">Loading...</div>
 
+        <!-- LIVE CAMERA STREAM AREA -->
         <div id="camera_reader"></div>
 
         <label>बारकोड स्कॅन करा (SCAN HERE)</label>
         <div class="scan-input-wrapper">
-            <!-- Hardware Mode Buttons -->
+            <!-- Mobile Camera Button -->
             <button class="btn-camera" id="btn_cam" onclick="toggleCamera()" title="Open Mobile Camera">📷</button>
+            
+            <!-- Virtual Keyboard Toggle Button -->
             <button class="btn-camera" id="btn_kb" onclick="toggleKeyboard()" title="Enable Virtual Keyboard">⌨️</button>
             
-            <!-- READONLY by default to suppress soft keyboard. Hardware scanners write to it via JS Background listener. -->
+            <!-- Inputmode="none" physically blocks the virtual keyboard on mobile unless the ⌨️ is tapped -->
             <input type="text" id="scan_input" placeholder="Ready for Hardware Scan..." autocomplete="off" readonly onkeypress="if(event.key === 'Enter') submitScan()">
             
             <button class="btn-add" id="btn_add" onclick="submitScan()">ADD</button>
@@ -281,6 +285,7 @@
         // Camera State
         let html5QrCode = null;
         let isCameraOpen = false;
+        let lastScannedBarcode = "";
 
         window.onload = () => {
             renderOperators();
@@ -327,7 +332,7 @@
         });
 
         // ==========================================
-        // MOBILE CAMERA SCANNER LOGIC
+        // 🔥 CONTINUOUS MOBILE CAMERA LOGIC 🔥
         // ==========================================
         async function toggleCamera() {
             const reader = document.getElementById('camera_reader');
@@ -344,9 +349,17 @@
                         { facingMode: "environment" }, 
                         { fps: 15, qrbox: { width: 250, height: 250 } },
                         (decodedText) => {
+                            if (isScanning) return; // Ignore if currently processing
+                            
+                            // Debounce mechanism: Prevent rapid-fire of the exact same barcode
+                            if (decodedText === lastScannedBarcode) return; 
+                            
+                            lastScannedBarcode = decodedText;
+                            // Clear memory of this specific barcode after 2.5 seconds
+                            setTimeout(() => { lastScannedBarcode = ""; }, 2500); 
+
                             document.getElementById('scan_input').value = decodedText;
-                            stopCameraStream();
-                            submitScan(); 
+                            submitScan(); // It submits, flashes, and Stays Open!
                         },
                         (errorMessage) => { }
                     );
@@ -723,6 +736,7 @@
         }
 
         function backToSetup() {
+            stopCameraStream(); // Safety shutoff when leaving scanner view
             document.getElementById('scan_view').style.display = 'none';
             document.getElementById('setup_view').style.display = 'block';
             loadOpenBatches();
@@ -800,6 +814,9 @@
             }).join('');
         }
 
+        // ==========================================
+        // BULLETPROOF ANTI-DUPLICATE SCANNER
+        // ==========================================
         async function submitScan() {
             if(isScanning) return; 
             
