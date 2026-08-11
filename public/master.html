@@ -154,7 +154,7 @@
                 <span style="font-size:11px; font-weight:bold; color:var(--accent-blue); margin-bottom:8px;">SELECTED FLOAT TO TOP ⬆</span>
             </div>
             
-            <input type="text" id="recipe_search" class="search-box" placeholder="🔍 Search ingredients..." oninput="renderRecipeCheckboxes()">
+            <input type="text" id="recipe_search" class="search-box" placeholder="🔍 Search ingredients..." oninput="renderRecipeChecklist()">
             
             <div class="recipe-grid" id="recipe_checklist">
                 <!-- Checkboxes injected here -->
@@ -162,7 +162,12 @@
 
             <button class="btn-huge btn-dark" onclick="updateRecipe()">⚙️ Update Master Recipe</button>
 
-            <label style="margin-top:25px;">Active Registered Recipes</label>
+            <!-- 🔥 NEW: ACTIVE RECIPE SEARCH BAR 🔥 -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:25px; margin-bottom: 8px;">
+                <label style="margin:0;">Active Registered Recipes</label>
+            </div>
+            <input type="text" id="active_recipe_search" class="search-box" style="margin-bottom:5px;" placeholder="🔍 Search active recipes..." oninput="renderRecipes()">
+            
             <div class="data-list" id="recipe_list">Loading...</div>
         </div>
     </div>
@@ -187,7 +192,7 @@
         let ingredients = [];
         let vendors = [];
         let recipes = [];
-        let activeRecipeChecklist = new Set(); // Stores checked product_codes
+        let activeRecipeChecklist = new Set(); 
 
         window.onload = () => {
             fetchData();
@@ -278,41 +283,61 @@
             } catch(e) { showDialog("Connection Error", "Failed to load master database.", "error"); }
         }
 
+        // 🔥 NULL-SAFE RENDERERS 🔥
         function renderIngredients() {
             const list = document.getElementById('ing_list');
-            list.innerHTML = ingredients.map(i => `
+            list.innerHTML = ingredients.map(i => {
+                let name = i.ingredient_name || i.product_code;
+                let safeName = name.replace(/'/g, "\\'");
+                return `
                 <div class="data-item">
-                    <div>${i.ingredient_name} <span class="data-code">${i.product_code}</span></div>
+                    <div>${name} <span class="data-code">${i.product_code}</span></div>
                     <div class="action-btns">
-                        <button class="btn-icon" onclick="editIngredient('${i.product_code}', '${i.ingredient_name.replace(/'/g, "\\'")}')">✏️</button>
+                        <button class="btn-icon" onclick="editIngredient('${i.product_code}', '${safeName}')">✏️</button>
                         <button class="btn-icon del" onclick="deleteIngredient('${i.product_code}')">🗑️</button>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         }
 
         function renderVendors() {
             const list = document.getElementById('ven_list');
-            list.innerHTML = vendors.map(v => `
+            list.innerHTML = vendors.map(v => {
+                let name = v.vendor_name || v.vendor_code;
+                let safeName = name.replace(/'/g, "\\'");
+                return `
                 <div class="data-item">
-                    <div>${v.vendor_name} <span class="data-code">${v.vendor_code}</span></div>
+                    <div>${name} <span class="data-code">${v.vendor_code}</span></div>
                     <div class="action-btns">
-                        <button class="btn-icon" onclick="editVendor('${v.vendor_code}', '${v.vendor_name.replace(/'/g, "\\'")}')">✏️</button>
+                        <button class="btn-icon" onclick="editVendor('${v.vendor_code}', '${safeName}')">✏️</button>
                         <button class="btn-icon del" onclick="deleteVendor('${v.vendor_code}')">🗑️</button>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         }
 
+        // 🔥 SEARCHABLE RECIPES LIST 🔥
         function renderRecipes() {
             const list = document.getElementById('recipe_list');
+            const search = document.getElementById('active_recipe_search').value.toLowerCase().trim();
+            
             const grouped = {};
             recipes.forEach(r => {
                 if(!grouped[r.fg_code]) grouped[r.fg_code] = [];
                 grouped[r.fg_code].push(r.ingredient_code);
             });
 
-            list.innerHTML = Object.keys(grouped).map(fg => `
+            let fgKeys = Object.keys(grouped);
+            if (search) {
+                fgKeys = fgKeys.filter(fg => fg.toLowerCase().includes(search));
+            }
+
+            if(fgKeys.length === 0) {
+                list.innerHTML = `<div style="padding:15px; color:#94a3b8; text-align:center; font-weight:bold;">No recipes found.</div>`;
+                return;
+            }
+
+            list.innerHTML = fgKeys.map(fg => `
                 <div class="data-item" style="flex-direction:column; align-items:flex-start;">
                     <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                         <strong style="color:var(--kilrr-orange); font-size:16px;">${fg}</strong>
@@ -331,36 +356,47 @@
         function toggleChecklist(code) {
             if(activeRecipeChecklist.has(code)) activeRecipeChecklist.delete(code);
             else activeRecipeChecklist.add(code);
-            renderRecipeChecklist(); // Re-render to float checked to top
+            renderRecipeChecklist(); 
         }
 
         function renderRecipeChecklist() {
             const box = document.getElementById('recipe_checklist');
-            const search = document.getElementById('recipe_search').value.toLowerCase();
+            const search = document.getElementById('recipe_search').value.toLowerCase().trim();
             
-            // Sort: Checked items first, then alphabetical
             let sortedIngredients = [...ingredients].sort((a, b) => {
                 let aChecked = activeRecipeChecklist.has(a.product_code);
                 let bChecked = activeRecipeChecklist.has(b.product_code);
                 if (aChecked && !bChecked) return -1;
                 if (!aChecked && bChecked) return 1;
-                return a.ingredient_name.localeCompare(b.ingredient_name);
+                let aName = a.ingredient_name || a.product_code || "";
+                let bName = b.ingredient_name || b.product_code || "";
+                return aName.localeCompare(bName);
             });
 
-            let filtered = sortedIngredients.filter(i => 
-                i.ingredient_name.toLowerCase().includes(search) || 
-                i.product_code.toLowerCase().includes(search)
-            );
+            // 🔥 NULL-SAFE FILTER TO PREVENT CRASHES 🔥
+            let filtered = sortedIngredients.filter(i => {
+                let name = (i.ingredient_name || "").toLowerCase();
+                let code = (i.product_code || "").toLowerCase();
+                return name.includes(search) || code.includes(search);
+            });
+
+            if(filtered.length === 0) {
+                box.innerHTML = `<div style="grid-column: 1/-1; padding:15px; color:#94a3b8; text-align:center; font-weight:bold;">No matching ingredients.</div>`;
+                return;
+            }
 
             box.innerHTML = filtered.map(i => {
+                if(!i.product_code || i.product_code.toLowerCase() === 'null') return '';
                 let isChecked = activeRecipeChecklist.has(i.product_code);
                 let cls = isChecked ? 'recipe-label checked' : 'recipe-label';
                 let icon = isChecked ? '✅' : '☐';
+                let dispName = (i.ingredient_name && i.ingredient_name.toLowerCase() !== 'null') ? i.ingredient_name : i.product_code;
+                
                 return `
                 <div class="${cls}" onclick="toggleChecklist('${i.product_code}')">
                     <div style="display:flex; align-items:center; gap:8px;">
                         <span>${icon}</span>
-                        <span>${i.ingredient_name} <span style="font-family:monospace; color:#94a3b8; font-size:11px; margin-left:4px;">${i.product_code}</span></span>
+                        <span>${dispName} <span style="font-family:monospace; color:#94a3b8; font-size:11px; margin-left:4px;">${i.product_code}</span></span>
                     </div>
                 </div>`;
             }).join('');
