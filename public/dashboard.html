@@ -17,18 +17,18 @@
         .nav-btn:hover { background: rgba(255,255,255,0.1); color: white;}
         .nav-btn.active { color: white; background: var(--kilrr-orange);}
 
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; }
+        .container { max-width: 1300px; margin: 30px auto; padding: 0 15px; }
         
         .card { background: var(--card-bg); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; border-top: 6px solid var(--kilrr-orange); margin-bottom: 30px;}
         
         /* DASHBOARD TABS */
-        .tab-bar { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px;}
-        .tab-btn { background: transparent; border: none; font-family: 'Space Grotesk'; font-size: 18px; font-weight: 900; color: #64748b; padding: 10px 20px; cursor: pointer; text-transform: uppercase; transition: 0.2s; border-radius: 8px;}
+        .tab-bar { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; flex-wrap: wrap;}
+        .tab-btn { background: transparent; border: none; font-family: 'Space Grotesk'; font-size: 16px; font-weight: 900; color: #64748b; padding: 10px 20px; cursor: pointer; text-transform: uppercase; transition: 0.2s; border-radius: 8px;}
         .tab-btn:hover { background: #f1f5f9; color: var(--navy-command);}
         .tab-btn.active { background: var(--navy-command); color: white;}
 
         .search-box { width: 100%; padding: 18px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 16px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 30px; transition: 0.2s;}
-        .search-box:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.1);}
+        .search-box:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.15);}
 
         /* BATCH GRID */
         .batch-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
@@ -79,8 +79,10 @@
 
     <div class="container">
         <div class="card">
+            <!-- 🔥 3-TAB DASHBOARD NAVIGATION 🔥 -->
             <div class="tab-bar">
-                <button class="tab-btn active" id="tab_batches" onclick="switchTab('batches')">🏭 Batch Traceability</button>
+                <button class="tab-btn active" id="tab_batches" onclick="switchTab('batches')">🏭 Final Batch Traceability</button>
+                <button class="tab-btn" id="tab_preprocess" onclick="switchTab('preprocess')">🔥 Pre-Process (WIP) Ledger</button>
                 <button class="tab-btn" id="tab_inwarding" onclick="switchTab('inwarding')">📦 Inwarding Ledger</button>
             </div>
 
@@ -95,16 +97,21 @@
     <script>
         let allBatchData = [];
         let allInwardData = [];
+        let allPreprocessData = [];
         let currentTab = 'batches';
 
         window.onload = async () => {
             try {
-                const [batchRes, inwardRes] = await Promise.all([
+                // Fetching all 3 data streams from the database
+                const [batchRes, inwardRes, preRes] = await Promise.all([
                     fetch('/api/dashboard-traceability'),
-                    fetch('/api/dashboard-inwarding')
+                    fetch('/api/dashboard-inwarding'),
+                    fetch('/api/dashboard-preprocess')
                 ]);
                 allBatchData = await batchRes.json();
                 allInwardData = await inwardRes.json();
+                allPreprocessData = await preRes.json();
+                
                 renderBatches();
             } catch(e) { 
                 document.getElementById('main_container').innerHTML = `<div style="text-align:center; color:var(--danger-red); font-weight:900; font-size:20px; padding:40px;">⚠️ Connection to Database Failed.</div>`;
@@ -114,6 +121,7 @@
         function switchTab(tab) {
             currentTab = tab;
             document.getElementById('tab_batches').classList.remove('active');
+            document.getElementById('tab_preprocess').classList.remove('active');
             document.getElementById('tab_inwarding').classList.remove('active');
             document.getElementById(`tab_${tab}`).classList.add('active');
             
@@ -123,10 +131,13 @@
 
         function handleSearch() {
             if(currentTab === 'batches') renderBatches();
+            else if(currentTab === 'preprocess') renderPreprocess();
             else renderInwarding();
         }
 
-        // 🔥 THE GROUPED BATCH RENDERER 🔥
+        // ==========================================
+        // 1. FINAL BATCH RENDERER (EXISTING)
+        // ==========================================
         function renderBatches() {
             const container = document.getElementById('main_container');
             const search = document.getElementById('search_box').value.toLowerCase();
@@ -146,14 +157,13 @@
                 let dateStr = new Date(b.created_at).toLocaleString();
                 let totalYield = parseFloat(b.total_weight || 0).toFixed(2);
 
-                // 🔥 GROUP INGREDIENTS FOR CLEAN UI DISPLAY 🔥
                 let groups = {};
                 b.scans.forEach(s => {
                     let tagParts = s.rm_tag.split('/');
                     let rawDate = tagParts[0] || 'N/A';
                     let fmtDate = rawDate.length === 4 ? `${rawDate.substring(0,2)}/${rawDate.substring(2,4)}` : rawDate;
                     let vendor = tagParts.length > 2 ? tagParts[2] : 'N/A';
-                    if(vendor === 'KILRR') vendor = 'KILRR (Internal)';
+                    if(vendor === 'KILRR') vendor = 'KILRR (Internal WIP)';
 
                     let key = `${s.product_code}_${vendor}_${fmtDate}`;
                     if(!groups[key]) {
@@ -202,7 +212,7 @@
 
                     <div style="border: 2px solid #e2e8f0; border-radius:10px; overflow: hidden;">
                         <table>
-                            <thead><tr><th>Ingredient</th><th>Vendor Source</th><th>Inward Date</th><th>Bags Used</th><th>Total Wt Consumed</th></tr></thead>
+                            <thead><tr><th>Ingredient</th><th>Vendor / Source</th><th>Inward Date</th><th>Bags Used</th><th>Total Wt Consumed</th></tr></thead>
                             <tbody>${scansHTML || '<tr><td colspan="5" style="text-align:center; padding:20px; color:#94a3b8;">No ingredients scanned yet.</td></tr>'}</tbody>
                         </table>
                     </div>
@@ -210,7 +220,76 @@
             }).join('');
         }
 
-        // 🔥 THE INWARDING LEDGER RENDERER 🔥
+        // ==========================================
+        // 2. 🔥 NEW: PRE-PROCESS (WIP) RENDERER 🔥
+        // ==========================================
+        function renderPreprocess() {
+            const container = document.getElementById('main_container');
+            const search = document.getElementById('search_box').value.toLowerCase();
+            
+            // Group the generated tags by their WIP Batch Code
+            const grouped = {};
+            allPreprocessData.forEach(row => {
+                if(!grouped[row.batch_code]) {
+                    grouped[row.batch_code] = {
+                        date: row.created_at,
+                        product: row.product_code,
+                        process: row.process_type,
+                        yield: row.total_yield,
+                        parents: row.parent_tag, 
+                        outputs: []
+                    };
+                }
+                grouped[row.batch_code].outputs.push(row.sub_tag);
+            });
+
+            const filteredKeys = Object.keys(grouped).filter(batch => 
+                batch.toLowerCase().includes(search) || 
+                grouped[batch].product.toLowerCase().includes(search) ||
+                grouped[batch].process.toLowerCase().includes(search)
+            );
+
+            if(filteredKeys.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:50px; font-weight:bold; color:#94a3b8; font-size: 18px;">No pre-process records found.</div>`;
+                return;
+            }
+
+            let rowsHTML = filteredKeys.map(batch => {
+                let g = grouped[batch];
+                let d = new Date(g.date).toLocaleString();
+                
+                // Beautifully format the Parent Tags (Ingredients used)
+                let parentHTML = g.parents ? g.parents.split(',').map(p => `<div style="color:var(--kilrr-orange); font-family:monospace; font-size:12px; font-weight:bold; margin-bottom:2px;">${p.trim()}</div>`).join('') : '<span style="color:#94a3b8; font-size:12px;">No input scans</span>';
+                
+                // Format the output range
+                let outs = g.outputs;
+                let outStr = outs.length > 1 ? `${outs[0]}<br><span style="font-size:11px; color:#64748b;">...to...</span><br>${outs[outs.length-1]}<br><span style="color:var(--accent-blue); font-size:12px;">(${outs.length} Bags Generated)</span>` : outs[0];
+
+                return `
+                <tr>
+                    <td style="font-size:13px; color:#64748b;">${d}</td>
+                    <td>
+                        <strong style="color:var(--navy-command); font-size:18px; text-transform:uppercase;">${batch}</strong><br>
+                        <span style="background:#e2e8f0; color:#0f172a; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:900; display:inline-block; margin-top:5px;">${g.product} - ${g.process}</span>
+                    </td>
+                    <td>${parentHTML}</td>
+                    <td style="font-family:monospace; color:var(--success-green); font-weight:bold; font-size:14px; line-height:1.4;">${outStr}</td>
+                    <td style="font-weight:900; font-size:20px; color:var(--navy-command);">${g.yield} KG</td>
+                </tr>`;
+            }).join('');
+
+            container.innerHTML = `
+            <div style="border: 2px solid #e2e8f0; border-radius:12px; overflow: hidden; background:white; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead><tr style="background:#f8fafc; border-bottom:2px solid #cbd5e1;"><th style="padding:15px; text-align:left;">Date & Time</th><th style="padding:15px; text-align:left;">WIP Batch & Process</th><th style="padding:15px; text-align:left;">Input Ingredients Consumed</th><th style="padding:15px; text-align:left;">Output Tags Generated</th><th style="padding:15px; text-align:left;">Batch Yield</th></tr></thead>
+                    <tbody>${rowsHTML}</tbody>
+                </table>
+            </div>`;
+        }
+
+        // ==========================================
+        // 3. INWARDING LEDGER RENDERER (EXISTING)
+        // ==========================================
         function renderInwarding() {
             const container = document.getElementById('main_container');
             const search = document.getElementById('search_box').value.toLowerCase();
@@ -247,7 +326,9 @@
             </div>`;
         }
 
-        // 🔥 THE GROUPED 1-CLICK FSSAI EXPORT ENGINE 🔥
+        // ==========================================
+        // PDF EXPORT SCRIPT
+        // ==========================================
         function printAuditTrail(batchData) {
             let printWindow = window.open('', '_blank');
             if(!printWindow) return alert("Popup blocked! Allow popups to generate FSSAI reports.");
@@ -261,7 +342,7 @@
                 let rawDate = tagParts[0] || 'N/A';
                 let fmtDate = rawDate.length === 4 ? `${rawDate.substring(0,2)}/${rawDate.substring(2,4)}` : rawDate;
                 let vendor = tagParts.length > 2 ? tagParts[2] : 'N/A';
-                if(vendor === 'KILRR') vendor = 'KILRR (Internal)';
+                if(vendor === 'KILRR') vendor = 'KILRR (Internal WIP)';
 
                 let key = `${s.product_code}_${vendor}_${fmtDate}`;
                 if(!groups[key]) {
@@ -293,24 +374,19 @@
                 @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
                 body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #0f172a; margin: 0; padding: 40px; background: white; }
                 .report-wrapper { max-width: 900px; margin: 0 auto; border: 2px solid #cbd5e1; padding: 40px; border-radius: 12px; }
-                
                 .header { border-bottom: 4px solid #ea580c; padding-bottom: 25px; margin-bottom: 30px; display:flex; justify-content:space-between; align-items:flex-end;}
                 h1 { margin: 0 0 5px 0; color: #0b1121; font-size: 32px; text-transform: uppercase; letter-spacing: -0.5px;}
                 h2 { color: #ea580c; margin: 0; font-size: 18px; text-transform: uppercase;}
                 .batch-highlight { text-align: right; }
                 .batch-highlight div { font-size: 14px; font-weight: bold; color: #64748b; margin-bottom: 5px; text-transform: uppercase;}
                 .batch-highlight span { background: #0b1121; color: white; padding: 8px 15px; border-radius: 6px; font-size: 24px; font-weight: 900; font-family: monospace;}
-                
                 .meta-box { background: #f8fafc; border: 2px solid #e2e8f0; padding: 25px; border-radius: 10px; margin-bottom: 40px; display: flex; justify-content: space-between;}
                 .meta-col { display: flex; flex-direction: column; gap: 12px; font-size: 15px;}
                 .meta-col strong { color: #64748b; text-transform: uppercase; font-size: 12px; display: block; margin-bottom: 2px;}
                 .meta-col div { font-weight: bold; color: #0b1121; }
-
                 h3 { color: #0b1121; font-size: 20px; text-transform: uppercase; margin: 0 0 15px 0; border-bottom: 2px solid #0b1121; display: inline-block; padding-bottom: 5px;}
-                
                 table { width: 100%; border-collapse: collapse; margin-bottom: 40px;}
                 th { background: #0b1121; color: white; padding: 15px 10px; text-align: left; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;}
-                
                 .footer { text-align: center; border-top: 2px solid #e2e8f0; padding-top: 20px; margin-top: 40px; }
                 .footer p { margin: 0 0 5px 0; font-size: 12px; color: #64748b; font-weight: bold;}
                 .footer-brand { font-size: 16px; font-weight: 900; color: #0b1121; margin: 0;}
@@ -328,7 +404,6 @@
                             <span>${batchData.batch_code}</span>
                         </div>
                     </div>
-
                     <div class="meta-box">
                         <div class="meta-col">
                             <div><strong>Production Date</strong> ${dateStr}</div>
@@ -339,23 +414,15 @@
                             <div><strong>Final Logged Yield</strong> ${totalYield} KG</div>
                         </div>
                     </div>
-
                     <h3>Ingredient Ledger (Grouped Summary)</h3>
                     <table>
                         <thead>
-                            <tr>
-                                <th>Ingredient</th>
-                                <th>Vendor Source</th>
-                                <th>Inward Date</th>
-                                <th>Bags Used</th>
-                                <th>Total Wt Consumed</th>
-                            </tr>
+                            <tr><th>Ingredient</th><th>Vendor Source</th><th>Inward Date</th><th>Bags Used</th><th>Total Wt Consumed</th></tr>
                         </thead>
                         <tbody>
                             ${scansHTML || '<tr><td colspan="5" style="text-align:center; padding:30px; font-weight:bold;">No ingredients were logged for this batch.</td></tr>'}
                         </tbody>
                     </table>
-
                     <div class="footer">
                         <p>This report was generated securely via system export. It serves as verifiable FSSAI documentation linking finished goods to raw material origin.</p>
                         <p class="footer-brand">Kilrr <span>OS</span></p>
