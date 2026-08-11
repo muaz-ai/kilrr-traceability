@@ -19,7 +19,6 @@
         .nav-btn:hover { background: rgba(255,255,255,0.1); color: white;}
         .nav-btn.active { color: white; background: var(--kilrr-orange);}
 
-        /* Make it an Ultra-Wide Container */
         .container { max-width: 1400px; margin: 30px auto; padding: 0 15px; display: grid; grid-template-columns: 400px 1fr; gap: 30px;}
         
         .card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; position: relative;}
@@ -41,7 +40,9 @@
 
         input, select { width: 100%; padding: 14px 15px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 16px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #f8fafc; color: #0f172a; transition: 0.2s ease;}
         input:focus, select:focus { border-color: var(--accent-blue); outline: none; background: #ffffff; box-shadow: 0 0 0 4px rgba(59,130,246,0.15);}
-        input[readonly] { background: #e2e8f0; color: #0f172a; font-family: monospace; font-size:18px; cursor: not-allowed; border-color: #cbd5e1;}
+        
+        /* Styled readonly for inputs that lock */
+        input[readonly] { background: #e2e8f0; color: #0f172a; font-family: monospace; font-size:18px; cursor: not-allowed; border-color: #cbd5e1; opacity: 0.8;}
 
         button { width: 100%; padding: 16px; border: none; border-radius: 10px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.1s;}
         button:active { transform: translateY(2px); }
@@ -63,7 +64,7 @@
         .stat-value-blue { font-size: 42px; font-weight: 900; color: var(--accent-blue); line-height: 1;}
         .stat-value-blue span { font-size: 18px; color: var(--accent-blue); font-weight: 800;}
 
-        /* 🔥 MASSIVE INGREDIENT PILLS (2-COLUMN EXACT MATCH TO SCANNER) 🔥 */
+        /* 🔥 MASSIVE INGREDIENT PILLS (EXACT MATCH TO SCANNER) 🔥 */
         .req-list { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;}
         .req-pill { background: white; border: 2px solid #cbd5e1; padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s;}
         
@@ -91,21 +92,10 @@
         .btn-add { background: var(--navy-command); color: white; border: none; border-radius: 10px; font-weight: 900; padding: 0 40px; cursor: pointer; font-size: 20px; transition: 0.2s; }
         .btn-add:active { transform: scale(0.95); }
 
-        .scan-history { max-height: 200px; overflow-y: auto; background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px;}
+        .scan-history { max-height: 250px; overflow-y: auto; background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px;}
         .scan-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 10px; font-family: monospace; font-weight: bold; font-size: 16px;}
 
-        /* PREVIEW CSS */
-        .preview-box { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 25px; display: flex; justify-content: center; align-items: center; background: #f8fafc; margin-bottom: 25px;}
-
-        /* 🔥 UNIFIED 1:1 STICKER CSS (FOR BOTH PREVIEW & PRINT) 🔥 */
-        .kilrr-label { width: 75mm; height: 75mm; box-sizing: border-box; padding: 3mm; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden; background: white; border: 2px solid black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; }
-        .kilrr-title { background-color: black !important; color: white !important; width: 100%; padding: 2mm 0; font-size: 16pt; font-weight: 900; text-transform: uppercase; margin: 0; text-align: center; line-height: 1.1; max-height: 14mm; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .kilrr-middle { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; min-height: 0; }
-        .kilrr-qr { width: 26mm; height: 26mm; margin-bottom: 2mm; }
-        .kilrr-date { background-color: black !important; color: white !important; padding: 1.5mm 4mm; font-size: 12pt; font-weight: 900; text-transform: uppercase; margin: 0; line-height: 1; }
-        .kilrr-bottom { width: 100%; text-align: center; }
-        .kilrr-tag { font-size: 11pt; font-weight: 900; font-family: monospace; margin: 0 0 1.5mm 0; line-height: 1; color: black; }
-        .kilrr-weight { font-size: 18pt; font-weight: 900; padding: 1.5mm 0; margin: 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; text-align: center; line-height: 1.1; color: black; }
+        .preview-box { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 25px; display: flex; justify-content: center; align-items: center; background: #f8fafc; margin-bottom: 25px; overflow: hidden;}
 
         /* HARDWARE ACCELERATED FLASH OVERLAY */
         #flash_overlay { position: fixed; inset: 0; pointer-events: none; z-index: 10000; opacity: 0; transition: opacity 0.3s ease-out; display: flex; flex-direction: column; align-items: center; justify-content: center;}
@@ -164,7 +154,7 @@
             <div class="row-inputs">
                 <div style="flex:1;">
                     <label>तारीख <span class="sub">1. DATE</span></label>
-                    <input type="date" id="date" onchange="generateBatchCode()">
+                    <input type="date" id="date" onchange="saveSession()">
                 </div>
                 <div style="flex:2;">
                     <label style="color:var(--accent-blue);">काय बनवत आहात? <span class="sub">2. SEARCH TARGET PRODUCT</span></label>
@@ -197,9 +187,9 @@
                     <input type="text" inputmode="decimal" id="total_yield" placeholder="e.g. 130" oninput="saveSession()">
                 </div>
                 <div style="flex:1;">
-                    <!-- 🔥 LOCKED BATCH NUMBER AUTO GENERATOR 🔥 -->
-                    <label>बॅच नंबर <span class="sub">SYSTEM GENERATED WIP BATCH NO.</span></label>
-                    <input type="text" id="batch_code" placeholder="Auto-Generates..." readonly>
+                    <!-- 🔥 MANUAL BATCH ENTRY (WILL LOCK DYNAMICALLY) 🔥 -->
+                    <label>बॅच नंबर <span class="sub">BATCH / LOT NO. (FOR FIFO)</span></label>
+                    <input type="text" id="batch_code" placeholder="E.G. GM61" style="text-transform: uppercase;" oninput="saveSession()">
                 </div>
             </div>
 
@@ -224,7 +214,7 @@
             <h2 style="color:var(--success-green);">Traceability Engine</h2>
             <span class="marathi-title green-title">कोणते बारकोड वापरले? (Scan Input Tags)</span>
 
-            <!-- 🔥 MASSIVE STATS ROW 🔥 -->
+            <!-- MASSIVE STATS ROW -->
             <div class="stats-row">
                 <div class="stat-card">
                     <div class="stat-label">Total Bags Scanned</div>
@@ -237,7 +227,7 @@
             </div>
 
             <label>काय काय लागणार? (Recipe Checklist)</label>
-            <!-- 🔥 MASSIVE 2-COLUMN CHECKLIST PILLS 🔥 -->
+            <!-- MASSIVE 2-COLUMN CHECKLIST PILLS -->
             <div class="req-list" id="scan_reqs">
                 <div style="grid-column:1/-1; text-align:center; color:#94a3b8; font-weight:bold; padding:20px 0;">Select Target Product First...</div>
             </div>
@@ -275,8 +265,7 @@
         let allIngredients = [];
         let recipeReqs = [];
         
-        // Parent tags now store objects: { tag: "BARCODE", weight: 25.00 }
-        let parentTags = [];
+        let parentTags = []; // Array of objects: { tag: "BARCODE", weight: 25.00 }
 
         let activeSessions = JSON.parse(localStorage.getItem('kilrr_wip_sessions')) || {};
         let currentSessionId = 'new';
@@ -299,29 +288,12 @@
                 
                 attachCustomDropdown('recipe_search', allIngredients, 'ingredient_name', 'product_code', async (code, name) => {
                     document.getElementById('product_code').value = code;
-                    generateBatchCode(); // Instantly create locked WIP code
                     await loadRecipeReqs(name, code, false);
                     saveSession();
                 });
             } catch(e) { console.error("Master data fetch failed."); }
             generatePreview();
         };
-
-        // ==========================================
-        // 🔥 AUTO-LOCKED BATCH CODE GENERATOR 🔥
-        // ==========================================
-        function generateBatchCode() {
-            const dateVal = document.getElementById('date').value;
-            const pCode = document.getElementById('product_code').value;
-            
-            if (dateVal && pCode) {
-                const [year, month, day] = dateVal.split('-');
-                const uniqueTime = new Date().getTime().toString().slice(-4); 
-                // e.g. WIP-GM-0811-4512
-                document.getElementById('batch_code').value = `WIP-${pCode}-${day}${month}-${uniqueTime}`;
-            }
-            saveSession();
-        }
 
         // ==========================================
         // KEYBOARD SUPPRESSION & HARDWARE CATCHER
@@ -344,7 +316,6 @@
         }
 
         document.addEventListener('keydown', function(e) {
-            // Ignore if typing naturally or a modal is open
             if (isKbActive) return; 
 
             if (e.key.length === 1) {
@@ -359,7 +330,7 @@
         });
 
         // ==========================================
-        // 🔥 CONTINUOUS MOBILE CAMERA LOGIC 🔥
+        // CONTINUOUS MOBILE CAMERA LOGIC 
         // ==========================================
         async function toggleCamera() {
             const reader = document.getElementById('camera_reader');
@@ -635,22 +606,23 @@
             }
 
             box.innerHTML = recipeReqs.map(r => {
-                if(!r.product_code || r.product_code === 'null') return ''; 
+                // 🔥 NULL INGREDIENT FIX: Prevent 'null' from breaking the UI
+                if(!r.product_code || r.product_code.toLowerCase() === 'null') return ''; 
+                let dispName = (r.ingredient_name && r.ingredient_name.toLowerCase() !== 'null') ? r.ingredient_name : r.product_code;
                 
-                // Live Input Weight Calculator per ingredient
                 let ingScans = parentTags.filter(t => t.tag.split('/')[1] === r.product_code);
                 let ingWeight = ingScans.reduce((sum, t) => sum + (parseFloat(t.weight) || 0), 0);
 
                 if (ingScans.length > 0) {
                     return `
                     <div class="req-pill done">
-                        <div class="req-name">${r.ingredient_name} <span class="req-code">${r.product_code}</span></div>
+                        <div class="req-name">${dispName} <span class="req-code">${r.product_code}</span></div>
                         <div class="req-status"><span class="ing-weight">${ingWeight.toFixed(2)} KG</span> <span style="font-size:22px;">✔</span></div>
                     </div>`;
                 } else {
                     return `
                     <div class="req-pill pending">
-                        <div class="req-name">${r.ingredient_name} <span class="req-code">${r.product_code}</span></div>
+                        <div class="req-name">${dispName} <span class="req-code">${r.product_code}</span></div>
                         <div class="req-status"><span class="ing-weight-zero">0.00 KG</span> <span style="font-size:20px;">⏳</span></div>
                     </div>`;
                 }
@@ -659,8 +631,16 @@
 
         async function submitScan() {
             const inp = document.getElementById('scan_input');
+            const batchInputVal = document.getElementById('batch_code').value.trim();
             const barcode = inp.value.trim().toUpperCase();
+            
             if(!barcode) return;
+
+            // Check if Batch Number is assigned before allowing scans
+            if(!batchInputVal) {
+                inp.value = '';
+                return alert("⚠️ Please assign a WIP Batch Number before scanning ingredients!");
+            }
 
             // Duplicate Check
             if(parentTags.some(t => t.tag === barcode)) {
@@ -727,10 +707,20 @@
             saveSession(); 
         }
 
+        // 🔥 TAMPER LOCK AND STATS RENDERER 🔥
         function renderTags() {
             const list = document.getElementById('scan_history');
+            const batchInput = document.getElementById('batch_code');
             
-            // 🔥 UPDATE MASSIVE LIVE STATS 🔥
+            // Manage Dynamic Tamper Lock for Batch Number
+            if(parentTags.length > 0) {
+                batchInput.setAttribute('readonly', 'true');
+                batchInput.style.backgroundColor = '#e2e8f0'; // Visual grey lock
+            } else {
+                batchInput.removeAttribute('readonly');
+                batchInput.style.backgroundColor = '#f8fafc'; // Visual unlock
+            }
+
             let totalWeight = parentTags.reduce((sum, t) => sum + (parseFloat(t.weight) || 0), 0);
             document.getElementById('stat_count').textContent = parentTags.length;
             document.getElementById('stat_weight').textContent = totalWeight.toFixed(2);
@@ -740,6 +730,7 @@
                 return;
             }
             
+            // Exactly matching scanner layout
             list.innerHTML = parentTags.map((item, index) => `
                 <div class="scan-item">
                     <span>${item.tag}</span>
@@ -752,20 +743,22 @@
         }
 
         // ==========================================
-        // THE UNIFIED HTML BUILDER (PREVIEW & PRINT)
+        // 🔥 PERFECT PIXEL-TO-PIXEL PREVIEW & PRINT 🔥
         // ==========================================
         function getStickerHTML(pName, dispDate, tagStr, wtText) {
             let qrEngine = new QRious({ value: tagStr, size: 250, level: 'M' });
+            
+            // Uses bulletproof inline CSS to guarantee absolute rendering conformity
             return `
-            <div class="kilrr-label">
-                <div class="kilrr-title">${pName}</div>
-                <div class="kilrr-middle">
-                    <img class="kilrr-qr" src="${qrEngine.toDataURL()}">
-                    <div class="kilrr-date">DATE: ${dispDate}</div>
+            <div style="width: 75mm; height: 75mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; background: white; border: 2px solid black; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; page-break-after: always; overflow: hidden;">
+                <div style="background: black; color: white; width: 100%; text-align: center; font-size: 16pt; font-weight: 900; text-transform: uppercase; padding: 2mm 0; line-height: 1; max-height: 14mm; overflow: hidden; display: flex; align-items: center; justify-content: center;">${pName}</div>
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%;">
+                    <img src="${qrEngine.toDataURL()}" style="width: 26mm; height: 26mm; margin-bottom: 2mm;">
+                    <div style="background: black; color: white; font-size: 12pt; font-weight: 900; padding: 1.5mm 4mm; display: inline-block; line-height: 1;">DATE: ${dispDate}</div>
                 </div>
-                <div class="kilrr-bottom">
-                    <div class="kilrr-tag">${tagStr}</div>
-                    <div class="kilrr-weight">${wtText}</div>
+                <div style="width: 100%; text-align: center;">
+                    <div style="font-size: 11pt; font-weight: 900; font-family: monospace; margin: 0 0 1.5mm 0; line-height: 1;">${tagStr}</div>
+                    <div style="border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; text-align: center; font-size: 18pt; font-weight: 900; padding: 1.5mm 0; margin: 0; line-height: 1.1;">${wtText}</div>
                 </div>
             </div>`;
         }
@@ -798,19 +791,8 @@
                     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                     @page { size: 75mm 75mm; margin: 0; }
                     body { margin: 0; padding: 0; }
-                    .kilrr-label { page-break-after: always; }
                 }
                 body { margin: 0; padding: 0; background: white; display: flex; flex-direction: column; align-items: center; }
-                
-                /* Exact Mirror CSS */
-                .kilrr-label { width: 75mm; height: 75mm; box-sizing: border-box; padding: 3mm; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden; background: white; border: 2px solid black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; page-break-after: always;}
-                .kilrr-title { background-color: black !important; color: white !important; width: 100%; padding: 2mm 0; font-size: 16pt; font-weight: 900; text-transform: uppercase; margin: 0; text-align: center; line-height: 1.1; max-height: 14mm; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-                .kilrr-middle { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; min-height: 0; }
-                .kilrr-qr { width: 26mm; height: 26mm; margin-bottom: 2mm; }
-                .kilrr-date { background-color: black !important; color: white !important; padding: 1.5mm 4mm; font-size: 12pt; font-weight: 900; text-transform: uppercase; margin: 0; line-height: 1; }
-                .kilrr-bottom { width: 100%; text-align: center; }
-                .kilrr-tag { font-size: 11pt; font-weight: 900; font-family: monospace; margin: 0 0 1.5mm 0; line-height: 1; color: black; }
-                .kilrr-weight { font-size: 18pt; font-weight: 900; padding: 1.5mm 0; margin: 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; text-align: center; line-height: 1.1; color: black; }
             </style></head><body>`;
 
             queueArray.forEach(tagStr => {
@@ -834,6 +816,7 @@
 
             if(!dateVal) return alert("⚠️ Date is missing!");
             if(!pName || !pCode || isNaN(startNo) || isNaN(endNo)) return alert("⚠️ Please fill out Target Product and Bag details.");
+            if(!batchCode) return alert("⚠️ Please assign a WIP Batch Number!");
             if(parentTags.length === 0) return alert("⚠️ You must scan at least one Input Tag!");
 
             const [year, month, day] = dateVal.split('-');
