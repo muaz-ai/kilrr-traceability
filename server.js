@@ -147,6 +147,27 @@ app.post("/update-recipe", async (req, res) => {
 // 4. FACTORY FLOOR ROUTES (INWARD & PRE-PROCESS)
 // ==========================================
 
+app.get("/api/last-inward", async (req, res) => {
+    try {
+        const { date, ing, ven } = req.query;
+        const result = await pool.query("SELECT MAX(end_no) as last_no FROM inwarding_logs WHERE date_received = $1 AND ingredient_code ILIKE $2 AND vendor_code ILIKE $3", [date, ing, ven]);
+        res.json(result.rows[0]);
+    } catch(e) { res.status(500).json({error: e.message}); }
+});
+
+// 🔥 NEW: Fetch Live Weight of a tag for the Pre-Process Dashboard
+app.get("/api/tag-weight", async (req, res) => {
+    try {
+        let tag = req.query.tag;
+        let parts = tag.split('/');
+        let pCode = parts.length >= 2 ? parts[1] : tag;
+        let weight = 0;
+        let inw = await pool.query("SELECT weight FROM inwarding_logs WHERE ingredient_code ILIKE $1 ORDER BY created_at DESC LIMIT 1", [pCode]);
+        if(inw.rows.length > 0) weight = parseFloat(inw.rows[0].weight) || 0;
+        res.json({ weight: weight });
+    } catch(e) { res.status(500).json({weight: 0}); }
+});
+
 app.post("/log-inwarding", async (req, res) => {
     try {
         const { queue } = req.body;
@@ -178,7 +199,6 @@ app.get("/open-batches", async (req, res) => {
     catch(e) { res.status(500).json({error: e.message}); }
 });
 
-// 🔥 NEW: Fetch recently closed batches for the Dashboard Archive
 app.get("/closed-batches", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM batches WHERE status = 'CLOSED' ORDER BY created_at DESC LIMIT 20")).rows); } 
     catch(e) { res.status(500).json({error: e.message}); }
