@@ -62,8 +62,17 @@
         .tag-pill { background: white; border: 2px solid #cbd5e1; padding: 12px 15px; border-radius: 8px; font-family: monospace; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; align-items: center;}
         .btn-remove { background: var(--danger-red); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; width: auto;}
 
-        /* PREVIEW CSS */
         .preview-box { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 25px; display: flex; justify-content: center; align-items: center; background: #f8fafc; margin-bottom: 25px;}
+
+        /* 🔥 UNIFIED 1:1 STICKER CSS (FOR BOTH PREVIEW & PRINT) 🔥 */
+        .kilrr-label { width: 75mm; height: 75mm; box-sizing: border-box; padding: 3mm; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden; background: white; border: 2px solid black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; }
+        .kilrr-title { background-color: black !important; color: white !important; width: 100%; padding: 2mm 0; font-size: 16pt; font-weight: 900; text-transform: uppercase; margin: 0; text-align: center; line-height: 1.1; max-height: 14mm; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .kilrr-middle { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; min-height: 0; }
+        .kilrr-qr { width: 26mm; height: 26mm; margin-bottom: 2mm; }
+        .kilrr-date { background-color: black !important; color: white !important; padding: 1.5mm 4mm; font-size: 12pt; font-weight: 900; text-transform: uppercase; margin: 0; line-height: 1; }
+        .kilrr-bottom { width: 100%; text-align: center; }
+        .kilrr-tag { font-size: 11pt; font-weight: 900; font-family: monospace; margin: 0 0 1.5mm 0; line-height: 1; color: black; }
+        .kilrr-weight { font-size: 18pt; font-weight: 900; padding: 1.5mm 0; margin: 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; text-align: center; line-height: 1.1; color: black; }
 
         @media (max-width: 1024px) { 
             .container { grid-template-columns: 1fr; margin-top: 15px; gap: 20px;}
@@ -323,7 +332,6 @@
             generatePreview();
         }
 
-        // SOFT CLOSE TASK (Just removes from UI, doesn't warn)
         function finishCurrentSession() {
             if (currentSessionId === 'new') return alert("Start a task first!");
             delete activeSessions[currentSessionId];
@@ -333,7 +341,6 @@
             loadSession('new');
         }
 
-        // HARD DISCARD
         function deleteCurrentSession() {
             if (currentSessionId === 'new') {
                 loadSession('new'); 
@@ -480,7 +487,23 @@
             list.innerHTML = parentTags.map((tag, index) => `<div class="tag-pill">${tag}<button class="btn-remove" onclick="removeTag(${index})">X</button></div>`).join('');
         }
 
-        // 🔥 THE FIXED PREVIEW FUNCTION (MIRRORS PRINT EXACTLY) 🔥
+        // 🔥 THE UNIFIED HTML BUILDER FOR BOTH PREVIEW & PRINT 🔥
+        function getStickerHTML(pName, dispDate, tagStr, wtText) {
+            let qrEngine = new QRious({ value: tagStr, size: 250, level: 'M' });
+            return `
+            <div class="kilrr-label">
+                <div class="kilrr-title">${pName}</div>
+                <div class="kilrr-middle">
+                    <img class="kilrr-qr" src="${qrEngine.toDataURL()}">
+                    <div class="kilrr-date">DATE: ${dispDate}</div>
+                </div>
+                <div class="kilrr-bottom">
+                    <div class="kilrr-tag">${tagStr}</div>
+                    <div class="kilrr-weight">${wtText}</div>
+                </div>
+            </div>`;
+        }
+
         function generatePreview() {
             const dateVal = document.getElementById('date').value;
             const pCode = document.getElementById('product_code').value.trim().toUpperCase();
@@ -498,23 +521,10 @@
             const dispDate = `${day}/${month}/${year}`;
             
             let tagStr = `${dateFmt}/${pCode}/KILRR/${startNo || 1}`;
-            let qrEngine = new QRious({ value: tagStr, size: 250, level: 'M' });
-            
-            // Explicit blank weight underline logic 
             let wtText = weightVal ? `NET WT: ${String(weightVal).padStart(2,'0')} KG` : `NET WT: _________ KG`;
 
-            document.getElementById('preview_area').innerHTML = `
-                <div style="background:white; padding:10px; border:2px solid black; width: 280px; color: black; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-sizing: border-box;">
-                    <div style="font-weight:900; font-size:26px; text-transform:uppercase; margin: 0; padding-bottom: 5px; border-bottom: 4px solid black; width: 100%; line-height: 1; text-align: center; background: black; color: white;">${pName}</div>
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin: 10px 0;">
-                        <img src="${qrEngine.toDataURL()}" style="width:130px; height:130px; margin-bottom: 5px;">
-                        <div style="font-weight:900; font-size:18px; text-transform:uppercase; margin: 0; line-height: 1; background: black; color: white; padding: 4px 10px;">DATE: ${dispDate}</div>
-                    </div>
-                    <div style="width: 100%; margin-bottom: 5px;">
-                        <div style="font-size:18px; font-weight:900; font-family:monospace; margin: 0 0 5px 0; line-height: 1; text-align: center;">${tagStr}</div>
-                        <div style="font-size:24px; font-weight:900; padding: 8px 0; margin: 0; border-top: 4px solid black; border-bottom: 4px solid black; width: 100%; line-height: 1; text-align: center;">${wtText}</div>
-                    </div>
-                </div>`;
+            // Uses the exact unified CSS framework to render the preview
+            document.getElementById('preview_area').innerHTML = getStickerHTML(pName, dispDate, tagStr, wtText);
         }
 
         function getPrintHTML(queueArray, pName, dispDate) {
@@ -523,34 +533,27 @@
                     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                     @page { size: 75mm 75mm; margin: 0; }
                     body { margin: 0; padding: 0; }
+                    .kilrr-label { page-break-after: always; }
                 }
-                body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; background: white; text-align: center; margin: 0; padding: 0; }
-                .label { width: 75mm; height: 75mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; page-break-after: always; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden; background: white; }
-                .title-bar { background-color: black !important; color: white !important; width: 100%; padding: 4mm 0; font-size: 28px; font-weight: 900; text-transform: uppercase; margin: 0; text-align: center; line-height: 1.1; display: flex; align-items: center; justify-content: center; }
-                .qr-container { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; margin-top: 1mm;}
-                .qr-image { width: 34mm; height: 34mm; margin-bottom: 2mm; }
-                .date-bar { background-color: black !important; color: white !important; padding: 3px 12px; font-size: 18px; font-weight: 900; text-transform: uppercase; margin: 1mm 0; line-height: 1.2; display: inline-block; }
-                .tag-string { font-size: 18px; font-weight: 900; font-family: monospace; margin: 1mm 0 2mm 0; line-height: 1; }
-                .weight-bar { font-size: 32px; font-weight: 900; padding: 3mm 0; margin: 0; border-top: 5px solid black; border-bottom: 5px solid black; width: 100%; text-align: center; line-height: 1; }
+                body { margin: 0; padding: 0; background: white; display: flex; flex-direction: column; align-items: center; }
+                
+                /* Exact Mirror CSS */
+                .kilrr-label { width: 75mm; height: 75mm; box-sizing: border-box; padding: 3mm; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden; background: white; border: 2px solid black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; page-break-after: always;}
+                .kilrr-title { background-color: black !important; color: white !important; width: 100%; padding: 2mm 0; font-size: 16pt; font-weight: 900; text-transform: uppercase; margin: 0; text-align: center; line-height: 1.1; max-height: 14mm; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+                .kilrr-middle { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; min-height: 0; }
+                .kilrr-qr { width: 26mm; height: 26mm; margin-bottom: 2mm; }
+                .kilrr-date { background-color: black !important; color: white !important; padding: 1.5mm 4mm; font-size: 12pt; font-weight: 900; text-transform: uppercase; margin: 0; line-height: 1; }
+                .kilrr-bottom { width: 100%; text-align: center; }
+                .kilrr-tag { font-size: 11pt; font-weight: 900; font-family: monospace; margin: 0 0 1.5mm 0; line-height: 1; color: black; }
+                .kilrr-weight { font-size: 18pt; font-weight: 900; padding: 1.5mm 0; margin: 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; text-align: center; line-height: 1.1; color: black; }
             </style></head><body>`;
 
             queueArray.forEach(tagStr => {
-                let qrEngine = new QRious({ value: tagStr, size: 250, level: 'M' });
                 let weightVal = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
                 let wtText = weightVal ? `NET WT: ${String(weightVal).padStart(2,'0')} KG` : `NET WT: _________ KG`;
-                
-                html += `
-                <div class="label">
-                    <div class="title-bar">${pName}</div>
-                    <div class="qr-container">
-                        <img class="qr-image" src="${qrEngine.toDataURL()}">
-                        <div class="date-bar">DATE: ${dispDate}</div>
-                        <div class="tag-string">${tagStr}</div>
-                    </div>
-                    <div class="weight-bar">${wtText}</div>
-                </div>`;
+                html += getStickerHTML(pName, dispDate, tagStr, wtText);
             });
-            html += `</body><script>window.onload = () => { window.print(); window.close(); };<\/script></html>`;
+            html += `</body><script>window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 500); };<\/script></html>`;
             return html;
         }
 
