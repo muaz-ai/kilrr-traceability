@@ -2,466 +2,460 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Kilrr OS - Master Admin Vault</title>
+    <title>Kilrr OS - Master Data Vault</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #059669; --danger-red: #dc2626; --card-bg: #ffffff; }
-        body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 50px;}
+        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #10b981; --danger-red: #dc2626; --card-bg: #ffffff; --accent-blue: #2563eb; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 80px;}
         
+        /* NAVIGATION */
         .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
         .brand { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;}
         .brand span { color: var(--kilrr-orange); }
         .nav-links { display: flex; gap: 10px; }
-        .nav-btn { color: #cbd5e1; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; padding: 8px 12px; border-radius: 8px;}
+        .nav-btn { color: #cbd5e1; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; padding: 8px 12px; border-radius: 8px; transition: 0.2s;}
         .nav-btn:hover { background: rgba(255,255,255,0.1); color: white;}
         .nav-btn.active { color: white; background: var(--kilrr-orange);}
 
-        #vault_gate { position: fixed; inset: 0; background: rgba(11, 17, 33, 0.98); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .vault-box { background: white; padding: 40px; border-radius: 16px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border-top: 6px solid var(--danger-red);}
-        .vault-box h1 { font-family: 'Space Grotesk'; font-size: 24px; color: var(--navy-command); margin-top: 0; text-transform: uppercase;}
-        .vault-box input[type="password"] { font-size: 20px; text-align: center; letter-spacing: 2px; border-color: var(--navy-command); margin-bottom: 25px;}
+        .container { max-width: 1400px; margin: 30px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;}
         
-        .enterprise-toggles { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 15px; margin-bottom: 25px; text-align: left;}
-        .toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;}
-        .toggle-row:last-child { margin-bottom: 0; }
-        .toggle-row span { font-weight: 800; font-size: 13px; color: var(--navy-command); }
+        /* CARDS */
+        .card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; position: relative;}
+        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #64748b, #475569); border-radius: 16px 16px 0 0;}
+        .card.card-orange::before { background: linear-gradient(90deg, var(--kilrr-orange), #f97316); }
+
+        h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 20px; text-transform: uppercase; color: var(--navy-command); letter-spacing: 0.5px;}
+        .marathi-title { font-family: 'Inter', sans-serif; color: #64748b; font-size: 14px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
+
+        label { font-weight: 800; font-size: 12px; color: var(--navy-command); display: block; margin-bottom: 8px; text-transform: uppercase;}
         
-        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 24px;}
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%;}
-        input:checked + .slider { background-color: var(--success-green); }
-        input:checked + .slider:before { transform: translateX(20px); }
-
-        #main_content { display: none; }
-
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px;}
+        input, select { width: 100%; padding: 14px 15px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 16px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #f8fafc; color: #0f172a; transition: 0.2s ease;}
+        input:focus, select:focus { border-color: var(--kilrr-orange); outline: none; background: #ffffff; box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.15);}
         
-        .card { background: var(--card-bg); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; position: relative;}
-        .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: var(--navy-command); border-radius: 16px 16px 0 0;}
-        .card.card-orange::before { background: var(--kilrr-orange); }
+        .row-inputs { display: flex; gap: 15px; }
 
-        h2 { margin: 0 0 15px 0; font-family: 'Space Grotesk', sans-serif; font-size: 18px; text-transform: uppercase; color: var(--navy-command);}
-        label { font-weight: 800; font-size: 11px; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;}
+        button.btn-huge { width: 100%; padding: 16px; border: none; border-radius: 10px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; background: var(--kilrr-orange); color: white; transition: 0.1s;}
+        button.btn-huge:active { transform: translateY(2px); }
+        button.btn-dark { background: var(--navy-command); }
 
-        input[type="text"] { width: 100%; padding: 12px 15px; box-sizing: border-box; border-radius: 8px; border: 2px solid #cbd5e1; font-size: 14px; font-weight: 700; font-family: 'Inter', sans-serif; margin-bottom: 15px; background: #f8fafc; transition: 0.2s ease;}
-        input[type="text"]:focus { border-color: var(--kilrr-orange); outline: none; background: white;}
+        /* LISTS */
+        .data-list { max-height: 250px; overflow-y: auto; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 15px; margin-top: 10px;}
+        .data-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; font-weight: 700; font-size: 14px; transition: 0.2s;}
+        .data-item:hover { border-color: var(--kilrr-orange); }
+        .data-code { color: var(--kilrr-orange); font-family: monospace; font-size: 13px; margin-left: 8px; background: #fff7ed; padding: 2px 6px; border-radius: 4px;}
         
-        button.btn-action { width: 100%; padding: 14px; border: none; border-radius: 8px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 14px; cursor: pointer; text-transform: uppercase; background: var(--kilrr-orange); color: white; transition: 0.1s;}
-        button.btn-action:active { transform: translateY(2px); }
-        button.btn-dark { background: var(--navy-command); color: white; border: none; width: 100%; padding: 16px; border-radius: 8px; font-family: 'Space Grotesk'; font-weight: 900; font-size: 16px; cursor: pointer;}
+        .action-btns { display: flex; gap: 5px;}
+        .btn-icon { background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 5px; border-radius: 4px; transition: 0.2s;}
+        .btn-icon:hover { background: #e2e8f0; }
+        .btn-icon.del:hover { background: #fee2e2; color: var(--danger-red); }
 
-        .row { display: flex; gap: 10px; }
-
-        .data-scroll-box { max-height: 180px; overflow-y: auto; margin-top: 15px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc;}
-        .data-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; border-bottom: 1px solid #e2e8f0; font-size: 13px; font-weight: 600; color: var(--navy-command);}
-        .data-row:last-child { border-bottom: none; }
-        .data-code { font-family: monospace; font-weight: bold; color: var(--kilrr-orange); background: #fff7ed; padding: 2px 6px; border-radius: 4px; margin-left: 5px;}
+        /* RECIPE CHECKBOXES */
+        .recipe-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 350px; overflow-y: auto; padding: 15px; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; margin-bottom: 20px;}
+        .recipe-label { display: flex; justify-content: space-between; align-items: center; background: white; border: 1px solid #cbd5e1; padding: 12px 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: 700; font-size: 13px; user-select: none;}
+        .recipe-label:hover { border-color: var(--kilrr-orange); }
+        .recipe-label.checked { border-color: var(--success-green); background: #ecfdf5; color: var(--success-green);}
         
-        .action-btns { display: flex; gap: 5px; }
-        .btn-icon { background: #e2e8f0; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-size: 12px; transition: 0.2s; }
-        .btn-icon:hover { background: #cbd5e1; }
-        .btn-icon.delete { color: var(--danger-red); }
-        .btn-icon.delete:hover { background: #fef2f2; }
+        .search-box { width: 100%; padding: 12px 15px; box-sizing: border-box; border-radius: 8px; border: 2px solid #cbd5e1; font-size: 14px; font-weight: 700; margin-bottom: 15px; background: white;}
+        .search-box:focus { border-color: var(--accent-blue); outline: none; }
 
-        .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 250px; overflow-y: auto; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 8px; padding: 15px; margin-bottom: 20px;}
-        .cb-label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--navy-command); cursor: pointer; background: white; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; transition: 0.2s;}
-        .cb-label:hover { border-color: var(--kilrr-orange); box-shadow: 0 2px 4px rgba(234, 88, 12, 0.1); }
-        .cb-label.selected { background: #fff7ed; border-color: var(--kilrr-orange); }
-        .cb-label input { width: 16px; height: 16px; accent-color: var(--kilrr-orange); cursor: pointer; }
-
-        .recipe-list { max-height: 400px; overflow-y: auto; margin-top: 15px; padding-right: 5px;}
-        .recipe-pill { background: white; border: 1px solid #cbd5e1; padding: 15px; border-radius: 10px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
-        .recipe-name { font-weight: 900; font-size: 16px; color: var(--navy-command); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
+        /* GENERIC DIALOG MODAL */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(11, 17, 33, 0.85); backdrop-filter: blur(5px); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s;}
+        .dialog-content { background: white; width: 100%; max-width: 420px; border-radius: 16px; padding: 35px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.3); transform: translateY(20px); transition: transform 0.2s; border-top: 6px solid var(--kilrr-orange);}
+        .modal-icon { font-size: 45px; margin-bottom: 10px; line-height: 1;}
+        .modal-title { font-family: 'Space Grotesk'; font-size: 24px; font-weight: 900; color: var(--navy-command); margin: 0 0 10px 0; text-transform: uppercase;}
+        .modal-desc { font-size: 15px; font-weight: 600; color: #64748b; margin-bottom: 25px; line-height: 1.5;}
         
-        .ing-badge-container { display: flex; flex-wrap: wrap; gap: 6px; }
-        .ing-badge { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; font-family: monospace; font-weight: bold; font-size: 12px; padding: 4px 8px; border-radius: 6px;}
+        .modal-input { width: 100%; padding: 16px; box-sizing: border-box; border-radius: 8px; border: 2px solid var(--navy-command); font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 25px; text-align: center;}
+        .modal-input:focus { outline: none; border-color: var(--kilrr-orange); }
         
-        .btn-edit { background: #f1f5f9; color: #2563eb; border: 2px solid #cbd5e1; padding: 4px 12px; font-size: 11px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s;}
-        .btn-edit:hover { background: #e0f2fe; border-color: #2563eb; }
+        .modal-actions { display: flex; gap: 15px; justify-content: center;}
+        .btn-modal { flex: 1; padding: 16px; border: none; border-radius: 8px; font-weight: 900; font-size: 15px; cursor: pointer; text-transform: uppercase; transition: 0.1s;}
+        .btn-modal:active { transform: scale(0.95); }
+        .btn-cancel { background: #e2e8f0; color: var(--navy-command); }
+        .btn-confirm { background: var(--kilrr-orange); color: white; }
 
         @media (max-width: 1024px) { 
             .container { grid-template-columns: 1fr; margin-top: 15px; gap: 20px;}
-            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap; border-top: 3px solid var(--kilrr-orange); border-bottom: none; z-index: 999;}
+            .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap; border-top: 3px solid var(--kilrr-orange); z-index: 999;}
             .brand { display: none; }
             .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 8px 12px;}
-            .nav-btn[href="index.html"]::before { content: "🏠"; font-size: 20px; margin-bottom: 4px;}
-            .nav-btn[href="inwarding.html"]::before { content: "📦"; font-size: 20px; margin-bottom: 4px;}
-            .nav-btn[href="preprocess.html"]::before { content: "🔥"; font-size: 20px; margin-bottom: 4px;}
-            .nav-btn[href="scanner.html"]::before { content: "📷"; font-size: 20px; margin-bottom: 4px;}
-            .nav-btn[href="dashboard.html"]::before { content: "📊"; font-size: 20px; margin-bottom: 4px;}
-            .nav-btn[href="master.html"]::before { content: "⚙️"; font-size: 20px; margin-bottom: 4px;}
+            .recipe-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div id="vault_gate">
-        <div class="vault-box">
-            <h1>RESTRICTED ZONE</h1>
-            <p style="color:#64748b; font-size:13px; font-weight:700; margin-bottom:20px;">Enter the Master Data encryption key.</p>
-            
-            <input type="password" id="auth_key" placeholder="••••••••••••••" onkeypress="if(event.key === 'Enter') unlockVault()">
-            
-            <div class="enterprise-toggles">
-                <div class="toggle-row">
-                    <span>Automated Audit Trails</span>
-                    <label class="switch"><input type="checkbox" id="audit_toggle"><span class="slider"></span></label>
+    <nav class="nav-top">
+        <a href="index.html" class="brand">Kilrr <span>OS</span></a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn">Hub</a>
+            <a href="inwarding.html" class="nav-btn">Inward</a>
+            <a href="preprocess.html" class="nav-btn">Pre-Process</a>
+            <a href="scanner.html" class="nav-btn">Scanner</a>
+            <a href="dashboard.html" class="nav-btn">Dashboard</a>
+            <a href="master.html" class="nav-btn active">Master</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- LEFT COLUMN: DB MANAGEMENT -->
+        <div>
+            <!-- INGREDIENTS DB -->
+            <div class="card">
+                <h2>Raw Materials Database</h2>
+                <span class="marathi-title">कच्चा माल डेटाबेस</span>
+                
+                <div class="row-inputs">
+                    <div style="flex:1;">
+                        <label>Code (e.g. SA)</label>
+                        <input type="text" id="ing_code" style="text-transform:uppercase;">
+                    </div>
+                    <div style="flex:2;">
+                        <label>Ingredient Name</label>
+                        <input type="text" id="ing_name">
+                    </div>
                 </div>
-                <div class="toggle-row">
-                    <span>Soft Deletes (Preservation)</span>
-                    <label class="switch"><input type="checkbox" id="soft_delete_toggle" checked><span class="slider"></span></label>
-                </div>
+                <button class="btn-huge" onclick="saveIngredient()">💾 Save Material</button>
+
+                <div class="data-list" id="ing_list">Loading...</div>
             </div>
 
-            <button class="btn-dark" onclick="unlockVault()">🔓 UNLOCK SERVER</button>
+            <!-- VENDORS DB -->
+            <div class="card">
+                <h2>Approved Vendors</h2>
+                <span class="marathi-title">व्यापारी डेटाबेस</span>
+                
+                <div class="row-inputs">
+                    <div style="flex:1;">
+                        <label>Code (e.g. V-01)</label>
+                        <input type="text" id="ven_code" style="text-transform:uppercase;">
+                    </div>
+                    <div style="flex:2;">
+                        <label>Vendor Name</label>
+                        <input type="text" id="ven_name">
+                    </div>
+                </div>
+                <button class="btn-huge" onclick="saveVendor()">💾 Save Vendor</button>
+
+                <div class="data-list" id="ven_list">Loading...</div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: RECIPE CONFIGURATION -->
+        <div class="card card-orange">
+            <h2 style="color:var(--kilrr-orange);">Master Flavour Profiles</h2>
+            <span class="marathi-title" style="color:var(--kilrr-orange);">रेसिपी डेटाबेस</span>
+
+            <label>Master Recipe Name / Target Code</label>
+            <input type="text" id="recipe_fg" placeholder="E.g. Garam Masala">
+
+            <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                <label>Select Ingredients (Checkboxes)</label>
+                <span style="font-size:11px; font-weight:bold; color:var(--accent-blue); margin-bottom:8px;">SELECTED FLOAT TO TOP ⬆</span>
+            </div>
+            
+            <input type="text" id="recipe_search" class="search-box" placeholder="🔍 Search ingredients..." oninput="renderRecipeCheckboxes()">
+            
+            <div class="recipe-grid" id="recipe_checklist">
+                <!-- Checkboxes injected here -->
+            </div>
+
+            <button class="btn-huge btn-dark" onclick="updateRecipe()">⚙️ Update Master Recipe</button>
+
+            <label style="margin-top:25px;">Active Registered Recipes</label>
+            <div class="data-list" id="recipe_list">Loading...</div>
         </div>
     </div>
 
-    <div id="main_content">
-        <nav class="nav-top">
-            <a href="index.html" class="brand">Kilrr <span>OS</span></a>
-            <div class="nav-links">
-                <a href="index.html" class="nav-btn">Hub</a>
-                <a href="inwarding.html" class="nav-btn">Inward</a>
-                <a href="preprocess.html" class="nav-btn">Pre-Process</a>
-                <a href="scanner.html" class="nav-btn">Scanner</a>
-                <a href="dashboard.html" class="nav-btn">Dashboard</a>
-                <a href="master.html" class="nav-btn active">Master</a>
-            </div>
-        </nav>
+    <!-- 🔒 UNIFIED SECURITY MODAL 🔒 -->
+    <div id="kilrr_modal" class="modal-overlay">
+        <div class="dialog-content" id="modal_content_box">
+            <div class="modal-icon" id="modal_icon">🔒</div>
+            <h3 class="modal-title" id="modal_title">Authorization Required</h3>
+            <p class="modal-desc" id="modal_desc">Enter Master PIN to apply database changes.</p>
+            
+            <input type="password" id="modal_password" class="modal-input" placeholder="Enter PIN (1234)..." autocomplete="off">
 
-        <div class="container">
-            <div>
-                <div class="card" style="margin-bottom: 30px;">
-                    <h2>Raw Materials Database</h2>
-                    <div class="row">
-                        <div style="flex:1;">
-                            <label>Code</label>
-                            <input type="text" id="mat_code" placeholder="E.g. SALT" style="text-transform: uppercase;">
-                        </div>
-                        <div style="flex:2;">
-                            <label>Ingredient Name</label>
-                            <input type="text" id="mat_name" placeholder="E.g. Iodized Salt">
-                        </div>
-                    </div>
-                    <button class="btn-action" onclick="saveMaterial()">💾 Save Material</button>
-                    
-                    <div class="data-scroll-box" id="materials_list">
-                        <div style="padding:15px; text-align:center; color:#94a3b8; font-size:12px;">Loading...</div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2>Approved Vendors</h2>
-                    <div class="row">
-                        <div style="flex:1;">
-                            <label>Code</label>
-                            <input type="text" id="ven_code" placeholder="E.g. V-01" style="text-transform: uppercase;">
-                        </div>
-                        <div style="flex:2;">
-                            <label>Vendor Name</label>
-                            <input type="text" id="ven_name" placeholder="E.g. Farm Fresh">
-                        </div>
-                    </div>
-                    <button class="btn-action" onclick="saveVendor()">💾 Save Vendor</button>
-                    
-                    <div class="data-scroll-box" id="vendors_list">
-                        <div style="padding:15px; text-align:center; color:#94a3b8; font-size:12px;">Loading...</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card card-orange">
-                <h2>Master Recipe Engine</h2>
-                <div style="background: #fff7ed; color: var(--kilrr-orange); padding: 12px; border-radius: 8px; font-weight: bold; font-size: 12px; margin-bottom: 20px; line-height: 1.4;">
-                    ⚠️ Updating a recipe replaces all previous ingredients. To completely delete a recipe, uncheck all boxes and hit update.
-                </div>
-                
-                <label>Master Flavour Profile (FG Name / Code)</label>
-                <input type="text" id="rec_fg" placeholder="E.g. Garam Masala">
-                
-                <!-- NEW SEARCH BAR FOR INGREDIENTS -->
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <label>Select Ingredients (Checkboxes)</label>
-                    <label style="color:var(--kilrr-orange);">Selected float to top ⬆️</label>
-                </div>
-                <input type="text" id="recipe_search" placeholder="🔍 Search ingredients..." oninput="renderRecipeCheckboxes()" style="margin-bottom: 10px; padding: 10px 15px; font-size:14px;">
-                
-                <div id="recipe_checkboxes" class="checkbox-grid">
-                    <div style="color:#94a3b8; font-size:12px; grid-column: 1 / -1; text-align:center;">Loading materials...</div>
-                </div>
-                
-                <button class="btn-dark" onclick="updateRecipe()">⚙️ Update Master Recipe</button>
-
-                <h3 style="font-family:'Space Grotesk'; font-size:15px; margin-top:25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; color: var(--navy-command);">Active Recipes</h3>
-                <div class="recipe-list" id="active_recipes_list">Loading...</div>
+            <div class="modal-actions">
+                <button id="modal_cancel" class="btn-modal btn-cancel" onclick="closeModal(false)">CANCEL</button>
+                <button id="modal_confirm" class="btn-modal btn-confirm" onclick="closeModal(true)">AUTHORIZE</button>
             </div>
         </div>
     </div>
 
     <script>
-        let sessionKey = sessionStorage.getItem('kilrr_vault_key');
-        let globalIngredients = [];
-        let currentRecipeIngredients = []; // Tracks what is currently checked
+        let ingredients = [];
+        let vendors = [];
+        let recipes = [];
+        let activeRecipeChecklist = new Set(); // Stores checked product_codes
 
         window.onload = () => {
-            if(sessionKey === "Kilrrspicesdata") {
-                document.getElementById('vault_gate').style.display = 'none';
-                document.getElementById('main_content').style.display = 'block';
-                loadAllData();
-            }
+            fetchData();
         };
 
-        function unlockVault() {
-            const keyAttempt = document.getElementById('auth_key').value;
-            if(keyAttempt === "Kilrrspicesdata") {
-                sessionStorage.setItem('kilrr_vault_key', keyAttempt);
-                sessionKey = keyAttempt;
-                document.getElementById('vault_gate').style.display = 'none';
-                document.getElementById('main_content').style.display = 'block';
-                loadAllData();
-            } else {
-                alert("❌ INVALID ENCRYPTION KEY");
-                document.getElementById('auth_key').value = '';
+        // ==========================================
+        // SECURITY MODAL LOGIC
+        // ==========================================
+        let modalCallback = null;
+
+        function showDialog(title, desc, type, callback) {
+            document.getElementById('modal_title').textContent = title;
+            document.getElementById('modal_desc').textContent = desc;
+            
+            const m = document.getElementById('kilrr_modal');
+            const box = document.getElementById('modal_content_box');
+            const cancelBtn = document.getElementById('modal_cancel');
+            const confirmBtn = document.getElementById('modal_confirm');
+            const icon = document.getElementById('modal_icon');
+            const pwd = document.getElementById('modal_password');
+
+            pwd.style.display = 'none'; pwd.value = '';
+            modalCallback = callback;
+
+            if (type === 'error') {
+                icon.textContent = '🛑';
+                box.style.borderTopColor = 'var(--danger-red)';
+                confirmBtn.style.background = 'var(--danger-red)';
+                confirmBtn.textContent = 'OK';
+                cancelBtn.style.display = 'none';
+            } else if (type === 'success') {
+                icon.textContent = '✅';
+                box.style.borderTopColor = 'var(--success-green)';
+                confirmBtn.style.background = 'var(--success-green)';
+                confirmBtn.textContent = 'OK';
+                cancelBtn.style.display = 'none';
+            } else if (type === 'password') {
+                icon.textContent = '🔒';
+                box.style.borderTopColor = 'var(--danger-red)';
+                confirmBtn.style.background = 'var(--danger-red)';
+                confirmBtn.textContent = 'AUTHORIZE';
+                cancelBtn.style.display = 'block';
+                pwd.style.display = 'block';
+                setTimeout(() => pwd.focus(), 50);
+            }
+
+            m.style.display = 'flex';
+            setTimeout(() => { m.style.opacity = '1'; box.style.transform = 'translateY(0)'; }, 10);
+        }
+
+        function closeModal(isConfirmed) {
+            const m = document.getElementById('kilrr_modal');
+            const box = document.getElementById('modal_content_box');
+            m.style.opacity = '0';
+            box.style.transform = 'translateY(20px)';
+            
+            let val = null;
+            if (document.getElementById('modal_password').style.display === 'block') val = document.getElementById('modal_password').value;
+
+            setTimeout(() => { m.style.display = 'none'; }, 200);
+            
+            if (modalCallback) {
+                modalCallback(isConfirmed ? (val !== null ? val : true) : false);
+                modalCallback = null;
             }
         }
 
-        function loadAllData() {
-            loadMaterials();
-            loadVendors();
-            loadActiveRecipes();
+        document.getElementById('modal_password').addEventListener('keypress', function(e) { if (e.key === 'Enter') closeModal(true); });
+
+        // ==========================================
+        // DATA FETCHING & RENDERING
+        // ==========================================
+        async function fetchData() {
+            try {
+                const [iRes, vRes, rRes] = await Promise.all([
+                    fetch('/get-ingredients'),
+                    fetch('/get-vendors'),
+                    fetch('/get-recipes')
+                ]);
+                ingredients = await iRes.json();
+                vendors = await vRes.json();
+                recipes = await rRes.json();
+                
+                renderIngredients();
+                renderVendors();
+                renderRecipes();
+                renderRecipeChecklist();
+            } catch(e) { showDialog("Connection Error", "Failed to load master database.", "error"); }
         }
 
-        // --- MATERIALS LOGIC ---
-        async function loadMaterials() {
-            try {
-                const res = await fetch('/get-ingredients');
-                const data = await res.json();
-                
-                globalIngredients = data;
-                renderRecipeCheckboxes();
-
-                const list = document.getElementById('materials_list');
-                if(data.length === 0) { list.innerHTML = `<div style="padding:15px; text-align:center; color:#94a3b8; font-size:12px; font-weight:bold;">No materials saved.</div>`; return; }
-                
-                list.innerHTML = data.map(m => `
-                    <div class="data-row">
-                        <div><span>${m.ingredient_name}</span> <span class="data-code">${m.product_code}</span></div>
-                        <div class="action-btns">
-                            <button class="btn-icon" onclick="editMaterial('${m.product_code}', '${m.ingredient_name}')">✎</button>
-                            <button class="btn-icon delete" onclick="deleteMaterial('${m.product_code}')">🗑️</button>
-                        </div>
+        function renderIngredients() {
+            const list = document.getElementById('ing_list');
+            list.innerHTML = ingredients.map(i => `
+                <div class="data-item">
+                    <div>${i.ingredient_name} <span class="data-code">${i.product_code}</span></div>
+                    <div class="action-btns">
+                        <button class="btn-icon" onclick="editIngredient('${i.product_code}', '${i.ingredient_name.replace(/'/g, "\\'")}')">✏️</button>
+                        <button class="btn-icon del" onclick="deleteIngredient('${i.product_code}')">🗑️</button>
                     </div>
-                `).join('');
-            } catch(e) { document.getElementById('materials_list').innerHTML = `<div style="color:red; padding:10px;">Error loading data.</div>`; }
+                </div>
+            `).join('');
         }
 
-        function editMaterial(code, name) {
-            document.getElementById('mat_code').value = code;
-            document.getElementById('mat_name').value = name;
-        }
-
-        async function deleteMaterial(code) {
-            if(!confirm(`Are you sure you want to permanently delete Raw Material: ${code}?`)) return;
-            try {
-                const res = await fetch('/delete-ingredient', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code: code, master_key: sessionKey})});
-                const data = await res.json();
-                if(data.error) return alert(data.error);
-                loadMaterials();
-            } catch(e) { alert("Error deleting material"); }
-        }
-
-        async function saveMaterial() {
-            const code = document.getElementById('mat_code').value.trim().toUpperCase();
-            const name = document.getElementById('mat_name').value.trim();
-            if(!code || !name) return alert("Fill both fields");
-            try {
-                const res = await fetch('/add-ingredient', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code, name, master_key: sessionKey})});
-                const data = await res.json();
-                if(data.error) return alert(data.error);
-                document.getElementById('mat_code').value = ''; document.getElementById('mat_name').value = '';
-                loadMaterials(); 
-            } catch(e) { alert("Error saving material"); }
-        }
-
-        // --- VENDORS LOGIC ---
-        async function loadVendors() {
-            try {
-                const res = await fetch('/get-vendors');
-                const data = await res.json();
-                const list = document.getElementById('vendors_list');
-                if(data.length === 0) { list.innerHTML = `<div style="padding:15px; text-align:center; color:#94a3b8; font-size:12px; font-weight:bold;">No vendors saved.</div>`; return; }
-                
-                list.innerHTML = data.map(v => `
-                    <div class="data-row">
-                        <div><span>${v.vendor_name}</span> <span class="data-code">${v.vendor_code}</span></div>
-                        <div class="action-btns">
-                            <button class="btn-icon" onclick="editVendor('${v.vendor_code}', '${v.vendor_name}')">✎</button>
-                            <button class="btn-icon delete" onclick="deleteVendor('${v.vendor_code}')">🗑️</button>
-                        </div>
+        function renderVendors() {
+            const list = document.getElementById('ven_list');
+            list.innerHTML = vendors.map(v => `
+                <div class="data-item">
+                    <div>${v.vendor_name} <span class="data-code">${v.vendor_code}</span></div>
+                    <div class="action-btns">
+                        <button class="btn-icon" onclick="editVendor('${v.vendor_code}', '${v.vendor_name.replace(/'/g, "\\'")}')">✏️</button>
+                        <button class="btn-icon del" onclick="deleteVendor('${v.vendor_code}')">🗑️</button>
                     </div>
-                `).join('');
-            } catch(e) { document.getElementById('vendors_list').innerHTML = `<div style="color:red; padding:10px;">Error loading data.</div>`; }
+                </div>
+            `).join('');
         }
 
-        function editVendor(code, name) {
-            document.getElementById('ven_code').value = code;
-            document.getElementById('ven_name').value = name;
+        function renderRecipes() {
+            const list = document.getElementById('recipe_list');
+            const grouped = {};
+            recipes.forEach(r => {
+                if(!grouped[r.fg_code]) grouped[r.fg_code] = [];
+                grouped[r.fg_code].push(r.ingredient_code);
+            });
+
+            list.innerHTML = Object.keys(grouped).map(fg => `
+                <div class="data-item" style="flex-direction:column; align-items:flex-start;">
+                    <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <strong style="color:var(--kilrr-orange); font-size:16px;">${fg}</strong>
+                        <button class="btn-icon" style="background:#e2e8f0; font-size:12px; font-weight:bold;" onclick="editRecipe('${fg}')">⚙️ EDIT</button>
+                    </div>
+                    <div style="display:flex; flex-wrap:wrap; gap:5px;">
+                        ${grouped[fg].map(c => `<span style="background:#f1f5f9; padding:4px 8px; border-radius:4px; font-family:monospace; font-size:11px; color:#64748b;">${c}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
         }
 
-        async function deleteVendor(code) {
-            if(!confirm(`Are you sure you want to permanently delete Vendor: ${code}?`)) return;
-            try {
-                const res = await fetch('/delete-vendor', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code: code, master_key: sessionKey})});
-                const data = await res.json();
-                if(data.error) return alert(data.error);
-                loadVendors();
-            } catch(e) { alert("Error deleting vendor"); }
+        // ==========================================
+        // FLOATING RECIPE CHECKLIST LOGIC
+        // ==========================================
+        function toggleChecklist(code) {
+            if(activeRecipeChecklist.has(code)) activeRecipeChecklist.delete(code);
+            else activeRecipeChecklist.add(code);
+            renderRecipeChecklist(); // Re-render to float checked to top
         }
 
-        async function saveVendor() {
-            const code = document.getElementById('ven_code').value.trim().toUpperCase();
-            const name = document.getElementById('ven_name').value.trim();
-            if(!code || !name) return alert("Fill both fields");
-            try {
-                const res = await fetch('/add-vendor', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code, name, master_key: sessionKey})});
-                const data = await res.json();
-                if(data.error) return alert(data.error);
-                document.getElementById('ven_code').value = ''; document.getElementById('ven_name').value = '';
-                loadVendors();
-            } catch(e) { alert("Error saving vendor"); }
-        }
-
-        // --- NEW AUTO-SORTING & SEARCHING CHECKBOX LOGIC ---
-        function toggleIngredient(code) {
-            if (currentRecipeIngredients.includes(code)) {
-                currentRecipeIngredients = currentRecipeIngredients.filter(c => c !== code); // Remove
-            } else {
-                currentRecipeIngredients.push(code); // Add
-            }
-            renderRecipeCheckboxes(); // Re-render to move to top instantly
-        }
-
-        function renderRecipeCheckboxes() {
-            const container = document.getElementById('recipe_checkboxes');
-            const searchTerm = document.getElementById('recipe_search').value.toLowerCase();
-
-            if (globalIngredients.length === 0) {
-                container.innerHTML = `<div style="color:#94a3b8; font-size:12px; grid-column: 1 / -1; text-align:center;">Add Raw Materials first.</div>`;
-                return;
-            }
-
-            // 1. Sort: Selected items float to the top, unselected stay below alphabetically
-            let sortedIngredients = [...globalIngredients].sort((a, b) => {
-                const aSelected = currentRecipeIngredients.includes(a.product_code);
-                const bSelected = currentRecipeIngredients.includes(b.product_code);
-                
-                if (aSelected && !bSelected) return -1;
-                if (!aSelected && bSelected) return 1;
-                
-                // If both are selected or both are unselected, sort alphabetically by name
+        function renderRecipeChecklist() {
+            const box = document.getElementById('recipe_checklist');
+            const search = document.getElementById('recipe_search').value.toLowerCase();
+            
+            // Sort: Checked items first, then alphabetical
+            let sortedIngredients = [...ingredients].sort((a, b) => {
+                let aChecked = activeRecipeChecklist.has(a.product_code);
+                let bChecked = activeRecipeChecklist.has(b.product_code);
+                if (aChecked && !bChecked) return -1;
+                if (!aChecked && bChecked) return 1;
                 return a.ingredient_name.localeCompare(b.ingredient_name);
             });
 
-            // 2. Filter by Search Bar
-            if (searchTerm) {
-                sortedIngredients = sortedIngredients.filter(ing => 
-                    ing.ingredient_name.toLowerCase().includes(searchTerm) || 
-                    ing.product_code.toLowerCase().includes(searchTerm)
-                );
-            }
+            let filtered = sortedIngredients.filter(i => 
+                i.ingredient_name.toLowerCase().includes(search) || 
+                i.product_code.toLowerCase().includes(search)
+            );
 
-            // 3. Render HTML
-            if (sortedIngredients.length === 0) {
-                container.innerHTML = `<div style="color:#94a3b8; font-size:12px; grid-column: 1 / -1; text-align:center;">No ingredients found matching "${searchTerm}"</div>`;
-                return;
-            }
-
-            container.innerHTML = sortedIngredients.map(ing => {
-                const isChecked = currentRecipeIngredients.includes(ing.product_code);
-                const checkedAttr = isChecked ? 'checked' : '';
-                const selectedClass = isChecked ? 'selected' : '';
-                
+            box.innerHTML = filtered.map(i => {
+                let isChecked = activeRecipeChecklist.has(i.product_code);
+                let cls = isChecked ? 'recipe-label checked' : 'recipe-label';
+                let icon = isChecked ? '✅' : '☐';
                 return `
-                <label class="cb-label ${selectedClass}">
-                    <input type="checkbox" class="recipe-cb" value="${ing.product_code}" ${checkedAttr} onchange="toggleIngredient('${ing.product_code}')"> 
-                    ${ing.ingredient_name} <span style="color:var(--kilrr-orange); margin-left:auto;">${ing.product_code}</span>
-                </label>`;
+                <div class="${cls}" onclick="toggleChecklist('${i.product_code}')">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span>${icon}</span>
+                        <span>${i.ingredient_name} <span style="font-family:monospace; color:#94a3b8; font-size:11px; margin-left:4px;">${i.product_code}</span></span>
+                    </div>
+                </div>`;
             }).join('');
         }
 
-        async function loadActiveRecipes() {
-            try {
-                const res = await fetch('/get-recipes');
-                const rawRecipes = await res.json();
-                
-                const grouped = {};
-                rawRecipes.forEach(r => {
-                    if(!grouped[r.fg_code]) grouped[r.fg_code] = [];
-                    if(r.ingredient_code && r.ingredient_code !== 'null') {
-                        grouped[r.fg_code].push(r.ingredient_code);
-                    }
-                });
-
-                const list = document.getElementById('active_recipes_list');
-                if(Object.keys(grouped).length === 0) {
-                    list.innerHTML = `<div style="text-align:center; color:#94a3b8; font-weight:bold; padding:20px; font-size:13px;">No recipes configured yet.</div>`;
-                    return;
-                }
-
-                list.innerHTML = Object.keys(grouped).map(fg => {
-                    let ingHTML = '';
-                    if(!grouped[fg] || grouped[fg].length === 0) {
-                        ingHTML = `<span style="color:var(--danger-red); font-size:11px; font-weight:bold;">EMPTY RECIPE - PLEASE EDIT</span>`;
-                    } else {
-                        ingHTML = grouped[fg].map(code => `<span class="ing-badge">${code}</span>`).join('');
-                    }
-
-                    return `
-                    <div class="recipe-pill">
-                        <div class="recipe-name">
-                            ${fg}
-                            <button class="btn-edit" onclick="quickEdit('${fg}', '${grouped[fg].join(',')}')">✎ EDIT</button>
-                        </div>
-                        <div class="ing-badge-container">${ingHTML}</div>
-                    </div>
-                `}).join('');
-            } catch(e) {
-                document.getElementById('active_recipes_list').innerHTML = `<div style="color:red; font-weight:bold;">Failed to load recipes.</div>`;
-            }
+        function editRecipe(fg) {
+            document.getElementById('recipe_fg').value = fg;
+            activeRecipeChecklist.clear();
+            recipes.filter(r => r.fg_code === fg).forEach(r => activeRecipeChecklist.add(r.ingredient_code));
+            renderRecipeChecklist();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        async function updateRecipe() {
-            const fg_code = document.getElementById('rec_fg').value.trim();
-            const ingredients = currentRecipeIngredients.join(',');
-            
-            if(!fg_code) return alert("Target Product Name is required.");
+        // ==========================================
+        // SECURE POST FUNCTIONS
+        // ==========================================
+        function editIngredient(code, name) { document.getElementById('ing_code').value = code; document.getElementById('ing_name').value = name; }
+        function editVendor(code, name) { document.getElementById('ven_code').value = code; document.getElementById('ven_name').value = name; }
 
-            try {
-                const res = await fetch('/update-recipe', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({fg_code, ingredients, master_key: sessionKey})});
-                const data = await res.json();
-                if(data.error) return alert(data.error);
-                if(data.status==='success') { 
-                    document.getElementById('rec_fg').value = ''; 
-                    document.getElementById('recipe_search').value = ''; 
-                    currentRecipeIngredients = []; // Clear selection
-                    renderRecipeCheckboxes(); // Reset checkboxes
-                    loadActiveRecipes();
-                }
-            } catch(e) { alert("Error updating recipe."); }
+        function saveIngredient() {
+            const code = document.getElementById('ing_code').value.trim().toUpperCase();
+            const name = document.getElementById('ing_name').value.trim();
+            if(!code || !name) return showDialog("Error", "Code and Name are required.", "error");
+
+            showDialog("Authorize Save", `Save Ingredient [${code}]?`, "password", async (pin) => {
+                if(!pin) return;
+                try {
+                    const res = await fetch('/add-ingredient', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ code, name, master_key: pin }) });
+                    const data = await res.json();
+                    if(data.error) return showDialog("Access Denied", data.error, "error");
+                    document.getElementById('ing_code').value = ''; document.getElementById('ing_name').value = '';
+                    fetchData();
+                } catch(e) { showDialog("Error", "Server failed.", "error"); }
+            });
         }
 
-        function quickEdit(fg, ings) {
-            document.getElementById('rec_fg').value = fg;
-            document.getElementById('recipe_search').value = ''; // Clear search field
+        function deleteIngredient(code) {
+            showDialog("Authorize Delete", `Delete Ingredient [${code}]?`, "password", async (pin) => {
+                if(!pin) return;
+                try {
+                    const res = await fetch('/delete-ingredient', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ code, master_key: pin }) });
+                    const data = await res.json();
+                    if(data.error) return showDialog("Access Denied", data.error, "error");
+                    fetchData();
+                } catch(e) { showDialog("Error", "Server failed.", "error"); }
+            });
+        }
+
+        function saveVendor() {
+            const code = document.getElementById('ven_code').value.trim().toUpperCase();
+            const name = document.getElementById('ven_name').value.trim();
+            if(!code || !name) return showDialog("Error", "Code and Name are required.", "error");
+
+            showDialog("Authorize Save", `Save Vendor [${code}]?`, "password", async (pin) => {
+                if(!pin) return;
+                try {
+                    const res = await fetch('/add-vendor', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ code, name, master_key: pin }) });
+                    const data = await res.json();
+                    if(data.error) return showDialog("Access Denied", data.error, "error");
+                    document.getElementById('ven_code').value = ''; document.getElementById('ven_name').value = '';
+                    fetchData();
+                } catch(e) { showDialog("Error", "Server failed.", "error"); }
+            });
+        }
+
+        function deleteVendor(code) {
+            showDialog("Authorize Delete", `Delete Vendor [${code}]?`, "password", async (pin) => {
+                if(!pin) return;
+                try {
+                    const res = await fetch('/delete-vendor', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ code, master_key: pin }) });
+                    const data = await res.json();
+                    if(data.error) return showDialog("Access Denied", data.error, "error");
+                    fetchData();
+                } catch(e) { showDialog("Error", "Server failed.", "error"); }
+            });
+        }
+
+        function updateRecipe() {
+            const fg = document.getElementById('recipe_fg').value.trim();
+            if(!fg) return showDialog("Error", "Master Recipe Name is required.", "error");
             
-            // Populate our tracking array and trigger the re-render/auto-sort
-            currentRecipeIngredients = ings ? ings.split(',').map(s => s.trim()).filter(Boolean) : [];
-            renderRecipeCheckboxes(); 
-            
-            // Scroll to it automatically
-            document.getElementById('rec_fg').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const selectedStr = Array.from(activeRecipeChecklist).join(',');
+
+            showDialog("Authorize Recipe", `Update Recipe for [${fg}]?`, "password", async (pin) => {
+                if(!pin) return;
+                try {
+                    const res = await fetch('/update-recipe', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ fg_code: fg, ingredients: selectedStr, master_key: pin }) });
+                    const data = await res.json();
+                    if(data.error) return showDialog("Access Denied", data.error, "error");
+                    document.getElementById('recipe_fg').value = '';
+                    activeRecipeChecklist.clear();
+                    fetchData();
+                    showDialog("Saved", "Recipe Updated Successfully.", "success");
+                } catch(e) { showDialog("Error", "Server failed.", "error"); }
+            });
         }
     </script>
 </body>
