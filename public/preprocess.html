@@ -29,8 +29,7 @@
         .session-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;}
         .session-manager select { border-color: var(--kilrr-orange); background: white; margin-bottom: 0; padding: 12px 15px; font-size: 15px; font-weight: 900;}
         .btn-danger-text { background: transparent; color: var(--danger-red); font-size: 12px; font-weight: bold; border: none; padding: 0; width: auto; cursor: pointer;}
-        .btn-success-text { background: transparent; color: var(--success-green); font-size: 12px; font-weight: bold; border: none; padding: 0; width: auto; cursor: pointer; margin-right: 15px;}
-
+        
         h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 20px; text-transform: uppercase; color: var(--navy-command); letter-spacing: 0.5px;}
         .marathi-title { font-family: 'Inter', sans-serif; color: var(--accent-blue); font-size: 14px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
         .marathi-title.green-title { color: var(--success-green); }
@@ -40,8 +39,6 @@
 
         input, select { width: 100%; padding: 14px 15px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 16px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 20px; background: #f8fafc; color: #0f172a; transition: 0.2s ease;}
         input:focus, select:focus { border-color: var(--accent-blue); outline: none; background: #ffffff; box-shadow: 0 0 0 4px rgba(59,130,246,0.15);}
-        
-        /* Styled readonly for inputs that lock */
         input[readonly] { background: #e2e8f0; color: #0f172a; font-family: monospace; font-size:18px; cursor: not-allowed; border-color: #cbd5e1; opacity: 0.8;}
 
         button { width: 100%; padding: 16px; border: none; border-radius: 10px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; transition: 0.1s;}
@@ -56,7 +53,6 @@
         .custom-dropdown-item { padding: 15px 20px; font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.1s; margin-bottom: 4px; border-bottom: 1px solid #f1f5f9; color: #0f172a;}
         .custom-dropdown-item:hover { background: #eff6ff; color: var(--accent-blue); }
 
-        /* 🔥 MASSIVE STATS ROW 🔥 */
         .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
         .stat-card { background: white; border: 3px dashed #cbd5e1; padding: 25px; border-radius: 12px; text-align: center; }
         .stat-label { font-size: 14px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
@@ -64,7 +60,6 @@
         .stat-value-blue { font-size: 42px; font-weight: 900; color: var(--accent-blue); line-height: 1;}
         .stat-value-blue span { font-size: 18px; color: var(--accent-blue); font-weight: 800;}
 
-        /* 🔥 MASSIVE INGREDIENT PILLS (EXACT MATCH TO SCANNER) 🔥 */
         .req-list { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;}
         .req-pill { background: white; border: 2px solid #cbd5e1; padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s;}
         
@@ -77,9 +72,7 @@
         .req-pill.done .req-code { font-family: monospace; font-size: 12px; color: #064e3b; background: #d1fae5; padding: 4px 8px; border-radius: 6px;}
         .req-pill.done .req-status { font-size: 18px; font-weight: 900; color: var(--navy-command); display: flex; gap: 15px; align-items: center; }
 
-        /* 🔥 MOBILE-NATIVE SCAN INPUT & CAMERA 🔥 */
         .scan-input-wrapper { display: flex; gap: 15px; margin-bottom: 25px; }
-        
         #camera_reader { width: 100%; border-radius: 12px; overflow: hidden; margin-bottom: 20px; border: 4px solid var(--accent-blue); display: none; }
         
         .btn-camera { background: var(--navy-command); color: white; border: none; border-radius: 10px; font-weight: 900; padding: 0 25px; cursor: pointer; font-size: 24px; transition: 0.2s; display: flex; align-items: center; justify-content: center;}
@@ -97,7 +90,6 @@
 
         .preview-box { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 25px; display: flex; justify-content: center; align-items: center; background: #f8fafc; margin-bottom: 25px; overflow: hidden;}
 
-        /* HARDWARE ACCELERATED FLASH OVERLAY */
         #flash_overlay { position: fixed; inset: 0; pointer-events: none; z-index: 10000; opacity: 0; transition: opacity 0.3s ease-out; display: flex; flex-direction: column; align-items: center; justify-content: center;}
         .flash-icon { font-size: 120px; line-height: 1; margin-bottom: 20px; text-shadow: 0 10px 20px rgba(0,0,0,0.3);}
         .flash-text { color: white; font-size: 80px; font-family: 'Space Grotesk', sans-serif; font-weight: 900; text-transform: uppercase; margin: 0; text-shadow: 0 10px 20px rgba(0,0,0,0.3); text-align: center;}
@@ -131,14 +123,13 @@
     </nav>
 
     <div class="container">
-        <!-- LEFT CARD: SETUP -->
         <div class="card">
-            
             <div class="session-manager">
                 <div class="session-header">
                     <label style="color:var(--kilrr-orange); margin:0; font-size:14px;">🔄 ACTIVE TASKS</label>
                     <div style="display:flex; align-items:center;">
-                        <button class="btn-success-text" onclick="finishCurrentSession()">✅ Finish Task</button>
+                        <!-- 🔥 RENAMED BUTTON TO PREVENT ACCIDENTAL DELETIONS 🔥 -->
+                        <button class="btn-danger-text" style="color:#64748b; margin-right: 15px;" onclick="finishCurrentSession()">✖ Close Task (No Save)</button>
                         <button class="btn-danger-text" onclick="deleteCurrentSession()">🗑️ Discard</button>
                     </div>
                 </div>
@@ -187,7 +178,6 @@
                     <input type="text" inputmode="decimal" id="total_yield" placeholder="e.g. 130" oninput="saveSession()">
                 </div>
                 <div style="flex:1;">
-                    <!-- 🔥 MANUAL BATCH ENTRY (WILL LOCK DYNAMICALLY) 🔥 -->
                     <label>बॅच नंबर <span class="sub">BATCH / LOT NO. (FOR FIFO)</span></label>
                     <input type="text" id="batch_code" placeholder="E.G. GM61" style="text-transform: uppercase;" oninput="saveSession()">
                 </div>
@@ -209,12 +199,10 @@
             </div>
         </div>
 
-        <!-- RIGHT CARD: SCANNER -->
         <div class="card card-green">
             <h2 style="color:var(--success-green);">Traceability Engine</h2>
             <span class="marathi-title green-title">कोणते बारकोड वापरले? (Scan Input Tags)</span>
 
-            <!-- MASSIVE STATS ROW -->
             <div class="stats-row">
                 <div class="stat-card">
                     <div class="stat-label">Total Bags Scanned</div>
@@ -227,21 +215,17 @@
             </div>
 
             <label>काय काय लागणार? (Recipe Checklist)</label>
-            <!-- MASSIVE 2-COLUMN CHECKLIST PILLS -->
             <div class="req-list" id="scan_reqs">
                 <div style="grid-column:1/-1; text-align:center; color:#94a3b8; font-weight:bold; padding:20px 0;">Select Target Product First...</div>
             </div>
 
-            <!-- LIVE CAMERA STREAM AREA -->
             <div id="camera_reader"></div>
 
             <label>बारकोड स्कॅन करा (SCAN HERE)</label>
             <div class="scan-input-wrapper">
-                <!-- Hardware Mode Buttons -->
                 <button class="btn-camera" id="btn_cam" onclick="toggleCamera()" title="Open Mobile Camera">📷</button>
                 <button class="btn-camera" id="btn_kb" onclick="toggleKeyboard()" title="Enable Virtual Keyboard">⌨️</button>
                 
-                <!-- Inputmode="none" physically blocks the virtual keyboard -->
                 <input type="text" id="scan_input" placeholder="Ready for Hardware Scan..." autocomplete="off" inputmode="none" readonly onkeypress="if(event.key === 'Enter') submitScan()">
                 
                 <button class="btn-add" id="btn_add" onclick="submitScan()">ADD</button>
@@ -257,6 +241,7 @@
                 <div style="color:#94a3b8; font-weight:800; padding:40px 0;">Awaiting Valid Data Input...</div>
             </div>
 
+            <!-- THE ONLY BUTTON THAT SAVES TO DB -->
             <button class="btn-green" onclick="generateAndPrint()" style="padding:25px; font-size:20px; border-radius:12px; margin-top:10px;">🖨️ जनरेट आणि प्रिंट करा (GENERATE WIP TAGS)</button>
         </div>
     </div>
@@ -264,21 +249,18 @@
     <script>
         let allIngredients = [];
         let recipeReqs = [];
-        
-        let parentTags = []; // Array of objects: { tag: "BARCODE", weight: 25.00 }
-
+        let parentTags = []; 
         let activeSessions = JSON.parse(localStorage.getItem('kilrr_wip_sessions')) || {};
         let currentSessionId = 'new';
-
-        // Scanner Keyboard Management
         let isKbActive = false;
         let scanBuffer = "";
         let scanTimer = null;
-
-        // Camera State
         let html5QrCode = null;
         let isCameraOpen = false;
         let lastScannedBarcode = "";
+        let isScanning = false;
+
+        const getTagStr = t => typeof t === 'string' ? t : (t ? t.tag : '');
 
         window.onload = async () => {
             initSessions();
@@ -295,14 +277,10 @@
             generatePreview();
         };
 
-        // ==========================================
-        // KEYBOARD SUPPRESSION & HARDWARE CATCHER
-        // ==========================================
         function toggleKeyboard() {
             const inp = document.getElementById('scan_input');
             const kbBtn = document.getElementById('btn_kb');
             isKbActive = !isKbActive;
-            
             if(isKbActive) {
                 inp.removeAttribute('readonly');
                 inp.placeholder = "Type barcode manually...";
@@ -317,7 +295,6 @@
 
         document.addEventListener('keydown', function(e) {
             if (isKbActive) return; 
-
             if (e.key.length === 1) {
                 scanBuffer += e.key;
                 clearTimeout(scanTimer);
@@ -329,19 +306,14 @@
             }
         });
 
-        // ==========================================
-        // CONTINUOUS MOBILE CAMERA LOGIC 
-        // ==========================================
         async function toggleCamera() {
             const reader = document.getElementById('camera_reader');
             const camBtn = document.getElementById('btn_cam');
-            
             if (isCameraOpen) {
                 await stopCameraStream();
             } else {
                 reader.style.display = 'block';
                 if (!html5QrCode) html5QrCode = new Html5Qrcode("camera_reader");
-                
                 try {
                     await html5QrCode.start(
                         { facingMode: "environment" }, 
@@ -350,7 +322,6 @@
                             if (decodedText === lastScannedBarcode) return; 
                             lastScannedBarcode = decodedText;
                             setTimeout(() => { lastScannedBarcode = ""; }, 2500); 
-
                             document.getElementById('scan_input').value = decodedText;
                             submitScan(); 
                         },
@@ -374,9 +345,6 @@
             document.getElementById('btn_cam').style.background = 'var(--navy-command)';
         }
 
-        // ==========================================
-        // SYSTEM AUDIO & HARDWARE FLASH
-        // ==========================================
         function speakAlert(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel(); 
@@ -391,40 +359,25 @@
             const overlay = document.getElementById('flash_overlay');
             const fIcon = document.getElementById('flash_icon');
             const fText = document.getElementById('flash_text');
-            
             overlay.style.transition = 'none'; 
-            
             if (type === 'success') {
                 overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.95)';
-                fIcon.textContent = '✅';
-                fText.textContent = 'SUCCESS';
-                speakAlert('Success');
+                fIcon.textContent = '✅'; fText.textContent = 'SUCCESS'; speakAlert('Success');
             } else if (type === 'error') {
                 overlay.style.backgroundColor = 'rgba(220, 38, 38, 0.95)';
-                fIcon.textContent = '🛑';
-                fText.textContent = 'WRONG ITEM';
-                speakAlert('Wrong Ingredient');
+                fIcon.textContent = '🛑'; fText.textContent = 'WRONG ITEM'; speakAlert('Wrong Ingredient');
             } else if (type === 'duplicate') {
                 overlay.style.backgroundColor = 'rgba(234, 179, 8, 0.95)'; 
-                fIcon.textContent = '⚠️';
-                fText.textContent = 'DUPLICATE';
-                speakAlert('Duplicate Scan');
+                fIcon.textContent = '⚠️'; fText.textContent = 'DUPLICATE'; speakAlert('Duplicate Scan');
             }
-            
             overlay.style.opacity = '1';
             void overlay.offsetWidth; 
-            
             overlay.style.transition = 'opacity 0.8s ease-in';
             setTimeout(() => { overlay.style.opacity = '0'; }, 600); 
         }
 
-        // ==========================================
-        // SESSION & PREVIEW LOGIC
-        // ==========================================
         function initSessions() {
-            if(!activeSessions['new']) {
-                document.getElementById('date').valueAsDate = new Date();
-            }
+            if(!activeSessions['new']) { document.getElementById('date').valueAsDate = new Date(); }
             updateSessionDropdown();
             loadSession('new');
         }
@@ -452,73 +405,45 @@
         async function loadSession(id) {
             if (id === 'new') {
                 document.getElementById('date').valueAsDate = new Date();
-                document.getElementById('recipe_search').value = '';
-                document.getElementById('product_code').value = '';
-                document.getElementById('process_type').value = 'Cleaning / Sorting';
-                document.getElementById('total_yield').value = '';
-                document.getElementById('batch_code').value = '';
-                document.getElementById('start_no').value = '1';
-                document.getElementById('end_no').value = '1';
-                document.getElementById('weight').value = '';
-                parentTags = [];
-                recipeReqs = [];
-                renderChecklist();
-                renderTags();
-                generatePreview();
+                document.getElementById('recipe_search').value = ''; document.getElementById('product_code').value = '';
+                document.getElementById('process_type').value = 'Cleaning / Sorting'; document.getElementById('total_yield').value = '';
+                document.getElementById('batch_code').value = ''; document.getElementById('start_no').value = '1';
+                document.getElementById('end_no').value = '1'; document.getElementById('weight').value = '';
+                parentTags = []; recipeReqs = [];
+                renderChecklist(); renderTags(); generatePreview();
                 return;
             }
-
             let s = activeSessions[id];
             if (!s) return;
-            
-            document.getElementById('date').value = s.date;
-            document.getElementById('recipe_search').value = s.recipe_search;
-            document.getElementById('product_code').value = s.product_code;
-            document.getElementById('process_type').value = s.process_type;
-            document.getElementById('total_yield').value = s.total_yield;
-            document.getElementById('batch_code').value = s.batch_code;
-            document.getElementById('start_no').value = s.start_no;
-            document.getElementById('end_no').value = s.end_no;
+            document.getElementById('date').value = s.date; document.getElementById('recipe_search').value = s.recipe_search;
+            document.getElementById('product_code').value = s.product_code; document.getElementById('process_type').value = s.process_type;
+            document.getElementById('total_yield').value = s.total_yield; document.getElementById('batch_code').value = s.batch_code;
+            document.getElementById('start_no').value = s.start_no; document.getElementById('end_no').value = s.end_no;
             document.getElementById('weight').value = s.weight;
-            parentTags = s.parentTags || [];
-
+            parentTags = (s.parentTags || []).map(t => typeof t === 'string' ? { tag: t, weight: 0 } : t);
             renderTags();
-            if (s.product_code) {
-                await loadRecipeReqs(s.recipe_search, s.product_code, true); 
-            } else {
-                recipeReqs = [];
-                renderChecklist();
-            }
+            if (s.product_code) { await loadRecipeReqs(s.recipe_search, s.product_code, true); } 
+            else { recipeReqs = []; renderChecklist(); }
             generatePreview();
         }
 
         function saveSession() {
             const pCode = document.getElementById('product_code').value;
             const pName = document.getElementById('recipe_search').value;
-            
             if (!pCode && parentTags.length === 0) return;
-
             if (currentSessionId === 'new') {
                 currentSessionId = 'task_' + Date.now();
                 setTimeout(updateSessionDropdown, 50); 
             }
-
             activeSessions[currentSessionId] = {
-                date: document.getElementById('date').value,
-                recipe_search: pName,
-                product_code: pCode,
-                process_type: document.getElementById('process_type').value,
-                total_yield: document.getElementById('total_yield').value,
-                batch_code: document.getElementById('batch_code').value,
-                start_no: document.getElementById('start_no').value,
-                end_no: document.getElementById('end_no').value,
-                weight: document.getElementById('weight').value,
+                date: document.getElementById('date').value, recipe_search: pName, product_code: pCode,
+                process_type: document.getElementById('process_type').value, total_yield: document.getElementById('total_yield').value,
+                batch_code: document.getElementById('batch_code').value, start_no: document.getElementById('start_no').value,
+                end_no: document.getElementById('end_no').value, weight: document.getElementById('weight').value,
                 parentTags: parentTags
             };
-            
             localStorage.setItem('kilrr_wip_sessions', JSON.stringify(activeSessions));
-            updateSessionDropdown();
-            generatePreview();
+            updateSessionDropdown(); generatePreview();
         }
 
         function finishCurrentSession() {
@@ -526,60 +451,37 @@
             delete activeSessions[currentSessionId];
             localStorage.setItem('kilrr_wip_sessions', JSON.stringify(activeSessions));
             currentSessionId = 'new';
-            updateSessionDropdown();
-            loadSession('new');
+            updateSessionDropdown(); loadSession('new');
         }
 
         function deleteCurrentSession() {
-            if (currentSessionId === 'new') {
-                loadSession('new'); 
-                return;
-            }
+            if (currentSessionId === 'new') { loadSession('new'); return; }
             if (!confirm("⚠️ WARNING: This will discard this active task and all its scanned progress. Continue?")) return;
-            
             delete activeSessions[currentSessionId];
             localStorage.setItem('kilrr_wip_sessions', JSON.stringify(activeSessions));
-            currentSessionId = 'new';
-            updateSessionDropdown();
-            loadSession('new');
+            currentSessionId = 'new'; updateSessionDropdown(); loadSession('new');
         }
 
         function attachCustomDropdown(inputId, dataArray, displayKey, codeKey, onSelectCallback) {
             const inp = document.getElementById(inputId); 
-            const list = document.createElement('div'); 
-            list.className = 'custom-dropdown-list'; 
-            inp.parentNode.appendChild(list);
-            
+            const list = document.createElement('div'); list.className = 'custom-dropdown-list'; inp.parentNode.appendChild(list);
             function renderList(filterTxt = "") {
                 list.innerHTML = ''; 
-                const matches = dataArray.filter(item => 
-                    (item[displayKey]||"").toLowerCase().includes(filterTxt.toLowerCase()) || 
-                    (item[codeKey]||"").toLowerCase().includes(filterTxt.toLowerCase())
-                );
-
+                const matches = dataArray.filter(item => (item[displayKey]||"").toLowerCase().includes(filterTxt.toLowerCase()) || (item[codeKey]||"").toLowerCase().includes(filterTxt.toLowerCase()));
                 if(matches.length === 0) { list.style.display = 'none'; return; }
-                
                 matches.forEach(match => { 
                     let div = document.createElement('div'); div.className = 'custom-dropdown-item'; 
                     div.innerHTML = `<strong style="color:var(--accent-blue);">${match[codeKey]}</strong> - ${match[displayKey]}`; 
-                    div.onclick = () => { 
-                        inp.value = match[displayKey]; 
-                        list.style.display = 'none'; 
-                        if(onSelectCallback) onSelectCallback(match[codeKey], match[displayKey]);
-                    }; 
+                    div.onclick = () => { inp.value = match[displayKey]; list.style.display = 'none'; if(onSelectCallback) onSelectCallback(match[codeKey], match[displayKey]); }; 
                     list.appendChild(div); 
                 }); 
                 list.style.display = 'block';
             }
-            
             inp.addEventListener('input', function() { renderList(this.value); }); 
             inp.addEventListener('focus', function() { renderList(this.value); });
             document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
         }
 
-        // ==========================================
-        // MASSIVE 2-COLUMN CHECKLIST & TAG LOGIC
-        // ==========================================
         async function loadRecipeReqs(name, code, preventReset = false) {
             try {
                 let res = await fetch(`/recipe-requirements/${encodeURIComponent(name)}`);
@@ -589,11 +491,7 @@
                     data = await res.json();
                 }
                 recipeReqs = data;
-                
-                if(!preventReset) {
-                    parentTags = [];
-                    renderTags();
-                }
+                if(!preventReset) { parentTags = []; renderTags(); }
                 renderChecklist();
             } catch(e) { console.error("Error loading checklist."); }
         }
@@ -604,136 +502,78 @@
                 box.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--accent-blue); font-weight:800; font-size:16px; padding:30px 0;"><span style="font-size:24px; display:block; margin-bottom:5px;">🔄</span> Single Item Process (No Checklist).<br>Scan matching input tags below.</div>`;
                 return;
             }
-
             box.innerHTML = recipeReqs.map(r => {
-                // 🔥 NULL INGREDIENT FIX: Prevent 'null' from breaking the UI
                 if(!r.product_code || r.product_code.toLowerCase() === 'null') return ''; 
                 let dispName = (r.ingredient_name && r.ingredient_name.toLowerCase() !== 'null') ? r.ingredient_name : r.product_code;
-                
-                let ingScans = parentTags.filter(t => t.tag.split('/')[1] === r.product_code);
+                let ingScans = parentTags.filter(t => getTagStr(t).split('/')[1] === r.product_code);
                 let ingWeight = ingScans.reduce((sum, t) => sum + (parseFloat(t.weight) || 0), 0);
-
                 if (ingScans.length > 0) {
-                    return `
-                    <div class="req-pill done">
-                        <div class="req-name">${dispName} <span class="req-code">${r.product_code}</span></div>
-                        <div class="req-status"><span class="ing-weight">${ingWeight.toFixed(2)} KG</span> <span style="font-size:22px;">✔</span></div>
-                    </div>`;
+                    return `<div class="req-pill done"><div class="req-name">${dispName} <span class="req-code">${r.product_code}</span></div><div class="req-status"><span class="ing-weight">${ingWeight.toFixed(2)} KG</span> <span style="font-size:22px;">✔</span></div></div>`;
                 } else {
-                    return `
-                    <div class="req-pill pending">
-                        <div class="req-name">${dispName} <span class="req-code">${r.product_code}</span></div>
-                        <div class="req-status"><span class="ing-weight-zero">0.00 KG</span> <span style="font-size:20px;">⏳</span></div>
-                    </div>`;
+                    return `<div class="req-pill pending"><div class="req-name">${dispName} <span class="req-code">${r.product_code}</span></div><div class="req-status"><span class="ing-weight-zero">0.00 KG</span> <span style="font-size:20px;">⏳</span></div></div>`;
                 }
             }).join('');
         }
 
         async function submitScan() {
+            if(isScanning) return; 
             const inp = document.getElementById('scan_input');
             const batchInputVal = document.getElementById('batch_code').value.trim();
             const barcode = inp.value.trim().toUpperCase();
-            
             if(!barcode) return;
+            if(!batchInputVal) { inp.value = ''; return alert("⚠️ Please assign a WIP Batch Number before scanning ingredients!"); }
 
-            // Check if Batch Number is assigned before allowing scans
-            if(!batchInputVal) {
-                inp.value = '';
-                return alert("⚠️ Please assign a WIP Batch Number before scanning ingredients!");
-            }
-
-            // Duplicate Check
-            if(parentTags.some(t => t.tag === barcode)) {
-                inp.value = '';
-                triggerFlash('duplicate');
-                return;
-            }
+            isScanning = true;
+            if(parentTags.some(t => getTagStr(t) === barcode)) { inp.value = ''; triggerFlash('duplicate'); isScanning = false; return; }
 
             let parts = barcode.split('/');
-            if(parts.length < 3) {
-                inp.value = '';
-                return alert("⚠️ Invalid Barcode Format!");
-            }
+            if(parts.length < 3) { inp.value = ''; isScanning = false; return alert("⚠️ Invalid Barcode Format!"); }
             let scannedCode = parts[1];
             
             const targetCode = document.getElementById('product_code').value.trim().toUpperCase();
-            if(!targetCode) {
-                inp.value = '';
-                return alert("⚠️ Select Target Product first!");
-            }
+            if(!targetCode) { inp.value = ''; isScanning = false; return alert("⚠️ Select Target Product first!"); }
 
-            // Recipe Verification
             if (recipeReqs.length === 0) {
-                if (scannedCode !== targetCode) {
-                    inp.value = '';
-                    triggerFlash('error');
-                    return;
-                }
+                if (scannedCode !== targetCode) { inp.value = ''; triggerFlash('error'); isScanning = false; return; }
             } else {
                 let reqItem = recipeReqs.find(r => r.product_code === scannedCode);
-                if(!reqItem) {
-                    inp.value = '';
-                    triggerFlash('error');
-                    return;
-                }
+                if(!reqItem) { inp.value = ''; triggerFlash('error'); isScanning = false; return; }
             }
 
-            // Flash Success
             triggerFlash('success');
+            parentTags.unshift({ tag: barcode, weight: 0 });
+            renderTags(); renderChecklist();
+            inp.value = ''; saveSession();
 
-            // Fetch live weight from DB for accurate total
-            let fetchedWeight = 0;
             try {
                 let wRes = await fetch(`/api/tag-weight?tag=${barcode}`);
                 let wData = await wRes.json();
-                fetchedWeight = wData.weight || 0;
-            } catch(e) { console.error("Could not fetch weight"); }
-
-            // Store object with weight
-            parentTags.unshift({ tag: barcode, weight: fetchedWeight });
-            
-            renderTags();
-            renderChecklist();
-            
-            inp.value = '';
-            if(!isKbActive) inp.focus();
-            saveSession(); 
+                let fetchedWeight = parseFloat(wData.weight) || 0;
+                let item = parentTags.find(t => getTagStr(t) === barcode);
+                if(item) item.weight = fetchedWeight;
+                renderTags(); renderChecklist(); saveSession();
+            } catch(e) { console.error("Could not fetch weight", e); } 
+            finally { setTimeout(() => { isScanning = false; if(!isKbActive) inp.focus(); }, 300); }
         }
 
         function removeTag(index) {
             parentTags.splice(index, 1);
-            renderTags();
-            renderChecklist();
-            saveSession(); 
+            renderTags(); renderChecklist(); saveSession(); 
         }
 
-        // 🔥 TAMPER LOCK AND STATS RENDERER 🔥
         function renderTags() {
             const list = document.getElementById('scan_history');
             const batchInput = document.getElementById('batch_code');
-            
-            // Manage Dynamic Tamper Lock for Batch Number
-            if(parentTags.length > 0) {
-                batchInput.setAttribute('readonly', 'true');
-                batchInput.style.backgroundColor = '#e2e8f0'; // Visual grey lock
-            } else {
-                batchInput.removeAttribute('readonly');
-                batchInput.style.backgroundColor = '#f8fafc'; // Visual unlock
-            }
+            if(parentTags.length > 0) { batchInput.setAttribute('readonly', 'true'); batchInput.style.backgroundColor = '#e2e8f0'; } 
+            else { batchInput.removeAttribute('readonly'); batchInput.style.backgroundColor = '#f8fafc'; }
 
             let totalWeight = parentTags.reduce((sum, t) => sum + (parseFloat(t.weight) || 0), 0);
-            document.getElementById('stat_count').textContent = parentTags.length;
-            document.getElementById('stat_weight').textContent = totalWeight.toFixed(2);
+            document.getElementById('stat_count').textContent = parentTags.length; document.getElementById('stat_weight').textContent = totalWeight.toFixed(2);
 
-            if(parentTags.length === 0) {
-                list.innerHTML = `<div style="color:#94a3b8; text-align:center; padding:20px; font-weight:bold;">No input barcodes scanned yet.</div>`;
-                return;
-            }
-            
-            // Exactly matching scanner layout
+            if(parentTags.length === 0) { list.innerHTML = `<div style="color:#94a3b8; text-align:center; padding:20px; font-weight:bold;">No input barcodes scanned yet.</div>`; return; }
             list.innerHTML = parentTags.map((item, index) => `
                 <div class="scan-item">
-                    <span>${item.tag}</span>
+                    <span>${getTagStr(item)}</span>
                     <div style="display:flex; gap:20px; align-items:center;">
                         <span style="color:var(--accent-blue); font-weight:900;">${parseFloat(item.weight).toFixed(2)} KG</span>
                         <button style="background:transparent; border:none; color:var(--danger-red); cursor:pointer; font-weight:900; font-size:22px;" onclick="removeTag(${index})">✖</button>
@@ -742,15 +582,9 @@
             `).join('');
         }
 
-        // ==========================================
-        // 🔥 PERFECT PIXEL-TO-PIXEL PREVIEW & PRINT 🔥
-        // ==========================================
         function getStickerHTML(pName, dispDate, tagStr, wtText) {
             let qrEngine = new QRious({ value: tagStr, size: 250, level: 'M' });
-            
-            // Uses bulletproof inline CSS to guarantee absolute rendering conformity
-            return `
-            <div style="width: 75mm; height: 75mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; background: white; border: 2px solid black; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; page-break-after: always; overflow: hidden;">
+            return `<div style="width: 75mm; height: 75mm; box-sizing: border-box; padding: 2mm; margin: 0 auto; background: white; border: 2px solid black; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; page-break-after: always; overflow: hidden;">
                 <div style="background: black; color: white; width: 100%; text-align: center; font-size: 16pt; font-weight: 900; text-transform: uppercase; padding: 2mm 0; line-height: 1; max-height: 14mm; overflow: hidden; display: flex; align-items: center; justify-content: center;">${pName}</div>
                 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%;">
                     <img src="${qrEngine.toDataURL()}" style="width: 26mm; height: 26mm; margin-bottom: 2mm;">
@@ -764,21 +598,13 @@
         }
 
         function generatePreview() {
-            const dateVal = document.getElementById('date').value;
-            const pCode = document.getElementById('product_code').value.trim().toUpperCase();
-            const pName = document.getElementById('recipe_search').value.trim().toUpperCase();
-            const weightVal = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
+            const dateVal = document.getElementById('date').value; const pCode = document.getElementById('product_code').value.trim().toUpperCase();
+            const pName = document.getElementById('recipe_search').value.trim().toUpperCase(); const weightVal = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
             let startNo = document.getElementById('start_no').value.replace(/[^0-9]/g, '');
 
-            if(!dateVal || !pCode) {
-                document.getElementById('preview_area').innerHTML = `<div style="color:#94a3b8; font-weight:800; padding:40px 0;">Awaiting Valid Data Input...</div>`;
-                return;
-            }
+            if(!dateVal || !pCode) { document.getElementById('preview_area').innerHTML = `<div style="color:#94a3b8; font-weight:800; padding:40px 0;">Awaiting Valid Data Input...</div>`; return; }
 
-            const [year, month, day] = dateVal.split('-');
-            const dateFmt = `${day}${month}`;
-            const dispDate = `${day}/${month}/${year}`;
-            
+            const [year, month, day] = dateVal.split('-'); const dateFmt = `${day}${month}`; const dispDate = `${day}/${month}/${year}`;
             let tagStr = `${dateFmt}/${pCode}/KILRR/${startNo || 1}`;
             let wtText = weightVal ? `NET WT: ${String(weightVal).padStart(2,'0')} KG` : `NET WT: _________ KG`;
 
@@ -786,15 +612,7 @@
         }
 
         function getPrintHTML(queueArray, pName, dispDate) {
-            let html = `<html><head><style>
-                @media print {
-                    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-                    @page { size: 75mm 75mm; margin: 0; }
-                    body { margin: 0; padding: 0; }
-                }
-                body { margin: 0; padding: 0; background: white; display: flex; flex-direction: column; align-items: center; }
-            </style></head><body>`;
-
+            let html = `<html><head><style>@media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } @page { size: 75mm 75mm; margin: 0; } body { margin: 0; padding: 0; } } body { margin: 0; padding: 0; background: white; display: flex; flex-direction: column; align-items: center; }</style></head><body>`;
             queueArray.forEach(tagStr => {
                 let weightVal = document.getElementById('weight').value.replace(/[^0-9.]/g, '');
                 let wtText = weightVal ? `NET WT: ${String(weightVal).padStart(2,'0')} KG` : `NET WT: _________ KG`;
@@ -805,63 +623,36 @@
         }
 
         async function generateAndPrint() {
-            const dateVal = document.getElementById('date').value;
-            const pName = document.getElementById('recipe_search').value.trim().toUpperCase();
-            const pCode = document.getElementById('product_code').value.trim().toUpperCase();
-            const processType = document.getElementById('process_type').value;
-            const totalYield = document.getElementById('total_yield').value.replace(/[^0-9.]/g, '');
-            const batchCode = document.getElementById('batch_code').value.trim().toUpperCase();
-            let startNo = parseInt(document.getElementById('start_no').value.replace(/[^0-9]/g, ''));
-            let endNo = parseInt(document.getElementById('end_no').value.replace(/[^0-9]/g, ''));
+            const dateVal = document.getElementById('date').value; const pName = document.getElementById('recipe_search').value.trim().toUpperCase();
+            const pCode = document.getElementById('product_code').value.trim().toUpperCase(); const processType = document.getElementById('process_type').value;
+            const totalYield = document.getElementById('total_yield').value.replace(/[^0-9.]/g, ''); const batchCode = document.getElementById('batch_code').value.trim().toUpperCase();
+            let startNo = parseInt(document.getElementById('start_no').value.replace(/[^0-9]/g, '')); let endNo = parseInt(document.getElementById('end_no').value.replace(/[^0-9]/g, ''));
 
-            if(!dateVal) return alert("⚠️ Date is missing!");
-            if(!pName || !pCode || isNaN(startNo) || isNaN(endNo)) return alert("⚠️ Please fill out Target Product and Bag details.");
-            if(!batchCode) return alert("⚠️ Please assign a WIP Batch Number!");
-            if(parentTags.length === 0) return alert("⚠️ You must scan at least one Input Tag!");
+            if(!dateVal) return alert("⚠️ Date is missing!"); if(!pName || !pCode || isNaN(startNo) || isNaN(endNo)) return alert("⚠️ Please fill out Target Product and Bag details.");
+            if(!batchCode) return alert("⚠️ Please assign a WIP Batch Number!"); if(parentTags.length === 0) return alert("⚠️ You must scan at least one Input Tag!");
 
-            const [year, month, day] = dateVal.split('-');
-            const dateFmt = `${day}${month}`;
-            const dispDate = `${day}/${month}/${year}`;
-            
-            let outputTags = [];
-            for(let i = startNo; i <= endNo; i++) {
-                outputTags.push(`${dateFmt}/${pCode}/KILRR/${i}`);
-            }
+            const [year, month, day] = dateVal.split('-'); const dateFmt = `${day}${month}`; const dispDate = `${day}/${month}/${year}`;
+            let outputTags = []; for(let i = startNo; i <= endNo; i++) { outputTags.push(`${dateFmt}/${pCode}/KILRR/${i}`); }
 
             let printWindow = window.open('', '_blank');
             if(!printWindow) return alert("⚠️ Popup Blocked! Allow popups to print.");
 
-            // Extract just the strings from the parentTags objects to log to DB
-            let rawParentTagStrings = parentTags.map(t => t.tag).join(', ');
+            let rawParentTagStrings = parentTags.map(t => getTagStr(t)).join(', ');
 
             try {
                 printWindow.document.write('<html><body style="background:#f8fafc;"><h2 style="font-family:sans-serif; text-align:center; margin-top:50px; color:#ea580c;">Logging WIP Batch to Engine...</h2></body></html>');
                 const res = await fetch('/log-preprocess', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ output_tags: outputTags, product_code: pCode, process_type: processType, parent_tags: rawParentTagStrings, total_yield: totalYield, batch_code: batchCode })
                 });
                 
-                const data = await res.json();
-                if(data.error) throw new Error(data.error);
+                const data = await res.json(); if(data.error) throw new Error(data.error);
 
-                printWindow.document.open(); 
-                printWindow.document.write(getPrintHTML(outputTags, pName, dispDate));
-                printWindow.document.close();
+                printWindow.document.open(); printWindow.document.write(getPrintHTML(outputTags, pName, dispDate)); printWindow.document.close();
 
-                if (currentSessionId !== 'new') {
-                    delete activeSessions[currentSessionId];
-                    localStorage.setItem('kilrr_wip_sessions', JSON.stringify(activeSessions));
-                }
-                
-                currentSessionId = 'new';
-                updateSessionDropdown();
-                loadSession('new');
-
-            } catch(e) { 
-                printWindow.close();
-                alert("Database Error: " + e.message); 
-            }
+                if (currentSessionId !== 'new') { delete activeSessions[currentSessionId]; localStorage.setItem('kilrr_wip_sessions', JSON.stringify(activeSessions)); }
+                currentSessionId = 'new'; updateSessionDropdown(); loadSession('new');
+            } catch(e) { printWindow.close(); alert("Database Error: " + e.message); }
         }
     </script>
 </body>
