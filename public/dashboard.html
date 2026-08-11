@@ -27,7 +27,7 @@
         .tab-btn:hover { background: #f1f5f9; color: var(--navy-command);}
         .tab-btn.active { background: var(--navy-command); color: white;}
 
-        .search-box { width: 100%; padding: 18px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 16px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 30px; transition: 0.2s;}
+        .search-box { width: 100%; padding: 18px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 16px; font-weight: 800; font-family: 'Inter', sans-serif; transition: 0.2s;}
         .search-box:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.15);}
 
         /* BATCH GRID */
@@ -44,7 +44,7 @@
         .stat-pill { background: #f8fafc; padding: 12px 20px; border-radius: 8px; font-weight: 800; font-size: 13px; border: 1px solid #cbd5e1; color: #64748b; text-transform: uppercase;}
         .stat-pill span { color: var(--navy-command); font-size: 18px; display: block; margin-top: 4px;}
 
-        .btn-export { background: var(--navy-command); color: white; border: none; padding: 15px 25px; border-radius: 10px; font-weight: 900; font-size: 14px; cursor: pointer; text-transform: uppercase; transition: 0.2s; display: flex; align-items: center; gap: 10px;}
+        .btn-export { background: var(--navy-command); color: white; border: none; padding: 15px 25px; border-radius: 10px; font-weight: 900; font-size: 14px; cursor: pointer; text-transform: uppercase; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;}
         .btn-export:hover { background: var(--kilrr-orange); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(234, 88, 12, 0.2);}
         
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white;}
@@ -54,13 +54,20 @@
         .status-open { background: var(--warning-yellow); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 900; vertical-align: middle; margin-left: 10px;}
         .status-closed { background: var(--success-green); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 900; vertical-align: middle; margin-left: 10px;}
 
+        /* Custom Scrollbar for tag lists */
+        .scroll-list { max-height: 120px; overflow-y: auto; padding-right: 5px; }
+        .scroll-list::-webkit-scrollbar { width: 6px; }
+        .scroll-list::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px;}
+        .scroll-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px;}
+
         @media (max-width: 1024px) { 
             .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap; border-top: 3px solid var(--kilrr-orange); z-index: 999;}
             .brand { display: none; }
             .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 8px 12px;}
             .bc-header { flex-direction: column; align-items: flex-start; gap: 15px;}
             .bc-meta { text-align: left; }
-            .btn-export { width: 100%; justify-content: center; margin-top: 15px;}
+            .search-wrapper { flex-direction: column; }
+            .btn-export { width: 100%; }
         }
     </style>
 </head>
@@ -79,14 +86,18 @@
 
     <div class="container">
         <div class="card">
-            <!-- 🔥 3-TAB DASHBOARD NAVIGATION 🔥 -->
+            <!-- 3-TAB DASHBOARD NAVIGATION -->
             <div class="tab-bar">
                 <button class="tab-btn active" id="tab_batches" onclick="switchTab('batches')">🏭 Final Batch Traceability</button>
                 <button class="tab-btn" id="tab_preprocess" onclick="switchTab('preprocess')">🔥 Pre-Process (WIP) Ledger</button>
                 <button class="tab-btn" id="tab_inwarding" onclick="switchTab('inwarding')">📦 Inwarding Ledger</button>
             </div>
 
-            <input type="text" id="search_box" class="search-box" placeholder="🔍 Search Records..." oninput="handleSearch()">
+            <!-- 🔥 SEARCH BAR & EXPORT TO CSV BUTTON 🔥 -->
+            <div class="search-wrapper" style="display: flex; gap: 15px; margin-bottom: 30px;">
+                <input type="text" id="search_box" class="search-box" style="margin-bottom:0;" placeholder="🔍 Search Records..." oninput="handleSearch()">
+                <button id="btn_export_csv" class="btn-export" style="display:none; white-space:nowrap; padding: 0 30px;" onclick="exportCSV()">📥 Export to CSV</button>
+            </div>
 
             <div class="batch-grid" id="main_container">
                 <div style="text-align:center; padding:50px; font-weight:bold; color:#94a3b8; font-size: 18px;">Syncing with Kilrr Server...</div>
@@ -102,7 +113,6 @@
 
         window.onload = async () => {
             try {
-                // Fetching all 3 data streams from the database
                 const [batchRes, inwardRes, preRes] = await Promise.all([
                     fetch('/api/dashboard-traceability'),
                     fetch('/api/dashboard-inwarding'),
@@ -126,6 +136,10 @@
             document.getElementById(`tab_${tab}`).classList.add('active');
             
             document.getElementById('search_box').value = '';
+
+            // Hide CSV export on Final Batches (because they have individual PDF exports)
+            document.getElementById('btn_export_csv').style.display = (tab === 'batches') ? 'none' : 'flex';
+            
             handleSearch();
         }
 
@@ -136,7 +150,7 @@
         }
 
         // ==========================================
-        // 1. FINAL BATCH RENDERER (EXISTING)
+        // 1. FINAL BATCH RENDERER
         // ==========================================
         function renderBatches() {
             const container = document.getElementById('main_container');
@@ -221,13 +235,12 @@
         }
 
         // ==========================================
-        // 2. 🔥 NEW: PRE-PROCESS (WIP) RENDERER 🔥
+        // 2. PRE-PROCESS (WIP) RENDERER 
         // ==========================================
         function renderPreprocess() {
             const container = document.getElementById('main_container');
             const search = document.getElementById('search_box').value.toLowerCase();
             
-            // Group the generated tags by their WIP Batch Code
             const grouped = {};
             allPreprocessData.forEach(row => {
                 if(!grouped[row.batch_code]) {
@@ -258,10 +271,12 @@
                 let g = grouped[batch];
                 let d = new Date(g.date).toLocaleString();
                 
-                // Beautifully format the Parent Tags (Ingredients used)
-                let parentHTML = g.parents ? g.parents.split(',').map(p => `<div style="color:var(--kilrr-orange); font-family:monospace; font-size:12px; font-weight:bold; margin-bottom:2px;">${p.trim()}</div>`).join('') : '<span style="color:#94a3b8; font-size:12px;">No input scans</span>';
+                // 🔥 UI FIX: Scrollable tags for large recipes like Garam Masala 🔥
+                let parentTagsArr = g.parents ? g.parents.split(',') : [];
+                let parentHTML = parentTagsArr.length > 0 
+                    ? `<div class="scroll-list">${parentTagsArr.map(p => `<div style="color:var(--kilrr-orange); font-family:monospace; font-size:12px; font-weight:bold; margin-bottom:2px;">${p.trim()}</div>`).join('')}</div>`
+                    : '<span style="color:#94a3b8; font-size:12px;">No input scans</span>';
                 
-                // Format the output range
                 let outs = g.outputs;
                 let outStr = outs.length > 1 ? `${outs[0]}<br><span style="font-size:11px; color:#64748b;">...to...</span><br>${outs[outs.length-1]}<br><span style="color:var(--accent-blue); font-size:12px;">(${outs.length} Bags Generated)</span>` : outs[0];
 
@@ -275,20 +290,32 @@
                     <td>${parentHTML}</td>
                     <td style="font-family:monospace; color:var(--success-green); font-weight:bold; font-size:14px; line-height:1.4;">${outStr}</td>
                     <td style="font-weight:900; font-size:20px; color:var(--navy-command);">${g.yield} KG</td>
+                    
+                    <!-- 🔥 NEW: INDIVIDUAL PRINT BUTTON FOR WIP 🔥 -->
+                    <td style="text-align:center;">
+                        <button class="btn-export" style="padding: 10px 15px; font-size: 11px; margin: 0 auto; white-space:nowrap;" onclick="printWIPAudit('${batch}')">🖨️ Print Audit</button>
+                    </td>
                 </tr>`;
             }).join('');
 
             container.innerHTML = `
             <div style="border: 2px solid #e2e8f0; border-radius:12px; overflow: hidden; background:white; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
                 <table style="width:100%; border-collapse:collapse;">
-                    <thead><tr style="background:#f8fafc; border-bottom:2px solid #cbd5e1;"><th style="padding:15px; text-align:left;">Date & Time</th><th style="padding:15px; text-align:left;">WIP Batch & Process</th><th style="padding:15px; text-align:left;">Input Ingredients Consumed</th><th style="padding:15px; text-align:left;">Output Tags Generated</th><th style="padding:15px; text-align:left;">Batch Yield</th></tr></thead>
+                    <thead><tr style="background:#f8fafc; border-bottom:2px solid #cbd5e1;">
+                        <th style="padding:15px; text-align:left;">Date & Time</th>
+                        <th style="padding:15px; text-align:left;">WIP Batch & Process</th>
+                        <th style="padding:15px; text-align:left;">Input Ingredients Consumed</th>
+                        <th style="padding:15px; text-align:left;">Output Tags Generated</th>
+                        <th style="padding:15px; text-align:left;">Batch Yield</th>
+                        <th style="padding:15px; text-align:center;">Action</th>
+                    </tr></thead>
                     <tbody>${rowsHTML}</tbody>
                 </table>
             </div>`;
         }
 
         // ==========================================
-        // 3. INWARDING LEDGER RENDERER (EXISTING)
+        // 3. INWARDING LEDGER RENDERER 
         // ==========================================
         function renderInwarding() {
             const container = document.getElementById('main_container');
@@ -327,7 +354,156 @@
         }
 
         // ==========================================
-        // PDF EXPORT SCRIPT
+        // 🔥 NEW: GLOBAL CSV EXPORT FUNCTION 🔥
+        // ==========================================
+        function exportCSV() {
+            let csv = "";
+            let filename = "";
+
+            if (currentTab === 'preprocess') {
+                filename = "Kilrr_WIP_Ledger_Export.csv";
+                csv += "Date,WIP Batch Code,Product Code,Process Type,Input Tags Consumed,Output Tags Generated,Total Yield (KG)\n";
+                
+                const grouped = {};
+                allPreprocessData.forEach(row => {
+                    if(!grouped[row.batch_code]) {
+                        grouped[row.batch_code] = {
+                            date: new Date(row.created_at).toLocaleString(),
+                            product: row.product_code,
+                            process: row.process_type,
+                            yield: row.total_yield,
+                            parents: row.parent_tag ? row.parent_tag.replace(/,/g, " | ") : "Raw Inward Process", 
+                            outputs: []
+                        };
+                    }
+                    grouped[row.batch_code].outputs.push(row.sub_tag);
+                });
+
+                Object.keys(grouped).forEach(batch => {
+                    let g = grouped[batch];
+                    let outputs = g.outputs.join(" | ");
+                    csv += `"${g.date}","${batch}","${g.product}","${g.process}","${g.parents}","${outputs}","${g.yield}"\n`;
+                });
+
+            } else if (currentTab === 'inwarding') {
+                filename = "Kilrr_Inwarding_Ledger_Export.csv";
+                csv += "Date Received,Ingredient Code,Ingredient Name,Vendor Code,Vendor Name,Start Bag,End Bag,Total Bags,Weight Per Bag (KG),Total Weight (KG)\n";
+                
+                allInwardData.forEach(i => {
+                    let d = new Date(i.date_received).toLocaleDateString();
+                    let totalWt = (parseFloat(i.packs) * parseFloat(i.weight)).toFixed(2);
+                    csv += `"${d}","${i.ingredient_code}","${i.ingredient_name}","${i.vendor_code}","${i.vendor_name}","${i.start_no}","${i.end_no}","${i.packs}","${i.weight}","${totalWt}"\n`;
+                });
+            }
+
+            // Trigger the download
+            let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            let link = document.createElement("a");
+            if (link.download !== undefined) {
+                let url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        // ==========================================
+        // 🔥 NEW: INDIVIDUAL WIP AUDIT PRINT 🔥
+        // ==========================================
+        function printWIPAudit(batchCode) {
+            let printWindow = window.open('', '_blank');
+            if(!printWindow) return alert("Popup blocked! Allow popups to generate FSSAI reports.");
+
+            // Find the specific batch data
+            let rows = allPreprocessData.filter(r => r.batch_code === batchCode);
+            if(rows.length === 0) return;
+
+            let firstRow = rows[0];
+            let dateStr = new Date(firstRow.created_at).toLocaleString();
+            let totalYield = parseFloat(firstRow.total_yield || 0).toFixed(2);
+            
+            // Format input tags 
+            let parents = firstRow.parent_tag ? firstRow.parent_tag.split(',').map(p => p.trim()) : [];
+            let parentsHTML = parents.map(p => `<tr><td style="padding:10px; border-bottom:1px solid #ddd; font-family:monospace; font-weight:bold; color:#ea580c;">${p}</td></tr>`).join('');
+            if(parentsHTML === '') parentsHTML = '<tr><td style="padding:10px; text-align:center;">No input tags scanned (Raw inward processing).</td></tr>';
+
+            // Format output tags
+            let outputs = rows.map(r => r.sub_tag);
+            let outputsHTML = outputs.map(o => `<tr><td style="padding:10px; border-bottom:1px solid #ddd; font-family:monospace; font-weight:bold; color:#064e3b;">${o}</td></tr>`).join('');
+
+            let html = `
+            <html><head><title>WIP Audit Report - ${batchCode}</title>
+            <style>
+                @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
+                body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #0f172a; margin: 0; padding: 40px; background: white; }
+                .report-wrapper { max-width: 900px; margin: 0 auto; border: 2px solid #cbd5e1; padding: 40px; border-radius: 12px; }
+                .header { border-bottom: 4px solid #ea580c; padding-bottom: 25px; margin-bottom: 30px; display:flex; justify-content:space-between; align-items:flex-end;}
+                h1 { margin: 0 0 5px 0; color: #0b1121; font-size: 32px; text-transform: uppercase; letter-spacing: -0.5px;}
+                h2 { color: #ea580c; margin: 0; font-size: 18px; text-transform: uppercase;}
+                .batch-highlight { text-align: right; }
+                .batch-highlight div { font-size: 14px; font-weight: bold; color: #64748b; margin-bottom: 5px; text-transform: uppercase;}
+                .batch-highlight span { background: #0b1121; color: white; padding: 8px 15px; border-radius: 6px; font-size: 24px; font-weight: 900; font-family: monospace;}
+                .meta-box { background: #f8fafc; border: 2px solid #e2e8f0; padding: 25px; border-radius: 10px; margin-bottom: 40px; display: flex; justify-content: space-between;}
+                .meta-col { display: flex; flex-direction: column; gap: 12px; font-size: 15px;}
+                .meta-col strong { color: #64748b; text-transform: uppercase; font-size: 12px; display: block; margin-bottom: 2px;}
+                .meta-col div { font-weight: bold; color: #0b1121; }
+                table { width: 100%; border-collapse: collapse; margin-bottom: 40px;}
+                th { background: #0b1121; color: white; padding: 15px 10px; text-align: left; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;}
+            </style>
+            </head><body>
+                <div class="report-wrapper">
+                    <div class="header">
+                        <div>
+                            <h1>WIP Traceability Audit</h1>
+                            <h2>Kilrr Blended Spices - Internal Pre-Process</h2>
+                        </div>
+                        <div class="batch-highlight">
+                            <div>Target Product: ${firstRow.product_code}</div>
+                            <span>${batchCode}</span>
+                        </div>
+                    </div>
+                    <div class="meta-box">
+                        <div class="meta-col">
+                            <div><strong>Production Date</strong> ${dateStr}</div>
+                            <div><strong>Process Type</strong> ${firstRow.process_type}</div>
+                        </div>
+                        <div class="meta-col" style="text-align:right;">
+                            <div><strong>Input Materials Scanned</strong> ${parents.length} Tags</div>
+                            <div><strong>WIP Batch Yield</strong> ${totalYield} KG</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; gap:30px;">
+                        <div style="flex:1;">
+                            <h3 style="border-bottom: 2px solid #ea580c; padding-bottom:5px;">Input Tags Consumed</h3>
+                            <table>
+                                <thead><tr><th>Barcode Tag</th></tr></thead>
+                                <tbody>${parentsHTML}</tbody>
+                            </table>
+                        </div>
+                        <div style="flex:1;">
+                            <h3 style="border-bottom: 2px solid #064e3b; padding-bottom:5px;">Output WIP Tags Generated</h3>
+                            <table>
+                                <thead><tr><th>Barcode Tag</th></tr></thead>
+                                <tbody>${outputsHTML}</tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </body>
+            <script>window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 500); };<\/script>
+            </html>`;
+
+            printWindow.document.open();
+            printWindow.document.write(html);
+            printWindow.document.close();
+        }
+
+        // ==========================================
+        // FINAL BATCH PDF EXPORT SCRIPT (EXISTING)
         // ==========================================
         function printAuditTrail(batchData) {
             let printWindow = window.open('', '_blank');
@@ -397,7 +573,7 @@
                     <div class="header">
                         <div>
                             <h1>Batch Traceability Audit</h1>
-                            <h2>Kilrr Blended Spices - Internal Record</h2>
+                            <h2>Kilrr Blended Spices - Final Goods</h2>
                         </div>
                         <div class="batch-highlight">
                             <div>Target Product: ${batchData.fg_code}</div>
