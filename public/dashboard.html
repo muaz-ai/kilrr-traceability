@@ -5,51 +5,256 @@
     <title>Kilrr OS - Traceability Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <style>
-        :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #10b981; --danger-red: #dc2626; --warning-yellow: #eab308; --card-bg: #ffffff; --accent-blue: #2563eb; }
-        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding-bottom: 80px;}
+        :root { 
+            --kilrr-orange: #ea580c; 
+            --navy-command: #0b1121; 
+            --success-green: #10b981; 
+            --danger-red: #dc2626; 
+            --warning-yellow: #eab308; 
+            --card-bg: #ffffff; 
+            --accent-blue: #2563eb; 
+        }
         
-        .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;}
-        .brand { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 900; color: white; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;}
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #f8fafc; 
+            color: #0f172a; 
+            margin: 0; 
+            padding-bottom: 80px;
+        }
+        
+        /* NAVIGATION */
+        .nav-top { 
+            background: var(--navy-command); 
+            border-bottom: 4px solid var(--kilrr-orange); 
+            padding: 15px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100;
+        }
+        
+        .brand { 
+            font-family: 'Space Grotesk', sans-serif; 
+            font-size: 26px; 
+            font-weight: 900; 
+            color: white; 
+            text-decoration: none; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+        }
+        
         .brand span { color: var(--kilrr-orange); }
+        
         .nav-links { display: flex; gap: 10px; }
-        .nav-btn { color: #cbd5e1; text-decoration: none; font-weight: 700; font-size: 13px; text-transform: uppercase; padding: 8px 12px; border-radius: 8px; transition: 0.2s;}
+        
+        .nav-btn { 
+            color: #cbd5e1; 
+            text-decoration: none; 
+            font-weight: 700; 
+            font-size: 13px; 
+            text-transform: uppercase; 
+            padding: 8px 12px; 
+            border-radius: 8px; 
+            transition: 0.2s;
+        }
+        
         .nav-btn:hover { background: rgba(255,255,255,0.1); color: white;}
         .nav-btn.active { color: white; background: var(--kilrr-orange);}
 
-        .container { max-width: 1300px; margin: 30px auto; padding: 0 15px; }
+        .container { 
+            max-width: 1300px; 
+            margin: 30px auto; 
+            padding: 0 15px; 
+        }
         
-        .card { background: var(--card-bg); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; border-top: 6px solid var(--kilrr-orange); margin-bottom: 30px;}
+        /* CARDS */
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 16px; 
+            padding: 30px; 
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); 
+            border: 1px solid #cbd5e1; 
+            border-top: 6px solid var(--kilrr-orange); 
+            margin-bottom: 30px;
+        }
         
         /* DASHBOARD TABS */
-        .tab-bar { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; flex-wrap: wrap;}
-        .tab-btn { background: transparent; border: none; font-family: 'Space Grotesk'; font-size: 16px; font-weight: 900; color: #64748b; padding: 10px 20px; cursor: pointer; text-transform: uppercase; transition: 0.2s; border-radius: 8px;}
+        .tab-bar { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 25px; 
+            border-bottom: 2px solid #e2e8f0; 
+            padding-bottom: 15px; 
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn { 
+            background: transparent; 
+            border: none; 
+            font-family: 'Space Grotesk', sans-serif; 
+            font-size: 16px; 
+            font-weight: 900; 
+            color: #64748b; 
+            padding: 10px 20px; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            transition: 0.2s; 
+            border-radius: 8px;
+        }
+        
         .tab-btn:hover { background: #f1f5f9; color: var(--navy-command);}
         .tab-btn.active { background: var(--navy-command); color: white;}
 
-        .search-box { width: 100%; padding: 18px 20px; box-sizing: border-box; border-radius: 10px; border: 2px solid #cbd5e1; font-size: 16px; font-weight: 800; font-family: 'Inter', sans-serif; transition: 0.2s;}
-        .search-box:focus { border-color: var(--kilrr-orange); outline: none; box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.15);}
+        .search-box { 
+            width: 100%; 
+            padding: 18px 20px; 
+            box-sizing: border-box; 
+            border-radius: 10px; 
+            border: 2px solid #cbd5e1; 
+            font-size: 16px; 
+            font-weight: 800; 
+            font-family: 'Inter', sans-serif; 
+            transition: 0.2s;
+        }
+        
+        .search-box:focus { 
+            border-color: var(--kilrr-orange); 
+            outline: none; 
+            box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.15);
+        }
 
         /* BATCH GRID */
-        .batch-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        .batch-card { background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 25px; transition: 0.2s;}
-        .batch-card:hover { border-color: var(--accent-blue); box-shadow: 0 10px 25px rgba(37,99,235,0.1);}
+        .batch-grid { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 20px; 
+        }
         
-        .bc-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px;}
-        .bc-title { font-size: 26px; font-weight: 900; color: var(--navy-command); margin: 0; font-family: 'Space Grotesk', sans-serif;}
-        .bc-recipe { font-size: 16px; font-weight: 800; color: var(--kilrr-orange); margin: 5px 0 0 0;}
-        .bc-meta { font-size: 14px; color: #64748b; font-weight: 700; text-align: right; display: flex; flex-direction: column; gap: 5px;}
+        .batch-card { 
+            background: white; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 12px; 
+            padding: 25px; 
+            transition: 0.2s;
+        }
         
-        .bc-stats { display: flex; gap: 15px; flex-wrap: wrap;}
-        .stat-pill { background: #f8fafc; padding: 12px 20px; border-radius: 8px; font-weight: 800; font-size: 13px; border: 1px solid #cbd5e1; color: #64748b; text-transform: uppercase;}
-        .stat-pill span { color: var(--navy-command); font-size: 18px; display: block; margin-top: 4px;}
+        .batch-card:hover { 
+            border-color: var(--accent-blue); 
+            box-shadow: 0 10px 25px rgba(37,99,235,0.1);
+        }
+        
+        .bc-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; 
+            border-bottom: 2px solid #f1f5f9; 
+            padding-bottom: 15px; 
+            margin-bottom: 20px;
+        }
+        
+        .bc-title { 
+            font-size: 26px; 
+            font-weight: 900; 
+            color: var(--navy-command); 
+            margin: 0; 
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        .bc-recipe { 
+            font-size: 16px; 
+            font-weight: 800; 
+            color: var(--kilrr-orange); 
+            margin: 5px 0 0 0;
+        }
+        
+        .bc-meta { 
+            font-size: 14px; 
+            color: #64748b; 
+            font-weight: 700; 
+            text-align: right; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 5px;
+        }
+        
+        .bc-stats { 
+            display: flex; 
+            gap: 15px; 
+            flex-wrap: wrap;
+        }
+        
+        .stat-pill { 
+            background: #f8fafc; 
+            padding: 12px 20px; 
+            border-radius: 8px; 
+            font-weight: 800; 
+            font-size: 13px; 
+            border: 1px solid #cbd5e1; 
+            color: #64748b; 
+            text-transform: uppercase;
+        }
+        
+        .stat-pill span { 
+            color: var(--navy-command); 
+            font-size: 18px; 
+            display: block; 
+            margin-top: 4px;
+        }
 
-        .btn-export { background: var(--navy-command); color: white; border: none; padding: 15px 25px; border-radius: 10px; font-weight: 900; font-size: 14px; cursor: pointer; text-transform: uppercase; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;}
-        .btn-export:hover { background: var(--kilrr-orange); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(234, 88, 12, 0.2);}
+        .btn-export { 
+            background: var(--navy-command); 
+            color: white; 
+            border: none; 
+            padding: 15px 25px; 
+            border-radius: 10px; 
+            font-weight: 900; 
+            font-size: 14px; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            transition: 0.2s; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px;
+        }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white;}
-        th { background: #f8fafc; text-align: left; padding: 15px; font-size: 12px; color: #64748b; text-transform: uppercase; border-bottom: 2px solid #cbd5e1; font-weight: 900;}
-        td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 14px; font-weight: 700; color: var(--navy-command);}
+        .btn-export:hover { 
+            background: var(--kilrr-orange); 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.2);
+        }
+        
+        /* TABLES */
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+            background: white;
+        }
+        
+        th { 
+            background: #f8fafc; 
+            text-align: left; 
+            padding: 15px; 
+            font-size: 12px; 
+            color: #64748b; 
+            text-transform: uppercase; 
+            border-bottom: 2px solid #cbd5e1; 
+            font-weight: 900;
+        }
+        
+        td { 
+            padding: 15px; 
+            border-bottom: 1px solid #f1f5f9; 
+            font-size: 14px; 
+            font-weight: 700; 
+            color: var(--navy-command);
+        }
         
         .status-open { background: var(--warning-yellow); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 900; vertical-align: middle; margin-left: 10px;}
         .status-closed { background: var(--success-green); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 900; vertical-align: middle; margin-left: 10px;}
@@ -93,7 +298,7 @@
                 <button class="tab-btn" id="tab_inwarding" onclick="switchTab('inwarding')">📦 Inwarding Ledger</button>
             </div>
 
-            <!-- 🔥 SEARCH BAR & EXPORT TO CSV BUTTON 🔥 -->
+            <!-- SEARCH BAR & EXPORT TO CSV BUTTON -->
             <div class="search-wrapper" style="display: flex; gap: 15px; margin-bottom: 30px;">
                 <input type="text" id="search_box" class="search-box" style="margin-bottom:0;" placeholder="🔍 Search Records..." oninput="handleSearch()">
                 <button id="btn_export_csv" class="btn-export" style="display:none; white-space:nowrap; padding: 0 30px;" onclick="exportCSV()">📥 Export to CSV</button>
@@ -271,7 +476,7 @@
                 let g = grouped[batch];
                 let d = new Date(g.date).toLocaleString();
                 
-                // 🔥 UI FIX: Scrollable tags for large recipes like Garam Masala 🔥
+                // Scrollable tags for large recipes
                 let parentTagsArr = g.parents ? g.parents.split(',') : [];
                 let parentHTML = parentTagsArr.length > 0 
                     ? `<div class="scroll-list">${parentTagsArr.map(p => `<div style="color:var(--kilrr-orange); font-family:monospace; font-size:12px; font-weight:bold; margin-bottom:2px;">${p.trim()}</div>`).join('')}</div>`
@@ -291,9 +496,9 @@
                     <td style="font-family:monospace; color:var(--success-green); font-weight:bold; font-size:14px; line-height:1.4;">${outStr}</td>
                     <td style="font-weight:900; font-size:20px; color:var(--navy-command);">${g.yield} KG</td>
                     
-                    <!-- 🔥 NEW: INDIVIDUAL PRINT BUTTON FOR WIP 🔥 -->
                     <td style="text-align:center;">
-                        <button class="btn-export" style="padding: 10px 15px; font-size: 11px; margin: 0 auto; white-space:nowrap;" onclick="printWIPAudit('${batch}')">🖨️ Print Audit</button>
+                        <button class="btn-export" style="padding: 10px 15px; font-size: 11px; margin: 0 auto 5px auto; white-space:nowrap;" onclick="printWIPAudit('${batch}')">🖨️ Print Audit</button>
+                        <button class="btn-export" style="padding: 10px 15px; font-size: 11px; margin: 0 auto; white-space:nowrap; background: var(--success-green);" onclick="reprintWIPTags('${batch}')">🖨️ Reprint Tags</button>
                     </td>
                 </tr>`;
             }).join('');
@@ -354,7 +559,7 @@
         }
 
         // ==========================================
-        // 🔥 NEW: GLOBAL CSV EXPORT FUNCTION 🔥
+        // GLOBAL CSV EXPORT FUNCTION
         // ==========================================
         function exportCSV() {
             let csv = "";
@@ -411,13 +616,72 @@
         }
 
         // ==========================================
-        // 🔥 NEW: INDIVIDUAL WIP AUDIT PRINT 🔥
+        // REPRINT WIP TAGS FUNCTION
+        // ==========================================
+        function reprintWIPTags(batchCode) {
+            let rows = allPreprocessData.filter(r => r.batch_code === batchCode);
+            if(rows.length === 0) return;
+            
+            let firstRow = rows[0];
+            let pCode = firstRow.product_code;
+            
+            let d = new Date(firstRow.created_at);
+            let dispDate = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+            
+            let outputTags = rows.map(r => r.sub_tag);
+            
+            let printWindow = window.open('', '_blank');
+            if(!printWindow) return alert("Popup blocked! Allow popups to print.");
+            
+            let html = `<html><head><style>
+                @media print {
+                    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                    @page { size: 75mm 75mm; margin: 0; }
+                    body { margin: 0; padding: 0; }
+                    .kilrr-label { page-break-after: always; }
+                }
+                body { margin: 0; padding: 0; background: white; display: flex; flex-direction: column; align-items: center; }
+                .kilrr-label { width: 75mm; height: 75mm; box-sizing: border-box; padding: 3mm; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: space-between; overflow: hidden; background: white; border: 2px solid black; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: black; page-break-after: always;}
+                .kilrr-title { background-color: black !important; color: white !important; width: 100%; padding: 2mm 0; font-size: 16pt; font-weight: 900; text-transform: uppercase; margin: 0; text-align: center; line-height: 1.1; max-height: 14mm; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+                .kilrr-middle { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; width: 100%; min-height: 0; }
+                .kilrr-qr { width: 26mm; height: 26mm; margin-bottom: 2mm; }
+                .kilrr-date { background-color: black !important; color: white !important; padding: 1.5mm 4mm; font-size: 12pt; font-weight: 900; text-transform: uppercase; margin: 0; line-height: 1; }
+                .kilrr-bottom { width: 100%; text-align: center; }
+                .kilrr-tag { font-size: 11pt; font-weight: 900; font-family: monospace; margin: 0 0 1.5mm 0; line-height: 1; color: black; }
+                .kilrr-weight { font-size: 18pt; font-weight: 900; padding: 1.5mm 0; margin: 0; border-top: 3px solid black; border-bottom: 3px solid black; width: 100%; text-align: center; line-height: 1.1; color: black; }
+            </style></head><body>`;
+
+            outputTags.forEach(tagStr => {
+                let qrEngine = new QRious({ value: tagStr, size: 250, level: 'M' });
+                let wtText = 'NET WT: _________ KG'; // Blank line for manual weight entry
+                html += `
+                <div class="kilrr-label">
+                    <div class="kilrr-title">${pCode}</div>
+                    <div class="kilrr-middle">
+                        <img class="kilrr-qr" src="${qrEngine.toDataURL()}">
+                        <div class="kilrr-date">DATE: ${dispDate}</div>
+                    </div>
+                    <div class="kilrr-bottom">
+                        <div class="kilrr-tag">${tagStr}</div>
+                        <div class="kilrr-weight">${wtText}</div>
+                    </div>
+                </div>`;
+            });
+            
+            html += `</body><script>window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 500); };<\/script></html>`;
+            
+            printWindow.document.open();
+            printWindow.document.write(html);
+            printWindow.document.close();
+        }
+
+        // ==========================================
+        // WIP FSSAI AUDIT REPORT (REVERSE LOOKUP GROUPING)
         // ==========================================
         function printWIPAudit(batchCode) {
             let printWindow = window.open('', '_blank');
             if(!printWindow) return alert("Popup blocked! Allow popups to generate FSSAI reports.");
 
-            // Find the specific batch data
             let rows = allPreprocessData.filter(r => r.batch_code === batchCode);
             if(rows.length === 0) return;
 
@@ -425,14 +689,67 @@
             let dateStr = new Date(firstRow.created_at).toLocaleString();
             let totalYield = parseFloat(firstRow.total_yield || 0).toFixed(2);
             
-            // Format input tags 
-            let parents = firstRow.parent_tag ? firstRow.parent_tag.split(',').map(p => p.trim()) : [];
-            let parentsHTML = parents.map(p => `<tr><td style="padding:10px; border-bottom:1px solid #ddd; font-family:monospace; font-weight:bold; color:#ea580c;">${p}</td></tr>`).join('');
-            if(parentsHTML === '') parentsHTML = '<tr><td style="padding:10px; text-align:center;">No input tags scanned (Raw inward processing).</td></tr>';
+            // Build an Ingredient Name Dictionary for Reverse Lookup
+            let ingMap = {};
+            allInwardData.forEach(i => ingMap[i.ingredient_code] = i.ingredient_name);
+            allBatchData.forEach(b => b.scans.forEach(s => { if(s.product_code) ingMap[s.product_code] = s.ingredient_name; }));
 
-            // Format output tags
-            let outputs = rows.map(r => r.sub_tag);
-            let outputsHTML = outputs.map(o => `<tr><td style="padding:10px; border-bottom:1px solid #ddd; font-family:monospace; font-weight:bold; color:#064e3b;">${o}</td></tr>`).join('');
+            let parentTags = firstRow.parent_tag ? firstRow.parent_tag.split(',').map(p => p.trim()) : [];
+            let groups = {};
+
+            parentTags.forEach(tag => {
+                if(!tag) return;
+                let parts = tag.split('/');
+                let rawDate = parts[0] || 'N/A';
+                let fmtDate = rawDate.length === 4 ? `${rawDate.substring(0,2)}/${rawDate.substring(2,4)}` : rawDate;
+                let pCode = parts[1] || 'Unknown';
+                let vendor = parts.length > 2 ? parts[2] : 'N/A';
+                if(vendor === 'KILRR') vendor = 'KILRR (Internal WIP)';
+                let bagNo = parseInt(parts[3] || 0);
+
+                // Reverse engineer the weight from Inward Data
+                let bagWeight = 0;
+                if(vendor !== 'KILRR (Internal WIP)') {
+                    for(let i of allInwardData) {
+                        if (i.ingredient_code === pCode && i.vendor_code === parts[2]) {
+                            let d = new Date(i.date_received);
+                            let tagD = `${String(d.getDate()).padStart(2,'0')}${String(d.getMonth()+1).padStart(2,'0')}`;
+                            if (tagD === rawDate && bagNo >= i.start_no && bagNo <= i.end_no) {
+                                bagWeight = parseFloat(i.weight);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                let key = `${pCode}_${vendor}_${fmtDate}`;
+                if(!groups[key]) {
+                    groups[key] = {
+                        ingredient: ingMap[pCode] || pCode,
+                        vendor: vendor,
+                        inwardDate: fmtDate,
+                        bags: 0,
+                        weight: 0
+                    };
+                }
+                groups[key].bags += 1;
+                groups[key].weight += bagWeight; 
+            });
+
+            let scansHTML = Object.values(groups).map(g => `
+                <tr>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold;">${g.ingredient}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold; color:#ea580c;">${g.vendor}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold;">${g.inwardDate}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0;">${g.bags} Units</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold;">${g.weight > 0 ? g.weight.toFixed(2) + ' KG' : 'N/A'}</td>
+                </tr>
+            `).join('');
+
+            if (parentTags.length === 0) scansHTML = '<tr><td colspan="5" style="text-align:center; padding:30px; font-weight:bold;">No input materials scanned (Raw processing).</td></tr>';
+
+            let outputTags = rows.map(r => r.sub_tag);
+            let outStr = outputTags.length > 1 ? `${outputTags[0]} ...to... ${outputTags[outputTags.length-1]}` : (outputTags[0] || 'N/A');
 
             let html = `
             <html><head><title>WIP Audit Report - ${batchCode}</title>
@@ -450,15 +767,20 @@
                 .meta-col { display: flex; flex-direction: column; gap: 12px; font-size: 15px;}
                 .meta-col strong { color: #64748b; text-transform: uppercase; font-size: 12px; display: block; margin-bottom: 2px;}
                 .meta-col div { font-weight: bold; color: #0b1121; }
+                h3 { color: #0b1121; font-size: 20px; text-transform: uppercase; margin: 0 0 15px 0; border-bottom: 2px solid #0b1121; display: inline-block; padding-bottom: 5px;}
                 table { width: 100%; border-collapse: collapse; margin-bottom: 40px;}
                 th { background: #0b1121; color: white; padding: 15px 10px; text-align: left; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;}
+                .footer { text-align: center; border-top: 2px solid #e2e8f0; padding-top: 20px; margin-top: 40px; }
+                .footer p { margin: 0 0 5px 0; font-size: 12px; color: #64748b; font-weight: bold;}
+                .footer-brand { font-size: 16px; font-weight: 900; color: #0b1121; margin: 0;}
+                .footer-brand span { color: #ea580c; }
             </style>
             </head><body>
                 <div class="report-wrapper">
                     <div class="header">
                         <div>
-                            <h1>WIP Traceability Audit</h1>
-                            <h2>Kilrr Blended Spices - Internal Pre-Process</h2>
+                            <h1>BATCH TRACEABILITY AUDIT</h1>
+                            <h2>KILRR BLENDED SPICES - INTERNAL PRE-PROCESS</h2>
                         </div>
                         <div class="batch-highlight">
                             <div>Target Product: ${firstRow.product_code}</div>
@@ -471,26 +793,24 @@
                             <div><strong>Process Type</strong> ${firstRow.process_type}</div>
                         </div>
                         <div class="meta-col" style="text-align:right;">
-                            <div><strong>Input Materials Scanned</strong> ${parents.length} Tags</div>
+                            <div><strong>Output Bags Generated</strong> <span style="font-family:monospace; color:#064e3b; background:#d1fae5; padding:2px 6px; border-radius:4px;">${outStr}</span></div>
                             <div><strong>WIP Batch Yield</strong> ${totalYield} KG</div>
                         </div>
                     </div>
                     
-                    <div style="display:flex; gap:30px;">
-                        <div style="flex:1;">
-                            <h3 style="border-bottom: 2px solid #ea580c; padding-bottom:5px;">Input Tags Consumed</h3>
-                            <table>
-                                <thead><tr><th>Barcode Tag</th></tr></thead>
-                                <tbody>${parentsHTML}</tbody>
-                            </table>
-                        </div>
-                        <div style="flex:1;">
-                            <h3 style="border-bottom: 2px solid #064e3b; padding-bottom:5px;">Output WIP Tags Generated</h3>
-                            <table>
-                                <thead><tr><th>Barcode Tag</th></tr></thead>
-                                <tbody>${outputsHTML}</tbody>
-                            </table>
-                        </div>
+                    <h3>INGREDIENT LEDGER (GROUPED SUMMARY)</h3>
+                    <table>
+                        <thead>
+                            <tr><th>INGREDIENT</th><th>VENDOR SOURCE</th><th>INWARD DATE</th><th>BAGS USED</th><th>TOTAL WT CONSUMED</th></tr>
+                        </thead>
+                        <tbody>
+                            ${scansHTML}
+                        </tbody>
+                    </table>
+
+                    <div class="footer">
+                        <p>This report was generated securely via system export. It serves as verifiable FSSAI documentation linking finished goods to raw material origin.</p>
+                        <p class="footer-brand">Kilrr <span>OS</span></p>
                     </div>
                 </div>
             </body>
@@ -503,7 +823,7 @@
         }
 
         // ==========================================
-        // FINAL BATCH PDF EXPORT SCRIPT (EXISTING)
+        // FINAL BATCH PDF EXPORT SCRIPT 
         // ==========================================
         function printAuditTrail(batchData) {
             let printWindow = window.open('', '_blank');
@@ -572,8 +892,8 @@
                 <div class="report-wrapper">
                     <div class="header">
                         <div>
-                            <h1>Batch Traceability Audit</h1>
-                            <h2>Kilrr Blended Spices - Final Goods</h2>
+                            <h1>BATCH TRACEABILITY AUDIT</h1>
+                            <h2>KILRR BLENDED SPICES - FINAL GOODS</h2>
                         </div>
                         <div class="batch-highlight">
                             <div>Target Product: ${batchData.fg_code}</div>
@@ -590,10 +910,10 @@
                             <div><strong>Final Logged Yield</strong> ${totalYield} KG</div>
                         </div>
                     </div>
-                    <h3>Ingredient Ledger (Grouped Summary)</h3>
+                    <h3>INGREDIENT LEDGER (GROUPED SUMMARY)</h3>
                     <table>
                         <thead>
-                            <tr><th>Ingredient</th><th>Vendor Source</th><th>Inward Date</th><th>Bags Used</th><th>Total Wt Consumed</th></tr>
+                            <tr><th>INGREDIENT</th><th>VENDOR SOURCE</th><th>INWARD DATE</th><th>BAGS USED</th><th>TOTAL WT CONSUMED</th></tr>
                         </thead>
                         <tbody>
                             ${scansHTML || '<tr><td colspan="5" style="text-align:center; padding:30px; font-weight:bold;">No ingredients were logged for this batch.</td></tr>'}
