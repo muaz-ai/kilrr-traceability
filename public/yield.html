@@ -338,6 +338,7 @@
         <h2>Production Yield & Packet Reconciliation Tracker</h2>
         <span class="marathi-title">फायनल बॅच वजन आणि पॅकिंग रिपोर्ट</span>
 
+        <!-- 🔥 MASTER CONFIGURATION BOX 🔥 -->
         <div class="setup-box">
             <div>
                 <label>Date</label>
@@ -353,11 +354,12 @@
             </div>
             <div>
                 <label>Target Wt / Run (g)</label>
-                <input type="number" id="target_weight" class="setup-input" value="130000" step="1" oninput="renderApp()">
+                <!-- Changing setup triggers math update only, not full re-render -->
+                <input type="number" id="target_weight" class="setup-input" value="130000" step="1" oninput="updateMath()">
             </div>
             <div>
                 <label>Empty Pkt Tare (g)</label>
-                <input type="number" id="tare_grams" class="setup-input" value="60" oninput="renderApp()">
+                <input type="number" id="tare_grams" class="setup-input" value="60" oninput="updateMath()">
             </div>
             <div>
                 <label>Total Runs (Batches)</label>
@@ -368,10 +370,12 @@
             </div>
         </div>
 
+        <!-- 🔥 DYNAMIC RUN CARDS 🔥 -->
         <div id="runs_container" class="run-grid">
             <!-- Javascript injects Run Cards here -->
         </div>
 
+        <!-- 🔥 SUMMARY TABLE 🔥 -->
         <h2 style="margin-top: 40px;">Batch Summary</h2>
         <div class="summary-wrapper">
             <table class="summary-table">
@@ -419,9 +423,14 @@
                 console.warn("Failed to fetch recipes, running in offline mode.");
             }
             
-            renderApp();
+            renderApp(); // Initial draw
         };
 
+        // ==========================================
+        // 1. DATA & STRUCTURAL LOGIC
+        // ==========================================
+        
+        // Changing the number of runs completely changes the screen, so we re-render everything
         function generateRuns() {
             const num = parseInt(document.getElementById('num_runs').value) || 1;
             let oldRuns = currentBatch.runs;
@@ -440,13 +449,9 @@
             renderApp();
         }
 
+        // Adding or removing a crate changes the structure, so we re-render everything
         function addCrate(rIndex) {
             currentBatch.runs[rIndex].crates.push({gross: '', pkts: ''});
-            renderApp();
-        }
-
-        function updateCrate(rIndex, cIndex, field, val) {
-            currentBatch.runs[rIndex].crates[cIndex][field] = val;
             renderApp();
         }
 
@@ -456,6 +461,16 @@
                 currentBatch.runs[rIndex].crates.push({gross: '', pkts: ''}); 
             }
             renderApp();
+        }
+
+        // ==========================================
+        // 2. THE FOCUS-SAFE TYPING LOGIC
+        // ==========================================
+        
+        // When typing, we ONLY update the array and call updateMath(), avoiding a full screen redraw
+        function updateCrate(rIndex, cIndex, field, val) {
+            currentBatch.runs[rIndex].crates[cIndex][field] = val;
+            updateMath(); 
         }
 
         function calculateStats(run) {
@@ -492,24 +507,17 @@
             };
         }
 
+        // Only draws the structure. Called when buttons like "+ Add Crate" are clicked.
         function renderApp() {
-            // 🔥 FOCUS-MEMORY CATCHER: Save the cursor before re-rendering the DOM
-            let activeId = null;
-            if (document.activeElement && document.activeElement.tagName === 'INPUT') {
-                activeId = document.activeElement.id;
-            }
-
             const container = document.getElementById('runs_container');
             const target = parseFloat(document.getElementById('target_weight').value) || 0;
             
             container.innerHTML = currentBatch.runs.map((run, rIndex) => {
-                let stats = calculateStats(run);
                 
-                // Added unique IDs to the inputs for the Memory Catcher
                 let cratesHTML = run.crates.map((c, cIndex) => `
                     <tr>
-                        <td><input type="number" id="crate_gross_${rIndex}_${cIndex}" step="1" class="crate-input" placeholder="e.g. 43140" value="${c.gross}" oninput="updateCrate(${rIndex}, ${cIndex}, 'gross', this.value)"></td>
-                        <td><input type="number" id="crate_pkts_${rIndex}_${cIndex}" class="crate-input" placeholder="e.g. 8" value="${c.pkts}" oninput="updateCrate(${rIndex}, ${cIndex}, 'pkts', this.value)"></td>
+                        <td><input type="number" step="1" class="crate-input" placeholder="e.g. 43140" value="${c.gross}" oninput="updateCrate(${rIndex}, ${cIndex}, 'gross', this.value)"></td>
+                        <td><input type="number" class="crate-input" placeholder="e.g. 8" value="${c.pkts}" oninput="updateCrate(${rIndex}, ${cIndex}, 'pkts', this.value)"></td>
                         <td style="text-align:right;"><button class="btn-del" onclick="removeCrate(${rIndex}, ${cIndex})">✖</button></td>
                     </tr>
                 `).join('');
@@ -518,7 +526,7 @@
                 <div class="run-card">
                     <div class="run-header">
                         <h3>RUN ${run.id}</h3>
-                        <span style="font-weight:bold; color:#64748b; font-size:12px;">TARGET: ${target.toFixed(0)} g</span>
+                        <span style="font-weight:bold; color:#64748b; font-size:12px;" id="run_target_${rIndex}">TARGET: ${target.toFixed(0)} g</span>
                     </div>
                     
                     <table class="crate-table">
@@ -539,36 +547,27 @@
                     <div class="run-stats-panel">
                         <div class="stat-group">
                             <span class="st-label">Total Gross</span>
-                            <span class="st-val">${stats.gross.toFixed(0)} g</span>
+                            <span class="st-val" id="run_gross_${rIndex}">0 g</span>
                         </div>
                         <div class="stat-group">
                             <span class="st-label" style="color:var(--danger-red);">Total Tare</span>
-                            <span class="st-val" style="color:var(--danger-red);">- ${stats.tare.toFixed(0)} g</span>
+                            <span class="st-val" id="run_tare_${rIndex}" style="color:var(--danger-red);">- 0 g</span>
                         </div>
                         <div class="stat-group" style="grid-column: 1 / -1; padding-top:10px; border-top:2px solid #e2e8f0; display:flex; flex-direction:row; justify-content:space-between; align-items:center;">
                             <span class="st-label" style="color:var(--kilrr-orange);">NET YIELD</span>
-                            <span class="st-val st-net" style="color:var(--navy-command);">${stats.net.toFixed(0)} g</span>
+                            <span class="st-val st-net" id="run_net_${rIndex}" style="color:var(--navy-command);">0 g</span>
                         </div>
                     </div>
                 </div>`;
             }).join('');
 
-            // Restore focus and cursor position to the exact textbox they were typing in
-            if (activeId) {
-                let activeEl = document.getElementById(activeId);
-                if (activeEl) {
-                    activeEl.focus();
-                    // Chrome hack: Safely push the cursor to the end of the number string
-                    if (activeId.startsWith('crate_')) {
-                        let tempVal = activeEl.value;
-                        activeEl.value = '';
-                        activeEl.value = tempVal;
-                    }
-                }
-            }
+            // After building the boxes, populate the math
+            updateMath();
+        }
 
-            const tbody = document.getElementById('summary_body');
-            const tfoot = document.getElementById('summary_footer');
+        // Safely updates the math text everywhere WITHOUT touching the inputs
+        function updateMath() {
+            const target = parseFloat(document.getElementById('target_weight').value) || 0;
             
             let totalShiftNet = 0;
             let totalShiftGross = 0;
@@ -576,9 +575,25 @@
             let totalShiftPkts = 0;
             let validRunsCount = 0;
 
-            tbody.innerHTML = currentBatch.runs.map(run => {
+            let summaryHTML = '';
+
+            currentBatch.runs.forEach((run, rIndex) => {
                 let stats = calculateStats(run);
                 
+                // Update Target Labels
+                let elTarget = document.getElementById(`run_target_${rIndex}`);
+                if(elTarget) elTarget.textContent = `TARGET: ${target.toFixed(0)} g`;
+
+                // Update individual run DOM stats securely
+                let elGross = document.getElementById(`run_gross_${rIndex}`);
+                let elTare = document.getElementById(`run_tare_${rIndex}`);
+                let elNet = document.getElementById(`run_net_${rIndex}`);
+
+                if(elGross) elGross.textContent = stats.gross.toFixed(0) + ' g';
+                if(elTare) elTare.textContent = '- ' + stats.tare.toFixed(0) + ' g';
+                if(elNet) elNet.textContent = stats.net.toFixed(0) + ' g';
+
+                // Aggregate for summary
                 if(stats.net > 0) {
                     totalShiftNet += stats.net;
                     totalShiftGross += stats.gross;
@@ -591,7 +606,7 @@
                     ? (stats.isLoss ? `<span class="status-badge loss">LOSS</span>` : `<span class="status-badge good">ON TARGET</span>`) 
                     : '--';
 
-                return `
+                summaryHTML += `
                 <tr>
                     <td>B${run.id}</td>
                     <td>${stats.pkts > 0 ? stats.pkts : '--'}</td>
@@ -602,13 +617,19 @@
                     <td style="color:${stats.isLoss ? 'var(--danger-red)' : 'inherit'};">${stats.net > 0 ? stats.lossPct.toFixed(2) + '%' : '--'}</td>
                     <td>${statusBadge}</td>
                 </tr>`;
-            }).join('');
+            });
+
+            // Update Summary Table (Safe to rewrite because user doesn't type here)
+            const tbody = document.getElementById('summary_body');
+            const tfoot = document.getElementById('summary_footer');
+            
+            if(tbody) tbody.innerHTML = summaryHTML;
 
             let totalTarget = validRunsCount * target; 
             let overallDiff = totalTarget - totalShiftNet;
             let overallLossPct = totalTarget > 0 ? (overallDiff / totalTarget) * 100 : 0;
 
-            tfoot.innerHTML = `
+            if(tfoot) tfoot.innerHTML = `
                 <tr>
                     <td style="color:var(--kilrr-orange);">TOTALS</td>
                     <td style="color:var(--kilrr-orange);">${totalShiftPkts}</td>
@@ -622,6 +643,9 @@
             `;
         }
 
+        // ==========================================
+        // 3. MASTER DATA DROPDOWN
+        // ==========================================
         function attachCustomDropdown(inputId, dataArray, displayKey, codeKey) {
             const inp = document.getElementById(inputId); 
             const list = document.createElement('div'); 
@@ -656,7 +680,7 @@
         }
 
         // ==========================================
-        // OFFICIAL FSSAI ANNEXURE PRINT REPORT
+        // 4. OFFICIAL FSSAI ANNEXURE PRINT REPORT
         // ==========================================
         function printYieldReport() {
             let dateVal = document.getElementById('date_input').value;
