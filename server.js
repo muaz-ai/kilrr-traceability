@@ -6,7 +6,7 @@ const https = require('https');
 try { require('dotenv').config(); } catch (e) { console.log("Local .env not found, relying on cloud variables."); }
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // Increased limit for large yield payloads
 
 try { const cors = require('cors'); app.use(cors()); } catch (e) {}
 
@@ -58,8 +58,27 @@ async function initDB() {
             CREATE TABLE IF NOT EXISTS sub_assemblies (id SERIAL PRIMARY KEY, sub_tag VARCHAR(255), product_code VARCHAR(100), process_type VARCHAR(100), parent_tag TEXT, total_yield VARCHAR(50), batch_code VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
             CREATE TABLE IF NOT EXISTS batches (batch_code VARCHAR(100) PRIMARY KEY, fg_code VARCHAR(100), operator_name VARCHAR(100), status VARCHAR(50) DEFAULT 'OPEN', total_weight DECIMAL DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
             CREATE TABLE IF NOT EXISTS scans (id SERIAL PRIMARY KEY, batch_code VARCHAR(100) REFERENCES batches(batch_code) ON DELETE CASCADE, rm_tag VARCHAR(255) UNIQUE, product_code VARCHAR(100), weight DECIMAL DEFAULT 0, operator VARCHAR(100), parent_tags TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+            
+            -- 🔥 NEW: Yield Tracking Table 🔥
+            CREATE TABLE IF NOT EXISTS yield_logs (
+                batch_code VARCHAR(100) PRIMARY KEY, 
+                date DATE, 
+                product_code VARCHAR(100), 
+                target_wt DECIMAL, 
+                tare_grams INT, 
+                total_runs INT, 
+                total_pkts INT, 
+                total_gross DECIMAL, 
+                total_tare DECIMAL, 
+                total_net DECIMAL, 
+                loss_pct DECIMAL, 
+                yield_pct DECIMAL, 
+                runs_data TEXT, 
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
         `);
 
+        // Apply patches for older databases without dropping data
         const patches = [
             `ALTER TABLE scans ADD COLUMN IF NOT EXISTS weight DECIMAL DEFAULT 0;`,
             `ALTER TABLE scans ADD COLUMN IF NOT EXISTS operator VARCHAR(100);`,
@@ -155,7 +174,7 @@ app.get("/api/last-inward", async (req, res) => {
     } catch(e) { res.status(500).json({error: e.message}); }
 });
 
-// 🔥 NEW: Fetch Live Weight of a tag for the Pre-Process Dashboard
+// Fetch Live Weight of a tag for the Pre-Process Dashboard
 app.get("/api/tag-weight", async (req, res) => {
     try {
         let tag = req.query.tag;
@@ -278,7 +297,31 @@ app.post("/delete-batch", async (req, res) => {
 });
 
 // ==========================================
-// 6. DASHBOARD TRACEABILITY ROUTES
+// 6. YIELD & RECONCILIATION ROUTES 🔥
+// ==========================================
+app.post("/log-yield", async (req, res) => {
+    try {
+        const { batch_code, date, product_code, target_wt, tare_grams, total_runs, total_pkts, total_gross, total_tare, total_net, loss_pct, yield_pct, runs_data, is_edit } = req.body;
+
+        // Prevent Duplicate Batches unless explicitly editing
+        if(!is_edit) {
+            let check = await pool.query("SELECT batch_code FROM yield_logs WHERE batch_code = $1", [batch_code]);
+            if(check.rows.length > 0) return res.status(400).json({error: "Duplicate Batch Code! This batch already exists. Go to the Dashboard to edit it."});
+        }
+
+        await pool.query(
+            `INSERT INTO yield_logs (batch_code, date, product_code, target_wt, tare_grams, total_runs, total_pkts, total_gross, total_tare, total_net, loss_pct, yield_pct, runs_data)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+             ON CONFLICT (batch_code) DO UPDATE SET
+             date=$2, product_code=$3, target_wt=$4, tare_grams=$5, total_runs=$6, total_pkts=$7, total_gross=$8, total_tare=$9, total_net=$10, loss_pct=$11, yield_pct=$12, runs_data=$13, created_at=CURRENT_TIMESTAMP`,
+            [batch_code, date, product_code, target_wt, tare_grams, total_runs, total_pkts, total_gross, total_tare, total_net, loss_pct, yield_pct, runs_data]
+        );
+        res.json({status: "success"});
+    } catch(e) { res.status(500).json({error: e.message}); }
+});
+
+// ==========================================
+// 7. DASHBOARD TRACEABILITY ROUTES
 // ==========================================
 
 app.get("/api/dashboard-traceability", async (req, res) => {
@@ -297,6 +340,11 @@ app.get("/api/dashboard-inwarding", async (req, res) => {
 
 app.get("/api/dashboard-preprocess", async (req, res) => {
     try { res.json((await pool.query("SELECT * FROM sub_assemblies ORDER BY created_at DESC LIMIT 200")).rows); } 
+    catch(e) { res.status(500).json({error: e.message}); }
+});
+
+app.get("/api/dashboard-yield", async (req, res) => {
+    try { res.json((await pool.query("SELECT * FROM yield_logs ORDER BY created_at DESC LIMIT 200")).rows); }
     catch(e) { res.status(500).json({error: e.message}); }
 });
 
