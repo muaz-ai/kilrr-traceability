@@ -58,6 +58,19 @@
         .scroll-list::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px;}
         .scroll-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px;}
 
+        /* MODAL */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(11, 17, 33, 0.85); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s;}
+        .dialog-content { background: white; width: 100%; max-width: 420px; border-radius: 16px; padding: 35px; text-align: center; border-top: 6px solid var(--kilrr-orange);}
+        .modal-icon { font-size: 45px; margin-bottom: 10px;}
+        .modal-title { font-family: 'Space Grotesk'; font-size: 24px; font-weight: 900; color: var(--navy-command); margin: 0 0 10px 0;}
+        .modal-desc { font-size: 15px; font-weight: 600; color: #64748b; margin-bottom: 25px;}
+        .modal-input { width: 100%; padding: 16px; box-sizing: border-box; border-radius: 8px; border: 2px solid var(--navy-command); font-size: 18px; font-weight: 800; font-family: 'Inter', sans-serif; margin-bottom: 25px; text-align: center;}
+        .modal-input:focus { outline: none; border-color: var(--kilrr-orange); }
+        .modal-actions { display: flex; gap: 15px; justify-content: center;}
+        .btn-modal { flex: 1; padding: 16px; border: none; border-radius: 8px; font-weight: 900; cursor: pointer;}
+        .btn-cancel { background: #e2e8f0; color: var(--navy-command); }
+        .btn-confirm { background: var(--kilrr-orange); color: white; }
+
         @media (max-width: 1024px) { 
             .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap; border-top: 3px solid var(--kilrr-orange); z-index: 999;}
             .brand { display: none; }
@@ -104,6 +117,20 @@
         </div>
     </div>
 
+    <!-- DIALOG MODAL FOR PIN VERIFICATION -->
+    <div id="kilrr_modal" class="modal-overlay">
+        <div class="dialog-content" id="modal_content_box">
+            <div class="modal-icon" id="modal_icon">🛑</div>
+            <h3 class="modal-title" id="modal_title">Title</h3>
+            <p class="modal-desc" id="modal_desc">Message goes here.</p>
+            <input type="password" id="modal_password" class="modal-input" style="display:none;" placeholder="Enter PIN (1234)..." autocomplete="off">
+            <div class="modal-actions">
+                <button id="modal_cancel" class="btn-modal btn-cancel" onclick="closeModal(false)">CANCEL</button>
+                <button id="modal_confirm" class="btn-modal btn-confirm" onclick="closeModal(true)">OK</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let allBatchData = [];
         let allInwardData = [];
@@ -111,13 +138,59 @@
         let allYieldData = [];
         let currentTab = 'batches';
 
+        // ==========================================
+        // MODAL ENGINE
+        // ==========================================
+        let modalCallback = null;
+        function showDialog(title, desc, type, callback) {
+            document.getElementById('modal_title').textContent = title;
+            document.getElementById('modal_desc').textContent = desc;
+            const m = document.getElementById('kilrr_modal');
+            const box = document.getElementById('modal_content_box');
+            const cancelBtn = document.getElementById('modal_cancel');
+            const confirmBtn = document.getElementById('modal_confirm');
+            const icon = document.getElementById('modal_icon');
+            const pwd = document.getElementById('modal_password');
+
+            pwd.style.display = 'none'; pwd.value = '';
+            modalCallback = callback;
+
+            if (type === 'error') {
+                icon.textContent = '🛑'; box.style.borderTopColor = 'var(--danger-red)';
+                confirmBtn.style.background = 'var(--danger-red)'; confirmBtn.textContent = 'OK'; cancelBtn.style.display = 'none';
+            } else if (type === 'password') {
+                icon.textContent = '🔒'; box.style.borderTopColor = 'var(--danger-red)';
+                confirmBtn.style.background = 'var(--danger-red)'; confirmBtn.textContent = 'AUTHORIZE'; cancelBtn.style.display = 'block';
+                pwd.style.display = 'block'; setTimeout(() => pwd.focus(), 50);
+            }
+            m.style.display = 'flex';
+            setTimeout(() => { m.style.opacity = '1'; box.style.transform = 'translateY(0)'; }, 10);
+        }
+
+        function closeModal(isConfirmed) {
+            const m = document.getElementById('kilrr_modal');
+            const box = document.getElementById('modal_content_box');
+            m.style.opacity = '0'; box.style.transform = 'translateY(20px)';
+            
+            let val = null;
+            if (document.getElementById('modal_password').style.display === 'block') val = document.getElementById('modal_password').value;
+
+            setTimeout(() => { m.style.display = 'none'; }, 200);
+            
+            if (modalCallback) { modalCallback(isConfirmed ? (val !== null ? val : true) : false); modalCallback = null; }
+        }
+        document.getElementById('modal_password').addEventListener('keypress', function(e) { if (e.key === 'Enter') closeModal(true); });
+
+        // ==========================================
+        // DATA LOADING
+        // ==========================================
         window.onload = async () => {
             try {
                 const [batchRes, inwardRes, preRes, yieldRes] = await Promise.all([
                     fetch('/api/dashboard-traceability'),
                     fetch('/api/dashboard-inwarding'),
                     fetch('/api/dashboard-preprocess'),
-                    fetch('/api/dashboard-yield').catch(() => ({json: () => []})) // Failsafe if endpoint is slow to deploy
+                    fetch('/api/dashboard-yield').catch(() => ({json: () => []})) // Failsafe
                 ]);
                 allBatchData = await batchRes.json();
                 allInwardData = await inwardRes.json();
@@ -139,10 +212,7 @@
             document.getElementById(`tab_${tab}`).classList.add('active');
             
             document.getElementById('search_box').value = '';
-
-            // Hide CSV export on Final Batches (because they have individual PDF exports)
             document.getElementById('btn_export_csv').style.display = (tab === 'batches' || tab === 'yield') ? 'none' : 'flex';
-            
             handleSearch();
         }
 
@@ -345,9 +415,11 @@
                     <td style="color:var(--success-green); font-weight:900;">${parseFloat(y.total_net).toFixed(0)} g</td>
                     <td style="color:${lossColor}; font-weight:900;">${parseFloat(y.loss_pct).toFixed(2)}%</td>
                     <td style="color:var(--navy-command); font-weight:900;">${parseFloat(y.yield_pct).toFixed(2)}%</td>
-                    <td style="text-align:center;">
-                        <button class="btn-export" style="padding: 10px 15px; font-size: 11px; margin: 0 auto 5px auto; white-space:nowrap; background:#f8fafc; color:#0f172a; border:1px solid #cbd5e1;" onclick="editYield('${y.batch_code}')">✏️ Edit</button>
-                        <button class="btn-export" style="padding: 10px 15px; font-size: 11px; margin: 0 auto; white-space:nowrap;" onclick="printYieldFromDashboard('${y.batch_code}')">🖨️ Print Annexure</button>
+                    <td style="text-align:center; display:flex; flex-direction:column; gap:5px;">
+                        <button class="btn-export" style="padding: 10px 15px; font-size: 11px; white-space:nowrap; background:#f8fafc; color:#0f172a; border:1px solid #cbd5e1;" onclick="editYield('${y.batch_code}')">✏️ Edit</button>
+                        <!-- 🔥 NEW: DELETE BUTTON WITH PIN PROTECTION 🔥 -->
+                        <button class="btn-export" style="padding: 10px 15px; font-size: 11px; white-space:nowrap; background:#fee2e2; color:var(--danger-red); border:1px solid #fca5a5;" onclick="deleteYield('${y.batch_code}')">🗑️ Delete</button>
+                        <button class="btn-export" style="padding: 10px 15px; font-size: 11px; white-space:nowrap;" onclick="printYieldFromDashboard('${y.batch_code}')">🖨️ Print Annexure</button>
                     </td>
                 </tr>`;
             }).join('');
@@ -361,13 +433,33 @@
             </div>`;
         }
 
-        // 🔥 EDIT YIELD (Redirects back to yield.html with loaded data)
         function editYield(batchCode) {
             let record = allYieldData.find(y => y.batch_code === batchCode);
             if(record) {
                 localStorage.setItem('kilrr_edit_yield', JSON.stringify(record));
                 window.location.href = 'yield.html';
             }
+        }
+
+        // 🔥 DELETE YIELD RECORD FUNCTION 🔥
+        function deleteYield(batchCode) {
+            showDialog("Authorize Delete", `Enter Master PIN to permanently delete Yield Record for [ ${batchCode} ]:`, "password", async (pin) => {
+                if(!pin) return;
+                try {
+                    const res = await fetch('/delete-yield', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ batch_code: batchCode, pin: pin })
+                    });
+                    const data = await res.json();
+                    if(data.error) return showDialog("Access Denied", data.error, "error");
+                    
+                    // Reload Data Silently
+                    const yieldRes = await fetch('/api/dashboard-yield');
+                    allYieldData = await yieldRes.json();
+                    renderYield();
+                } catch(e) { showDialog("Error", "Server error", "error"); }
+            });
         }
 
         // ==========================================
@@ -463,7 +555,7 @@
         }
 
         // ==========================================
-        // 🔥 YIELD REPORT PRINTING (FROM DASHBOARD)
+        // YIELD REPORT PRINTING (FROM DASHBOARD)
         // ==========================================
         function printYieldFromDashboard(batchCode) {
             let record = allYieldData.find(y => y.batch_code === batchCode);
@@ -596,13 +688,12 @@
         }
 
         // ==========================================
-        // OTHER PRINT SCRIPTS (REPRINT WIP & FSSAI)
+        // OTHER PRINT SCRIPTS
         // ==========================================
         function reprintWIPTags(batchCode) {
             let rows = allPreprocessData.filter(r => r.batch_code === batchCode);
             if(rows.length === 0) return;
-            let firstRow = rows[0];
-            let pCode = firstRow.product_code;
+            let firstRow = rows[0]; let pCode = firstRow.product_code;
             let d = new Date(firstRow.created_at);
             let dispDate = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
             let outputTags = rows.map(r => r.sub_tag);
@@ -616,7 +707,6 @@
                 let qrEngine = new QRious({ value: tagStr, size: 250, level: 'M' });
                 html += `<div class="kilrr-label"><div class="kilrr-title">${pCode}</div><div class="kilrr-middle"><img class="kilrr-qr" src="${qrEngine.toDataURL()}"><div class="kilrr-date">DATE: ${dispDate}</div></div><div class="kilrr-bottom"><div class="kilrr-tag">${tagStr}</div><div class="kilrr-weight">NET WT: _________ KG</div></div></div>`;
             });
-            
             html += `</body><script>window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 500); };<\/script></html>`;
             printWindow.document.open(); printWindow.document.write(html); printWindow.document.close();
         }
