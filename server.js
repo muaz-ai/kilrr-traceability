@@ -59,7 +59,7 @@ async function initDB() {
             CREATE TABLE IF NOT EXISTS batches (batch_code VARCHAR(100) PRIMARY KEY, fg_code VARCHAR(100), operator_name VARCHAR(100), status VARCHAR(50) DEFAULT 'OPEN', total_weight DECIMAL DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
             CREATE TABLE IF NOT EXISTS scans (id SERIAL PRIMARY KEY, batch_code VARCHAR(100) REFERENCES batches(batch_code) ON DELETE CASCADE, rm_tag VARCHAR(255) UNIQUE, product_code VARCHAR(100), weight DECIMAL DEFAULT 0, operator VARCHAR(100), parent_tags TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
             
-            -- 🔥 NEW: Yield Tracking Table 🔥
+            -- Yield Tracking Table
             CREATE TABLE IF NOT EXISTS yield_logs (
                 batch_code VARCHAR(100) PRIMARY KEY, 
                 date DATE, 
@@ -78,7 +78,6 @@ async function initDB() {
             );
         `);
 
-        // Apply patches for older databases without dropping data
         const patches = [
             `ALTER TABLE scans ADD COLUMN IF NOT EXISTS weight DECIMAL DEFAULT 0;`,
             `ALTER TABLE scans ADD COLUMN IF NOT EXISTS operator VARCHAR(100);`,
@@ -174,7 +173,6 @@ app.get("/api/last-inward", async (req, res) => {
     } catch(e) { res.status(500).json({error: e.message}); }
 });
 
-// Fetch Live Weight of a tag for the Pre-Process Dashboard
 app.get("/api/tag-weight", async (req, res) => {
     try {
         let tag = req.query.tag;
@@ -302,13 +300,7 @@ app.post("/delete-batch", async (req, res) => {
 app.post("/log-yield", async (req, res) => {
     try {
         const { batch_code, date, product_code, target_wt, tare_grams, total_runs, total_pkts, total_gross, total_tare, total_net, loss_pct, yield_pct, runs_data, is_edit } = req.body;
-app.post("/delete-yield", async (req, res) => {
-    if(req.body.pin !== MASTER_PASSWORD) return res.status(403).json({error: "ACCESS DENIED: Invalid Master Password."});
-    try {
-        await pool.query("DELETE FROM yield_logs WHERE batch_code = $1", [req.body.batch_code]);
-        res.json({status: "success"});
-    } catch(e) { res.status(500).json({error: e.message}); }
-});
+
         // Prevent Duplicate Batches unless explicitly editing
         if(!is_edit) {
             let check = await pool.query("SELECT batch_code FROM yield_logs WHERE batch_code = $1", [batch_code]);
@@ -322,6 +314,14 @@ app.post("/delete-yield", async (req, res) => {
              date=$2, product_code=$3, target_wt=$4, tare_grams=$5, total_runs=$6, total_pkts=$7, total_gross=$8, total_tare=$9, total_net=$10, loss_pct=$11, yield_pct=$12, runs_data=$13, created_at=CURRENT_TIMESTAMP`,
             [batch_code, date, product_code, target_wt, tare_grams, total_runs, total_pkts, total_gross, total_tare, total_net, loss_pct, yield_pct, runs_data]
         );
+        res.json({status: "success"});
+    } catch(e) { res.status(500).json({error: e.message}); }
+});
+
+app.post("/delete-yield", async (req, res) => {
+    if(req.body.pin !== MASTER_PASSWORD) return res.status(403).json({error: "ACCESS DENIED: Invalid Master Password."});
+    try {
+        await pool.query("DELETE FROM yield_logs WHERE batch_code = $1", [req.body.batch_code]);
         res.json({status: "success"});
     } catch(e) { res.status(500).json({error: e.message}); }
 });
