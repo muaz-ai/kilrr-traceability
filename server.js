@@ -6,7 +6,7 @@ const https = require('https');
 try { require('dotenv').config(); } catch (e) { console.log("Local .env not found, relying on cloud variables."); }
 
 const app = express();
-app.use(express.json({ limit: '10mb' })); // Increased limit for large yield payloads
+app.use(express.json({ limit: '10mb' })); // Allows large yield arrays to be saved
 
 try { const cors = require('cors'); app.use(cors()); } catch (e) {}
 
@@ -28,6 +28,7 @@ const pool = new Pool({
     connectionTimeoutMillis: 15000 
 });
 
+// The Engine that pushes live data to Google Sheets
 function backupToSheets(eventType, operator, payload) {
     if(!SHEET_WEBHOOK || !SHEET_WEBHOOK.startsWith('https')) return;
     try {
@@ -78,6 +79,7 @@ async function initDB() {
             );
         `);
 
+        // Safely apply schema updates without dropping existing data
         const patches = [
             `ALTER TABLE scans ADD COLUMN IF NOT EXISTS weight DECIMAL DEFAULT 0;`,
             `ALTER TABLE scans ADD COLUMN IF NOT EXISTS operator VARCHAR(100);`,
@@ -96,7 +98,7 @@ async function initDB() {
 initDB();
 
 // ==========================================
-// 3. SECURED MASTER DATA ROUTES (THE VAULT)
+// 3. SECURED MASTER DATA ROUTES
 // ==========================================
 
 app.get("/get-ingredients", async (req, res) => {
@@ -191,6 +193,8 @@ app.post("/log-inwarding", async (req, res) => {
         for(let item of queue) {
             let safeWeight = parseFloat(item.weight) || 0;
             await pool.query("INSERT INTO inwarding_logs (date_received, ingredient_code, ingredient_name, vendor_code, vendor_name, weight, start_no, end_no, packs) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)", [item.dateRaw, item.ingCode, item.ingName, item.venCode, item.venName, safeWeight, item.startNo, item.endNo, item.packs]);
+            
+            // 📡 LIVE SHEET SYNC
             backupToSheets("INWARD_LOGGED", "System", item);
         }
         res.json({status: "success"});
@@ -203,6 +207,11 @@ app.post("/log-preprocess", async (req, res) => {
         for(let tag of output_tags) {
             await pool.query("INSERT INTO sub_assemblies (sub_tag, product_code, process_type, parent_tag, total_yield, batch_code) VALUES ($1, $2, $3, $4, $5, $6)", [tag, product_code, process_type, parent_tags, total_yield, batch_code]);
         }
+        
+        // 📡 LIVE SHEET SYNC
+        let outRange = output_tags.length > 1 ? `${output_tags[0]} to ${output_tags[output_tags.length-1]}` : output_tags[0];
+        backupToSheets("WIP_LOGGED", "System", { batch_code, product_code, process_type, parent_tags, total_yield, outputs: outRange });
+
         res.json({status: "success"});
     } catch(e) { res.status(500).json({error: e.message}); }
 });
@@ -224,6 +233,10 @@ app.get("/closed-batches", async (req, res) => {
 app.post("/create-batch", async (req, res) => {
     try {
         await pool.query("INSERT INTO batches (batch_code, fg_code, operator_name) VALUES ($1, $2, $3)", [req.body.batch_code, req.body.fg_code, req.body.operator_name]);
+        
+        // 📡 LIVE SHEET SYNC
+        backupToSheets("FINAL_BATCH", req.body.operator_name, req.body);
+
         res.json({status: "success"});
     } catch(e) {
         if(e.code === '23505') return res.status(400).json({error: "Batch code already exists!"});
@@ -248,6 +261,7 @@ app.post("/scan", async (req, res) => {
         let w = 0; 
         let pTags = null;
 
+        // Extract internal tags vs raw material tags
         if(vCode === 'KILRR') {
             let wip = await pool.query("SELECT parent_tag FROM sub_assemblies WHERE sub_tag = $1", [rm_tag]);
             if(wip.rows.length > 0) pTags = wip.rows[0].parent_tag;
@@ -258,6 +272,10 @@ app.post("/scan", async (req, res) => {
 
         await pool.query("INSERT INTO scans (batch_code, rm_tag, product_code, weight, operator, parent_tags) VALUES ($1, $2, $3, $4, $5, $6)", [batch_code, rm_tag, pCode, w, operator, pTags]);
         await pool.query("UPDATE batches SET total_weight = COALESCE(total_weight, 0) + $1 WHERE batch_code = $2", [w, batch_code]);
+        
+        // 📡 LIVE SHEET SYNC: Individual Scan Data
+        backupToSheets("SCAN_LOGGED", operator, { batch_code, rm_tag, product_code: pCode, weight: w });
+
         res.json({status: "success"});
     } catch(e) { res.status(500).json({error: e.message}); }
 });
@@ -295,13 +313,14 @@ app.post("/delete-batch", async (req, res) => {
 });
 
 // ==========================================
-// 6. YIELD & RECONCILIATION ROUTES 🔥
+// 6. YIELD & RECONCILIATION ROUTES
 // ==========================================
+
 app.post("/log-yield", async (req, res) => {
     try {
         const { batch_code, date, product_code, target_wt, tare_grams, total_runs, total_pkts, total_gross, total_tare, total_net, loss_pct, yield_pct, runs_data, is_edit } = req.body;
 
-        // Prevent Duplicate Batches unless explicitly editing
+        // Enforce duplicate logic
         if(!is_edit) {
             let check = await pool.query("SELECT batch_code FROM yield_logs WHERE batch_code = $1", [batch_code]);
             if(check.rows.length > 0) return res.status(400).json({error: "Duplicate Batch Code! This batch already exists. Go to the Dashboard to edit it."});
@@ -314,6 +333,10 @@ app.post("/log-yield", async (req, res) => {
              date=$2, product_code=$3, target_wt=$4, tare_grams=$5, total_runs=$6, total_pkts=$7, total_gross=$8, total_tare=$9, total_net=$10, loss_pct=$11, yield_pct=$12, runs_data=$13, created_at=CURRENT_TIMESTAMP`,
             [batch_code, date, product_code, target_wt, tare_grams, total_runs, total_pkts, total_gross, total_tare, total_net, loss_pct, yield_pct, runs_data]
         );
+
+        // 📡 LIVE SHEET SYNC
+        if(!is_edit) backupToSheets("YIELD_LOGGED", "System", req.body);
+
         res.json({status: "success"});
     } catch(e) { res.status(500).json({error: e.message}); }
 });
