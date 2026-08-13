@@ -115,21 +115,26 @@
     </nav>
 
     <div class="container">
-        <h2>Production Yield & Packet Reconciliation Tracker</h2>
-        <span class="marathi-title">फायनल बॅच वजन आणि पॅकिंग रिपोर्ट</span>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap: wrap;">
+            <div>
+                <h2>Production Yield & Packet Reconciliation</h2>
+                <span class="marathi-title">फायनल बॅच वजन आणि पॅकिंग रिपोर्ट <span style="color:#64748b; font-size:12px;">(Auto-Saves)</span></span>
+            </div>
+            <button onclick="clearLocalSession()" style="background:transparent; color:var(--danger-red); font-weight:900; font-family:'Inter'; border:none; cursor:pointer; margin-bottom: 25px; padding: 10px;">🗑️ Clear Screen Data</button>
+        </div>
 
         <div class="setup-box">
             <div>
                 <label>Date</label>
-                <input type="date" id="date_input" class="setup-input">
+                <input type="date" id="date_input" class="setup-input" oninput="updateMath()">
             </div>
             <div class="custom-dropdown-container">
                 <label>Target Product (Recipe)</label>
-                <input type="text" id="target_product" class="setup-input" placeholder="Search Master Recipes..." autocomplete="off">
+                <input type="text" id="target_product" class="setup-input" placeholder="Search Master Recipes..." autocomplete="off" oninput="updateMath()">
             </div>
             <div>
                 <label>WIP Batch Code</label>
-                <input type="text" id="batch_code" class="setup-input" placeholder="E.g. TAN-245" style="text-transform: uppercase;">
+                <input type="text" id="batch_code" class="setup-input" placeholder="E.g. TAN-245" style="text-transform: uppercase;" oninput="updateMath()">
             </div>
             <div>
                 <label>Target Wt / Run (g)</label>
@@ -142,7 +147,7 @@
             <div>
                 <label>Total Runs (Batches)</label>
                 <div style="display:flex; gap:10px;">
-                    <input type="number" id="num_runs" class="setup-input" value="1" min="1">
+                    <input type="number" id="num_runs" class="setup-input" value="1" min="1" oninput="updateMath()">
                     <button class="btn-set" onclick="generateRuns()">GENERATE</button>
                 </div>
             </div>
@@ -194,27 +199,36 @@
         let currentBatch = { runs: [{ id: 1, crates: [{gross: '', pkts: ''}] }] };
 
         window.onload = async () => {
-            // Check if we are loading this page from an "Edit" click in the Dashboard
+            // Priority 1: Check if editing from Dashboard
             let editDataStr = localStorage.getItem('kilrr_edit_yield');
+            // Priority 2: Check if there's an auto-saved active session
+            let autoSaveStr = localStorage.getItem('kilrr_active_yield');
+
             if(editDataStr) {
                 let editData = JSON.parse(editDataStr);
                 isEditMode = true;
-                
-                // Populate Setup Box
                 document.getElementById('date_input').value = editData.date ? editData.date.split('T')[0] : '';
                 document.getElementById('target_product').value = editData.product_code || '';
                 document.getElementById('batch_code').value = editData.batch_code || '';
-                document.getElementById('batch_code').readOnly = true; // Lock batch code during edit
+                document.getElementById('batch_code').readOnly = true; 
                 document.getElementById('target_weight').value = editData.target_wt || 130000;
                 document.getElementById('tare_grams').value = editData.tare_grams || 60;
                 document.getElementById('num_runs').value = editData.total_runs || 1;
-                
-                // Parse Runs
                 if(editData.runs_data) currentBatch.runs = JSON.parse(editData.runs_data);
                 
-                // Clear memory
-                localStorage.removeItem('kilrr_edit_yield');
-            } else {
+                localStorage.removeItem('kilrr_edit_yield'); // Clear memory
+            } 
+            else if (autoSaveStr) {
+                let autoSaveData = JSON.parse(autoSaveStr);
+                document.getElementById('date_input').value = autoSaveData.date || '';
+                document.getElementById('target_product').value = autoSaveData.product_code || '';
+                document.getElementById('batch_code').value = autoSaveData.batch_code || '';
+                document.getElementById('target_weight').value = autoSaveData.target_weight || 130000;
+                document.getElementById('tare_grams').value = autoSaveData.tare_grams || 60;
+                document.getElementById('num_runs').value = autoSaveData.num_runs || 1;
+                if(autoSaveData.runs) currentBatch.runs = autoSaveData.runs;
+            } 
+            else {
                 document.getElementById('date_input').valueAsDate = new Date();
             }
 
@@ -227,6 +241,30 @@
             
             renderApp(); 
         };
+
+        // ==========================================
+        // AUTO-SAVE ENGINE
+        // ==========================================
+        function saveLocalSession() {
+            if (isEditMode) return; // Do not auto-save over a dashboard edit
+            let sessionData = {
+                date: document.getElementById('date_input').value,
+                product_code: document.getElementById('target_product').value,
+                batch_code: document.getElementById('batch_code').value,
+                target_weight: document.getElementById('target_weight').value,
+                tare_grams: document.getElementById('tare_grams').value,
+                num_runs: document.getElementById('num_runs').value,
+                runs: currentBatch.runs
+            };
+            localStorage.setItem('kilrr_active_yield', JSON.stringify(sessionData));
+        }
+
+        function clearLocalSession() {
+            if(confirm("Are you sure you want to clear this screen and delete unsaved typing?")) {
+                localStorage.removeItem('kilrr_active_yield');
+                location.reload();
+            }
+        }
 
         // ==========================================
         // UI & MATH LOGIC
@@ -327,7 +365,6 @@
             updateMath();
         }
 
-        // Object holding the exact final math payload for Database Save
         let masterPayload = {};
 
         function updateMath() {
@@ -402,6 +439,8 @@
                 runs_data: JSON.stringify(currentBatch.runs),
                 is_edit: isEditMode
             };
+
+            saveLocalSession(); // FIRE THE AUTO-SAVE ENGINE!
         }
 
         // ==========================================
@@ -448,7 +487,10 @@
                 if(data.error) throw new Error(data.error);
                 
                 showDialog("Success", "Yield Report Saved to Dashboard Successfully!", "success");
-                // Reset to standard mode after successful edit
+                
+                // Clear Auto-Save because it is safely in the database now
+                localStorage.removeItem('kilrr_active_yield');
+
                 if(isEditMode) {
                     isEditMode = false;
                     document.getElementById('batch_code').readOnly = false;
@@ -468,7 +510,7 @@
                 matches.forEach(match => { 
                     let div = document.createElement('div'); div.className = 'custom-dropdown-item'; 
                     div.innerHTML = `<strong style="color:var(--accent-blue);">${match[codeKey]}</strong> - ${match[displayKey]}`; 
-                    div.onclick = () => { inp.value = match[displayKey]; list.style.display = 'none'; }; list.appendChild(div); 
+                    div.onclick = () => { inp.value = match[displayKey]; list.style.display = 'none'; updateMath();}; list.appendChild(div); 
                 }); 
                 list.style.display = 'block';
             }
@@ -485,7 +527,6 @@
             let rowsHTML = currentBatch.runs.map(run => {
                 let stats = calculateStats(run);
                 if(stats.net === 0) return '';
-                // Added Packet count text under Tare Weight
                 return `
                 <tr>
                     <td>Run ${run.id}</td>
