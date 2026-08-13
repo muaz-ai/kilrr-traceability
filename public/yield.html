@@ -316,7 +316,7 @@
             .brand { display: none; }
             .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 8px 12px;}
             .run-grid { grid-template-columns: 1fr; }
-            .summary-wrapper { overflow-x: auto; }
+            .setup-box { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -338,19 +338,18 @@
         <h2>Production Yield & Packet Reconciliation Tracker</h2>
         <span class="marathi-title">फायनल बॅच वजन आणि पॅकिंग रिपोर्ट</span>
 
-        <!-- 🔥 MASTER CONFIGURATION BOX 🔥 -->
         <div class="setup-box">
             <div>
                 <label>Date</label>
                 <input type="date" id="date_input" class="setup-input">
             </div>
             <div class="custom-dropdown-container">
-                <label>Target Product (SKU)</label>
-                <input type="text" id="target_product" class="setup-input" placeholder="Search Master DB..." autocomplete="off">
+                <label>Target Product (Recipe)</label>
+                <input type="text" id="target_product" class="setup-input" placeholder="Search Master Recipes..." autocomplete="off">
             </div>
             <div>
-                <label>Batch Code</label>
-                <input type="text" id="batch_code" class="setup-input" placeholder="E.g. TAN-245">
+                <label>WIP Batch Code</label>
+                <input type="text" id="batch_code" class="setup-input" placeholder="E.g. TAN-245" style="text-transform: uppercase;">
             </div>
             <div>
                 <label>Target Wt / Run (KG)</label>
@@ -369,12 +368,10 @@
             </div>
         </div>
 
-        <!-- 🔥 DYNAMIC RUN CARDS 🔥 -->
         <div id="runs_container" class="run-grid">
             <!-- Javascript injects Run Cards here -->
         </div>
 
-        <!-- 🔥 SUMMARY TABLE 🔥 -->
         <h2 style="margin-top: 40px;">Batch Summary</h2>
         <div class="summary-wrapper">
             <table class="summary-table">
@@ -399,15 +396,13 @@
             </table>
         </div>
 
-        <button class="btn-print" onclick="printYieldReport()">🖨️ Print Batch Reconciliation Audit</button>
+        <button class="btn-print" onclick="printYieldReport()">🖨️ Print Batch Reconciliation Annexure</button>
     </div>
 
     <script>
-        // State Management
-        let masterIngredients = [];
         let currentBatch = {
             runs: [
-                { id: 1, crates: [{gross: '', pkts: ''}] } // Initialize with 1 run, 1 empty crate
+                { id: 1, crates: [{gross: '', pkts: ''}] } 
             ]
         };
 
@@ -415,19 +410,21 @@
             document.getElementById('date_input').valueAsDate = new Date();
             
             try {
-                let res = await fetch('/get-ingredients');
-                masterIngredients = await res.json();
-                attachCustomDropdown('target_product', masterIngredients, 'ingredient_name', 'product_code');
+                // 🔥 FIXED: Fetch from /get-recipes instead of /get-ingredients 🔥
+                let res = await fetch('/get-recipes');
+                let rawRecipes = await res.json();
+                
+                // Extract unique Final Goods (FG) codes
+                let uniqueFGs = [...new Set(rawRecipes.map(r => r.fg_code))].map(fg => ({ display_name: fg, code: fg }));
+                
+                attachCustomDropdown('target_product', uniqueFGs, 'display_name', 'code');
             } catch(e) {
-                console.warn("Failed to fetch ingredients, running in offline mode.");
+                console.warn("Failed to fetch recipes, running in offline mode.");
             }
             
             renderApp();
         };
 
-        // ==========================================
-        // 1. DATA & MATH LOGIC
-        // ==========================================
         function generateRuns() {
             const num = parseInt(document.getElementById('num_runs').value) || 1;
             let oldRuns = currentBatch.runs;
@@ -471,16 +468,12 @@
             let totalGross = 0;
             let totalPkts = 0;
             
-            // Loop through all crate weighings for this run
             run.crates.forEach(c => {
                 totalGross += parseFloat(c.gross) || 0;
                 totalPkts += parseInt(c.pkts) || 0;
             });
             
-            // MATH: Convert Grams to KG for Tare Subtraction
             let totalTare = (totalPkts * tareGrams) / 1000; 
-            
-            // MATH: Net Yield
             let netYield = totalGross > 0 ? (totalGross - totalTare) : 0;
             
             let diff = 0;
@@ -498,18 +491,14 @@
                 net: netYield,
                 diff: diff,
                 lossPct: lossPct,
-                isLoss: diff > 0.01 // Threshold for variance
+                isLoss: diff > 0.01 
             };
         }
 
-        // ==========================================
-        // 2. UI RENDERER
-        // ==========================================
         function renderApp() {
             const container = document.getElementById('runs_container');
             const target = parseFloat(document.getElementById('target_weight').value) || 0;
             
-            // Render the Run Cards
             container.innerHTML = currentBatch.runs.map((run, rIndex) => {
                 let stats = calculateStats(run);
                 
@@ -560,7 +549,6 @@
                 </div>`;
             }).join('');
 
-            // Render Summary Table
             const tbody = document.getElementById('summary_body');
             const tfoot = document.getElementById('summary_footer');
             
@@ -598,7 +586,6 @@
                 </tr>`;
             }).join('');
 
-            // Overall Math
             let totalTarget = validRunsCount * target; 
             let overallDiff = totalTarget - totalShiftNet;
             let overallLossPct = totalTarget > 0 ? (overallDiff / totalTarget) * 100 : 0;
@@ -617,9 +604,6 @@
             `;
         }
 
-        // ==========================================
-        // 3. MASTER DATA DROPDOWN
-        // ==========================================
         function attachCustomDropdown(inputId, dataArray, displayKey, codeKey) {
             const inp = document.getElementById(inputId); 
             const list = document.createElement('div'); 
@@ -654,12 +638,12 @@
         }
 
         // ==========================================
-        // 4. FSSAI AUDIT PRINT LOGIC
+        // 🔥 OFFICIAL FSSAI ANNEXURE PRINT REPORT 🔥
         // ==========================================
         function printYieldReport() {
             let dateVal = document.getElementById('date_input').value;
             let product = document.getElementById('target_product').value || 'Unspecified';
-            let batchCode = document.getElementById('batch_code').value || 'Unspecified';
+            let batchCode = document.getElementById('batch_code').value.toUpperCase() || 'Unspecified';
             let target = parseFloat(document.getElementById('target_weight').value) || 0;
             let tare = parseFloat(document.getElementById('tare_grams').value) || 0;
 
@@ -677,7 +661,7 @@
 
                 return `
                 <tr>
-                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold;">B${run.id}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold;">Run ${run.id}</td>
                     <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0;">${stats.pkts > 0 ? stats.pkts : '--'}</td>
                     <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0;">${stats.gross > 0 ? stats.gross.toFixed(3) : '--'}</td>
                     <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; color:#dc2626;">${stats.tare > 0 ? stats.tare.toFixed(3) : '--'}</td>
@@ -692,7 +676,7 @@
             let overallLossPct = totalTarget > 0 ? (overallDiff / totalTarget) * 100 : 0;
 
             let html = `
-            <html><head><title>Yield Audit - ${batchCode}</title>
+            <html><head><title>Annexure - Yield Audit - ${batchCode}</title>
             <style>
                 @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
                 body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #0f172a; margin: 0; padding: 40px; background: white; }
@@ -723,7 +707,7 @@
                 <div class="report-wrapper">
                     <div class="header">
                         <div>
-                            <h1>YIELD & RECONCILIATION AUDIT</h1>
+                            <h1>ANNEXURE: YIELD & RECONCILIATION</h1>
                             <h2>KILRR BLENDED SPICES</h2>
                         </div>
                         <div class="batch-highlight">
@@ -736,7 +720,7 @@
                         <div class="meta-col">
                             <div><strong>Production Date</strong> ${dateVal}</div>
                             <div><strong>Empty Pkt Tare</strong> ${tare} grams</div>
-                            <div><strong>Total Packets Sealed</strong> ${totalShiftPkts}</div>
+                            <div><strong>Total Packets Sealed</strong> ${totalShiftPkts} Units</div>
                         </div>
                         <div class="meta-col" style="text-align:right;">
                             <div><strong>Target Weight Per Run</strong> ${target.toFixed(3)} KG</div>
@@ -761,7 +745,7 @@
                     </div>
 
                     <div class="footer">
-                        <p>This report was generated securely via system export.</p>
+                        <p>This report was generated securely via system export. Attach this annexure to the primary FSSAI Batch Traceability Report.</p>
                         <p class="footer-brand">Kilrr <span>OS</span></p>
                     </div>
                 </div>
