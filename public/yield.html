@@ -338,7 +338,6 @@
         <h2>Production Yield & Packet Reconciliation Tracker</h2>
         <span class="marathi-title">फायनल बॅच वजन आणि पॅकिंग रिपोर्ट</span>
 
-        <!-- 🔥 MASTER CONFIGURATION BOX 🔥 -->
         <div class="setup-box">
             <div>
                 <label>Date</label>
@@ -354,7 +353,6 @@
             </div>
             <div>
                 <label>Target Wt / Run (g)</label>
-                <!-- Default changed to 130000 grams -->
                 <input type="number" id="target_weight" class="setup-input" value="130000" step="1" oninput="renderApp()">
             </div>
             <div>
@@ -370,12 +368,10 @@
             </div>
         </div>
 
-        <!-- 🔥 DYNAMIC RUN CARDS 🔥 -->
         <div id="runs_container" class="run-grid">
             <!-- Javascript injects Run Cards here -->
         </div>
 
-        <!-- 🔥 SUMMARY TABLE 🔥 -->
         <h2 style="margin-top: 40px;">Batch Summary</h2>
         <div class="summary-wrapper">
             <table class="summary-table">
@@ -426,9 +422,6 @@
             renderApp();
         };
 
-        // ==========================================
-        // 1. DATA & MATH LOGIC
-        // ==========================================
         function generateRuns() {
             const num = parseInt(document.getElementById('num_runs').value) || 1;
             let oldRuns = currentBatch.runs;
@@ -477,7 +470,6 @@
                 totalPkts += parseInt(c.pkts) || 0;
             });
             
-            // GRAM MATH: No conversion division needed! Just pure grams.
             let totalTare = totalPkts * tareGrams; 
             let netYield = totalGross > 0 ? (totalGross - totalTare) : 0;
             
@@ -496,24 +488,28 @@
                 net: netYield,
                 diff: diff,
                 lossPct: lossPct,
-                isLoss: diff > 0 // Any variance above 0 grams is registered as a loss
+                isLoss: diff > 0 
             };
         }
 
-        // ==========================================
-        // 2. UI RENDERER
-        // ==========================================
         function renderApp() {
+            // 🔥 FOCUS-MEMORY CATCHER: Save the cursor before re-rendering the DOM
+            let activeId = null;
+            if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+                activeId = document.activeElement.id;
+            }
+
             const container = document.getElementById('runs_container');
             const target = parseFloat(document.getElementById('target_weight').value) || 0;
             
             container.innerHTML = currentBatch.runs.map((run, rIndex) => {
                 let stats = calculateStats(run);
                 
+                // Added unique IDs to the inputs for the Memory Catcher
                 let cratesHTML = run.crates.map((c, cIndex) => `
                     <tr>
-                        <td><input type="number" step="1" class="crate-input" placeholder="e.g. 43140" value="${c.gross}" oninput="updateCrate(${rIndex}, ${cIndex}, 'gross', this.value)"></td>
-                        <td><input type="number" class="crate-input" placeholder="e.g. 8" value="${c.pkts}" oninput="updateCrate(${rIndex}, ${cIndex}, 'pkts', this.value)"></td>
+                        <td><input type="number" id="crate_gross_${rIndex}_${cIndex}" step="1" class="crate-input" placeholder="e.g. 43140" value="${c.gross}" oninput="updateCrate(${rIndex}, ${cIndex}, 'gross', this.value)"></td>
+                        <td><input type="number" id="crate_pkts_${rIndex}_${cIndex}" class="crate-input" placeholder="e.g. 8" value="${c.pkts}" oninput="updateCrate(${rIndex}, ${cIndex}, 'pkts', this.value)"></td>
                         <td style="text-align:right;"><button class="btn-del" onclick="removeCrate(${rIndex}, ${cIndex})">✖</button></td>
                     </tr>
                 `).join('');
@@ -556,6 +552,20 @@
                     </div>
                 </div>`;
             }).join('');
+
+            // Restore focus and cursor position to the exact textbox they were typing in
+            if (activeId) {
+                let activeEl = document.getElementById(activeId);
+                if (activeEl) {
+                    activeEl.focus();
+                    // Chrome hack: Safely push the cursor to the end of the number string
+                    if (activeId.startsWith('crate_')) {
+                        let tempVal = activeEl.value;
+                        activeEl.value = '';
+                        activeEl.value = tempVal;
+                    }
+                }
+            }
 
             const tbody = document.getElementById('summary_body');
             const tfoot = document.getElementById('summary_footer');
@@ -646,7 +656,7 @@
         }
 
         // ==========================================
-        // 3. OFFICIAL FSSAI ANNEXURE PRINT REPORT
+        // OFFICIAL FSSAI ANNEXURE PRINT REPORT
         // ==========================================
         function printYieldReport() {
             let dateVal = document.getElementById('date_input').value;
