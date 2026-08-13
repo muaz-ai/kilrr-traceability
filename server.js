@@ -302,7 +302,13 @@ app.post("/delete-batch", async (req, res) => {
 app.post("/log-yield", async (req, res) => {
     try {
         const { batch_code, date, product_code, target_wt, tare_grams, total_runs, total_pkts, total_gross, total_tare, total_net, loss_pct, yield_pct, runs_data, is_edit } = req.body;
-
+app.post("/delete-yield", async (req, res) => {
+    if(req.body.pin !== MASTER_PASSWORD) return res.status(403).json({error: "ACCESS DENIED: Invalid Master Password."});
+    try {
+        await pool.query("DELETE FROM yield_logs WHERE batch_code = $1", [req.body.batch_code]);
+        res.json({status: "success"});
+    } catch(e) { res.status(500).json({error: e.message}); }
+});
         // Prevent Duplicate Batches unless explicitly editing
         if(!is_edit) {
             let check = await pool.query("SELECT batch_code FROM yield_logs WHERE batch_code = $1", [batch_code]);
