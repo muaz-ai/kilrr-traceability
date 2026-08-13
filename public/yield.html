@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Kilrr OS - Yield Tracker</title>
+    <title>Kilrr OS - Yield & Reconciliation</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
@@ -11,17 +11,17 @@
             --navy-command: #0b1121; 
             --success-green: #10b981; 
             --danger-red: #dc2626; 
-            --warning-yellow: #eab308; 
             --card-bg: #ffffff; 
             --accent-blue: #2563eb; 
         }
         
         body { 
             font-family: 'Inter', sans-serif; 
-            background: #f8fafc; 
+            background: #f1f5f9; 
             color: #0f172a; 
             margin: 0; 
-            padding-bottom: 80px;
+            padding-bottom: 100px; 
+            min-height: 100vh;
         }
         
         /* NAVIGATION */
@@ -34,7 +34,8 @@
             align-items: center; 
             position: sticky; 
             top: 0; 
-            z-index: 100;
+            z-index: 100; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         
         .brand { 
@@ -48,6 +49,7 @@
         }
         
         .brand span { color: var(--kilrr-orange); }
+        
         .nav-links { display: flex; gap: 10px; }
         
         .nav-btn { 
@@ -56,84 +58,265 @@
             font-weight: 700; 
             font-size: 13px; 
             text-transform: uppercase; 
+            transition: 0.2s; 
             padding: 8px 12px; 
-            border-radius: 8px; 
-            transition: 0.2s;
+            border-radius: 8px;
         }
         
         .nav-btn:hover { background: rgba(255,255,255,0.1); color: white;}
         .nav-btn.active { color: white; background: var(--kilrr-orange);}
 
-        .container { max-width: 1400px; margin: 30px auto; padding: 0 15px; }
-        
-        /* CARDS */
-        .card { 
-            background: var(--card-bg); 
-            border-radius: 16px; 
-            padding: 30px; 
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); 
-            border: 1px solid #cbd5e1; 
-            border-top: 6px solid var(--kilrr-orange); 
-            margin-bottom: 30px;
+        .container { 
+            max-width: 1400px; 
+            margin: 30px auto; 
+            padding: 0 15px; 
         }
 
-        h2 { margin: 0 0 5px 0; font-family: 'Space Grotesk', sans-serif; font-size: 26px; text-transform: uppercase; color: var(--navy-command);}
-        .marathi-title { font-family: 'Inter', sans-serif; color: var(--kilrr-orange); font-size: 15px; font-weight: 800; display: block; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;}
+        h2 { 
+            margin: 0 0 5px 0; 
+            font-family: 'Space Grotesk', sans-serif; 
+            font-size: 28px; 
+            text-transform: uppercase; 
+            color: var(--navy-command); 
+            letter-spacing: -0.5px;
+        }
+        
+        .marathi-title { 
+            font-family: 'Inter', sans-serif; 
+            color: var(--kilrr-orange); 
+            font-size: 16px; 
+            font-weight: 800; 
+            display: block; 
+            margin-bottom: 25px; 
+        }
 
-        /* MASTER TARGET SETUP */
-        .target-box { background: #fff7ed; border: 2px solid var(--kilrr-orange); border-radius: 12px; padding: 25px; margin-bottom: 30px; display: flex; gap: 20px; align-items: center;}
-        .target-box label { font-size: 14px; font-weight: 900; color: var(--navy-command); text-transform: uppercase; margin-bottom: 8px; display: block;}
-        .target-box input { padding: 15px 20px; border-radius: 8px; border: 2px solid #cbd5e1; font-size: 24px; font-weight: 900; font-family: 'Space Grotesk'; width: 200px; outline: none;}
-        .target-box input:focus { border-color: var(--kilrr-orange); }
+        /* MASTER SETUP BOX */
+        .setup-box { 
+            background: #ffffff; 
+            border: 2px solid var(--kilrr-orange); 
+            border-top: 8px solid var(--kilrr-orange);
+            border-radius: 16px; 
+            padding: 30px; 
+            margin-bottom: 30px; 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 20px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+
+        .setup-box label { 
+            font-size: 12px; 
+            font-weight: 900; 
+            color: var(--navy-command); 
+            text-transform: uppercase; 
+            margin-bottom: 8px; 
+            display: block;
+        }
+
+        .setup-input { 
+            width: 100%; 
+            padding: 15px; 
+            box-sizing: border-box; 
+            border-radius: 8px; 
+            border: 2px solid #cbd5e1; 
+            font-size: 16px; 
+            font-weight: 900; 
+            font-family: 'Inter', sans-serif; 
+            background: #f8fafc; 
+            outline: none; 
+            transition: 0.2s ease;
+        }
+        
+        .setup-input:focus { 
+            border-color: var(--kilrr-orange); 
+            background: white; 
+            box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.15);
+        }
+
+        .btn-set { 
+            background: var(--navy-command); 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: 900; 
+            padding: 0 20px; 
+            cursor: pointer; 
+            transition: 0.2s;
+        }
+        .btn-set:hover { background: var(--kilrr-orange); }
+
+        /* CUSTOM DROPDOWN */
+        .custom-dropdown-container { position: relative; width: 100%; }
+        .custom-dropdown-list { 
+            position: absolute; 
+            top: calc(100% + 5px); 
+            left: 0; right: 0; 
+            background: #ffffff; 
+            border: 2px solid var(--accent-blue); 
+            border-radius: 12px; 
+            max-height: 250px; 
+            overflow-y: auto; 
+            z-index: 9999; 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15); 
+            display: none; 
+            padding: 10px; 
+        }
+        .custom-dropdown-item { 
+            padding: 15px 20px; 
+            font-size: 16px; 
+            font-weight: 700; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: 0.1s; 
+            margin-bottom: 4px; 
+            border-bottom: 1px solid #f1f5f9; 
+            color: #0f172a;
+        }
+        .custom-dropdown-item:hover { background: #eff6ff; color: var(--accent-blue); }
 
         /* DYNAMIC RUN GRID */
-        .run-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px; margin-bottom: 40px;}
-        .run-card { background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 25px; position: relative; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
-        .run-card:hover { border-color: var(--accent-blue); }
+        .run-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr)); 
+            gap: 25px; 
+            margin-bottom: 40px;
+        }
         
-        .run-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 15px;}
-        .run-header h3 { margin: 0; font-size: 22px; font-weight: 900; color: var(--navy-command); font-family: 'Space Grotesk';}
-        .btn-del-run { background: #fee2e2; color: var(--danger-red); border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s;}
-        .btn-del-run:hover { background: var(--danger-red); color: white;}
-
-        .drum-list { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;}
-        .drum-input { width: 90px; padding: 10px; border-radius: 6px; border: 2px solid #cbd5e1; font-weight: bold; text-align: center; outline: none; font-size: 14px;}
-        .drum-input:focus { border-color: var(--accent-blue); }
-        .btn-add-drum { background: #f1f5f9; color: var(--navy-command); border: 2px dashed #cbd5e1; border-radius: 6px; padding: 10px 15px; font-weight: bold; cursor: pointer; transition: 0.2s;}
-        .btn-add-drum:hover { background: #e2e8f0; border-color: var(--navy-command);}
-
-        .run-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;}
-        .run-inputs label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; display: block;}
-        .run-inputs input { width: 100%; padding: 12px; box-sizing: border-box; border-radius: 8px; border: 2px solid #cbd5e1; font-weight: 900; font-size: 16px; outline: none;}
-        .run-inputs input:focus { border-color: var(--kilrr-orange); }
-
-        .run-stats { background: #f8fafc; border-radius: 8px; padding: 15px; display: flex; justify-content: space-between; align-items: center;}
-        .stat-block { display: flex; flex-direction: column; gap: 4px;}
-        .stat-label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;}
-        .stat-val { font-size: 18px; font-weight: 900; font-family: monospace;}
+        .run-card { 
+            background: white; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 16px; 
+            padding: 25px; 
+            transition: 0.2s; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+        }
         
-        .status-loss { color: var(--danger-red); background: #fee2e2; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 900;}
-        .status-target { color: var(--success-green); background: #d1fae5; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 900;}
+        .run-card:hover { border-color: var(--kilrr-orange); }
+        
+        .run-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 2px solid #f1f5f9; 
+            padding-bottom: 15px; 
+            margin-bottom: 15px;
+        }
+        
+        .run-header h3 { 
+            margin: 0; 
+            font-size: 22px; 
+            font-weight: 900; 
+            color: var(--navy-command); 
+            font-family: 'Space Grotesk';
+        }
 
-        .btn-massive { width: 100%; background: var(--navy-command); color: white; border: none; padding: 20px; border-radius: 12px; font-family: 'Space Grotesk'; font-size: 18px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.2s; margin-bottom: 40px;}
-        .btn-massive:hover { background: var(--accent-blue); transform: translateY(-2px);}
+        /* CRATE TABLE */
+        .crate-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .crate-table th { text-align: left; font-size: 11px; color: #64748b; text-transform: uppercase; padding-bottom: 8px;}
+        .crate-table td { padding-bottom: 10px; padding-right: 10px; }
+        
+        .crate-input { 
+            width: 100%; 
+            padding: 12px; 
+            box-sizing: border-box; 
+            border-radius: 6px; 
+            border: 2px solid #cbd5e1; 
+            font-weight: 900; 
+            font-size: 16px; 
+            font-family: monospace;
+            outline: none; 
+            transition: 0.2s;
+        }
+        .crate-input:focus { border-color: var(--kilrr-orange); }
+
+        .btn-del { 
+            background: #fee2e2; 
+            color: var(--danger-red); 
+            border: none; 
+            border-radius: 6px; 
+            width: 40px; 
+            height: 40px; 
+            font-weight: 900; 
+            cursor: pointer; 
+            transition: 0.2s;
+        }
+        .btn-del:hover { background: var(--danger-red); color: white; }
+        
+        .btn-add-crate { 
+            background: #f8fafc; 
+            color: var(--navy-command); 
+            border: 2px dashed #cbd5e1; 
+            border-radius: 8px; 
+            padding: 12px; 
+            font-weight: 900; 
+            font-size: 13px; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            width: 100%;
+        }
+        .btn-add-crate:hover { background: #e2e8f0; border-color: var(--navy-command);}
+
+        /* RUN STATS PANEL */
+        .run-stats-panel { 
+            background: #f8fafc; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 12px; 
+            padding: 20px; 
+            margin-top: auto; 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px;
+        }
+        
+        .stat-group { display: flex; flex-direction: column; gap: 4px; }
+        .st-label { font-size: 11px; color: #64748b; font-weight: 900; text-transform: uppercase; }
+        .st-val { font-size: 18px; font-weight: 900; font-family: monospace; color: var(--navy-command); }
+        
+        .st-net { font-size: 26px; color: var(--success-green); }
+        .st-loss { color: var(--danger-red); }
 
         /* SUMMARY TABLE */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white;}
-        th { background: #0b1121; color: white; padding: 15px; font-size: 13px; text-transform: uppercase; border-bottom: 2px solid #cbd5e1; font-weight: 900;}
-        td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 15px; font-weight: 800; color: var(--navy-command); font-family: monospace;}
+        .summary-wrapper { 
+            border: 2px solid #e2e8f0; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); 
+            background: white;
+            margin-bottom: 30px;
+        }
         
-        .footer-stats { display: flex; justify-content: space-between; background: #fff7ed; border: 2px solid var(--kilrr-orange); border-radius: 12px; padding: 20px; margin-top: 30px;}
-        .f-stat { font-size: 24px; font-weight: 900; color: var(--navy-command); font-family: 'Space Grotesk';}
-        .f-stat span { color: var(--kilrr-orange); font-size: 14px; display: block; font-family: 'Inter'; text-transform: uppercase;}
+        .summary-table { width: 100%; border-collapse: collapse; }
+        .summary-table th { background: #0b1121; color: white; padding: 18px; font-size: 13px; text-transform: uppercase; font-weight: 900; text-align: left;}
+        .summary-table td { padding: 18px; border-bottom: 1px solid #f1f5f9; font-size: 16px; font-weight: 900; color: var(--navy-command); font-family: monospace;}
+        
+        .status-badge.loss { background: #fee2e2; color: var(--danger-red); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-family: 'Inter'; text-transform: uppercase;}
+        .status-badge.good { background: #d1fae5; color: var(--success-green); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-family: 'Inter'; text-transform: uppercase;}
+
+        .btn-print { 
+            width: 100%; 
+            background: linear-gradient(135deg, #059669, #047857); 
+            color: white; 
+            border: none; 
+            padding: 25px; 
+            border-radius: 12px; 
+            font-family: 'Space Grotesk'; 
+            font-size: 20px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            box-shadow: 0 8px 15px rgba(5, 150, 105, 0.3);
+        }
+        .btn-print:hover { transform: translateY(-3px); }
 
         @media (max-width: 1024px) { 
             .nav-top { position: fixed; bottom: 0; top: auto; width: 100%; padding: 10px 0; justify-content: space-around; overflow-x: auto; white-space: nowrap; border-top: 3px solid var(--kilrr-orange); z-index: 999;}
             .brand { display: none; }
             .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; padding: 8px 12px;}
             .run-grid { grid-template-columns: 1fr; }
-            .target-box { flex-direction: column; align-items: flex-start; }
-            .footer-stats { flex-direction: column; gap: 15px;}
+            .summary-wrapper { overflow-x: auto; }
         }
     </style>
 </head>
@@ -152,205 +335,445 @@
     </nav>
 
     <div class="container">
-        <div class="card">
-            <h2>Production Yield & Variance Tracker</h2>
-            <!-- Explicit phonetic Marathi matching local dialect -->
-            <span class="marathi-title">प्रोडक्शन एरिया - उत्पन्न आणि तूट रिपोर्ट</span>
+        <h2>Production Yield & Packet Reconciliation Tracker</h2>
+        <span class="marathi-title">फायनल बॅच वजन आणि पॅकिंग रिपोर्ट</span>
 
-            <div class="target-box">
-                <div>
-                    <label>Target Weight Per Run (KG)</label>
-                    <input type="number" id="global_target" value="126.335" step="0.001" oninput="renderApp()">
+        <!-- 🔥 MASTER CONFIGURATION BOX 🔥 -->
+        <div class="setup-box">
+            <div>
+                <label>Date</label>
+                <input type="date" id="date_input" class="setup-input">
+            </div>
+            <div class="custom-dropdown-container">
+                <label>Target Product (SKU)</label>
+                <input type="text" id="target_product" class="setup-input" placeholder="Search Master DB..." autocomplete="off">
+            </div>
+            <div>
+                <label>Batch Code</label>
+                <input type="text" id="batch_code" class="setup-input" placeholder="E.g. TAN-245">
+            </div>
+            <div>
+                <label>Target Wt / Run (KG)</label>
+                <input type="number" id="target_weight" class="setup-input" value="130" step="0.001" oninput="renderApp()">
+            </div>
+            <div>
+                <label>Empty Pkt Tare (g)</label>
+                <input type="number" id="tare_grams" class="setup-input" value="60" oninput="renderApp()">
+            </div>
+            <div>
+                <label>Total Runs (Batches)</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="num_runs" class="setup-input" value="1" min="1">
+                    <button class="btn-set" onclick="generateRuns()">GENERATE</button>
                 </div>
-                <div style="color:#64748b; font-weight:bold; font-size:13px; max-width:400px;">
-                    This is your Master Recipe baseline. Every batch run below will be automatically mathematically checked against this weight to calculate physical processing loss.
-                </div>
-            </div>
-
-            <div id="runs_container" class="run-grid">
-                <!-- Javascript will inject the Batch Run cards here -->
-            </div>
-
-            <button class="btn-massive" onclick="addRun()">➕ नवीन रन टाका (ADD NEW BATCH RUN)</button>
-
-            <div style="border: 2px solid #e2e8f0; border-radius:12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
-                <table id="summary_table">
-                    <thead>
-                        <tr>
-                            <th>Batch #</th>
-                            <th>Final Weight</th>
-                            <th>Target Wt</th>
-                            <th>Variance (Diff)</th>
-                            <th>Loss %</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="summary_body">
-                        <!-- Javascript injects rows here -->
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="footer-stats">
-                <div class="f-stat"><span id="avg_weight">0.00 KG</span> Average Output Weight</div>
-                <div class="f-stat"><span id="total_weight">0.00 KG</span> Total Shift Output Weight</div>
             </div>
         </div>
+
+        <!-- 🔥 DYNAMIC RUN CARDS 🔥 -->
+        <div id="runs_container" class="run-grid">
+            <!-- Javascript injects Run Cards here -->
+        </div>
+
+        <!-- 🔥 SUMMARY TABLE 🔥 -->
+        <h2 style="margin-top: 40px;">Batch Summary</h2>
+        <div class="summary-wrapper">
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Run #</th>
+                        <th>Packets</th>
+                        <th>Gross Wt</th>
+                        <th>Tare Wt</th>
+                        <th style="color:var(--kilrr-orange);">Net Yield</th>
+                        <th>Variance</th>
+                        <th>Loss %</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="summary_body">
+                    <!-- Javascript injects Summary Rows here -->
+                </tbody>
+                <tfoot id="summary_footer" style="background:#fff7ed; border-top: 4px solid var(--kilrr-orange);">
+                    <!-- Javascript injects Total Footer here -->
+                </tfoot>
+            </table>
+        </div>
+
+        <button class="btn-print" onclick="printYieldReport()">🖨️ Print Batch Reconciliation Audit</button>
     </div>
 
     <script>
         // State Management
-        let runs = [
-            { id: 1, drums: [], packets: '', finalWeight: '' } // Start with 1 empty run
-        ];
+        let masterIngredients = [];
+        let currentBatch = {
+            runs: [
+                { id: 1, crates: [{gross: '', pkts: ''}] } // Initialize with 1 run, 1 empty crate
+            ]
+        };
 
-        function getTarget() {
-            return parseFloat(document.getElementById('global_target').value) || 0;
-        }
-
-        function addRun() {
-            runs.push({
-                id: runs.length + 1,
-                drums: [],
-                packets: '',
-                finalWeight: ''
-            });
-            renderApp();
-        }
-
-        function removeRun(index) {
-            if(confirm("Discard this run data?")) {
-                runs.splice(index, 1);
-                // Re-index remaining runs
-                runs.forEach((r, i) => r.id = i + 1);
-                renderApp();
-            }
-        }
-
-        function addDrum(runIndex) {
-            runs[runIndex].drums.push('');
-            renderApp();
-        }
-
-        function updateDrum(runIndex, drumIndex, val) {
-            runs[runIndex].drums[drumIndex] = val;
-            renderApp();
-        }
-
-        function updateField(runIndex, field, val) {
-            runs[runIndex][field] = val;
-            renderApp();
-        }
-
-        function calculateRunStats(run) {
-            let target = getTarget();
-            let finalWt = parseFloat(run.finalWeight) || 0;
-            let diff = target - finalWt;
-            let lossPct = target > 0 ? (diff / target) * 100 : 0;
+        window.onload = async () => {
+            document.getElementById('date_input').valueAsDate = new Date();
             
-            // To prevent massive negative loss % if they haven't typed final weight yet
-            if(finalWt === 0) { diff = 0; lossPct = 0; }
+            try {
+                let res = await fetch('/get-ingredients');
+                masterIngredients = await res.json();
+                attachCustomDropdown('target_product', masterIngredients, 'ingredient_name', 'product_code');
+            } catch(e) {
+                console.warn("Failed to fetch ingredients, running in offline mode.");
+            }
+            
+            renderApp();
+        };
 
-            let statusHTML = diff > 0.01 ? `<span class="status-loss">LOSS</span>` : `<span class="status-target">ON TARGET</span>`;
+        // ==========================================
+        // 1. DATA & MATH LOGIC
+        // ==========================================
+        function generateRuns() {
+            const num = parseInt(document.getElementById('num_runs').value) || 1;
+            let oldRuns = currentBatch.runs;
+            currentBatch.runs = [];
+            
+            for(let i=1; i<=num; i++) {
+                if(oldRuns[i-1]) {
+                    currentBatch.runs.push(oldRuns[i-1]);
+                } else {
+                    currentBatch.runs.push({
+                        id: i,
+                        crates: [{gross: '', pkts: ''}]
+                    });
+                }
+            }
+            renderApp();
+        }
+
+        function addCrate(rIndex) {
+            currentBatch.runs[rIndex].crates.push({gross: '', pkts: ''});
+            renderApp();
+        }
+
+        function updateCrate(rIndex, cIndex, field, val) {
+            currentBatch.runs[rIndex].crates[cIndex][field] = val;
+            renderApp();
+        }
+
+        function removeCrate(rIndex, cIndex) {
+            currentBatch.runs[rIndex].crates.splice(cIndex, 1);
+            if(currentBatch.runs[rIndex].crates.length === 0) {
+                currentBatch.runs[rIndex].crates.push({gross: '', pkts: ''}); 
+            }
+            renderApp();
+        }
+
+        function calculateStats(run) {
+            let tareGrams = parseFloat(document.getElementById('tare_grams').value) || 0;
+            let target = parseFloat(document.getElementById('target_weight').value) || 0;
+            
+            let totalGross = 0;
+            let totalPkts = 0;
+            
+            // Loop through all crate weighings for this run
+            run.crates.forEach(c => {
+                totalGross += parseFloat(c.gross) || 0;
+                totalPkts += parseInt(c.pkts) || 0;
+            });
+            
+            // MATH: Convert Grams to KG for Tare Subtraction
+            let totalTare = (totalPkts * tareGrams) / 1000; 
+            
+            // MATH: Net Yield
+            let netYield = totalGross > 0 ? (totalGross - totalTare) : 0;
+            
+            let diff = 0;
+            let lossPct = 0;
+            
+            if(netYield > 0) {
+                diff = target - netYield;
+                lossPct = target > 0 ? (diff / target) * 100 : 0;
+            }
             
             return {
-                diff: diff.toFixed(3),
-                lossPct: lossPct.toFixed(3),
-                statusHTML: statusHTML,
-                isLoss: diff > 0.01
+                gross: totalGross,
+                pkts: totalPkts,
+                tare: totalTare,
+                net: netYield,
+                diff: diff,
+                lossPct: lossPct,
+                isLoss: diff > 0.01 // Threshold for variance
             };
         }
 
+        // ==========================================
+        // 2. UI RENDERER
+        // ==========================================
         function renderApp() {
             const container = document.getElementById('runs_container');
-            const target = getTarget();
+            const target = parseFloat(document.getElementById('target_weight').value) || 0;
             
-            // 1. Render The Run Cards
-            container.innerHTML = runs.map((run, rIndex) => {
-                let stats = calculateRunStats(run);
-                let drumSum = run.drums.reduce((sum, val) => sum + (parseFloat(val) || 0), 0).toFixed(2);
+            // Render the Run Cards
+            container.innerHTML = currentBatch.runs.map((run, rIndex) => {
+                let stats = calculateStats(run);
                 
-                let drumsHTML = run.drums.map((dVal, dIndex) => `
-                    <input type="number" class="drum-input" placeholder="0.00" value="${dVal}" 
-                           oninput="updateDrum(${rIndex}, ${dIndex}, this.value)">
+                let cratesHTML = run.crates.map((c, cIndex) => `
+                    <tr>
+                        <td><input type="number" step="0.001" class="crate-input" placeholder="e.g. 43.140" value="${c.gross}" oninput="updateCrate(${rIndex}, ${cIndex}, 'gross', this.value)"></td>
+                        <td><input type="number" class="crate-input" placeholder="e.g. 8" value="${c.pkts}" oninput="updateCrate(${rIndex}, ${cIndex}, 'pkts', this.value)"></td>
+                        <td style="text-align:right;"><button class="btn-del" onclick="removeCrate(${rIndex}, ${cIndex})">✖</button></td>
+                    </tr>
                 `).join('');
 
                 return `
                 <div class="run-card">
                     <div class="run-header">
-                        <h3>BATCH RUN ${run.id}</h3>
-                        ${runs.length > 1 ? `<button class="btn-del-run" onclick="removeRun(${rIndex})">✖</button>` : ''}
+                        <h3>RUN ${run.id}</h3>
+                        <span style="font-weight:bold; color:#64748b; font-size:12px;">TARGET: ${target.toFixed(3)} KG</span>
                     </div>
                     
-                    <label>Individual Drum Weights (KG)</label>
-                    <div class="drum-list">
-                        ${drumsHTML}
-                        <button class="btn-add-drum" onclick="addDrum(${rIndex})">+ Add Drum</button>
-                    </div>
+                    <table class="crate-table">
+                        <thead>
+                            <tr>
+                                <th>Scale Reading (Gross KG)</th>
+                                <th>Silver Packets Count</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${cratesHTML}
+                        </tbody>
+                    </table>
                     
-                    <div style="font-weight:900; font-family:monospace; color:var(--kilrr-orange); margin-bottom:20px; font-size:14px;">
-                        Drum Sum: ${drumSum} KG
-                    </div>
-
-                    <div class="run-inputs">
-                        <div>
-                            <label>Packets Generated</label>
-                            <input type="number" placeholder="0" value="${run.packets}" oninput="updateField(${rIndex}, 'packets', this.value)">
+                    <button class="btn-add-crate" onclick="addCrate(${rIndex})">+ Add Crate / Weighing</button>
+                    
+                    <div class="run-stats-panel">
+                        <div class="stat-group">
+                            <span class="st-label">Total Gross</span>
+                            <span class="st-val">${stats.gross.toFixed(3)}</span>
                         </div>
-                        <div>
-                            <label>फायनल वजन (Final Weight)</label>
-                            <input type="number" step="0.001" placeholder="0.000" value="${run.finalWeight}" oninput="updateField(${rIndex}, 'finalWeight', this.value)">
+                        <div class="stat-group">
+                            <span class="st-label" style="color:var(--danger-red);">Total Tare</span>
+                            <span class="st-val" style="color:var(--danger-red);">- ${stats.tare.toFixed(3)}</span>
                         </div>
-                    </div>
-
-                    <div class="run-stats">
-                        <div class="stat-block">
-                            <span class="stat-label">Variance</span>
-                            <span class="stat-val" style="color:${stats.isLoss ? 'var(--danger-red)' : 'var(--navy-command)'};">${stats.diff} KG</span>
-                        </div>
-                        <div class="stat-block">
-                            <span class="stat-label">Loss %</span>
-                            <span class="stat-val" style="color:${stats.isLoss ? 'var(--danger-red)' : 'var(--navy-command)'};">${stats.lossPct}%</span>
-                        </div>
-                        <div class="stat-block">
-                            ${stats.statusHTML}
+                        <div class="stat-group" style="grid-column: 1 / -1; padding-top:10px; border-top:2px solid #e2e8f0; display:flex; flex-direction:row; justify-content:space-between; align-items:center;">
+                            <span class="st-label" style="color:var(--kilrr-orange);">NET YIELD</span>
+                            <span class="st-val st-net" style="color:var(--navy-command);">${stats.net.toFixed(3)} KG</span>
                         </div>
                     </div>
                 </div>`;
             }).join('');
 
-            // 2. Render Summary Table
+            // Render Summary Table
             const tbody = document.getElementById('summary_body');
-            let totalShiftWeight = 0;
+            const tfoot = document.getElementById('summary_footer');
+            
+            let totalShiftNet = 0;
+            let totalShiftGross = 0;
+            let totalShiftTare = 0;
+            let totalShiftPkts = 0;
             let validRunsCount = 0;
 
-            tbody.innerHTML = runs.map(run => {
-                let stats = calculateRunStats(run);
-                let finalWt = parseFloat(run.finalWeight) || 0;
+            tbody.innerHTML = currentBatch.runs.map(run => {
+                let stats = calculateStats(run);
                 
-                if(finalWt > 0) {
-                    totalShiftWeight += finalWt;
+                if(stats.net > 0) {
+                    totalShiftNet += stats.net;
+                    totalShiftGross += stats.gross;
+                    totalShiftTare += stats.tare;
+                    totalShiftPkts += stats.pkts;
+                    validRunsCount++;
+                }
+
+                let statusBadge = stats.net > 0 
+                    ? (stats.isLoss ? `<span class="status-badge loss">LOSS</span>` : `<span class="status-badge good">ON TARGET</span>`) 
+                    : '--';
+
+                return `
+                <tr>
+                    <td>B${run.id}</td>
+                    <td>${stats.pkts > 0 ? stats.pkts : '--'}</td>
+                    <td>${stats.gross > 0 ? stats.gross.toFixed(3) : '--'}</td>
+                    <td style="color:var(--danger-red);">${stats.tare > 0 ? stats.tare.toFixed(3) : '--'}</td>
+                    <td style="color:var(--kilrr-orange);">${stats.net > 0 ? stats.net.toFixed(3) : '--'}</td>
+                    <td style="color:${stats.isLoss ? 'var(--danger-red)' : 'inherit'};">${stats.net > 0 ? stats.diff.toFixed(3) : '--'}</td>
+                    <td style="color:${stats.isLoss ? 'var(--danger-red)' : 'inherit'};">${stats.net > 0 ? stats.lossPct.toFixed(3) + '%' : '--'}</td>
+                    <td>${statusBadge}</td>
+                </tr>`;
+            }).join('');
+
+            // Overall Math
+            let totalTarget = validRunsCount * target; 
+            let overallDiff = totalTarget - totalShiftNet;
+            let overallLossPct = totalTarget > 0 ? (overallDiff / totalTarget) * 100 : 0;
+
+            tfoot.innerHTML = `
+                <tr>
+                    <td style="color:var(--kilrr-orange);">TOTALS</td>
+                    <td style="color:var(--kilrr-orange);">${totalShiftPkts}</td>
+                    <td style="color:var(--kilrr-orange);">${totalShiftGross.toFixed(3)}</td>
+                    <td style="color:var(--danger-red);">${totalShiftTare.toFixed(3)}</td>
+                    <td style="color:var(--navy-command); font-size:20px;">${totalShiftNet.toFixed(3)} KG</td>
+                    <td style="color:${overallDiff > 0.01 ? 'var(--danger-red)' : 'inherit'};">${totalShiftNet > 0 ? overallDiff.toFixed(3) : '0.000'}</td>
+                    <td style="color:${overallDiff > 0.01 ? 'var(--danger-red)' : 'inherit'};">${totalShiftNet > 0 ? overallLossPct.toFixed(3) + '%' : '0.000%'}</td>
+                    <td></td>
+                </tr>
+            `;
+        }
+
+        // ==========================================
+        // 3. MASTER DATA DROPDOWN
+        // ==========================================
+        function attachCustomDropdown(inputId, dataArray, displayKey, codeKey) {
+            const inp = document.getElementById(inputId); 
+            const list = document.createElement('div'); 
+            list.className = 'custom-dropdown-list'; 
+            inp.parentNode.appendChild(list);
+            
+            function renderList(filterTxt = "") {
+                list.innerHTML = ''; 
+                const matches = dataArray.filter(item => 
+                    (item[displayKey]||"").toLowerCase().includes(filterTxt.toLowerCase()) || 
+                    (item[codeKey]||"").toLowerCase().includes(filterTxt.toLowerCase())
+                );
+
+                if(matches.length === 0) { list.style.display = 'none'; return; }
+                
+                matches.forEach(match => { 
+                    let div = document.createElement('div'); 
+                    div.className = 'custom-dropdown-item'; 
+                    div.innerHTML = `<strong style="color:var(--accent-blue);">${match[codeKey]}</strong> - ${match[displayKey]}`; 
+                    div.onclick = () => { 
+                        inp.value = match[displayKey]; 
+                        list.style.display = 'none'; 
+                    }; 
+                    list.appendChild(div); 
+                }); 
+                list.style.display = 'block';
+            }
+            
+            inp.addEventListener('input', function() { renderList(this.value); }); 
+            inp.addEventListener('focus', function() { renderList(this.value); });
+            document.addEventListener('click', function(e) { if(e.target !== inp) list.style.display = 'none'; });
+        }
+
+        // ==========================================
+        // 4. FSSAI AUDIT PRINT LOGIC
+        // ==========================================
+        function printYieldReport() {
+            let dateVal = document.getElementById('date_input').value;
+            let product = document.getElementById('target_product').value || 'Unspecified';
+            let batchCode = document.getElementById('batch_code').value || 'Unspecified';
+            let target = parseFloat(document.getElementById('target_weight').value) || 0;
+            let tare = parseFloat(document.getElementById('tare_grams').value) || 0;
+
+            let totalShiftNet = 0;
+            let totalShiftPkts = 0;
+            let validRunsCount = 0;
+
+            let rowsHTML = currentBatch.runs.map(run => {
+                let stats = calculateStats(run);
+                if(stats.net > 0) {
+                    totalShiftNet += stats.net;
+                    totalShiftPkts += stats.pkts;
                     validRunsCount++;
                 }
 
                 return `
                 <tr>
-                    <td>B${run.id}</td>
-                    <td>${finalWt > 0 ? finalWt.toFixed(3) : '--'}</td>
-                    <td>${target.toFixed(3)}</td>
-                    <td style="color:${stats.isLoss ? 'var(--danger-red)' : 'inherit'};">${finalWt > 0 ? stats.diff : '--'}</td>
-                    <td style="color:${stats.isLoss ? 'var(--danger-red)' : 'inherit'};">${finalWt > 0 ? stats.lossPct + '%' : '--'}</td>
-                    <td>${finalWt > 0 ? stats.statusHTML : '--'}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold;">B${run.id}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0;">${stats.pkts > 0 ? stats.pkts : '--'}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0;">${stats.gross > 0 ? stats.gross.toFixed(3) : '--'}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; color:#dc2626;">${stats.tare > 0 ? stats.tare.toFixed(3) : '--'}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold; color:#0b1121;">${stats.net > 0 ? stats.net.toFixed(3) : '--'}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0;">${stats.net > 0 ? stats.diff.toFixed(3) : '--'}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0;">${stats.net > 0 ? stats.lossPct.toFixed(3) + '%' : '--'}</td>
                 </tr>`;
             }).join('');
 
-            // 3. Update Global Footer Stats
-            document.getElementById('total_weight').textContent = totalShiftWeight.toFixed(3) + " KG";
-            document.getElementById('avg_weight').textContent = (validRunsCount > 0 ? (totalShiftWeight / validRunsCount).toFixed(3) : "0.000") + " KG";
-        }
+            let totalTarget = validRunsCount * target; 
+            let overallDiff = totalTarget - totalShiftNet;
+            let overallLossPct = totalTarget > 0 ? (overallDiff / totalTarget) * 100 : 0;
 
-        // Initial Render
-        renderApp();
+            let html = `
+            <html><head><title>Yield Audit - ${batchCode}</title>
+            <style>
+                @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
+                body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #0f172a; margin: 0; padding: 40px; background: white; }
+                .report-wrapper { max-width: 900px; margin: 0 auto; border: 2px solid #cbd5e1; padding: 40px; border-radius: 12px; }
+                
+                .header { border-bottom: 4px solid #ea580c; padding-bottom: 20px; margin-bottom: 30px; display:flex; justify-content:space-between; align-items:center;}
+                h1 { margin: 0 0 5px 0; color: #0b1121; font-size: 32px; text-transform: uppercase; letter-spacing: -0.5px;}
+                h2 { color: #ea580c; margin: 0; font-size: 18px; text-transform: uppercase;}
+                
+                .batch-highlight { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 5px; max-width: 40%;}
+                .batch-highlight div { font-size: 14px; font-weight: bold; color: #64748b; text-transform: uppercase;}
+                .batch-highlight span { background: #0b1121; color: white; padding: 8px 15px; border-radius: 6px; font-size: 20px; font-weight: 900; font-family: monospace;}
+                
+                .meta-box { background: #f8fafc; border: 2px solid #e2e8f0; padding: 25px; border-radius: 10px; margin-bottom: 30px; display: flex; justify-content: space-between;}
+                .meta-col { display: flex; flex-direction: column; gap: 12px; font-size: 15px;}
+                .meta-col strong { color: #64748b; text-transform: uppercase; font-size: 12px; display: block; margin-bottom: 2px;}
+                .meta-col div { font-weight: bold; color: #0b1121; }
+                
+                table { width: 100%; border-collapse: collapse; margin-bottom: 40px;}
+                th { background: #0b1121; color: white; padding: 15px 10px; text-align: left; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;}
+                
+                .footer { text-align: center; border-top: 2px solid #e2e8f0; padding-top: 20px; margin-top: 40px; }
+                .footer p { margin: 0 0 5px 0; font-size: 12px; color: #64748b; font-weight: bold;}
+                .footer-brand { font-size: 16px; font-weight: 900; color: #0b1121; margin: 0;}
+                .footer-brand span { color: #ea580c; }
+            </style>
+            </head><body>
+                <div class="report-wrapper">
+                    <div class="header">
+                        <div>
+                            <h1>YIELD & RECONCILIATION AUDIT</h1>
+                            <h2>KILRR BLENDED SPICES</h2>
+                        </div>
+                        <div class="batch-highlight">
+                            <div>Target Product: ${product}</div>
+                            <span>${batchCode}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="meta-box">
+                        <div class="meta-col">
+                            <div><strong>Production Date</strong> ${dateVal}</div>
+                            <div><strong>Empty Pkt Tare</strong> ${tare} grams</div>
+                            <div><strong>Total Packets Sealed</strong> ${totalShiftPkts}</div>
+                        </div>
+                        <div class="meta-col" style="text-align:right;">
+                            <div><strong>Target Weight Per Run</strong> ${target.toFixed(3)} KG</div>
+                            <div><strong>Total Expected Yield</strong> ${totalTarget.toFixed(3)} KG</div>
+                            <div><strong style="color:#ea580c;">Actual Shift Net Yield</strong> <span style="font-size:22px;">${totalShiftNet.toFixed(3)} KG</span></div>
+                            <div><strong style="color:#dc2626;">Total Shift Loss %</strong> ${overallLossPct.toFixed(3)}%</div>
+                        </div>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr><th>Run #</th><th>Packets</th><th>Gross Wt</th><th>Tare Wt</th><th>Net Yield</th><th>Variance</th><th>Loss %</th></tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHTML}
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top: 40px; display: flex; justify-content: space-between; padding: 0 20px;">
+                        <div><strong>Production Supervisor Sign:</strong> _______________________</div>
+                        <div><strong>Quality Assurance Sign:</strong> _______________________</div>
+                    </div>
+
+                    <div class="footer">
+                        <p>This report was generated securely via system export.</p>
+                        <p class="footer-brand">Kilrr <span>OS</span></p>
+                    </div>
+                </div>
+            </body>
+            <script>window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 500); };<\/script>
+            </html>`;
+
+            let printWindow = window.open('', '_blank');
+            printWindow.document.open();
+            printWindow.document.write(html);
+            printWindow.document.close();
+        }
     </script>
 </body>
 </html>
