@@ -338,6 +338,7 @@
         <h2>Production Yield & Packet Reconciliation Tracker</h2>
         <span class="marathi-title">फायनल बॅच वजन आणि पॅकिंग रिपोर्ट</span>
 
+        <!-- 🔥 MASTER CONFIGURATION BOX 🔥 -->
         <div class="setup-box">
             <div>
                 <label>Date</label>
@@ -352,8 +353,9 @@
                 <input type="text" id="batch_code" class="setup-input" placeholder="E.g. TAN-245" style="text-transform: uppercase;">
             </div>
             <div>
-                <label>Target Wt / Run (KG)</label>
-                <input type="number" id="target_weight" class="setup-input" value="130" step="0.001" oninput="renderApp()">
+                <label>Target Wt / Run (g)</label>
+                <!-- Default changed to 130000 grams -->
+                <input type="number" id="target_weight" class="setup-input" value="130000" step="1" oninput="renderApp()">
             </div>
             <div>
                 <label>Empty Pkt Tare (g)</label>
@@ -368,10 +370,12 @@
             </div>
         </div>
 
+        <!-- 🔥 DYNAMIC RUN CARDS 🔥 -->
         <div id="runs_container" class="run-grid">
             <!-- Javascript injects Run Cards here -->
         </div>
 
+        <!-- 🔥 SUMMARY TABLE 🔥 -->
         <h2 style="margin-top: 40px;">Batch Summary</h2>
         <div class="summary-wrapper">
             <table class="summary-table">
@@ -379,10 +383,10 @@
                     <tr>
                         <th>Run #</th>
                         <th>Packets</th>
-                        <th>Gross Wt</th>
-                        <th>Tare Wt</th>
-                        <th style="color:var(--kilrr-orange);">Net Yield</th>
-                        <th>Variance</th>
+                        <th>Gross Wt (g)</th>
+                        <th>Tare Wt (g)</th>
+                        <th style="color:var(--kilrr-orange);">Net Yield (g)</th>
+                        <th>Variance (g)</th>
                         <th>Loss %</th>
                         <th>Status</th>
                     </tr>
@@ -410,13 +414,10 @@
             document.getElementById('date_input').valueAsDate = new Date();
             
             try {
-                // 🔥 FIXED: Fetch from /get-recipes instead of /get-ingredients 🔥
                 let res = await fetch('/get-recipes');
                 let rawRecipes = await res.json();
                 
-                // Extract unique Final Goods (FG) codes
                 let uniqueFGs = [...new Set(rawRecipes.map(r => r.fg_code))].map(fg => ({ display_name: fg, code: fg }));
-                
                 attachCustomDropdown('target_product', uniqueFGs, 'display_name', 'code');
             } catch(e) {
                 console.warn("Failed to fetch recipes, running in offline mode.");
@@ -425,6 +426,9 @@
             renderApp();
         };
 
+        // ==========================================
+        // 1. DATA & MATH LOGIC
+        // ==========================================
         function generateRuns() {
             const num = parseInt(document.getElementById('num_runs').value) || 1;
             let oldRuns = currentBatch.runs;
@@ -473,7 +477,8 @@
                 totalPkts += parseInt(c.pkts) || 0;
             });
             
-            let totalTare = (totalPkts * tareGrams) / 1000; 
+            // GRAM MATH: No conversion division needed! Just pure grams.
+            let totalTare = totalPkts * tareGrams; 
             let netYield = totalGross > 0 ? (totalGross - totalTare) : 0;
             
             let diff = 0;
@@ -491,10 +496,13 @@
                 net: netYield,
                 diff: diff,
                 lossPct: lossPct,
-                isLoss: diff > 0.01 
+                isLoss: diff > 0 // Any variance above 0 grams is registered as a loss
             };
         }
 
+        // ==========================================
+        // 2. UI RENDERER
+        // ==========================================
         function renderApp() {
             const container = document.getElementById('runs_container');
             const target = parseFloat(document.getElementById('target_weight').value) || 0;
@@ -504,7 +512,7 @@
                 
                 let cratesHTML = run.crates.map((c, cIndex) => `
                     <tr>
-                        <td><input type="number" step="0.001" class="crate-input" placeholder="e.g. 43.140" value="${c.gross}" oninput="updateCrate(${rIndex}, ${cIndex}, 'gross', this.value)"></td>
+                        <td><input type="number" step="1" class="crate-input" placeholder="e.g. 43140" value="${c.gross}" oninput="updateCrate(${rIndex}, ${cIndex}, 'gross', this.value)"></td>
                         <td><input type="number" class="crate-input" placeholder="e.g. 8" value="${c.pkts}" oninput="updateCrate(${rIndex}, ${cIndex}, 'pkts', this.value)"></td>
                         <td style="text-align:right;"><button class="btn-del" onclick="removeCrate(${rIndex}, ${cIndex})">✖</button></td>
                     </tr>
@@ -514,13 +522,13 @@
                 <div class="run-card">
                     <div class="run-header">
                         <h3>RUN ${run.id}</h3>
-                        <span style="font-weight:bold; color:#64748b; font-size:12px;">TARGET: ${target.toFixed(3)} KG</span>
+                        <span style="font-weight:bold; color:#64748b; font-size:12px;">TARGET: ${target.toFixed(0)} g</span>
                     </div>
                     
                     <table class="crate-table">
                         <thead>
                             <tr>
-                                <th>Scale Reading (Gross KG)</th>
+                                <th>Scale Reading (Gross g)</th>
                                 <th>Silver Packets Count</th>
                                 <th></th>
                             </tr>
@@ -535,15 +543,15 @@
                     <div class="run-stats-panel">
                         <div class="stat-group">
                             <span class="st-label">Total Gross</span>
-                            <span class="st-val">${stats.gross.toFixed(3)}</span>
+                            <span class="st-val">${stats.gross.toFixed(0)} g</span>
                         </div>
                         <div class="stat-group">
                             <span class="st-label" style="color:var(--danger-red);">Total Tare</span>
-                            <span class="st-val" style="color:var(--danger-red);">- ${stats.tare.toFixed(3)}</span>
+                            <span class="st-val" style="color:var(--danger-red);">- ${stats.tare.toFixed(0)} g</span>
                         </div>
                         <div class="stat-group" style="grid-column: 1 / -1; padding-top:10px; border-top:2px solid #e2e8f0; display:flex; flex-direction:row; justify-content:space-between; align-items:center;">
                             <span class="st-label" style="color:var(--kilrr-orange);">NET YIELD</span>
-                            <span class="st-val st-net" style="color:var(--navy-command);">${stats.net.toFixed(3)} KG</span>
+                            <span class="st-val st-net" style="color:var(--navy-command);">${stats.net.toFixed(0)} g</span>
                         </div>
                     </div>
                 </div>`;
@@ -577,11 +585,11 @@
                 <tr>
                     <td>B${run.id}</td>
                     <td>${stats.pkts > 0 ? stats.pkts : '--'}</td>
-                    <td>${stats.gross > 0 ? stats.gross.toFixed(3) : '--'}</td>
-                    <td style="color:var(--danger-red);">${stats.tare > 0 ? stats.tare.toFixed(3) : '--'}</td>
-                    <td style="color:var(--kilrr-orange);">${stats.net > 0 ? stats.net.toFixed(3) : '--'}</td>
-                    <td style="color:${stats.isLoss ? 'var(--danger-red)' : 'inherit'};">${stats.net > 0 ? stats.diff.toFixed(3) : '--'}</td>
-                    <td style="color:${stats.isLoss ? 'var(--danger-red)' : 'inherit'};">${stats.net > 0 ? stats.lossPct.toFixed(3) + '%' : '--'}</td>
+                    <td>${stats.gross > 0 ? stats.gross.toFixed(0) : '--'}</td>
+                    <td style="color:var(--danger-red);">${stats.tare > 0 ? stats.tare.toFixed(0) : '--'}</td>
+                    <td style="color:var(--kilrr-orange);">${stats.net > 0 ? stats.net.toFixed(0) : '--'}</td>
+                    <td style="color:${stats.isLoss ? 'var(--danger-red)' : 'inherit'};">${stats.net > 0 ? stats.diff.toFixed(0) : '--'}</td>
+                    <td style="color:${stats.isLoss ? 'var(--danger-red)' : 'inherit'};">${stats.net > 0 ? stats.lossPct.toFixed(2) + '%' : '--'}</td>
                     <td>${statusBadge}</td>
                 </tr>`;
             }).join('');
@@ -594,11 +602,11 @@
                 <tr>
                     <td style="color:var(--kilrr-orange);">TOTALS</td>
                     <td style="color:var(--kilrr-orange);">${totalShiftPkts}</td>
-                    <td style="color:var(--kilrr-orange);">${totalShiftGross.toFixed(3)}</td>
-                    <td style="color:var(--danger-red);">${totalShiftTare.toFixed(3)}</td>
-                    <td style="color:var(--navy-command); font-size:20px;">${totalShiftNet.toFixed(3)} KG</td>
-                    <td style="color:${overallDiff > 0.01 ? 'var(--danger-red)' : 'inherit'};">${totalShiftNet > 0 ? overallDiff.toFixed(3) : '0.000'}</td>
-                    <td style="color:${overallDiff > 0.01 ? 'var(--danger-red)' : 'inherit'};">${totalShiftNet > 0 ? overallLossPct.toFixed(3) + '%' : '0.000%'}</td>
+                    <td style="color:var(--kilrr-orange);">${totalShiftGross.toFixed(0)}</td>
+                    <td style="color:var(--danger-red);">${totalShiftTare.toFixed(0)}</td>
+                    <td style="color:var(--navy-command); font-size:20px;">${totalShiftNet.toFixed(0)} g</td>
+                    <td style="color:${overallDiff > 0 ? 'var(--danger-red)' : 'inherit'};">${totalShiftNet > 0 ? overallDiff.toFixed(0) : '0'}</td>
+                    <td style="color:${overallDiff > 0 ? 'var(--danger-red)' : 'inherit'};">${totalShiftNet > 0 ? overallLossPct.toFixed(2) + '%' : '0.00%'}</td>
                     <td></td>
                 </tr>
             `;
@@ -638,7 +646,7 @@
         }
 
         // ==========================================
-        // 🔥 OFFICIAL FSSAI ANNEXURE PRINT REPORT 🔥
+        // 3. OFFICIAL FSSAI ANNEXURE PRINT REPORT
         // ==========================================
         function printYieldReport() {
             let dateVal = document.getElementById('date_input').value;
@@ -663,11 +671,11 @@
                 <tr>
                     <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold;">Run ${run.id}</td>
                     <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0;">${stats.pkts > 0 ? stats.pkts : '--'}</td>
-                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0;">${stats.gross > 0 ? stats.gross.toFixed(3) : '--'}</td>
-                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; color:#dc2626;">${stats.tare > 0 ? stats.tare.toFixed(3) : '--'}</td>
-                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold; color:#0b1121;">${stats.net > 0 ? stats.net.toFixed(3) : '--'}</td>
-                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0;">${stats.net > 0 ? stats.diff.toFixed(3) : '--'}</td>
-                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0;">${stats.net > 0 ? stats.lossPct.toFixed(3) + '%' : '--'}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0;">${stats.gross > 0 ? stats.gross.toFixed(0) : '--'}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; color:#dc2626;">${stats.tare > 0 ? stats.tare.toFixed(0) : '--'}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0; font-weight:bold; color:#0b1121;">${stats.net > 0 ? stats.net.toFixed(0) : '--'}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0;">${stats.net > 0 ? stats.diff.toFixed(0) : '--'}</td>
+                    <td style="padding:12px 10px; border-bottom:1px solid #e2e8f0;">${stats.net > 0 ? stats.lossPct.toFixed(2) + '%' : '--'}</td>
                 </tr>`;
             }).join('');
 
@@ -723,16 +731,16 @@
                             <div><strong>Total Packets Sealed</strong> ${totalShiftPkts} Units</div>
                         </div>
                         <div class="meta-col" style="text-align:right;">
-                            <div><strong>Target Weight Per Run</strong> ${target.toFixed(3)} KG</div>
-                            <div><strong>Total Expected Yield</strong> ${totalTarget.toFixed(3)} KG</div>
-                            <div><strong style="color:#ea580c;">Actual Shift Net Yield</strong> <span style="font-size:22px;">${totalShiftNet.toFixed(3)} KG</span></div>
-                            <div><strong style="color:#dc2626;">Total Shift Loss %</strong> ${overallLossPct.toFixed(3)}%</div>
+                            <div><strong>Target Weight Per Run</strong> ${target.toFixed(0)} g</div>
+                            <div><strong>Total Expected Yield</strong> ${totalTarget.toFixed(0)} g</div>
+                            <div><strong style="color:#ea580c;">Actual Shift Net Yield</strong> <span style="font-size:22px;">${totalShiftNet.toFixed(0)} g</span></div>
+                            <div><strong style="color:#dc2626;">Total Shift Loss %</strong> ${overallLossPct.toFixed(2)}%</div>
                         </div>
                     </div>
                     
                     <table>
                         <thead>
-                            <tr><th>Run #</th><th>Packets</th><th>Gross Wt</th><th>Tare Wt</th><th>Net Yield</th><th>Variance</th><th>Loss %</th></tr>
+                            <tr><th>Run #</th><th>Packets</th><th>Gross Wt (g)</th><th>Tare Wt (g)</th><th>Net Yield (g)</th><th>Variance (g)</th><th>Loss %</th></tr>
                         </thead>
                         <tbody>
                             ${rowsHTML}
