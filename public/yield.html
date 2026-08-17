@@ -7,7 +7,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --kilrr-orange: #ea580c; --navy-command: #0b1121; --success-green: #10b981; --danger-red: #dc2626; --card-bg: #ffffff; --accent-blue: #2563eb; }
-        body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: #0f172a; margin: 0; padding-bottom: 100px; min-height: 100vh;}
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #0f172a;
+            margin: 0;
+            padding-bottom: 100px;
+            min-height: 100vh;
+            background-color: #eef1f6;
+            background-image:
+                radial-gradient(circle at 12% -10%, rgba(234, 88, 12, 0.10), transparent 45%),
+                radial-gradient(circle at 100% 0%, rgba(37, 99, 235, 0.08), transparent 42%),
+                linear-gradient(rgba(11, 17, 33, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(11, 17, 33, 0.035) 1px, transparent 1px);
+            background-size: auto, auto, 32px 32px, 32px 32px;
+            background-attachment: fixed, fixed, fixed, fixed;
+        }
         
         /* NAVIGATION */
         .nav-top { background: var(--navy-command); border-bottom: 4px solid var(--kilrr-orange); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
